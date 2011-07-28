@@ -13,7 +13,12 @@
     <artifactId>flexbuh-document</artifactId>
     <name>Flexbuh - Document</name>
         
-    <dependencies>        
+    <dependencies>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-dictionary</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>

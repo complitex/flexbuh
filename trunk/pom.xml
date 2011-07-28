@@ -24,16 +24,17 @@
         <module>flexbuh-web</module>
         <module>flexbuh-document</module>
 
-        <module>../complitex/complitex-template</module>
         <module>../complitex/complitex-admin</module>
+        <module>../complitex/complitex-dictionary</module>
+        <module>../complitex/complitex-images</module>
         <module>../complitex/complitex-logging</module>
         <module>../complitex/complitex-resources</module>
-        <module>../complitex/complitex-images</module>
+        <module>../complitex/complitex-template</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Complitex Modules -->            
+            <!-- Complitex Modules -->
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-template</artifactId>
@@ -57,6 +58,11 @@
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-images</artifactId>
+                <version>${complitex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.complitex</groupId>
+                <artifactId>complitex-dictionary</artifactId>
                 <version>${complitex.version}</version>
             </dependency>
 
