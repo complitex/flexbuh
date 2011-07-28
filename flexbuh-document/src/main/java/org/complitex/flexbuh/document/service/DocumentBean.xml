@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.document.service.TemplateBean">
+    <resultMap id="documentResultMap" type="org.complitex.flexbuh.document.entity.AbstractTemplate">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="data" property="data"/>
+    </resultMap>
+
+    <insert id="insertTemplate" parameterType="org.complitex.flexbuh.document.entity.AbstractTemplate">
+        insert into `${table}` (`name`, `data`) values (#{name}, #{data})
+    </insert>
+</mapper>
