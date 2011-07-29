@@ -1,29 +1,58 @@
 package org.complitex.flexbuh.document.entity;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.*;
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.07.11 16:05
  */
+@XmlRootElement(name = "DECLAR", namespace = "http://www.w3.org/2001/XMLSchema-instance")
+@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlSeeAlso(DeclarationValue.class)
 public class Declaration {
-    private String tin;         // код плательщика
-    private String cDoc;        // код документа
-    private String cDocSub;     // подтип документа
-    private String cDocVer;     // номер версии документа
-    private String cDocType;    // № исправительной документа (0 - основной (первого поданного))
-    private String cDocCnt;     // № однотипных документов в периоде
-    private String cReg;        // код области
-    private String cRaj;        // код административного района
-    private String periodMonth; // отчетный месяц (последний в отчетном периоде)
-    private String periodType;  // тип периода
-    private String periodYear;  // отчетный год
-    private String cStiOrig;    // Код ГНИ, в которую подается оригинал документа
-    private String cDocStan;    // законодательство
-    private String dFill;       // дата заполненные документы плательщиком
-    private String software;    // сигнатура программы
+    private static class Head{
+        @XmlElement(name = "TIN") String tin;                   // код плательщика
+        @XmlElement(name = "C_DOC") String cDoc;                // код документа
+        @XmlElement(name = "C_DOC_SUB") String cDocSub;         // подтип документа
+        @XmlElement(name = "C_DOC_VER") String cDocVer;         // номер версии документа
+        @XmlElement(name = "C_DOC_TYPE") String cDocType;       // № исправительной документа (0 - основной (первого поданного))
+        @XmlElement(name = "C_DOC_CNT") String cDocCnt;         // № однотипных документов в периоде
+        @XmlElement(name = "C_REG") String cReg;                // код области
+        @XmlElement(name = "C_RAJ") String cRaj;                // код административного района
+        @XmlElement(name = "PERIOD_MONTH") String periodMonth;  // отчетный месяц (последний в отчетном периоде)
+        @XmlElement(name = "PERIOD_TYPE") String periodType;    // тип периода
+        @XmlElement(name = "PERIOD_YEAR") String periodYear;    // отчетный год
+        @XmlElement(name = "C_STI_ORIG") String cStiOrig;       // Код ГНИ, в которую подается оригинал документа
+        @XmlElement(name = "C_DOC_STAN") String cDocStan;       // законодательство
+        @XmlElement(name = "D_FILL") String dFill;              // дата заполненные документы плательщиком
+        @XmlElement(name = "SOFTWARE") String software;         // сигнатура программы
+    }
 
-    private List<DeclarationValue> values;
+    @XmlElement(name = "DECLARHEAD")
+    private Head head;
+
+    @XmlTransient
+    private List<DeclarationValue> values = new ArrayList<DeclarationValue>();
+
+    @XmlElementWrapper(name = "DECLARBODY")
+    @XmlAnyElement
+    private List<JAXBElement<DeclarationValue>> xmlValues = new ArrayList<JAXBElement<DeclarationValue>>();
+
+    public Declaration() {
+        head = new Head();
+    }
+
+    public void prepareXmlValues(){
+        xmlValues.clear();
+
+        for (DeclarationValue v : values){
+            xmlValues.add(new JAXBElement<DeclarationValue>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
+        }
+    }
 
     /**
      * Значением элемента является код ЕГРПОУ для юридических лиц и идентификационный номер ГРФЛ для физических лиц.
@@ -31,7 +60,7 @@ public class Declaration {
      * @return код плательщика
      */
     public String getTin() {
-        return tin;
+        return head.tin;
     }
 
     /**
@@ -40,7 +69,7 @@ public class Declaration {
      * @param tin код плательщика
      */
     public void setTin(String tin) {
-        this.tin = tin;
+        head.tin = tin;
     }
 
     /**
@@ -49,7 +78,7 @@ public class Declaration {
      * @return код документа
      */
     public String getCDoc() {
-        return cDoc;
+        return head.cDoc;
     }
 
     /**
@@ -58,7 +87,7 @@ public class Declaration {
      * @param cDoc код документа
      */
     public void setCDoc(String cDoc) {
-        this.cDoc = cDoc;
+        head.cDoc = cDoc;
     }
 
     /**
@@ -67,7 +96,7 @@ public class Declaration {
      * @return подтип документа
      */
     public String getCDocSub() {
-        return cDocSub;
+        return head.cDocSub;
     }
 
     /**
@@ -76,7 +105,7 @@ public class Declaration {
      * @param cDocSub подтип документа
      */
     public void setCDocSub(String cDocSub) {
-        this.cDocSub = cDocSub;
+        head.cDocSub = cDocSub;
     }
 
     /**
@@ -85,7 +114,7 @@ public class Declaration {
      * @return номер версии документа
      */
     public String getCDocVer() {
-        return cDocVer;
+        return head.cDocVer;
     }
 
     /**
@@ -94,7 +123,7 @@ public class Declaration {
      * @param cDocVer номер версии документа
      */
     public void setCDocVer(String cDocVer) {
-        this.cDocVer = cDocVer;
+        head.cDocVer = cDocVer;
     }
 
     /**
@@ -105,7 +134,7 @@ public class Declaration {
      * @return № исправительной документа (0 - основной (первого поданного))
      */
     public String getCDocType() {
-        return cDocType;
+        return head.cDocType;
     }
 
     /**
@@ -116,7 +145,7 @@ public class Declaration {
      * @param cDocType № исправительной документа (0 - основной (первого поданного))
      */
     public void setCDocType(String cDocType) {
-        this.cDocType = cDocType;
+        head.cDocType = cDocType;
     }
 
     /**
@@ -129,7 +158,7 @@ public class Declaration {
      * @return № однотипных документов в периоде
      */
     public String getCDocCnt() {
-        return cDocCnt;
+        return head.cDocCnt;
     }
 
     /**
@@ -142,7 +171,7 @@ public class Declaration {
      * @param cDocCnt № однотипных документов в периоде
      */
     public void setCDocCnt(String cDocCnt) {
-        this.cDocCnt = cDocCnt;
+        head.cDocCnt = cDocCnt;
     }
 
     /**
@@ -153,7 +182,7 @@ public class Declaration {
      * @return код области
      */
     public String getCReg() {
-        return cReg;
+        return head.cReg;
     }
 
     /**
@@ -164,7 +193,7 @@ public class Declaration {
      * @param cReg код области
      */
     public void setCReg(String cReg) {
-        this.cReg = cReg;
+        head.cReg = cReg;
     }
 
     /**
@@ -175,7 +204,7 @@ public class Declaration {
      * @return код административного района
      */
     public String getCRaj() {
-        return cRaj;
+        return head.cRaj;
     }
 
     /**
@@ -186,7 +215,7 @@ public class Declaration {
      * @param cRaj код административного района
      */
     public void setCRaj(String cRaj) {
-        this.cRaj = cRaj;
+        head.cRaj = cRaj;
     }
 
     /**
@@ -195,7 +224,7 @@ public class Declaration {
      * @return отчетный месяц (последний в отчетном периоде)
      */
     public String getPeriodMonth() {
-        return periodMonth;
+        return head.periodMonth;
     }
 
     /**
@@ -204,7 +233,7 @@ public class Declaration {
      * @param periodMonth отчетный месяц (последний в отчетном периоде)
      */
     public void setPeriodMonth(String periodMonth) {
-        this.periodMonth = periodMonth;
+        head.periodMonth = periodMonth;
     }
 
     /**
@@ -212,7 +241,7 @@ public class Declaration {
      * @return тип периода
      */
     public String getPeriodType() {
-        return periodType;
+        return head.periodType;
     }
 
     /**
@@ -220,7 +249,7 @@ public class Declaration {
      * @param periodType тип периода
      */
     public void setPeriodType(String periodType) {
-        this.periodType = periodType;
+        head.periodType = periodType;
     }
 
     /**
@@ -228,7 +257,7 @@ public class Declaration {
      * @return отчетный год
      */
     public String getPeriodYear() {
-        return periodYear;
+        return head.periodYear;
     }
 
     /**
@@ -236,7 +265,7 @@ public class Declaration {
      * @param periodYear отчетный год
      */
     public void setPeriodYear(String periodYear) {
-        this.periodYear = periodYear;
+        head.periodYear = periodYear;
     }
 
     /**
@@ -245,7 +274,7 @@ public class Declaration {
      * @return Код ГНИ, в которую подается оригинал документа
      */
     public String getCStiOrig() {
-        return cStiOrig;
+        return head.cStiOrig;
     }
 
     /**
@@ -254,7 +283,7 @@ public class Declaration {
      * @param cStiOrig Код ГНИ, в которую подается оригинал документа
      */
     public void setCStiOrig(String cStiOrig) {
-        this.cStiOrig = cStiOrig;
+        head.cStiOrig = cStiOrig;
     }
 
     /**
@@ -262,7 +291,7 @@ public class Declaration {
      * @return законодательство
      */
     public String getCDocStan() {
-        return cDocStan;
+        return head.cDocStan;
     }
 
     /**
@@ -270,7 +299,7 @@ public class Declaration {
      * @param cDocStan законодательство
      */
     public void setCDocStan(String cDocStan) {
-        this.cDocStan = cDocStan;
+        head.cDocStan = cDocStan;
     }
 
     /**
@@ -278,7 +307,7 @@ public class Declaration {
      * @return дата заполненные документы плательщиком
      */
     public String getDFill() {
-        return dFill;
+        return head.dFill;
     }
 
     /**
@@ -286,7 +315,7 @@ public class Declaration {
      * @param dFill дата заполненные документы плательщиком
      */
     public void setDFill(String dFill) {
-        this.dFill = dFill;
+        head.dFill = dFill;
     }
 
     /**
@@ -294,7 +323,7 @@ public class Declaration {
      * @return сигнатура программы
      */
     public String getSoftware() {
-        return software;
+        return head.software;
     }
 
     /**
@@ -302,7 +331,7 @@ public class Declaration {
      * @param software сигнатура программы
      */
     public void setSoftware(String software) {
-        this.software = software;
+        head.software = software;
     }
 
     public List<DeclarationValue> getValues() {
