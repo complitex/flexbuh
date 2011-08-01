@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>org.complitex.flexbuh</groupId>
-        <artifactId>flexbuh</artifactId>          
+        <artifactId>flexbuh-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -13,7 +13,12 @@
     <artifactId>flexbuh-common</artifactId>
     <name>Flexbuh - Common</name>
         
-    <dependencies>        
+    <dependencies>
+        <dependency>
+            <groupId>org.complitex.flexbuh</groupId>
+            <artifactId>flexbuh-resources</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -34,6 +39,10 @@
             <groupId>org.odlabs.wiquery</groupId>
             <artifactId>wiquery</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>javaee-inject</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>javax</groupId>
@@ -46,13 +55,18 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
         </dependency>
     </dependencies>
 </project>
