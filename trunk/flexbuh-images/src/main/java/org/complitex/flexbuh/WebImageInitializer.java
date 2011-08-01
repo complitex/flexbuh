@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.images;
+package org.complitex.flexbuh;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;

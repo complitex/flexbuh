@@ -2,10 +2,6 @@
 
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <typeAliases>
-        <typeAlias type="org.complitex.dictionary.entity.Locale" alias="Locale"/>
-    </typeAliases>
-
     <environments default="local">
         <environment id="local">
             <transactionManager type="MANAGED"/>
@@ -16,17 +12,6 @@
     </environments>
 
     <mappers>
-        <mapper resource="org/complitex/dictionary/entity/Locale.xml"/>
-
-        <mapper resource="org/complitex/dictionary/service/LogBean.xml"/>
-        <mapper resource="org/complitex/dictionary/service/SessionBean.xml"/>
-        <mapper resource="org/complitex/dictionary/service/PreferenceBean.xml"/>
-        <mapper resource="org/complitex/dictionary/service/ConfigBean.xml"/>
-
-        <mapper resource="org/complitex/admin/service/UserBean.xml"/>
-        <mapper resource="org/complitex/admin/service/UserProfileBean.xml"/>
-        <mapper resource="org/complitex/logging/service/LogListBean.xml"/>
-
         <mapper resource="org/complitex/flexbuh/document/service/DocumentBean.xml"/>
     </mappers>
 </configuration>
