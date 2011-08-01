@@ -23,6 +23,8 @@
     <modules>
         <module>flexbuh-web</module>
         <module>flexbuh-document</module>
+        <module>flexbuh-admin</module>
+        <module>flexbuh-common</module>
 
         <module>../complitex/complitex-admin</module>
         <module>../complitex/complitex-dictionary</module>
