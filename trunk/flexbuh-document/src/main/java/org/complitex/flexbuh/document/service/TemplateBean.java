@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.document.service;
 
-import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.flexbuh.document.entity.AbstractTemplate;
+import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
 
@@ -10,7 +10,7 @@ import javax.ejb.Stateless;
  *         Date: 27.07.11 15:59
  */
 @Stateless
-public class TemplateBean extends AbstractBean{
+public class TemplateBean extends AbstractBean {
     public static final String NS = TemplateBean.class.getName();
 
     public void save(AbstractTemplate template){

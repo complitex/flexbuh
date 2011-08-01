@@ -2,19 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.complitex</groupId>
-        <artifactId>complitex</artifactId>
-        <version>2.0.2-SNAPSHOT</version>
-        <relativePath>../complitex/pom.xml</relativePath>
-    </parent>
-
-    <properties>
-        <complitex.version>2.0.2-SNAPSHOT</complitex.version>
-    </properties>
-
     <groupId>org.complitex.flexbuh</groupId>
-    <artifactId>flexbuh</artifactId>
+    <artifactId>flexbuh-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -25,49 +14,40 @@
         <module>flexbuh-document</module>
         <module>flexbuh-admin</module>
         <module>flexbuh-common</module>
-
-        <module>../complitex/complitex-admin</module>
-        <module>../complitex/complitex-dictionary</module>
-        <module>../complitex/complitex-images</module>
-        <module>../complitex/complitex-logging</module>
-        <module>../complitex/complitex-resources</module>
-        <module>../complitex/complitex-template</module>
+        <module>flexbuh-images</module>
+        <module>flexbuh-resources</module>
     </modules>
+
+    <properties>
+        <!-- wicket version -->
+        <wicket.version>1.4.17</wicket.version>
+
+        <!-- source encoding -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--skip test-->
+        <maven.test.skip>true</maven.test.skip>
+        <compiler.showDeprecation>true</compiler.showDeprecation>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>wiquery-repository</id>
+            <name>wiQuery repository</name>
+            <url>http://wiquery.googlecode.com/svn/repo/</url>
+        </repository>
+
+        <repository>
+            <id>wicketstuff-core-releases</id>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Complitex Modules -->
-            <dependency>
-                <groupId>org.complitex</groupId>
-                <artifactId>complitex-template</artifactId>
-                <version>${complitex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex</groupId>
-                <artifactId>complitex-admin</artifactId>
-                <version>${complitex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex</groupId>
-                <artifactId>complitex-logging</artifactId>
-                <version>${complitex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex</groupId>
-                <artifactId>complitex-resources</artifactId>
-                <version>${complitex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex</groupId>
-                <artifactId>complitex-images</artifactId>
-                <version>${complitex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex</groupId>
-                <artifactId>complitex-dictionary</artifactId>
-                <version>${complitex.version}</version>
-            </dependency>
-
             <!--Flexbuh Modules -->
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
@@ -80,6 +60,186 @@
                 <artifactId>flexbuh-document</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-images</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-resources</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!--Wicket-->
+            <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-auth-roles</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-ioc</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-datetime</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-extensions</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wicketstuff</groupId>
+                <artifactId>javaee-inject</artifactId>
+                <version>1.4.17.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.odlabs.wiquery</groupId>
+                <artifactId>wiquery</artifactId>
+                <version>1.2.4</version>
+            </dependency>
+
+            <!-- Java EE API -->
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>6.0</version>
+            </dependency>
+
+            <!-- slf4j logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+
+             <!-- MyBatis -->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>3.0.5</version>
+            </dependency>
+
+            <!--Google Guava-->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>r09</version>
+            </dependency>
+
+            <!--Test-->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.7</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>5.14</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+     <build>
+        <resources>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <filtering>false</filtering>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <filtering>true</filtering>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                    <showDeprecation>${compiler.showDeprecation}</showDeprecation>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.googlecode.maven-overview-plugin</groupId>
+                <artifactId>maven-overview-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                    <exclusions>
+                        <exclusion>
+                            <scope>test</scope>
+                        </exclusion>
+                    </exclusions>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>com.google.code.maven-svn-wagon</groupId>
+                <artifactId>maven-svn-wagon</artifactId>
+                <version>1.3</version>
+            </extension>
+        </extensions>
+    </build>
 </project>

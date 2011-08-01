@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>org.complitex.flexbuh</groupId>
-        <artifactId>flexbuh</artifactId>
+        <artifactId>flexbuh-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -13,45 +13,42 @@
     <packaging>war</packaging>
     <name>Flexbuh - Web</name>
 
-    <dependencies>        
+    <dependencies>
+        <!--Flexbuh-->
         <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-resources</artifactId>
+            <groupId>org.complitex.flexbuh</groupId>
+            <artifactId>flexbuh-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-images</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-template</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-admin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-dictionary</artifactId>
+            <groupId>org.complitex.flexbuh</groupId>
+            <artifactId>flexbuh-admin</artifactId>
         </dependency>
         <dependency>
             <groupId>org.complitex.flexbuh</groupId>
             <artifactId>flexbuh-document</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.complitex.flexbuh</groupId>
+            <artifactId>flexbuh-resources</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.flexbuh</groupId>
+            <artifactId>flexbuh-images</artifactId>
+        </dependency>
 
+        <!--Mybatis-->
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
         </dependency>
+
+        <!--Guava-->
         <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
+        <!--Wicket-->
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -80,9 +77,11 @@
             <groupId>org.wicketstuff</groupId>
             <artifactId>javaee-inject</artifactId>
         </dependency>
+
+        <!--Log-->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
+            <artifactId>jul-to-slf4j</artifactId>
         </dependency>
     </dependencies>    
 </project>
