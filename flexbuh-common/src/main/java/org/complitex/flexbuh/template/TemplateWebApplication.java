@@ -2,6 +2,7 @@ package org.complitex.flexbuh.template;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Session;
+import org.complitex.flexbuh.inject.JavaEE6ModuleNamingStrategy;
 import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.security.ServletAuthWebApplication;
 import org.complitex.flexbuh.template.pages.expired.SessionExpiredPage;
@@ -33,7 +34,7 @@ public abstract class TemplateWebApplication extends ServletAuthWebApplication i
 
         initializeTemplateConfig();
 
-        addComponentInstantiationListener(new JavaEEComponentInjector(this));
+        addComponentInstantiationListener(new JavaEEComponentInjector(this, new JavaEE6ModuleNamingStrategy()));
 
         getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
     }

@@ -12,6 +12,6 @@
     </environments>
 
     <mappers>
-        <mapper resource="org/complitex/flexbuh/document/service/DocumentBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/document/service/TemplateBean.xml"/>
     </mappers>
 </configuration>

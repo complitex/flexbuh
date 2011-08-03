@@ -1,7 +1,6 @@
 package org.complitex.flexbuh.web;
 
 import org.apache.wicket.Page;
-import org.complitex.flexbuh.document.web.ImportTemplatePage;
 import org.complitex.flexbuh.template.TemplateWebApplication;
 
 /**
@@ -14,7 +13,16 @@ public class FlexbuhWebApplication extends TemplateWebApplication{
     protected void init() {
         super.init();
 
-        mountBookmarkablePage("test", ImportTemplatePage.class);
+//        mountBookmarkablePage("test", ImportTemplatePage.class);
+//        mountBookmarkablePage("test2", TransformationTestPage.class);
+
+        getDebugSettings().setComponentUseCheck(true);
+        getDebugSettings().setLinePreciseReportingOnAddComponentEnabled(true);
+        getDebugSettings().setLinePreciseReportingOnNewComponentEnabled(true);
+        getDebugSettings().setOutputComponentPath(true);
+        getDebugSettings().setOutputMarkupContainerClassName(true);
+        getDebugSettings().setDevelopmentUtilitiesEnabled(true);
+
     }
 
     @Override

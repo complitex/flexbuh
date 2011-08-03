@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.document.entity.AbstractTemplate;
+import org.complitex.flexbuh.document.entity.TemplateXSL;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -15,5 +16,9 @@ public class TemplateBean extends AbstractBean {
 
     public void save(AbstractTemplate template){
         sqlSession().insert(NS + ".insertTemplate", template);
+    }
+
+    public TemplateXSL getTemplateXSL(String name){
+        return (TemplateXSL) sqlSession().selectOne(NS + ".selectTemplateXSL", name);
     }
 }

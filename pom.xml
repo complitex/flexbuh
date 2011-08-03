@@ -112,6 +112,11 @@
                 <version>${wicket.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-devutils</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wicketstuff</groupId>
                 <artifactId>javaee-inject</artifactId>
                 <version>1.4.17.3</version>
@@ -137,11 +142,11 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>jul-to-slf4j</artifactId>
+                <artifactId>slf4j-jdk14</artifactId>
                 <version>1.6.1</version>
             </dependency>
 
-             <!-- MyBatis -->
+            <!-- MyBatis -->
             <dependency>
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis</artifactId>
@@ -171,7 +176,7 @@
         </dependencies>
     </dependencyManagement>
 
-     <build>
+    <build>
         <resources>
             <resource>
                 <filtering>false</filtering>

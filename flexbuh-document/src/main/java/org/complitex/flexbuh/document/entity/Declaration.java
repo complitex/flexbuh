@@ -10,7 +10,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.07.11 16:05
  */
-@XmlRootElement(name = "DECLAR", namespace = "http://www.w3.org/2001/XMLSchema-instance")
+@XmlRootElement(name = "DECLAR")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 @XmlSeeAlso(DeclarationValue.class)
 public class Declaration {
