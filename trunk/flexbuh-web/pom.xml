@@ -78,12 +78,18 @@
             <artifactId>javaee-inject</artifactId>
         </dependency>
 
+        <!--Debug-->
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-devutils</artifactId>
+        </dependency>
+
         <!--Log-->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
+            <artifactId>slf4j-jdk14</artifactId>
         </dependency>
-    </dependencies>    
+    </dependencies>
 </project>
 
 

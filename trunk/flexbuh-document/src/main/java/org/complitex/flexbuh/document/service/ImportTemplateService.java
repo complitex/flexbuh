@@ -25,17 +25,17 @@ public class ImportTemplateService {
 
         //XSL
         for (File f : new File(dir, "xsl").listFiles()){
-            templateBean.save(new TemplateXSL(f.getName(), getData(f)));
+            templateBean.save(new TemplateXSL(getName(f), getData(f)));
         }
 
         //XSD
         for (File f : new File(dir, "xsd").listFiles()){
-            templateBean.save(new TemplateXSD(f.getName(), getData(f)));
+            templateBean.save(new TemplateXSD(getName(f), getData(f)));
         }
 
         //FO
         for (File f : new File(dir, "fo").listFiles()){
-            templateBean.save(new TemplateFO(f.getName(), getData(f)));
+            templateBean.save(new TemplateFO(getName(f), getData(f)));
         }
     }
 
@@ -50,5 +50,9 @@ public class ImportTemplateService {
         }
 
         return data;
+    }
+
+    private String getName(File f){
+        return f.getName().substring(0, f.getName().lastIndexOf('.'));
     }
 }
