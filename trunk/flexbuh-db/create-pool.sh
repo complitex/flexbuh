@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GLASSFISH_ASADMIN_COMMAND=/home/pavel/glassfish3/bin/asadmin
+GLASSFISH_ASADMIN_COMMAND=asadmin
 GLASSFISH_POOL=flexbuhPool
 DB_USER=flexbuh
 DB_PASSWORD=flexbuh
