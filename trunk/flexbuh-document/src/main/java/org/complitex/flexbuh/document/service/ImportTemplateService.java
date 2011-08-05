@@ -15,6 +15,7 @@ import java.io.IOException;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.07.11 16:30
  */
+@SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
 @Stateless
 public class ImportTemplateService {
     @EJB

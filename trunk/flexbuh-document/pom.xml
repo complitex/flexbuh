@@ -12,7 +12,7 @@
     <groupId>org.complitex.flexbuh</groupId>
     <artifactId>flexbuh-document</artifactId>
     <name>Flexbuh - Document</name>
-        
+
     <dependencies>
         <dependency>
             <groupId>org.complitex.flexbuh</groupId>
@@ -59,6 +59,11 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jtidy</groupId>
+            <artifactId>jtidy</artifactId>
         </dependency>
 
         <dependency>
