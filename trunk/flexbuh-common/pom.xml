@@ -68,5 +68,10 @@
             <artifactId>javaee-api</artifactId>
             <version>6.0</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.5</version>
+		</dependency>
+	</dependencies>
 </project>
