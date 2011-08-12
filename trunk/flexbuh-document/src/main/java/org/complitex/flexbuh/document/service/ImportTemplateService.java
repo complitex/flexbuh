@@ -1,15 +1,10 @@
 package org.complitex.flexbuh.document.service;
 
-import org.complitex.flexbuh.document.entity.TemplateFO;
-import org.complitex.flexbuh.document.entity.TemplateXSD;
 import org.complitex.flexbuh.document.entity.TemplateXSL;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,6 +13,8 @@ import java.io.IOException;
 @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
 @Stateless
 public class ImportTemplateService {
+    public static final String FILE_ENCODING = "CP1251";
+
     @EJB
     private TemplateBean templateBean;
 
@@ -26,34 +23,41 @@ public class ImportTemplateService {
 
         //XSL
         for (File f : new File(dir, "xsl").listFiles()){
-            templateBean.save(new TemplateXSL(getName(f), getData(f)));
+            templateBean.save(new TemplateXSL(getName(f), changeWhitespaceUTF8(getData(f))));
         }
 
         //XSD
-        for (File f : new File(dir, "xsd").listFiles()){
-            templateBean.save(new TemplateXSD(getName(f), getData(f)));
-        }
+//        for (File f : new File(dir, "xsd").listFiles()){
+//            templateBean.save(new TemplateXSD(getName(f), getData(f)));
+//        }
 
         //FO
-        for (File f : new File(dir, "fo").listFiles()){
-            templateBean.save(new TemplateFO(getName(f), getData(f)));
-        }
+//        for (File f : new File(dir, "fo").listFiles()){
+//            templateBean.save(new TemplateFO(getName(f), getData(f)));
+//        }
     }
 
     private String getData(File file) throws IOException {
+        StringBuilder data = new StringBuilder();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), FILE_ENCODING));
+
         String line;
-        String data = "";
 
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-
-        while ((line = bufferedReader.readLine()) != null){
-            data += line + "\n";
+        while ((line = br.readLine()) != null){
+            data.append(line).append('\n');
         }
 
-        return data;
+        br.close();
+
+        return data.toString();
     }
 
     private String getName(File f){
         return f.getName().substring(0, f.getName().lastIndexOf('.'));
+    }
+
+    private String changeWhitespaceUTF8(String s){
+        return s.replaceAll("&amp;nbsp;", "&amp;#160;");
     }
 }

@@ -5,6 +5,7 @@ import org.complitex.flexbuh.document.entity.TemplateXSL;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -20,5 +21,10 @@ public class TemplateBean extends AbstractBean {
 
     public TemplateXSL getTemplateXSL(String name){
         return (TemplateXSL) sqlSession().selectOne(NS + ".selectTemplateXSL", name);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<String> getTemplateXSLNames(){
+        return sqlSession().selectList(NS + ".selectTemplateXSLNames");
     }
 }

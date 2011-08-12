@@ -2,18 +2,21 @@ package org.complitex.flexbuh.document.test;
 
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
+import org.w3c.tidy.Tidy;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 29.07.11 15:30
  */
 public class DeclarationTest {
-    public static void main(String... args) throws JAXBException {
-        testJavaToXml();
+    public static void main(String... args) throws JAXBException, FileNotFoundException {
+        testHtmlToXml();
     }
 
     private static void testJavaToXml() throws JAXBException {
@@ -46,5 +49,13 @@ public class DeclarationTest {
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
         m.marshal(declaration, System.out);
+    }
+
+    private static void testHtmlToXml() throws FileNotFoundException {
+        Tidy tidy = new Tidy();
+        tidy.setXHTML(true);
+        tidy.setOutputEncoding("UTF-8");
+
+        tidy.parse(new FileReader("c:\\TemplateTest.html"), System.out);
     }
 }

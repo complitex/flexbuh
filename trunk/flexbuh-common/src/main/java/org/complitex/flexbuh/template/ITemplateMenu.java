@@ -20,6 +20,7 @@ public interface ITemplateMenu extends Serializable{
 
     /**
      * Список ссылок на функциональные страницы модуля.
+     *
      * @param locale Текущая локализация
      * @return Список ссылок
      */

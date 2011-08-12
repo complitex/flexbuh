@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h1><wicket:message key="title"/></h1>
+
+    <form action="#" wicket:id="form">
+        <table class="tbForm">
+            <tr>
+                <th><wicket:message key="person"/> </th>
+                <td><select wicket:id="person"></select></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="document"/> </th>
+                <td><select wicket:id="document"></select></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="period"/> </th>
+                <td><select wicket:id="period"></select></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="quarter"/> </th>
+                <td><select wicket:id="quarter"></select></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="year"/> </th>
+                <td><select wicket:id="year"></select></td>
+            </tr>
+        </table>
+
+        <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+        <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+    </form>
+</wicket:extend>
+</body>
+</html>
