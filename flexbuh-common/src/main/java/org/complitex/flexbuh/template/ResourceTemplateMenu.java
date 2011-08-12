@@ -39,4 +39,8 @@ public abstract class ResourceTemplateMenu implements ITemplateMenu {
     protected String getString(Class base, Locale locale, String key){
         return getString(base.getName(), locale, key);
     }
+
+    protected String getString(String key, Locale locale){
+        return getString(getClass().getName(), locale, key);
+    }
 }

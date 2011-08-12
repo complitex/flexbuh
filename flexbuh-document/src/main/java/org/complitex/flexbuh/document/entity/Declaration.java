@@ -3,6 +3,7 @@ package org.complitex.flexbuh.document.entity;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @XmlRootElement(name = "DECLAR")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 @XmlSeeAlso(DeclarationValue.class)
-public class Declaration {
+public class Declaration implements Serializable{
     private static class Head{
         @XmlElement(name = "TIN") String tin;                   // код плательщика
         @XmlElement(name = "C_DOC") String cDoc;                // код документа

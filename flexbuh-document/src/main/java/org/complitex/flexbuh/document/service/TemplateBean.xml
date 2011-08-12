@@ -15,4 +15,8 @@
     <select id="selectTemplateXSL" parameterType="string" resultMap="templateXSLResultMap">
         select * from `template_xsl` where `name` = #{name}
     </select>
+
+    <select id="selectTemplateXSLNames" resultType="string">
+        select `name` from `template_xsl` where `name` like 'J%'
+    </select>
 </mapper>
