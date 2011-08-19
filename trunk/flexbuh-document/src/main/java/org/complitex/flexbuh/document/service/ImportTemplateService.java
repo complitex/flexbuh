@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.document.entity.TemplateXSD;
 import org.complitex.flexbuh.document.entity.TemplateXSL;
 
 import javax.ejb.EJB;
@@ -27,9 +28,9 @@ public class ImportTemplateService {
         }
 
         //XSD
-//        for (File f : new File(dir, "xsd").listFiles()){
-//            templateBean.save(new TemplateXSD(getName(f), getData(f)));
-//        }
+        for (File f : new File(dir, "xsd").listFiles()){
+            templateBean.save(new TemplateXSD(getName(f), getData(f)));
+        }
 
         //FO
 //        for (File f : new File(dir, "fo").listFiles()){

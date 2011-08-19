@@ -5,7 +5,9 @@ import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -15,7 +17,7 @@ import java.util.List;
 @XmlAccessorType(value = XmlAccessType.FIELD)
 @XmlSeeAlso(DeclarationValue.class)
 public class Declaration implements Serializable{
-    private static class Head{
+    private static class Head implements Serializable{
         @XmlElement(name = "TIN") String tin;                   // код плательщика
         @XmlElement(name = "C_DOC") String cDoc;                // код документа
         @XmlElement(name = "C_DOC_SUB") String cDocSub;         // подтип документа
@@ -37,7 +39,7 @@ public class Declaration implements Serializable{
     private Head head;
 
     @XmlTransient
-    private List<DeclarationValue> values = new ArrayList<DeclarationValue>();
+    private Map<String, DeclarationValue> valuesMap = new HashMap<String, DeclarationValue>();
 
     @XmlElementWrapper(name = "DECLARBODY")
     @XmlAnyElement
@@ -50,9 +52,21 @@ public class Declaration implements Serializable{
     public void prepareXmlValues(){
         xmlValues.clear();
 
-        for (DeclarationValue v : values){
+        for (DeclarationValue v : valuesMap.values()){
             xmlValues.add(new JAXBElement<DeclarationValue>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
         }
+    }
+
+    public DeclarationValue getValue(String name){
+        return valuesMap.get(name);
+    }
+
+    public DeclarationValue addValue(DeclarationValue value){
+        return valuesMap.put(value.getName(), value);
+    }
+
+    public void removeValue(String name){
+        valuesMap.remove(name);
     }
 
     /**
@@ -335,11 +349,11 @@ public class Declaration implements Serializable{
         head.software = software;
     }
 
-    public List<DeclarationValue> getValues() {
-        return values;
+    public Map<String, DeclarationValue> getValuesMap() {
+        return valuesMap;
     }
 
-    public void setValues(List<DeclarationValue> values) {
-        this.values = values;
+    public void setValuesMap(Map<String, DeclarationValue> valuesMap) {
+        this.valuesMap = valuesMap;
     }
 }
