@@ -16,6 +16,15 @@ public class DeclarationValue {
     public DeclarationValue() {
     }
 
+    public DeclarationValue(String name) {
+        this.name = name;
+    }
+
+    public DeclarationValue(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     public DeclarationValue(String name, String rowNum, String value) {
         this.name = name;
         this.rowNum = rowNum;

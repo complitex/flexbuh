@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.document.entity.AbstractTemplate;
+import org.complitex.flexbuh.document.entity.TemplateXSD;
 import org.complitex.flexbuh.document.entity.TemplateXSL;
 import org.complitex.flexbuh.service.AbstractBean;
 
@@ -21,6 +22,10 @@ public class TemplateBean extends AbstractBean {
 
     public TemplateXSL getTemplateXSL(String name){
         return (TemplateXSL) sqlSession().selectOne(NS + ".selectTemplateXSL", name);
+    }
+
+    public TemplateXSD getTemplateXSD(String name){
+        return (TemplateXSD) sqlSession().selectOne(NS + ".selectTemplateXSD", name);
     }
 
     @SuppressWarnings({"unchecked"})

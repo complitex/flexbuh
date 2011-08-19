@@ -1,3 +1,49 @@
-input{
+input {
+    background-color: #cccccc;
+    border: 1px solid black;
     width: 100%;
+    font-family: monospace;
+
+}
+
+table.border1 td, table.border1 th {
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+
+table input {
+    border: none;
+}
+
+.title1 {
+    vertical-align: top;
+    font-style: italic;
+}
+
+tr.head {
+    position: relative;
+    background-color: white;
+}
+
+td.money, td.money input {
+    text-align: right;
+}
+
+th.td_box, .td_box input, .td_input_box input {
+    border: 1px solid black;
+}
+
+.td_box_l {
+    border: black solid;
+    border-width: 1px;
+}
+
+.td_no_box {
+    border: 0 solid white;
+}
+
+.td_unln {
+    vertical-align: bottom;
+    border: 0 solid black;
+    border-bottom-width: 1px;
 }

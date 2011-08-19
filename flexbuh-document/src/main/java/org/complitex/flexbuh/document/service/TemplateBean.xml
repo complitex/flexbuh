@@ -8,12 +8,22 @@
         <result column="data" property="data"/>
     </resultMap>
 
+    <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.document.entity.TemplateXSD">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="data" property="data"/>
+    </resultMap>
+
     <insert id="insertTemplate" parameterType="org.complitex.flexbuh.document.entity.AbstractTemplate">
         insert into `${table}` (`name`, `data`) values (#{name}, #{data})
     </insert>
 
     <select id="selectTemplateXSL" parameterType="string" resultMap="templateXSLResultMap">
         select * from `template_xsl` where `name` = #{name}
+    </select>
+
+    <select id="selectTemplateXSD" parameterType="string" resultMap="templateXSDResultMap">
+        select * from `template_xsd` where `name` = #{name}
     </select>
 
     <select id="selectTemplateXSLNames" resultType="string">
