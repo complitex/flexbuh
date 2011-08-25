@@ -61,8 +61,8 @@ public class Declaration implements Serializable{
         return valuesMap.get(name);
     }
 
-    public DeclarationValue addValue(DeclarationValue value){
-        return valuesMap.put(value.getName(), value);
+    public void addValue(DeclarationValue value){
+        valuesMap.put(value.getName(), value);
     }
 
     public void removeValue(String name){

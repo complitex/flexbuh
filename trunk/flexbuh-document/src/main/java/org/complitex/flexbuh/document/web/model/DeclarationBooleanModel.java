@@ -27,7 +27,8 @@ public class DeclarationBooleanModel extends AbstractDeclarationModel<Boolean>{
         DeclarationValue value = declaration.getValue(name);
 
         if (value == null){
-            value = declaration.addValue(new DeclarationValue(name));
+            value = new DeclarationValue(name);
+            declaration.addValue(value);
         }
 
         value.setValue(object ? TRUE : FALSE);
