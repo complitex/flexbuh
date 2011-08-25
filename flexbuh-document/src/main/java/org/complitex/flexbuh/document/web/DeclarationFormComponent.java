@@ -1,56 +1,48 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.*;
+import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+import org.apache.wicket.validation.IValidator;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.TemplateXSD;
-import org.complitex.flexbuh.document.entity.TemplateXSL;
-import org.complitex.flexbuh.document.service.TemplateBean;
+import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
+import org.complitex.flexbuh.document.web.validation.Restriction;
+import org.complitex.flexbuh.util.XmlUtil;
 import org.complitex.flexbuh.web.component.RadioSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import org.wiquery.plugin.jquertytools.tooltip.TooltipBehavior;
 import org.xml.sax.SAXException;
 
 import javax.ejb.EJB;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -60,11 +52,15 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
 
     @EJB
-    private TemplateBean templateBean;
-
-    private MarkupResourceStream markupResourceStream;
+    private TemplateService templateService;
 
     private Map<String, RadioSet<String>> radioSetMap = new HashMap<String, RadioSet<String>>();
+
+    private transient MarkupResourceStream markupResourceStream;
+    private transient Document commonTypes;
+    private transient XPath schemaXPath;
+
+    private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
 
     public DeclarationFormComponent(String id, String templateName, Declaration declaration){
         super(id);
@@ -78,9 +74,16 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     private void init(String templateName, Declaration declaration)
             throws TransformerException, JAXBException, ParserConfigurationException, IOException, SAXException, XPathFactoryConfigurationException {
-        Document template = getDocument(templateName, declaration);
-        Document schema = getSchema(templateName);
-        XPath xPath = getSchemaXPath();
+        add(CSSPackageResource.getHeaderContribution(TooltipBehavior.CSS));
+
+        Document template = templateService.getDocument(templateName, declaration);
+        Document schema = templateService.getSchema(templateName);
+
+        //Schema XPath
+        schemaXPath = XmlUtil.newSchemaXPath();
+
+        //Common Types
+        commonTypes = templateService.getSchema("common_types");
 
         NodeList bodyNodeList = template.getElementsByTagName("body");
 
@@ -96,99 +99,14 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         NodeList inputList = div.getElementsByTagName("input");
 
         for (int i=0; i < inputList.getLength(); ++i){
-            addFormComponent((Element) inputList.item(i), declaration, container, template, schema, xPath);
+            addFormComponent((Element) inputList.item(i), declaration, container, template, schema);
         }
 
         //Markup
-        StringResourceStream stringResourceStream = new StringResourceStream(getString(div), "text/html");
+        StringResourceStream stringResourceStream = new StringResourceStream(XmlUtil.getString(div), "text/html");
         stringResourceStream.setCharset(Charset.forName("UTF-8"));
 
         markupResourceStream = new MarkupResourceStream(stringResourceStream);
-    }
-
-    private Document getDocument(String templateName, Declaration declaration) throws TransformerException, JAXBException, ParserConfigurationException, IOException, SAXException {
-        TemplateXSL templateXSL = templateBean.getTemplateXSL(templateName);
-
-        //XSL transformation
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-
-        StreamResult result = new StreamResult(new StringWriter());
-
-        Transformer transformer = transformerFactory.newTransformer(new StreamSource(new StringReader(templateXSL.getData())));
-
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.setOutputProperty(OutputKeys.VERSION, "1.0");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-
-        transformer.transform(new StreamSource(new StringReader(getDeclarationXML(declaration))), result);
-
-        //Parse document
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-        return documentBuilder.parse(new InputSource(new StringReader(result.getWriter().toString())));
-    }
-
-    private Document getSchema(String templateName) throws ParserConfigurationException, IOException, SAXException {
-        TemplateXSD templateXSD = templateBean.getTemplateXSD(templateName);
-
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-        return documentBuilder.parse(new InputSource(new StringReader(templateXSD.getData())));
-    }
-
-    private XPath getSchemaXPath() {
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath xPath = factory.newXPath();
-
-
-        xPath.setNamespaceContext(new NamespaceContext(){
-            @Override
-            public String getNamespaceURI(String prefix) {
-                return XMLConstants.W3C_XML_SCHEMA_NS_URI;
-            }
-
-            @Override
-            public String getPrefix(String namespaceURI) {
-                return "xs";
-            }
-
-            @Override
-            public Iterator getPrefixes(String namespaceURI) {
-                return Arrays.asList("xs").iterator();
-            }
-        });
-
-        return xPath;
-    }
-
-    private String getDeclarationXML(Declaration declaration) throws JAXBException {
-        declaration.prepareXmlValues();
-
-        JAXBContext context = JAXBContext.newInstance(Declaration.class);
-        Marshaller m = context.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-        StringWriter writer = new StringWriter();
-
-        m.marshal(declaration, writer);
-
-        return writer.toString();
-    }
-
-    public String getString(Node node) throws TransformerException {
-        DOMSource domSource = new DOMSource(node);
-        StringWriter writer = new StringWriter();
-        StreamResult result = new StreamResult(writer);
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
-        transformer.transform(domSource, result);
-        return writer.toString();
     }
 
     @Override
@@ -202,6 +120,8 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             renderComponentTagBody(associatedMarkupStream, (ComponentTag) associatedMarkupStream.get());
         } catch (Exception e) {
             log.error("Ошибка создания страницы", e);
+
+            throw new WicketRuntimeException(e);
         }
     }
 
@@ -210,16 +130,15 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         return markupResourceStream;
     }
 
-    private void addFormComponent(Element input, Declaration declaration, WebMarkupContainer container, Document template, Document schema,
-                                  XPath xPath){
+    private void addFormComponent(Element input, Declaration declaration, WebMarkupContainer container, Document template, Document schema){
         try {
-            String id = input.getAttribute("id");
+            final String id = input.getAttribute("id");
 
             //set wicket id markup
             input.setAttribute("wicket:id", id);
 
             //lookup schema rules
-            Element schemaElement = (Element) xPath.evaluate("//xs:element[@name='" + id + "']", schema, XPathConstants.NODE);
+            Element schemaElement = XmlUtil.getElementByName(id, schema, schemaXPath);
             String schemaType = schemaElement.getAttribute("type");
 
             if ("DGchk".equals(schemaType)){
@@ -239,7 +158,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                         input.getParentNode().appendChild(radioSetElement);
 
                         //add radio set component
-                        radioSet = new RadioSet<String>(rId, new DeclarationChoiceModel(id, declaration));
+                        radioSet = new RadioSet<>(rId, new DeclarationChoiceModel(id, declaration));
                         container.add(radioSet);
 
                         //child nodes to radio set
@@ -252,24 +171,104 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
                     input.setAttribute("type", "radio");
 
-                    Radio<String> radio = new Radio<String>(id, new Model<String>(id), radioSet);
+                    Radio<String> radio = new Radio<>(id, new Model<>(id), radioSet);
                     radioSet.addRadio(radio);
 
                     container.add(radio);
                 }else{
                     input.setAttribute("type", "checkbox");
-                    container.add(new CheckBox(id, new DeclarationBooleanModel(id, declaration)));
+
+                    CheckBox checkBox = new CheckBox(id, new DeclarationBooleanModel(id, declaration));
+
+                    container.add(checkBox);
                 }
             }else{
+                //TextField
                 input.setAttribute("type", "text");
-                container.add(new TextField<String>(id, new DeclarationStringModel(id, declaration)));
+
+                final TextField<String> textField = new TextField<>(id, new DeclarationStringModel(id, declaration));
+                textField.setMarkupId(id);
+                textField.setOutputMarkupId(true);
+                container.add(textField);
+
+                //Feedback container
+                String feedbackContainerId = "feedback_container_" + id;
+
+                Element feedbackContainerElement = template.createElement("div");
+                feedbackContainerElement.setAttribute("wicket:id", feedbackContainerId);
+                feedbackContainerElement.setAttribute("style", "display: none; background-color: #f0e68c;");
+                input.getParentNode().appendChild(feedbackContainerElement);
+
+                WebMarkupContainer feedbackContainer = new WebMarkupContainer(feedbackContainerId);
+                feedbackContainer.setMarkupId(feedbackContainerId);
+                feedbackContainer.setOutputMarkupId(true);
+                container.add(feedbackContainer);
+
+                //Feedback label
+                Element feedbackElement = template.createElement("span");
+                feedbackElement.setAttribute("wicket:id", "feedback_" + id);
+                feedbackContainerElement.appendChild(feedbackElement);
+
+                final Label feedbackLabel = new Label("feedback_" + id, new Model<String>());
+                feedbackLabel.setOutputMarkupId(true);
+                feedbackContainer.add(feedbackLabel);
+
+                //Tooltip
+                textField.add(new TooltipBehavior().setTip(feedbackContainer));
+
+                //Ajax update
+                textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                    @Override
+                    protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                        feedbackLabel.setDefaultModelObject(textField.getFeedbackMessage().getMessage());
+
+                        target.addComponent(feedbackLabel);
+
+                        target.appendJavascript("$('#" + id +"').css('background-color', '#ff9999')");
+                    }
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        String value = textField.getValue();
+
+                        if (value != null && !value.isEmpty()) {
+                            target.appendJavascript("$('#" + id +"').css('background-color', '#99ff99')");
+                        }else{
+                            target.appendJavascript("$('#" + id +"').css('background-color', '#cccccc')");
+                        }
+                    }
+                });
+
+                //Validation
+                IValidator<String> validator = getValidator(schemaType);
+                if (validator != null) {
+                    textField.add(validator);
+                }
             }
         } catch (XPathExpressionException e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
         }
     }
 
-    private Element getElementById(String id, Node node, XPath xPath) throws XPathExpressionException {
-        return (Element) xPath.evaluate("//[@id = '" + id + "']", node, XPathConstants.NODE);
+    @SuppressWarnings({"unchecked"})
+    private <T> IValidator<T> getValidator(String id) throws XPathExpressionException {
+        IValidator<T> validator = validatorMap.get(id);
+
+        if (validator == null){
+            validator = createValidator(id);
+
+            if (validator != null) {
+                validatorMap.put(id, validator);
+            }
+        }
+
+        return validator;
+    }
+
+    private <T> IValidator<T> createValidator(String schemaType) throws XPathExpressionException {
+        Element typeElement = XmlUtil.getElementByName(schemaType, commonTypes, schemaXPath);
+
+        return typeElement != null ? new Restriction<T>(typeElement) : null;
     }
 }
+
