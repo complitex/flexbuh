@@ -77,6 +77,11 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         add(CSSPackageResource.getHeaderContribution(TooltipBehavior.CSS));
 
         Document template = templateService.getDocument(templateName, declaration);
+
+        if (template == null){
+            return;
+        }
+
         Document schema = templateService.getSchema(templateName);
 
         //Schema XPath
@@ -236,6 +241,9 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                         }else{
                             target.appendJavascript("$('#" + id +"').css('background-color', '#cccccc')");
                         }
+
+                        feedbackLabel.setDefaultModelObject("");
+                        target.addComponent(feedbackLabel);
                     }
                 });
 
