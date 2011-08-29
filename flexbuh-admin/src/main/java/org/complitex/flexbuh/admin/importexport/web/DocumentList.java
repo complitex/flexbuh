@@ -5,45 +5,48 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.PageableListView;
-import org.complitex.flexbuh.entity.dictionary.Currency;
-import org.complitex.flexbuh.entity.dictionary.CurrencyName;
-import org.complitex.flexbuh.service.dictionary.CurrencyBean;
+import org.complitex.flexbuh.entity.dictionary.Document;
+import org.complitex.flexbuh.entity.dictionary.DocumentName;
+import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+
 /**
  * @author Pavel Sknar
- *         Date: 29.08.11 10:29
+ *         Date: 29.08.11 13:25
  */
-public class CurrencyList extends TemplatePage {
-	private final static Logger log = LoggerFactory.getLogger(CurrencyList.class);
+public class DocumentList extends TemplatePage {
+	private final static Logger log = LoggerFactory.getLogger(DocumentList.class);
 
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
 
 	@EJB
-	CurrencyBean currencyBean;
+	DocumentBean documentBean;
 
-	public CurrencyList() {
+	public DocumentList() {
 
 		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
         datacontainer.setOutputMarkupId(true);
         add(datacontainer);
 
-        PageableListView<Currency> listview = new PageableListView<Currency>("rows", currencyBean.readAll(), 20) {
+        PageableListView<Document> listview = new PageableListView<Document>("rows", documentBean.readAll(), 20) {
             @Override
-            protected void populateItem(ListItem<Currency> item) {
-                item.add(new Label("code_number", Integer.toString(item.getModelObject().getCodeNumber())));
-                item.add(new Label("code_string", item.getModelObject().getCodeString()));
+            protected void populateItem(ListItem<Document> item) {
+                item.add(new Label("type", item.getModelObject().getType()));
+                item.add(new Label("sub_type", item.getModelObject().getSubType()));
+                item.add(new Label("parent_document_type", item.getModelObject().getParentDocumentType()));
+                item.add(new Label("parent_document_sub_type", item.getModelObject().getParentDocumentSubType()));
+                item.add(new Label("cnt_set", Boolean.toString(item.getModelObject().getCntSet())));
+                item.add(new Label("selected", Boolean.toString(item.getModelObject().getSelected())));
                 item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
                 item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
-				for (CurrencyName currencyName : item.getModelObject().getNames()) {
+				for (DocumentName currencyName : item.getModelObject().getNames()) {
 					if ("uk".equals(currencyName.getLanguage().getLangIsoCode())) {
 						item.add(new Label("name_uk", currencyName.getValue()));
-					} else if ("ru".equals(currencyName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_ru", currencyName.getValue()));
 					}
 				}
             }

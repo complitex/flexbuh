@@ -5,45 +5,43 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.PageableListView;
-import org.complitex.flexbuh.entity.dictionary.Currency;
-import org.complitex.flexbuh.entity.dictionary.CurrencyName;
-import org.complitex.flexbuh.service.dictionary.CurrencyBean;
+import org.complitex.flexbuh.entity.dictionary.Region;
+import org.complitex.flexbuh.entity.dictionary.RegionName;
+import org.complitex.flexbuh.service.dictionary.RegionBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+
 /**
  * @author Pavel Sknar
- *         Date: 29.08.11 10:29
+ *         Date: 29.08.11 15:25
  */
-public class CurrencyList extends TemplatePage {
-	private final static Logger log = LoggerFactory.getLogger(CurrencyList.class);
+public class RegionList extends TemplatePage {
+	private final static Logger log = LoggerFactory.getLogger(RegionList.class);
 
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
 
 	@EJB
-	CurrencyBean currencyBean;
+	RegionBean regionBean;
 
-	public CurrencyList() {
+	public RegionList() {
 
 		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
         datacontainer.setOutputMarkupId(true);
         add(datacontainer);
 
-        PageableListView<Currency> listview = new PageableListView<Currency>("rows", currencyBean.readAll(), 20) {
+        PageableListView<Region> listview = new PageableListView<Region>("rows", regionBean.readAll(), 20) {
             @Override
-            protected void populateItem(ListItem<Currency> item) {
-                item.add(new Label("code_number", Integer.toString(item.getModelObject().getCodeNumber())));
-                item.add(new Label("code_string", item.getModelObject().getCodeString()));
+            protected void populateItem(ListItem<Region> item) {
+                item.add(new Label("code", Integer.toString(item.getModelObject().getCode())));
                 item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
                 item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
-				for (CurrencyName currencyName : item.getModelObject().getNames()) {
-					if ("uk".equals(currencyName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", currencyName.getValue()));
-					} else if ("ru".equals(currencyName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_ru", currencyName.getValue()));
+				for (RegionName regionName : item.getModelObject().getNames()) {
+					if ("uk".equals(regionName.getLanguage().getLangIsoCode())) {
+						item.add(new Label("name_uk", regionName.getValue()));
 					}
 				}
             }

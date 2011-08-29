@@ -6,31 +6,37 @@
 <body>
 <wicket:extend>
 	<div>
-        <h1><wicket:message key="title"/></h1>
+		<h1><wicket:message key="title"/></h1>
 		<table wicket:id="data">
 			<thead>
 				<tr>
-					<th>Code number</th>
-					<th>Code string</th>
+					<th>Document type</th>
+					<th>Document sub type</th>
+					<th>Version</th>
+					<th>Date term</th>
+					<th>Period year</th>
+					<th>Period month</th>
+					<th>Period type</th>
 					<th>Begin date</th>
 					<th>End date</th>
-					<th>Ukrainian name</th>
-					<th>Russian name</th>
 				</tr>
 			</thead>
 			<tbody >
 				<tr wicket:id="rows">
-					<td wicket:id="code_number"></td>
-					<td wicket:id="code_string"></td>
+					<td wicket:id="type"></td>
+					<td wicket:id="sub_type"></td>
+					<td wicket:id="version"></td>
+					<td wicket:id="date_term"></td>
+					<td wicket:id="period_year"></td>
+					<td wicket:id="period_month"></td>
+					<td wicket:id="period_type"></td>
 					<td wicket:id="begin_date"></td>
 					<td wicket:id="end_date"></td>
-					<td wicket:id="name_uk"></td>
-					<td wicket:id="name_ru"></td>
 				</tr>
 			</tbody>
 			<tfoot>
 				<tr>
-					<td wicket:id="navigator" colspan="6"></td>
+					<td wicket:id="navigator" colspan="9"></td>
 				</tr>
 			</tfoot>
 		</table>

@@ -71,6 +71,126 @@ public class DictionaryMenu extends ResourceTemplateMenu {
                 }
 		);
 
+		templateLinks.add(
+				new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("document_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return DocumentList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+		);
+
+		templateLinks.add(
+				new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("document_term_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return DocumentTermList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+		);
+
+		templateLinks.add(
+				new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("document_version_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return DocumentVersionList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+		);
+
+		templateLinks.add(
+				new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("region_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return RegionList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+		);
+
+		templateLinks.add(
+				new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("tax_inspection_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return TaxInspectionList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+		);
+
         return templateLinks;
     }
 
