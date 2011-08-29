@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -8,7 +9,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlType
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class DeclarationValue {
+public class DeclarationValue implements Serializable{
     @XmlTransient private String name;
     @XmlAttribute(name = "ROWNUM") private String rowNum;
     @XmlValue private String value;

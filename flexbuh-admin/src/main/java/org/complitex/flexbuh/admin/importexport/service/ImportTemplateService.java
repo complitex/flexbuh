@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.document.service;
+package org.complitex.flexbuh.admin.importexport.service;
 
 import org.complitex.flexbuh.entity.TemplateControl;
 import org.complitex.flexbuh.entity.TemplateFO;
@@ -16,7 +16,6 @@ import java.io.*;
  */
 @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
 @Stateless
-@Deprecated
 public class ImportTemplateService {
     public static final String FILE_ENCODING = "CP1251";
 

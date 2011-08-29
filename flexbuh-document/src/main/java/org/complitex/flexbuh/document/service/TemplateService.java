@@ -1,9 +1,9 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.TemplateXSD;
-import org.complitex.flexbuh.document.entity.TemplateXSL;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
+import org.complitex.flexbuh.entity.TemplateXSL;
+import org.complitex.flexbuh.service.TemplateBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -63,14 +63,20 @@ public class TemplateService {
         return documentBuilder.parse(new InputSource(new StringReader(result.getWriter().toString())));
     }
 
-    public Document getSchema(String templateName) throws ParserConfigurationException, IOException, SAXException {
-        TemplateXSD templateXSD = templateBean.getTemplateXSD(templateName);
-
+    public Document getDocument(String data) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-        return documentBuilder.parse(new InputSource(new StringReader(templateXSD.getData())));
+        return documentBuilder.parse(new InputSource(new StringReader(data)));
+    }
+
+    public Document getSchema(String templateName) throws ParserConfigurationException, IOException, SAXException {
+        return getDocument(templateBean.getTemplateXSD(templateName).getData());
+    }
+
+    public Document getControl(String templateName) throws IOException, SAXException, ParserConfigurationException {
+        return getDocument(templateBean.getTemplateControl(templateName).getData());
     }
 }

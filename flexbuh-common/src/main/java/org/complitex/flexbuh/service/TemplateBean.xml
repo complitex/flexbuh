@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.complitex.flexbuh.document.service.TemplateBean">
-    <resultMap id="templateXSLResultMap" type="org.complitex.flexbuh.document.entity.TemplateXSL">
+<mapper namespace="org.complitex.flexbuh.service.TemplateBean">
+    <resultMap id="templateXSLResultMap" type="org.complitex.flexbuh.entity.TemplateXSL">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
     </resultMap>
 
-    <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.document.entity.TemplateXSD">
+    <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.entity.TemplateXSD">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
     </resultMap>
 
-    <insert id="insertTemplate" parameterType="org.complitex.flexbuh.document.entity.AbstractTemplate">
+    <resultMap id="templateControlResultMap" type="org.complitex.flexbuh.entity.TemplateControl">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="data" property="data"/>
+    </resultMap>
+
+    <insert id="insertTemplate" parameterType="org.complitex.flexbuh.entity.AbstractTemplate">
         insert into `${table}` (`name`, `data`) values (#{name}, #{data})
     </insert>
 
@@ -24,6 +30,10 @@
 
     <select id="selectTemplateXSD" parameterType="string" resultMap="templateXSDResultMap">
         select * from `template_xsd` where `name` = #{name}
+    </select>
+
+    <select id="selectTemplateControl" resultType="string" resultMap="templateControlResultMap">
+        select * from `template_control` where `name` = #{name}
     </select>
 
     <select id="selectTemplateXSLNames" resultType="string">

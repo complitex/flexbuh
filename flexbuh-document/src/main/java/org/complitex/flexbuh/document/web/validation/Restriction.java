@@ -88,6 +88,9 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
                     String value = element.getAttribute("value");
 
                     switch (element.getTagName()){
+                        case "xs:length":
+                            length = Integer.valueOf(value);
+                            break;
                         case "xs:pattern":
                             pattern = Pattern.compile(value);
                             break;
@@ -134,8 +137,8 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
         if (validatable.getValue() != null) {
             String valueString = validatable.getValue().toString();
 
-            if (pattern != null && !pattern.matcher(valueString).matches()){
-                error(validatable, "pattern");
+            if (length != null && valueString.length() != length){
+                error(validatable, "length");
             }
 
             if (minLength != null && valueString.length() < minLength){
@@ -150,8 +153,8 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
                 error(validatable, "totalDigits");
             }
 
-            if (length != null && valueString.length() == length){
-                error(validatable, "length");
+            if (pattern != null && !pattern.matcher(valueString).matches()){
+                error(validatable, "pattern");
             }
 
             if (enumeration.size() > 0 && !enumeration.contains(valueString)){
@@ -219,5 +222,133 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
         }
 
         return resourceBundle.getString(key);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(String documentation) {
+        this.documentation = documentation;
+    }
+
+    public String getBase() {
+        return base;
+    }
+
+    public void setBase(String base) {
+        this.base = base;
+    }
+
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(Pattern pattern) {
+        this.pattern = pattern;
+    }
+
+    public List<String> getEnumeration() {
+        return enumeration;
+    }
+
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
+    }
+
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
+    }
+
+    public Integer getMinLength() {
+        return minLength;
+    }
+
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
+    }
+
+    public Integer getMaxLength() {
+        return maxLength;
+    }
+
+    public void setMaxLength(Integer maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public Integer getTotalDigits() {
+        return totalDigits;
+    }
+
+    public void setTotalDigits(Integer totalDigits) {
+        this.totalDigits = totalDigits;
+    }
+
+    public Long getMinInclusive() {
+        return minInclusive;
+    }
+
+    public void setMinInclusive(Long minInclusive) {
+        this.minInclusive = minInclusive;
+    }
+
+    public Long getMaxInclusive() {
+        return maxInclusive;
+    }
+
+    public void setMaxInclusive(Long maxInclusive) {
+        this.maxInclusive = maxInclusive;
+    }
+
+    public boolean isComplex() {
+        return complex;
+    }
+
+    public void setComplex(boolean complex) {
+        this.complex = complex;
+    }
+
+    public boolean isRequiredRowNum() {
+        return requiredRowNum;
+    }
+
+    public void setRequiredRowNum(boolean requiredRowNum) {
+        this.requiredRowNum = requiredRowNum;
+    }
+
+    public Element getTypeElement() {
+        return typeElement;
+    }
+
+    public void setTypeElement(Element typeElement) {
+        this.typeElement = typeElement;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

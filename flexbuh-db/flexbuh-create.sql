@@ -103,6 +103,21 @@ CREATE TABLE `template_xsd` (
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
+-- Controls
+-- --------------------------
+
+DROP TABLE IF EXISTS `template_control`;
+
+CREATE TABLE `template_control` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `data` MEDIUMTEXT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `key_name`(`name`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
 -- Language
 -- --------------------------
 

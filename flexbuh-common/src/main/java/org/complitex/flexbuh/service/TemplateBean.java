@@ -1,9 +1,9 @@
-package org.complitex.flexbuh.document.service;
+package org.complitex.flexbuh.service;
 
-import org.complitex.flexbuh.document.entity.AbstractTemplate;
-import org.complitex.flexbuh.document.entity.TemplateXSD;
-import org.complitex.flexbuh.document.entity.TemplateXSL;
-import org.complitex.flexbuh.service.AbstractBean;
+import org.complitex.flexbuh.entity.AbstractTemplate;
+import org.complitex.flexbuh.entity.TemplateControl;
+import org.complitex.flexbuh.entity.TemplateXSD;
+import org.complitex.flexbuh.entity.TemplateXSL;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -26,6 +26,10 @@ public class TemplateBean extends AbstractBean {
 
     public TemplateXSD getTemplateXSD(String name){
         return (TemplateXSD) sqlSession().selectOne(NS + ".selectTemplateXSD", name);
+    }
+
+    public TemplateControl getTemplateControl(String name){
+        return  (TemplateControl) sqlSession().selectOne(NS + ".selectTemplateControl", name);
     }
 
     @SuppressWarnings({"unchecked"})

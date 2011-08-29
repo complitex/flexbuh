@@ -6,7 +6,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
-import org.complitex.flexbuh.document.service.TemplateBean;
+import org.complitex.flexbuh.service.TemplateBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
 
 import javax.ejb.EJB;
