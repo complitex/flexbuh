@@ -13,4 +13,9 @@
         delete from `${table}` where `upload_date` = #{uploadDate}
     </delete>
 
+	<update id="activateByUploadDate" parameterType="map"
+			flushCache="true">
+        update `${table}` set `status`=0 where `upload_date` = #{uploadDate}
+    </update>
+
 </mapper>

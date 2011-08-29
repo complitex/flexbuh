@@ -42,6 +42,7 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
 			processDocument("ROW", beginDate, endDate, importDate, docDictionaries, document);
 			processDocument("row", beginDate, endDate, importDate, docDictionaries, document);
 			commit(docDictionaries, true);
+			activateUploadedRecords(importDate);
 
 			listener.completed();
 		} catch (Throwable th) {
@@ -61,6 +62,20 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
 	}
 
 	protected abstract List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException;
+
+	protected void activateUploadedRecords(Date importDate) {
+		try {
+			userTransaction.begin();
+			getDictionaryBean().activate(importDate);
+			userTransaction.commit();
+		} catch (Exception e) {
+			try{
+				userTransaction.rollback();
+			} catch (Exception e2) {
+			}
+			log.error("Failed remove uploaded records. Import date: " + importDate, e);
+		}
+	}
 
 	protected void deleteUploadedRecords(Date importDate) {
 		try {
