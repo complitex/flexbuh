@@ -7,10 +7,10 @@ import java.util.List;
  *         Date: 05.08.11 12:24
  */
 public class Region extends DictionaryOfLimitedTime {
-	private static final String TABLE = "region";
+	public static final String TABLE = "region";
 
 	private Integer code;
-	private List<RegionName> regionNames;
+	private List<RegionName> names;
 
 	public Integer getCode() {
 		return code;
@@ -20,12 +20,17 @@ public class Region extends DictionaryOfLimitedTime {
 		this.code = code;
 	}
 
-	public List<RegionName> getRegionNames() {
-		return regionNames;
+	public List<RegionName> getNames() {
+		return names;
 	}
 
-	public void setRegionNames(List<RegionName> regionNames) {
-		this.regionNames = regionNames;
+	public void setNames(List<RegionName> names) {
+		this.names = names;
+	}
+
+	@Override
+	public boolean validate() {
+		return super.validate() && code != null && names != null && names.size() > 0;
 	}
 
 	@Override

@@ -6,34 +6,34 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 05.08.11 15:43
  */
-public class Document extends Dictionary {
-	private static final String TABLE = "document";
+public class Document extends DictionaryOfLimitedTime {
+	public static final String TABLE = "document";
 
-	private DocumentType type;
-	private DocumentSubType subType;
+	private String type;
+	private String subType;
 	private List<DocumentName> names;
 
 	/**
 	 * Чи може подаватись у звітному періоді більше одного разу
 	 */
 	private Boolean cntSet;
-	private DocumentType parentDocumentType;
-	private DocumentSubType parentDocumentSubType;
+	private String parentDocumentType;
+	private String parentDocumentSubType;
 	private Boolean selected;
 
-	public DocumentType getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(DocumentType type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
-	public DocumentSubType getSubType() {
+	public String getSubType() {
 		return subType;
 	}
 
-	public void setSubType(DocumentSubType subType) {
+	public void setSubType(String subType) {
 		this.subType = subType;
 	}
 
@@ -53,19 +53,19 @@ public class Document extends Dictionary {
 		this.cntSet = cntSet;
 	}
 
-	public DocumentType getParentDocumentType() {
+	public String getParentDocumentType() {
 		return parentDocumentType;
 	}
 
-	public void setParentDocumentType(DocumentType parentDocumentType) {
+	public void setParentDocumentType(String parentDocumentType) {
 		this.parentDocumentType = parentDocumentType;
 	}
 
-	public DocumentSubType getParentDocumentSubType() {
+	public String getParentDocumentSubType() {
 		return parentDocumentSubType;
 	}
 
-	public void setParentDocumentSubType(DocumentSubType parentDocumentSubType) {
+	public void setParentDocumentSubType(String parentDocumentSubType) {
 		this.parentDocumentSubType = parentDocumentSubType;
 	}
 
@@ -75,6 +75,13 @@ public class Document extends Dictionary {
 
 	public void setSelected(Boolean selected) {
 		this.selected = selected;
+	}
+
+	@Override
+	public boolean validate() {
+		return  super.validate() &&
+				type != null && subType != null && names != null && names.size() > 0 && cntSet != null &&
+				selected != null;
 	}
 
 	@Override
