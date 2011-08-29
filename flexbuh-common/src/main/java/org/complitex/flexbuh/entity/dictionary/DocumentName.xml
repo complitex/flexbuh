@@ -5,8 +5,8 @@
     <resultMap id="documentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentName">
         <id column="id" property="id"/>
         <result property="value" column="value"/>
-		<association property="language" column="language_id"
-					 resultMap="org.complitex.flexbuh.service.LanguageBean.languageResultMap"/>
+		<association property="language" column="language_id" javaType="org.complitex.flexbuh.entity.Language"
+					 select="org.complitex.flexbuh.service.LanguageBean.findById"/>
     </resultMap>
 
 	<select id="selectDocumentNames" parameterType="long" resultMap="documentNameResultMap"

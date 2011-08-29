@@ -47,6 +47,30 @@ public class DictionaryMenu extends ResourceTemplateMenu {
                 }
         );
 
+		templateLinks.add(
+				new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("currency_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return CurrencyList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+		);
+
         return templateLinks;
     }
 

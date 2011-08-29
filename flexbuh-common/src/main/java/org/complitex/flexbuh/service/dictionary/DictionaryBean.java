@@ -26,6 +26,13 @@ public abstract class DictionaryBean<T extends Dictionary> extends AbstractBean 
 		sqlSession().delete(NS + ".deleteByUploadDate", params);
 	}
 
+	public void activate(Date uploadDate) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("table", getTable());
+		params.put("uploadDate", uploadDate);
+		sqlSession().delete(NS + ".activateByUploadDate", params);
+	}
+
 	abstract public void create(T dictionary);
 
 	abstract protected String getTable();
