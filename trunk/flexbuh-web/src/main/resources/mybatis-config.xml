@@ -12,6 +12,25 @@
     </environments>
 
     <mappers>
+        <mapper resource="org/complitex/flexbuh/service/ConfigBean.xml"/>
         <mapper resource="org/complitex/flexbuh/document/service/TemplateBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/AreaName.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/CurrencyName.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/Dictionary.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/DictionaryOfLimitedTime.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/DictionaryTypeName.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/DocumentName.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/NormativeDocumentName.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/RegionName.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/TaxInspectionName.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/LanguageBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/CurrencyBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/DictionaryBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/DictionaryTypeBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/DocumentBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/DocumentTermBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/DocumentVersionBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/RegionBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/dictionary/TaxInspectionBean.xml"/>
     </mappers>
 </configuration>

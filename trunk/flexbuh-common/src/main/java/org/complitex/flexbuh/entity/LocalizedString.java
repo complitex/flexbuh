@@ -1,5 +1,8 @@
 package org.complitex.flexbuh.entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Pavel Sknar
  *         Date: 05.08.11 11:47
@@ -22,5 +25,13 @@ public abstract class LocalizedString extends DomainObject {
 
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).
+				append("id", getId()).
+				append("language", language).
+				append("value", value).toString();
 	}
 }

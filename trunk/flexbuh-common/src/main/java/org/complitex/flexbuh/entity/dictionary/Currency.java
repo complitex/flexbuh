@@ -1,5 +1,9 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.util.List;
 
 /**
@@ -7,11 +11,11 @@ import java.util.List;
  *         Date: 05.08.11 10:57
  */
 public class Currency extends DictionaryOfLimitedTime {
-	private static final String TABLE = "currency";
+	public static final String TABLE = "currency";
 
 	private Integer codeNumber;
 	private String codeString;
-	private List<CurrencyName> names;
+	private List<CurrencyName> names = Lists.newArrayList();
 
 	public Integer getCodeNumber() {
 		return codeNumber;
@@ -38,7 +42,27 @@ public class Currency extends DictionaryOfLimitedTime {
 	}
 
 	@Override
+	public boolean validate() {
+		return super.validate() && codeNumber != null && codeString != null && names.size() > 0 &&
+				getBeginDate() != null && getEndDate() != null;
+
+	}
+
+	@Override
 	public String getTable() {
 		return TABLE;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).
+				append("id", getId()).
+				append("codeNumber", codeNumber).
+				append("codeString", codeString).
+				append("names", names).
+				append("beginDate", getBeginDate()).
+				append("endDate", getEndDate()).
+				append("uploadDate", getUploadDate()).
+				append("status", getStatus()).toString();
 	}
 }

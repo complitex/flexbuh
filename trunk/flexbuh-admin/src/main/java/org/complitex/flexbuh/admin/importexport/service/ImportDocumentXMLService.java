@@ -1,0 +1,103 @@
+package org.complitex.flexbuh.admin.importexport.service;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
+import org.complitex.flexbuh.entity.Language;
+import org.complitex.flexbuh.entity.dictionary.CurrencyName;
+import org.complitex.flexbuh.entity.dictionary.Dictionary;
+import org.complitex.flexbuh.entity.dictionary.Document;
+import org.complitex.flexbuh.entity.dictionary.DocumentName;
+import org.complitex.flexbuh.service.LanguageBean;
+import org.complitex.flexbuh.service.dictionary.DictionaryBean;
+import org.complitex.flexbuh.service.dictionary.DocumentBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.transaction.*;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @author Pavel Sknar
+ *         Date: 22.08.11 12:12
+ */
+@Stateless
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+@TransactionManagement(TransactionManagementType.BEAN)
+public class ImportDocumentXMLService extends ImportDictionaryXMLService {
+	private final static Logger log = LoggerFactory.getLogger(ImportDocumentXMLService.class);
+
+	@EJB
+	private LanguageBean languageBean;
+
+	@EJB
+	private DocumentBean documentBean;
+
+	private Language ukLang = null;
+
+	@Override
+	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+		initLang();
+		super.process(listener, importFile, beginDate, endDate);
+	}
+
+	@Override
+	protected List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+		Document document = new Document();
+		document.setUploadDate(importDate);
+		document.setBeginDate(beginDate);
+		document.setEndDate(endDate);
+		for (int j = 0; j < contentNodeRow.getLength(); j++) {
+			Node currentNode = contentNodeRow.item(j);
+			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC")) {
+				document.setType(currentNode.getTextContent());
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_SUB")) {
+				document.setSubType(currentNode.getTextContent());
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME")) {
+				if (document.getNames() == null) {
+					document.setNames(Lists.<DocumentName>newArrayList());
+				}
+				DocumentName ukName = new DocumentName();
+				ukName.setLanguage(ukLang);
+				ukName.setValue(currentNode.getTextContent());
+				document.getNames().add(ukName);
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_CNT_SET")) {
+				if ("0".equals(currentNode.getTextContent())) {
+					document.setCntSet(Boolean.FALSE);
+				} else if ("1".equals(currentNode.getTextContent())) {
+					document.setCntSet(Boolean.TRUE);
+				} else {
+					throw new IllegalArgumentException("C_DOC_CNT_SET must be '0' or '1'");
+				}
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "PARENT_C_DOC")) {
+				document.setParentDocumentType(currentNode.getTextContent());
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "PARENT_C_DOC_SUB")) {
+				document.setParentDocumentSubType(currentNode.getTextContent());
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "SELECTED")) {
+				document.setSelected(Boolean.parseBoolean(currentNode.getTextContent()));
+			}
+		}
+		Validate.isTrue(document.validate(), "Invalid processing document: " + document);
+		return Lists.newArrayList((Dictionary)document);
+	}
+
+	private void initLang() {
+		if (ukLang == null) {
+			ukLang = languageBean.find("uk");
+			Validate.notNull(ukLang, "'uk' language not find");
+		}
+	}
+
+	@Override
+	protected DictionaryBean getDictionaryBean() {
+		return documentBean;
+	}
+}

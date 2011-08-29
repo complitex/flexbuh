@@ -7,26 +7,26 @@ import java.util.List;
  *         Date: 08.08.11 14:52
  */
 public class DocumentVersion extends DictionaryOfLimitedTime {
-	private static final String TABLE = "document_version";
+	public static final String TABLE = "document_version";
 
-	private DocumentType documentType;
-	private DocumentSubType documentSubType;
+	private String documentType;
+	private String documentSubType;
 	private Integer version;
 	private List<NormativeDocumentName> normativeDocumentNames;
 
-	public DocumentType getDocumentType() {
+	public String getDocumentType() {
 		return documentType;
 	}
 
-	public void setDocumentType(DocumentType documentType) {
+	public void setDocumentType(String documentType) {
 		this.documentType = documentType;
 	}
 
-	public DocumentSubType getDocumentSubType() {
+	public String getDocumentSubType() {
 		return documentSubType;
 	}
 
-	public void setDocumentSubType(DocumentSubType documentSubType) {
+	public void setDocumentSubType(String documentSubType) {
 		this.documentSubType = documentSubType;
 	}
 
@@ -44,6 +44,12 @@ public class DocumentVersion extends DictionaryOfLimitedTime {
 
 	public void setNormativeDocumentNames(List<NormativeDocumentName> normativeDocumentNames) {
 		this.normativeDocumentNames = normativeDocumentNames;
+	}
+
+	@Override
+	public boolean validate() {
+		return super.validate() && documentType != null && documentSubType != null && version != null &&
+				normativeDocumentNames != null && normativeDocumentNames.size() > 0;
 	}
 
 	@Override

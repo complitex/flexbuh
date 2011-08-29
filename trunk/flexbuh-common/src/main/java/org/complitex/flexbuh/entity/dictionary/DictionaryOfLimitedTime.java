@@ -25,4 +25,9 @@ public abstract class DictionaryOfLimitedTime extends Dictionary {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
+	@Override
+	public boolean validate() {
+		return super.validate() && (beginDate == null || endDate == null || beginDate.before(endDate));
+	}
 }

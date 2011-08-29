@@ -6,8 +6,8 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 05.08.11 13:06
  */
-public class TaxInspection extends Dictionary {
-	private static final String TABLE = "tax_inspection";
+public class TaxInspection extends DictionaryOfLimitedTime {
+	public static final String TABLE = "tax_inspection";
 
 	private Integer code;
 	private List<TaxInspectionName> names;
@@ -67,5 +67,12 @@ public class TaxInspection extends Dictionary {
 	@Override
 	public String getTable() {
 		return TABLE;
+	}
+
+	@Override
+	public boolean validate() {
+		return super.validate() &&
+				code != null && names != null && names.size() > 0 && regionCode != null &&
+				codeArea != null && areaNames != null && areaNames.size() > 0 && codeTaxInspectionType != null;
 	}
 }

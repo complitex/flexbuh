@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentBean">
+    <resultMap id="documentResultMap"
+			   type="org.complitex.flexbuh.entity.dictionary.Document"
+			   extends="org.complitex.flexbuh.entity.dictionary.DictionaryOfLimitedTime.dictionaryOfLimitedTimeResultMap">
+        <result property="type" column="document_type"/>
+        <result property="subType" column="document_sub_type"/>
+		<result property="cntSet" column="cnt_set"/>
+		<result property="parentDocumentType" column="parent_document_type"/>
+        <result property="parentDocumentSubType" column="parent_document_sub_type"/>
+		<result property="selected" column="selected"/>
+		<collection property="names" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.dictionary.DocumentName"
+				column="id" select="org.complitex.flexbuh.entity.dictionary.DocumentName.selectDocumentNames"/>
+    </resultMap>
+
+    <insert id="create" parameterType="org.complitex.flexbuh.entity.dictionary.Document"
+			keyProperty="id" useGeneratedKeys="true"
+			flushCache="true">
+        insert into `${table}` (`status`, `upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`,`cnt_set`, `parent_document_type`, `parent_document_sub_type`, `selected`)
+        	values (#{status}, #{uploadDate}, #{beginDate}, #{endDate}, #{type}, #{subType}, #{cntSet}, #{parentDocumentType}, #{parentDocumentSubType}, #{selected})
+    </insert>
+
+	<select id="readAll" resultMap="documentResultMap"
+			useCache="true" flushCache="false">
+        select * from `${table}` where `status` = 0
+    </select>
+
+	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="documentResultMap"
+			useCache="true" flushCache="false">
+        select * from `${table}` where `id` = #{id}
+    </select>
+</mapper>

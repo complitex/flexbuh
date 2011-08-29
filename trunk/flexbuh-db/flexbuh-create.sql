@@ -109,122 +109,12 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `language`;
 
 CREATE TABLE `language` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `lang_iso_code` VARCHAR(45) NOT NULL,
+  `default_lang` TINYINT(1),
   PRIMARY KEY (`id`),
+  UNIQUE (`lang_iso_code`),
   UNIQUE INDEX `key_name`(`lang_iso_code`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- AreaName
--- --------------------------
-
-DROP TABLE IF EXISTS `area_name`;
-
-CREATE TABLE `area_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_area_name__language_id` (`language_id`),
-  CONSTRAINT `fk_area_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- CurrencyName
--- --------------------------
-
-DROP TABLE IF EXISTS `currency_name`;
-
-CREATE TABLE `currency_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_currency_name__language_id` (`language_id`),
-  CONSTRAINT `fk_currency_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- DocumentName
--- --------------------------
-
-DROP TABLE IF EXISTS `document_name`;
-
-CREATE TABLE `document_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_document_name__language_id` (`language_id`),
-  CONSTRAINT `fk_document_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- NormativeDocumentName
--- --------------------------
-
-DROP TABLE IF EXISTS `document_name`;
-
-CREATE TABLE `normative_document_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_normative_document_name__language_id` (`language_id`),
-  CONSTRAINT `fk_normative_document_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- RegionName
--- --------------------------
-
-DROP TABLE IF EXISTS `region_name`;
-
-CREATE TABLE `region_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_region_name__language_id` (`language_id`),
-  CONSTRAINT `fk_region_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- TaxInspectionName
--- --------------------------
-
-DROP TABLE IF EXISTS `tax_inspection_name`;
-
-CREATE TABLE `tax_inspection_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_tax_inspection_name__language_id` (`language_id`),
-  CONSTRAINT `fk_tax_inspection_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- DictionaryTypeName
--- --------------------------
-
-DROP TABLE IF EXISTS `dictionary_type_name`;
-
-CREATE TABLE `dictionary_type_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `language_id` INTEGER UNSIGNED NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_dictionary_type_name__language_id` (`language_id`),
-  CONSTRAINT `fk_dictionary_type_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -235,7 +125,7 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `dictionary_type`;
 
 CREATE TABLE `dictionary_type` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(40) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `key_dictionary_type__code` (`code`)
@@ -243,22 +133,39 @@ CREATE TABLE `dictionary_type` (
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- CollectionDictionaryTypeName
+-- DictionaryFileName
 -- --------------------------
 
-DROP TABLE IF EXISTS `collection_dictionary_type_name`;
+DROP TABLE IF EXISTS `dictionary_file_name`;
 
-CREATE TABLE `collection_dictionary_type_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
-  `dictionary_type_name_id` INTEGER UNSIGNED NOT NULL,
+CREATE TABLE `dictionary_file_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `dictionary_type_id` BIGINT(20) NOT NULL,
+  `file_name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (dictionary_type_id, dictionary_type_name_id),
-  KEY `key_collection_dictionary_type_name__dictionary_type` (`dictionary_type_id`),
-  KEY `key_collection_dictionary_type_name__dictionary_type_name` (`dictionary_type_name_id`),
-  KEY `key_collection_dictionary_type_name` (dictionary_type_id, dictionary_type_name_id),
-  CONSTRAINT `fk_collection_dictionary_type_name__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`),
-  CONSTRAINT `fk_collection_dictionary_type_name__dictionary_type_name` FOREIGN KEY (`dictionary_type_name_id`) REFERENCES `dictionary_type_name` (`id`)
+  KEY `key_dictionary_file_name__dictionary_type_id` (`dictionary_type_id`),
+  CONSTRAINT `fk_dictionary_file_name__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- DictionaryTypeName
+-- --------------------------
+
+DROP TABLE IF EXISTS `dictionary_type_name`;
+
+CREATE TABLE `dictionary_type_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `dictionary_type_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE (`language_id`, `dictionary_type_id`),
+  KEY `key_dictionary_type_name__language_id` (`language_id`),
+  KEY `key_dictionary_type_name__dictionary_type_id` (`dictionary_type_id`),
+  KEY `key_dictionary_type_name` (`language_id`, `dictionary_type_id`),
+  CONSTRAINT `fk_dictionary_type_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_dictionary_type_name__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -269,63 +176,33 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `currency`;
 
 CREATE TABLE `currency` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `begin_date` TIMESTAMP,
-  `end_date` TIMESTAMP,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
-  `code_number` INTEGER UNSIGNED NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `status` INTEGER NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
+  `begin_date` DATETIME,
+  `end_date` DATETIME,
+  `code_number` INTEGER NOT NULL,
   `code_string` VARCHAR(40) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_currency__dictionary_type` (`dictionary_type_id`),
-  CONSTRAINT `fk_currency__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`)
+  PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- CollectionCurrencyName
+-- CurrencyName
 -- --------------------------
 
-DROP TABLE IF EXISTS `collection_currency_name`;
+DROP TABLE IF EXISTS `currency_name`;
 
-CREATE TABLE `collection_currency_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `currency_id` INTEGER UNSIGNED NOT NULL,
-  `currency_name_id` INTEGER UNSIGNED NOT NULL,
+CREATE TABLE `currency_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  `currency_id` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (currency_id, currency_name_id),
-  KEY `key_collection_currency_name__currency` (`currency_id`),
-  KEY `key_collection_currency_name__currency_name` (`currency_name_id`),
-  KEY `key_collection_currency_name` (`currency_id`, `currency_name_id`),
-  CONSTRAINT `fk_collection_currency_name__currency` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`),
-  CONSTRAINT `fk_collection_currency_name__currency_name` FOREIGN KEY (`currency_name_id`) REFERENCES `currency_name` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- DocumentSubType
--- --------------------------
-
-DROP TABLE IF EXISTS `document_sub_type`;
-
-CREATE TABLE `document_sub_type` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `code` VARCHAR(40) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_document_sub_type__code` (`code`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- DocumentType
--- --------------------------
-
-DROP TABLE IF EXISTS `document_type`;
-
-CREATE TABLE `document_type` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `code` VARCHAR(40) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key_document_type__code` (`code`)
+  KEY `key_currency_name__language_id` (`language_id`),
+  KEY `key_currency_id` (`currency_id`),
+  CONSTRAINT `fk_currency_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_currency_name__currency` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`) ON DELETE CASCADE
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -336,43 +213,40 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `document`;
 
 CREATE TABLE `document` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_sub_type_id` INTEGER UNSIGNED NOT NULL,
-  `parent_document_type_id` INTEGER UNSIGNED NOT NULL,
-  `parent_document_sub_type_id` INTEGER UNSIGNED NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `status` INTEGER NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
+  `begin_date` TIMESTAMP,
+  `end_date` TIMESTAMP,
+  `document_type` VARCHAR(40) NOT NULL,
+  `document_sub_type` VARCHAR(40) NOT NULL,
+  `parent_document_type` VARCHAR(40),
+  `parent_document_sub_type` VARCHAR(40),
   `cnt_set` TINYINT(1) NOT NULL,
   `selected` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_document__dictionary_type_id` (`dictionary_type_id`),
-  KEY `key_document` (document_type_id, document_sub_type_id),
-  KEY `key_document__parent_document` (parent_document_type_id, parent_document_sub_type_id),
-  CONSTRAINT `fk_document__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`),
-  CONSTRAINT `fk_document__document_type` FOREIGN KEY (`document_type_id`) REFERENCES `document_type` (`id`),
-  CONSTRAINT `fk_document__sub_document_type` FOREIGN KEY (`document_sub_type_id`) REFERENCES `document_sub_type` (`id`),
-  CONSTRAINT `fk_document__parent_document_type` FOREIGN KEY (`parent_document_type_id`) REFERENCES `document_type` (`id`),
-  CONSTRAINT `fk_document__parent_sub_document_type` FOREIGN KEY (`parent_document_sub_type_id`) REFERENCES `document_sub_type` (`id`)
+  UNIQUE (document_type, document_sub_type),
+  KEY `key_document` (document_type, document_sub_type),
+  KEY `key_document__parent_document` (parent_document_type, parent_document_sub_type)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- CollectionDocumentName
+-- DocumentName
 -- --------------------------
 
-DROP TABLE IF EXISTS `collection_document_name`;
+DROP TABLE IF EXISTS `document_name`;
 
-CREATE TABLE `collection_document_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `document_id` INTEGER UNSIGNED NOT NULL,
-  `document_name_id` INTEGER UNSIGNED NOT NULL,
+CREATE TABLE `document_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(4000) NOT NULL,
+  `document_id` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (document_id, document_name_id),
-  KEY `key_collection_document_name__document` (`document_id`),
-  KEY `key_collection_document_name__document_name` (`document_name_id`),
-  KEY `key_collection_document_name` (`document_id`, `document_name_id`),
-  CONSTRAINT `fk_collection_document_name__document` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`),
-  CONSTRAINT `fk_collection_document_name__document_name` FOREIGN KEY (`document_name_id`) REFERENCES `document_name` (`id`)
+  KEY `key_document_name__language_id` (`language_id`),
+  KEY `key_document_name__document_id` (`document_id`),
+  CONSTRAINT `fk_document_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_document_name__document` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`) ON DELETE CASCADE
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -383,22 +257,20 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `document_term`;
 
 CREATE TABLE `document_term` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_sub_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_version` INTEGER UNSIGNED NOT NULL,
-  `data_term` TIMESTAMP NOT NULL,
-  `selected` TINYINT(1) NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `status` INTEGER NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
+  `begin_date` TIMESTAMP,
+  `end_date` TIMESTAMP,
+  `document_type` VARCHAR(40) NOT NULL,
+  `document_sub_type` VARCHAR(40) NOT NULL,
+  `document_version` INTEGER NOT NULL,
+  `date_term` TIMESTAMP NOT NULL,
   `period_month` INTEGER NOT NULL,
   `period_type` INTEGER NOT NULL,
   `period_year` INTEGER NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_document_term__dictionary_type_id` (`dictionary_type_id`),
-  KEY `key_document_term__document` (document_type_id, document_sub_type_id),
-  CONSTRAINT `fk_document_term__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`),
-  CONSTRAINT `fk_document_term__document_type` FOREIGN KEY (`document_type_id`) REFERENCES `document_type` (`id`),
-  CONSTRAINT `fk_document_term__sub_document_type` FOREIGN KEY (`document_sub_type_id`) REFERENCES `document_sub_type` (`id`)
+  KEY `key_document_term__document` (document_type, document_sub_type)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -409,40 +281,37 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `document_version`;
 
 CREATE TABLE `document_version` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `status` INTEGER NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
   `begin_date` TIMESTAMP,
   `end_date` TIMESTAMP,
-  `document_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_sub_type_id` INTEGER UNSIGNED NOT NULL,
-  `document_version` INTEGER UNSIGNED NOT NULL,
+  `document_type` VARCHAR(40) NOT NULL,
+  `document_sub_type` VARCHAR(40) NOT NULL,
+  `version` INTEGER NOT NULL,
+  UNIQUE (document_type, document_sub_type, version),
   PRIMARY KEY (`id`),
-  KEY `key_document_version__dictionary_type_id` (`dictionary_type_id`),
-  KEY `key_document_version__document` (document_type_id, document_sub_type_id),
-  KEY `key_document_version__document_version` (document_type_id, document_sub_type_id, document_version),
-  CONSTRAINT `fk_document_version__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`),
-  CONSTRAINT `fk_document_version__document_type` FOREIGN KEY (`document_type_id`) REFERENCES `document_type` (`id`),
-  CONSTRAINT `fk_document_version__sub_document_type` FOREIGN KEY (`document_sub_type_id`) REFERENCES `document_sub_type` (`id`)
+  KEY `key_document_version__document` (document_type, document_sub_type),
+  KEY `key_document_version__document_version` (document_type, document_sub_type, version)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- CollectionNormativeDocumentName
+-- NormativeDocumentName
 -- --------------------------
 
-DROP TABLE IF EXISTS `collection_normative_document_name`;
+DROP TABLE IF EXISTS `normative_document_name`;
 
-CREATE TABLE `collection_normative_document_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `document_version_id` INTEGER UNSIGNED NOT NULL,
-  `normative_document_name_id` INTEGER UNSIGNED NOT NULL,
+CREATE TABLE `normative_document_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(4000) NOT NULL,
+  `document_version_id` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (document_version_id, normative_document_name_id),
-  KEY `key_collection_normative_document_name__document_version` (`document_version_id`),
-  KEY `key_collection_normative_document_name__normative_document_name` (`normative_document_name_id`),
-  KEY `key_collection_normative_document_name` (`document_version_id`, `normative_document_name_id`),
-  CONSTRAINT `fk_collection_normative_document_name__document_version` FOREIGN KEY (`document_version_id`) REFERENCES `document_version` (`id`),
-  CONSTRAINT `fk_collection_normative_document_name__normative_document_name` FOREIGN KEY (`normative_document_name_id`) REFERENCES `normative_document_name` (`id`)
+  KEY `key_normative_document_name__language_id` (`language_id`),
+  KEY `key_normative_document_name__document_version_id` (`document_version_id`),
+  CONSTRAINT `fk_normative_document_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_normative_document_name__document_version` FOREIGN KEY (`document_version_id`) REFERENCES `document_version` (`id`) ON DELETE CASCADE
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -453,35 +322,34 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `region`;
 
 CREATE TABLE `region` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `status` INTEGER NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
   `begin_date` TIMESTAMP,
   `end_date` TIMESTAMP,
-  `code` INTEGER UNSIGNED NOT NULL,
+  `code` INTEGER NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_region__dictionary_type` (`dictionary_type_id`),
-  KEY `key_region__code` (`code`),
-  CONSTRAINT `fk_region__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`)
+  KEY `key_region__code` (`code`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+
 -- --------------------------
--- CollectionRegionName
+-- RegionName
 -- --------------------------
 
-DROP TABLE IF EXISTS `collection_region_name`;
+DROP TABLE IF EXISTS `region_name`;
 
-CREATE TABLE `collection_region_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `region_id` INTEGER UNSIGNED NOT NULL,
-  `region_name_id` INTEGER UNSIGNED NOT NULL,
+CREATE TABLE `region_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  `region_id` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (region_id, region_name_id),
-  KEY `key_collection_region_name__region` (`region_id`),
-  KEY `key_collection_region_name__region_name` (`region_name_id`),
-  KEY `key_collection_region_name` (`region_id`, `region_name_id`),
-  CONSTRAINT `fk_collection_region_name__region` FOREIGN KEY (`region_id`) REFERENCES `region` (`id`),
-  CONSTRAINT `fk_collection_region_name__region_name` FOREIGN KEY (`region_name_id`) REFERENCES `region_name` (`id`)
+  KEY `key_region_name__language_id` (`language_id`),
+  KEY `key_region_name__region_id` (`region_id`),
+  CONSTRAINT `fk_region_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_region_name__region` FOREIGN KEY (`region_id`) REFERENCES `region` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -492,36 +360,56 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `tax_inspection`;
 
 CREATE TABLE `tax_inspection` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `dictionary_type_id` INTEGER UNSIGNED NOT NULL,
-  `code` INTEGER UNSIGNED NOT NULL,
-  `region_code` INTEGER UNSIGNED NOT NULL,
-  `code_area` INTEGER UNSIGNED NOT NULL,
-  `code_tax_inspection_type` INTEGER UNSIGNED NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `status` INTEGER NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
+  `begin_date` TIMESTAMP,
+  `end_date` TIMESTAMP,
+  `code` INTEGER NOT NULL,
+  `region_code` BIGINT(20) NOT NULL,
+  `code_area` INTEGER NOT NULL,
+  `code_tax_inspection_type` INTEGER NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_tax_inspection__dictionary_type` (`dictionary_type_id`),
-  KEY `key_tax_inspection__code` (`code`),
-  CONSTRAINT `fk_tax_inspection__dictionary_type` FOREIGN KEY (`dictionary_type_id`) REFERENCES `dictionary_type` (`id`)
+  KEY `key_tax_inspection__code` (`code`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+-- --------------------------
+-- AreaName
+-- --------------------------
+
+DROP TABLE IF EXISTS `area_name`;
+
+CREATE TABLE `area_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `tax_inspection_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_area_name__language_id` (`language_id`),
+  KEY `key_area_name__tax_inspection_id` (`tax_inspection_id`),
+  CONSTRAINT `fk_area_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_area_name__tax_inspection` FOREIGN KEY (`tax_inspection_id`) REFERENCES `tax_inspection` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- CollectionRegionName
+-- TaxInspectionName
 -- --------------------------
 
-DROP TABLE IF EXISTS `collection_tax_inspection_name`;
+DROP TABLE IF EXISTS `tax_inspection_name`;
 
-CREATE TABLE `collection_tax_inspection_name` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `tax_inspection_id` INTEGER UNSIGNED NOT NULL,
-  `tax_inspection_name_id` INTEGER UNSIGNED NOT NULL,
+CREATE TABLE `tax_inspection_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `tax_inspection_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (tax_inspection_id, tax_inspection_name_id),
-  KEY `key_collection_tax_inspection_name__tax_inspection` (`tax_inspection_id`),
-  KEY `key_collection_tax_inspection_name__tax_inspection_name` (`tax_inspection_name_id`),
-  KEY `key_collection_tax_inspection_name` (`tax_inspection_id`, `tax_inspection_name_id`),
-  CONSTRAINT `fk_collection_tax_inspection_name__tax_inspection` FOREIGN KEY (`tax_inspection_id`) REFERENCES `tax_inspection` (`id`),
-  CONSTRAINT `fk_collection_tax_inspection_name__tax_inspection_name` FOREIGN KEY (`tax_inspection_name_id`) REFERENCES `tax_inspection_name` (`id`)
+  KEY `key_tax_inspection_name__language_id` (`language_id`),
+  KEY `key_tax_inspection_name__tax_inspection_id` (`tax_inspection_id`),
+  CONSTRAINT `fk_tax_inspection_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_tax_inspection_name__tax_inspection` FOREIGN KEY (`tax_inspection_id`) REFERENCES `tax_inspection` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
