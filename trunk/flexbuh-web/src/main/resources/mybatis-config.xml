@@ -13,7 +13,7 @@
 
     <mappers>
         <mapper resource="org/complitex/flexbuh/service/ConfigBean.xml"/>
-        <mapper resource="org/complitex/flexbuh/document/service/TemplateBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/service/TemplateBean.xml"/>
         <mapper resource="org/complitex/flexbuh/entity/dictionary/AreaName.xml"/>
         <mapper resource="org/complitex/flexbuh/entity/dictionary/CurrencyName.xml"/>
         <mapper resource="org/complitex/flexbuh/entity/dictionary/Dictionary.xml"/>

@@ -276,7 +276,17 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private <T> IValidator<T> createValidator(String schemaType) throws XPathExpressionException {
         Element typeElement = XmlUtil.getElementByName(schemaType, commonTypes, schemaXPath);
 
-        return typeElement != null ? new Restriction<T>(typeElement) : null;
+        if (typeElement != null) {
+            Restriction<T> restriction = new Restriction<>(typeElement);
+
+            if (restriction.isComplex()){
+                return createValidator(restriction.getBase());
+            }
+
+            return restriction;
+        }
+
+        return null;
     }
 }
 
