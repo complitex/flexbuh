@@ -30,8 +30,8 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -93,9 +93,9 @@ public class TemplateService {
         return context.createUnmarshaller();
     }
 
-    public List<Rule> getRules(String templateName, Unmarshaller unmarshaller)
+    public Map<String, Rule> getRules(String templateName, Unmarshaller unmarshaller)
             throws IOException, SAXException, ParserConfigurationException, JAXBException {
-        List<Rule> rules = new ArrayList<>();
+        Map<String, Rule> rules = new LinkedHashMap<>();
 
         Document controls = getControl(templateName);
 
@@ -107,14 +107,14 @@ public class TemplateService {
             Rule rule = (Rule) unmarshaller.unmarshal(ruleNode);
 
             if ("=".equals(rule.getSign()) && rule.getExpression() != null) {
-                rules.add(rule);
+                rules.put(rule.getCDocRowC().replace("^", ""), rule);
             }
         }
 
         return rules;
     }
 
-    public List<Rule> getRules(String templateName) throws JAXBException, IOException, SAXException, ParserConfigurationException {
+    public Map<String, Rule> getRules(String templateName) throws JAXBException, IOException, SAXException, ParserConfigurationException {
         return getRules(templateName, getRuleUnmarshaller());
     }
 }
