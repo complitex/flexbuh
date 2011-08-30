@@ -24,6 +24,7 @@ import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 import org.complitex.flexbuh.document.web.validation.Restriction;
 import org.complitex.flexbuh.util.ScriptUtil;
+import org.complitex.flexbuh.util.StringUtil;
 import org.complitex.flexbuh.util.XmlUtil;
 import org.complitex.flexbuh.web.component.RadioSet;
 import org.slf4j.Logger;
@@ -73,7 +74,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
 
-    private List<Rule> rules;
+    private Map<String, Rule> rulesMap;
     private Map<String, TextField<String>> textFieldMap = new HashMap<>();
 
     public DeclarationFormComponent(String id, String templateName, Declaration declaration){
@@ -104,7 +105,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         NodeList bodyNodeList = template.getElementsByTagName("body");
 
         //Rules
-        rules = templateService.getRules(templateName);
+        rulesMap = templateService.getRules(templateName);
 
         //Form
         Element div = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
@@ -235,6 +236,12 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 feedbackLabel.setOutputMarkupId(true);
                 feedbackContainer.add(feedbackLabel);
 
+                //Rule
+                final Rule rule = rulesMap.get(id);
+                if (rule != null) {
+                    feedbackLabel.setDefaultModelObject(rule.getDescription());
+                }
+
                 //Tooltip
                 textField.add(new TooltipBehavior().setTip(feedbackContainer));
 
@@ -265,7 +272,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                             target.appendJavascript("$('#" + id +"').css('background-color', '#cccccc')");
                         }
 
-                        feedbackLabel.setDefaultModelObject("");
+                        feedbackLabel.setDefaultModelObject(rule != null ? rule.getDescription() : "");
                         target.addComponent(feedbackLabel);
                     }
                 });
@@ -313,7 +320,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     }
 
     private void autoFill(AjaxRequestTarget target, ScriptEngine scriptEngine) throws ScriptException {
-        for (Rule rule : rules){
+        for (Rule rule : rulesMap.values()){
             String expression = rule.getExpression();
 
             //todo implement many row
@@ -323,39 +330,28 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
             List<String> ids = extractIds(expression);
 
-            if (isTextFieldFilled(ids)) {
-                for (String id : ids){
-                    TextField<String> textField = textFieldMap.get(id);
+            for (String id : ids){
+                TextField<String> textField = textFieldMap.get(id);
 
-                    expression = expression.replace("^" + id, textField.getValue());
-                }
+                //todo add validation checking
+                String value = (StringUtil.isDecimal(textField.getValue())) ? textField.getValue() : "0";
 
-                expression = expression.replace("ABS", "Math.abs");
-                expression = StringEscapeUtils.unescapeXml(expression);
-
-                String autoFillId = rule.getCDocRowC().replace("^", "");
-
-                TextField<String> autoFill = textFieldMap.get(autoFillId);
-
-                autoFill.getModel().setObject(scriptEngine.eval(expression).toString());
-
-                target.addComponent(autoFill);
-
-                target.appendJavascript("$('#" + autoFillId +"').css('background-color', '#add8e6')");
+                expression = expression.replace("^" + id, value);
             }
+
+            expression = expression.replace("ABS", "Math.abs");
+            expression = StringEscapeUtils.unescapeXml(expression);
+
+            String autoFillId = rule.getCDocRowC().replace("^", "");
+
+            TextField<String> autoFill = textFieldMap.get(autoFillId);
+
+            autoFill.getModel().setObject(scriptEngine.eval(expression).toString());
+
+            target.addComponent(autoFill);
+
+            target.appendJavascript("$('#" + autoFillId +"').css('background-color', '#add8e6')");
         }
-    }
-
-    private boolean isTextFieldFilled(List<String> ids){
-        for (String id: ids){
-            TextField<String> textField = textFieldMap.get(id);
-
-            if (textField == null || textField.hasErrorMessage() || textField.getValue() == null){
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private List<String> extractIds(String expression){
