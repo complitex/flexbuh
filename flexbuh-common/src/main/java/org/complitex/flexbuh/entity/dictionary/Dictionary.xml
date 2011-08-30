@@ -5,7 +5,7 @@
     <resultMap id="dictionaryResultMap" type="org.complitex.flexbuh.entity.dictionary.Dictionary">
         <id column="id" property="id"/>
         <result property="status" column="status"/>
-		<result property="uploadStatus" column="upload_status"/>
+		<result property="uploadDate" column="upload_date"/>
     </resultMap>
 
 

@@ -32,6 +32,14 @@ public class TemplateBean extends AbstractBean {
         return  (TemplateControl) sqlSession().selectOne(NS + ".selectTemplateControl", name);
     }
 
+    public TemplateControl getTemplateFO(String name){
+        return  (TemplateControl) sqlSession().selectOne(NS + ".selectTemplateFO", name);
+    }
+
+	public boolean isExist(AbstractTemplate template) {
+		return (Long)sqlSession().selectOne(NS + ".isExist", template) > 0;
+	}
+
     @SuppressWarnings({"unchecked"})
     public List<String> getTemplateXSLNames(){
         return sqlSession().selectList(NS + ".selectTemplateXSLNames");

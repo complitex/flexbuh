@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Date;
 import java.util.List;
 
@@ -24,18 +26,21 @@ public abstract class ImportService {
     private ConfigBean configBean;
 
 	@Asynchronous
-	public void processFiles(ImportListener listener, Date beginDate, Date endDate) {
+	public void processFiles(@NotNull ImportListener listener, @Null Date beginDate, @Null Date endDate) {
+		listener.begin();
 		try {
-
-			for (File importFile : listImportFiles()) {
+			File[] importFiles = listImportFiles();
+			log.debug("Import files: {}", importFiles);
+			for (File importFile : importFiles) {
 				ImportListener childListener = listener.getChildImportListener(importFile);
 				try {
-					processFile(listener, importFile, beginDate, endDate);
+					processFile(childListener, importFile, beginDate, endDate);
 				} catch (Throwable th) {
 					childListener.cancel();
+					log.error("Cancel import file " + importFile.getName(), th);
 				}
 			}
-
+			listener.completed();
 		} catch (Throwable th) {
 			log.debug("Import interrupted", th);
 			listener.cancel();
@@ -43,14 +48,15 @@ public abstract class ImportService {
 	}
 
 	@Asynchronous
-	public void processFiles(ImportListener listener, List<String> importFileNames, Date beginDate, Date endDate) {
+	public void processFiles(@NotNull ImportListener listener, @NotNull List<String> importFileNames,
+							 @Null Date beginDate, @Null Date endDate) {
 		log.debug("Start import files: {}", importFileNames);
 		listener.begin();
 		try {
 			File rootDir = getRootDir();
 			for (String importFileName : importFileNames) {
 
-				File importFile = new File(getRootDir(), importFileName);
+				File importFile = new File(getImportDir(), importFileName);
 
 				ImportListener childListener = listener.getChildImportListener(importFile);
 
@@ -83,7 +89,7 @@ public abstract class ImportService {
 	}
 
 	public void processFile(ImportListener listener, String importFileName, Date beginDate, Date endDate) {
-		File importFile = new File(getRootDir(), importFileName);
+		File importFile = new File(getImportDir(), importFileName);
 		if (!importFile.exists()) {
 			log.debug("Import file '{}' does not exist in root dir {}", importFile, getRootDir());
 			listener.cancel();
@@ -98,7 +104,16 @@ public abstract class ImportService {
 		Validate.isTrue(importDir.exists(), "Import dir do not exist: " + importDir);
 		Validate.isTrue(importDir.isDirectory(), "Import dir " + importDir + " is not directory");
 
-		return importDir.listFiles();
+		return importDir.listFiles(getFilenameFilter());
+	}
+
+	protected FilenameFilter getFilenameFilter() {
+		return new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return true;
+			}
+		};
 	}
 
 	protected abstract ImportFileService getImportFileService(@NotNull String fileName);

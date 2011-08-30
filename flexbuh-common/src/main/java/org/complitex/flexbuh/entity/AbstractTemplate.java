@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.entity;
 
+import java.util.Date;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.07.11 16:02
@@ -8,13 +10,15 @@ public abstract class AbstractTemplate {
     private Long id;
     private String name;
     private String data;
+	private Date uploadDate;
 
     protected AbstractTemplate() {
     }
 
-    protected AbstractTemplate(String name, String data) {
+    protected AbstractTemplate(String name, String data, Date uploadDate) {
         this.name = name;
         this.data = data;
+		this.uploadDate = uploadDate;
     }
 
     public abstract String getTable();
@@ -42,4 +46,12 @@ public abstract class AbstractTemplate {
     public void setData(String data) {
         this.data = data;
     }
+
+	public Date getUploadDate() {
+		return uploadDate;
+	}
+
+	public void setUploadDate(Date uploadDate) {
+		this.uploadDate = uploadDate;
+	}
 }

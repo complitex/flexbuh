@@ -6,22 +6,32 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
+        <result column="upload_date" property="uploadData"/>
     </resultMap>
 
     <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.entity.TemplateXSD">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
+		<result column="upload_date" property="uploadData"/>
     </resultMap>
 
     <resultMap id="templateControlResultMap" type="org.complitex.flexbuh.entity.TemplateControl">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
+		<result column="upload_date" property="uploadData"/>
+    </resultMap>
+
+	<resultMap id="templateFOResultMap" type="org.complitex.flexbuh.entity.TemplateFO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="data" property="data"/>
+		<result column="upload_date" property="uploadData"/>
     </resultMap>
 
     <insert id="insertTemplate" parameterType="org.complitex.flexbuh.entity.AbstractTemplate">
-        insert into `${table}` (`name`, `data`) values (#{name}, #{data})
+        insert into `${table}` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
     </insert>
 
     <select id="selectTemplateXSL" parameterType="string" resultMap="templateXSLResultMap">
@@ -36,7 +46,15 @@
         select * from `template_control` where `name` = #{name}
     </select>
 
+    <select id="selectTemplateFO" resultType="string" resultMap="templateFOResultMap">
+        select * from `template_fo` where `name` = #{name}
+    </select>
+
     <select id="selectTemplateXSLNames" resultType="string">
         select `name` from `template_xsl` where `name` like 'J%'
     </select>
+
+	<select id="isExist" resultType="long">
+		select count(id) from `${table}` where `name` = #{name}
+	</select>
 </mapper>

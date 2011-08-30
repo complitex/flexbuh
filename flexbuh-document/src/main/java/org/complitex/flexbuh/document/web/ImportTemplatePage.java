@@ -2,7 +2,7 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
-import org.complitex.flexbuh.document.service.ImportTemplateService;
+import org.complitex.flexbuh.document.service.ImportTemplateService2;
 
 import javax.ejb.EJB;
 import java.io.IOException;
@@ -13,14 +13,14 @@ import java.io.IOException;
  */
 public class ImportTemplatePage extends WebPage{
     @EJB
-    private ImportTemplateService importTemplateService;
+    private ImportTemplateService2 importTemplateService2;
 
     public ImportTemplatePage() {
         add(new Form("form"){
             @Override
             protected void onSubmit() {
                 try {
-                    importTemplateService.importAllTemplates("C:\\OPZ");
+                    importTemplateService2.importAllTemplates("C:\\OPZ");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

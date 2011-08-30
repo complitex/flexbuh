@@ -1,9 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.extensions.markup.html.form.DateTextField;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -13,13 +11,9 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
-import org.complitex.flexbuh.admin.importexport.service.ImportListener;
-import org.complitex.flexbuh.entity.dictionary.DictionaryType;
-import org.complitex.flexbuh.service.dictionary.DictionaryTypeBean;
+import org.complitex.flexbuh.admin.importexport.service.*;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,29 +21,36 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.io.File;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Pavel Sknar
- *         Date: 18.08.11 17:26
+ *         Date: 30.08.11 10:09
  */
-public class ImportDictionary extends TemplatePage {
-	private final static Logger log = LoggerFactory.getLogger(ImportDictionary.class);
+public class ImportFile extends TemplatePage {
+
+	private final static Logger log = LoggerFactory.getLogger(ImportFile.class);
 
 	@EJB
-    private DictionaryTypeBean dictionaryTypeService;
+	private ImportTemplateFOService importTemplateFOService;
 
 	@EJB
-	private ImportDictionaryService importDictionaryService;
+	private ImportTemplateXSDService importTemplateXSDService;
+
+	@EJB
+	private ImportTemplateXSLService importTemplateXSLService;
+
+	@EJB
+	private ImportTemplateControlService importTemplateControlService;
 
 	@SuppressWarnings("unchecked")
-    public ImportDictionary() {
+    public ImportFile() {
 
 		final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
 
-		final IModel<List<DictionaryType>> dictionaryModel = new ListModel<DictionaryType>();
+		final IModel<List<DataFile>> dataFileModel = new ListModel<>();
 
         container.add(new FeedbackPanel("messages"));
 
@@ -57,34 +58,22 @@ public class ImportDictionary extends TemplatePage {
         container.add(form);
 
 		//Dictionary types
-        final CheckBoxMultipleChoice<DictionaryType> dictionaryTypes =
-				new CheckBoxMultipleChoice<DictionaryType>("dictionaryTypes", dictionaryModel, dictionaryTypeService.readAll(),
-						new IChoiceRenderer<DictionaryType>() {
+        final CheckBoxMultipleChoice<DataFile> dataFiles =
+				new CheckBoxMultipleChoice<>("dataFiles", dataFileModel, Arrays.asList(DataFile.values()),
+						new IChoiceRenderer<DataFile>() {
 
 							@Override
-							public Object getDisplayValue(DictionaryType object) {
-								return object.getDefaultName();
+							public Object getDisplayValue(DataFile object) {
+								return getString(object.toString());
 							}
 
 							@Override
-							public String getIdValue(DictionaryType object, int index) {
-								return object.getCode();
+							public String getIdValue(DataFile object, int index) {
+								return object.toString();
 							}
 						});
 
-		form.add(dictionaryTypes);
-
-		//Begin Date
-		final IModel<Date> beginDateModel = new Model<Date>();
-		DateTextField beginDate = new DateTextField("beginDate", beginDateModel);
-        //dateTextField.add(new DatePicker("beginDate"));
-        form.add(beginDate);
-
-        //End Date
-		final IModel<Date> endDateModel = new Model<Date>();
-		DateTextField endDate = new DateTextField("endDate", endDateModel);
-		//DatePicker<Date> endDate = new DatePicker<Date>("endDate", endDateModel);
-        form.add(endDate);
+		form.add(dataFiles);
 
         //Кнопка импортировать
         Button process = new Button("process") {
@@ -92,17 +81,34 @@ public class ImportDictionary extends TemplatePage {
             public void onSubmit() {
 				log.debug("Submit process");
 
-				List<String> fileNames = Lists.newArrayList();
-				log.debug("Selected objects: {}", dictionaryModel.getObject());
+				log.debug("Selected objects: {}", dataFileModel.getObject());
 
-				log.debug("Begin date {}, end date {}", beginDateModel.getObject(), endDateModel.getObject());
+				DictionaryImportListener importListener = new DictionaryImportListener();
 
-				for (DictionaryType dictionaryType : dictionaryModel.getObject()) {
-					fileNames.addAll(dictionaryType.getFileNames());
+				for (DataFile dataFile : dataFileModel.getObject()) {
+					switch (dataFile) {
+						case CONTROL:
+							log.debug("start import control");
+							importListener.addProcessingCountFiles(importTemplateControlService.listImportFiles().length);
+							importTemplateControlService.processFiles(importListener, null, null);
+							break;
+						case FO:
+							log.debug("start import fo");
+							importListener.addProcessingCountFiles(importTemplateFOService.listImportFiles().length);
+							importTemplateFOService.processFiles(importListener, null, null);
+							break;
+						case XSD:
+							log.debug("start import xsd");
+							importListener.addProcessingCountFiles(importTemplateXSDService.listImportFiles().length);
+							importTemplateXSDService.processFiles(importListener, null, null);
+							break;
+						case XSL:
+							log.debug("start import xsl");
+							importListener.addProcessingCountFiles(importTemplateXSLService.listImportFiles().length);
+							importTemplateXSLService.processFiles(importListener, null, null);
+							break;
+					}
 				}
-
-				DictionaryImportListener importListener = new DictionaryImportListener(fileNames.size());
-				importDictionaryService.processFiles(importListener, fileNames, beginDateModel.getObject(), endDateModel.getObject());
 
 				container.add(newTimer(importListener));
             }
@@ -134,8 +140,8 @@ public class ImportDictionary extends TemplatePage {
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
 
-				log.debug("listener status: {}, count completed: {}, count canceled: {}",
-						new Object[]{listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
+				log.debug("import file: {}, listener status: {}, count completed: {}, count canceled: {}",
+						new Object[]{listener.currentImportFile(), listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
 
 				if (listener.isEnded()) {
 					info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
@@ -153,12 +159,8 @@ public class ImportDictionary extends TemplatePage {
 		private Integer countCompleted = 0;
 		private Integer countCanceled = 0;
 		private Integer countTotal = 0;
-		
-		private Status status = null;
 
-		public DictionaryImportListener(Integer countTotal) {
-			this.countTotal = countTotal;
-		}
+		private Status status = null;
 
 		@Override
 		public void begin() {
@@ -183,7 +185,7 @@ public class ImportDictionary extends TemplatePage {
 		public void cancel() {
 			status = Status.CANCELED;
 		}
-		
+
 		public String currentImportFile() {
 			synchronized (fileName) {
 				return fileName;
@@ -200,6 +202,10 @@ public class ImportDictionary extends TemplatePage {
 			synchronized (countCanceled) {
 				return countCanceled;
 			}
+		}
+
+		public void addProcessingCountFiles(int count) {
+			countTotal = countTotal + count;
 		}
 
 		public long getCountTotal() {
@@ -229,7 +235,7 @@ public class ImportDictionary extends TemplatePage {
 
 				@Override
 				public void begin() {
-					
+
 				}
 
 				@Override
@@ -258,9 +264,23 @@ public class ImportDictionary extends TemplatePage {
 			};
 		}
 	}
-	
+
 	private enum Status {
 		PROCESSING, PROCESSED, PROCESSED_WITH_ERROR, CANCELED
 	}
 
+	private enum DataFile {
+		XSD("xsd"), XSL("xsl"), FO("fo"), CONTROL("control");
+
+		private String fileName;
+
+		private DataFile(String fileName) {
+			this.fileName = fileName;
+		}
+
+		@Override
+		public String toString() {
+			return fileName;
+		}
+	}
 }

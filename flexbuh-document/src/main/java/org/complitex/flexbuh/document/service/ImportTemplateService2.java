@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.service;
+package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.entity.TemplateControl;
 import org.complitex.flexbuh.entity.TemplateFO;
@@ -7,16 +7,17 @@ import org.complitex.flexbuh.entity.TemplateXSL;
 import org.complitex.flexbuh.service.TemplateBean;
 
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import java.io.*;
+import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.07.11 16:30
  */
 @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
-@Stateless
-public class ImportTemplateService {
+//@Stateless
+@Deprecated
+public class ImportTemplateService2 {
     public static final String FILE_ENCODING = "CP1251";
 
     @EJB
@@ -27,22 +28,22 @@ public class ImportTemplateService {
 
         //XSL
         for (File f : new File(dir, "xsl").listFiles()){
-            templateBean.save(new TemplateXSL(getName(f), changeWhitespaceUTF8(getData(f))));
+            templateBean.save(new TemplateXSL(getName(f), changeWhitespaceUTF8(getData(f)), new Date()));
         }
 
         //XSD
         for (File f : new File(dir, "xsd").listFiles()){
-            templateBean.save(new TemplateXSD(getName(f), getData(f)));
+            templateBean.save(new TemplateXSD(getName(f), getData(f), new Date()));
         }
 
         //FO
         for (File f : new File(dir, "fo").listFiles()){
-            templateBean.save(new TemplateFO(getName(f), getData(f)));
+            templateBean.save(new TemplateFO(getName(f), getData(f), new Date()));
         }
 
         //Control
         for (File f : new File(dir, "controls").listFiles()){
-            templateBean.save(new TemplateControl(getName(f), getData(f)));
+            templateBean.save(new TemplateControl(getName(f), getData(f), new Date()));
         }
     }
 
