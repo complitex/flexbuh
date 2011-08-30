@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -16,11 +17,13 @@ import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.validation.IValidator;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 import org.complitex.flexbuh.document.web.validation.Restriction;
+import org.complitex.flexbuh.util.ScriptUtil;
 import org.complitex.flexbuh.util.XmlUtil;
 import org.complitex.flexbuh.web.component.RadioSet;
 import org.slf4j.Logger;
@@ -32,6 +35,8 @@ import org.wiquery.plugin.jquertytools.tooltip.TooltipBehavior;
 import org.xml.sax.SAXException;
 
 import javax.ejb.EJB;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -40,9 +45,13 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -50,6 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DeclarationFormComponent extends WebMarkupContainer implements IMarkupResourceStreamProvider{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
+    private Pattern compile = Pattern.compile("\\^(\\w*\\.?\\w*)");
 
     @EJB
     private TemplateService templateService;
@@ -58,9 +68,13 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     private transient MarkupResourceStream markupResourceStream;
     private transient Document commonTypes;
-    private transient XPath schemaXPath;
+    private transient XPath schemaXPath = XmlUtil.newSchemaXPath();
+    private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
     private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
+
+    private List<Rule> rules;
+    private Map<String, TextField<String>> textFieldMap = new HashMap<>();
 
     public DeclarationFormComponent(String id, String templateName, Declaration declaration){
         super(id);
@@ -84,13 +98,13 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
         Document schema = templateService.getSchema(templateName);
 
-        //Schema XPath
-        schemaXPath = XmlUtil.newSchemaXPath();
-
         //Common Types
         commonTypes = templateService.getSchema("common_types");
 
         NodeList bodyNodeList = template.getElementsByTagName("body");
+
+        //Rules
+        rules = templateService.getRules(templateName);
 
         //Form
         Element div = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
@@ -196,6 +210,9 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 textField.setOutputMarkupId(true);
                 container.add(textField);
 
+                //Add to map
+                textFieldMap.put(id, textField);
+
                 //Feedback container
                 String feedbackContainerId = "feedback_container_" + id;
 
@@ -237,6 +254,12 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                         String value = textField.getValue();
 
                         if (value != null && !value.isEmpty()) {
+                            try {
+                                autoFill(target, scriptEngine);
+                            } catch (Exception e) {
+                                log.error("Ошибка автозаполнения", e);
+                            }
+
                             target.appendJavascript("$('#" + id +"').css('background-color', '#99ff99')");
                         }else{
                             target.appendJavascript("$('#" + id +"').css('background-color', '#cccccc')");
@@ -287,6 +310,64 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         }
 
         return null;
+    }
+
+    private void autoFill(AjaxRequestTarget target, ScriptEngine scriptEngine) throws ScriptException {
+        for (Rule rule : rules){
+            String expression = rule.getExpression();
+
+            //todo implement many row
+            if (expression.contains("SUM") || expression.contains("SUMF")){
+                continue;
+            }
+
+            List<String> ids = extractIds(expression);
+
+            if (isTextFieldFilled(ids)) {
+                for (String id : ids){
+                    TextField<String> textField = textFieldMap.get(id);
+
+                    expression = expression.replace("^" + id, textField.getValue());
+                }
+
+                expression = expression.replace("ABS", "Math.abs");
+                expression = StringEscapeUtils.unescapeXml(expression);
+
+                String autoFillId = rule.getCDocRowC().replace("^", "");
+
+                TextField<String> autoFill = textFieldMap.get(autoFillId);
+
+                autoFill.getModel().setObject(scriptEngine.eval(expression).toString());
+
+                target.addComponent(autoFill);
+
+                target.appendJavascript("$('#" + autoFillId +"').css('background-color', '#add8e6')");
+            }
+        }
+    }
+
+    private boolean isTextFieldFilled(List<String> ids){
+        for (String id: ids){
+            TextField<String> textField = textFieldMap.get(id);
+
+            if (textField == null || textField.hasErrorMessage() || textField.getValue() == null){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private List<String> extractIds(String expression){
+        List<String> ids = new ArrayList<>();
+
+        Matcher matcher = compile.matcher(expression);
+
+        while (matcher.find()){
+            ids.add(matcher.group(1));
+        }
+
+        return ids;
     }
 }
 

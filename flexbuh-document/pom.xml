@@ -40,10 +40,10 @@
             <artifactId>wiquery</artifactId>
         </dependency>
 
-         <dependency>
-             <groupId>com.wiquery-plugins</groupId>
-             <artifactId>other-plugins</artifactId>
-         </dependency>
+        <dependency>
+            <groupId>com.wiquery-plugins</groupId>
+            <artifactId>other-plugins</artifactId>
+        </dependency>
 
         <!--Debug-->
         <dependency>
@@ -65,12 +65,12 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-		<!--
+
         <dependency>
-            <groupId>net.sf.jtidy</groupId>
-            <artifactId>jtidy</artifactId>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
--->
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

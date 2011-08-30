@@ -1,18 +1,23 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.complitex.flexbuh.entity.TemplateXSL;
 import org.complitex.flexbuh.service.TemplateBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,6 +30,8 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -78,5 +85,36 @@ public class TemplateService {
 
     public Document getControl(String templateName) throws IOException, SAXException, ParserConfigurationException {
         return getDocument(templateBean.getTemplateControl(templateName).getData());
+    }
+
+    public Unmarshaller getRuleUnmarshaller() throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(Rule.class);
+
+        return context.createUnmarshaller();
+    }
+
+    public List<Rule> getRules(String templateName, Unmarshaller unmarshaller)
+            throws IOException, SAXException, ParserConfigurationException, JAXBException {
+        List<Rule> rules = new ArrayList<>();
+
+        Document controls = getControl(templateName);
+
+        NodeList ruleNodeList = controls.getElementsByTagName("rule");
+
+        for (int i = 0; i < ruleNodeList.getLength(); ++i){
+            Node ruleNode  = ruleNodeList.item(i);
+
+            Rule rule = (Rule) unmarshaller.unmarshal(ruleNode);
+
+            if ("=".equals(rule.getSign()) && rule.getExpression() != null) {
+                rules.add(rule);
+            }
+        }
+
+        return rules;
+    }
+
+    public List<Rule> getRules(String templateName) throws JAXBException, IOException, SAXException, ParserConfigurationException {
+        return getRules(templateName, getRuleUnmarshaller());
     }
 }
