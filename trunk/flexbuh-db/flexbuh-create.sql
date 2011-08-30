@@ -67,6 +67,7 @@ CREATE TABLE `template_xsl` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `data` MEDIUMTEXT NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `key_name`(`name`)
 )
@@ -82,6 +83,7 @@ CREATE TABLE `template_fo` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `data` MEDIUMTEXT NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `key_name`(`name`)
 )
@@ -97,6 +99,7 @@ CREATE TABLE `template_xsd` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `data` MEDIUMTEXT NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `key_name`(`name`)
 )
@@ -112,6 +115,7 @@ CREATE TABLE `template_control` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `data` MEDIUMTEXT NOT NULL,
+  `upload_date` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `key_name`(`name`)
 )

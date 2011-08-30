@@ -14,7 +14,8 @@ import java.util.Locale;
  *         Date: 18.08.11 17:04
  */
 public class DictionaryMenu extends ResourceTemplateMenu {
-    @Override
+
+	@Override
     public String getTitle(Locale locale) {
         return getString("title", locale);
     }
@@ -196,6 +197,6 @@ public class DictionaryMenu extends ResourceTemplateMenu {
 
     @Override
     public String getTagId() {
-        return "DocumentMenu";
+        return "DictionaryMenu";
     }
 }
