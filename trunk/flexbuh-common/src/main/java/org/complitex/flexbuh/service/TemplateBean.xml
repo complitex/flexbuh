@@ -6,28 +6,52 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
-        <result column="upload_date" property="uploadData"/>
+        <result column="upload_date" property="uploadDate"/>
     </resultMap>
 
     <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.entity.TemplateXSD">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
-		<result column="upload_date" property="uploadData"/>
+		<result column="upload_date" property="uploadDate"/>
     </resultMap>
 
     <resultMap id="templateControlResultMap" type="org.complitex.flexbuh.entity.TemplateControl">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
-		<result column="upload_date" property="uploadData"/>
+		<result column="upload_date" property="uploadDate"/>
     </resultMap>
 
 	<resultMap id="templateFOResultMap" type="org.complitex.flexbuh.entity.TemplateFO">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
-		<result column="upload_date" property="uploadData"/>
+		<result column="upload_date" property="uploadDate"/>
+    </resultMap>
+
+	<resultMap id="templateXSLWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateXSL">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="upload_date" property="uploadDate"/>
+    </resultMap>
+
+    <resultMap id="templateXSDWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateXSD">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="upload_date" property="uploadDate"/>
+    </resultMap>
+
+    <resultMap id="templateControlWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateControl">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="upload_date" property="uploadDate"/>
+    </resultMap>
+
+	<resultMap id="templateFOWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateFO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+		<result column="upload_date" property="uploadDate"/>
     </resultMap>
 
     <insert id="insertTemplate" parameterType="org.complitex.flexbuh.entity.AbstractTemplate">
@@ -48,6 +72,22 @@
 
     <select id="selectTemplateFO" resultType="string" resultMap="templateFOResultMap">
         select * from `template_fo` where `name` = #{name}
+    </select>
+
+	<select id="selectAllTemplateXSL" resultMap="templateXSLWithoutDataResultMap">
+        select `name`, `upload_date` from `template_xsl`
+    </select>
+
+    <select id="selectAllTemplateXSD" resultMap="templateXSDWithoutDataResultMap">
+        select `name`, `upload_date` from `template_xsd`
+    </select>
+
+    <select id="selectAllTemplateControl" resultMap="templateControlWithoutDataResultMap">
+        select `name`, `upload_date` from `template_control`
+    </select>
+
+    <select id="selectAllTemplateFO" resultMap="templateFOWithoutDataResultMap">
+        select `name`, `upload_date` from `template_fo`
     </select>
 
     <select id="selectTemplateXSLNames" resultType="string">
