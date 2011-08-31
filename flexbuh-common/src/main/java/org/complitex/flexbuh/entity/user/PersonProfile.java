@@ -9,7 +9,7 @@ import java.util.Date;
  *         Date: 31.08.11 14:26
  */
 public class PersonProfile extends DomainObject {
-	private static final String TABLE = "user";
+	public static final String TABLE = "user";
 
 	private String name;
 	private String codeTIN; // Код ЕДРПОУ
@@ -30,22 +30,152 @@ public class PersonProfile extends DomainObject {
 	private String ipn; // Індивідуальний податковий номер
 	private String numSvdPDV; // Номер свідоцтва ПДВ
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCodeTIN() {
+		return codeTIN;
+	}
+
+	public void setCodeTIN(String codeTIN) {
+		this.codeTIN = codeTIN;
+	}
+
+	public Integer getCodeTaxInspection() {
+		return codeTaxInspection;
+	}
+
+	public void setCodeTaxInspection(Integer codeTaxInspection) {
+		this.codeTaxInspection = codeTaxInspection;
+	}
+
+	public String getCodeKVED() {
+		return codeKVED;
+	}
+
+	public void setCodeKVED(String codeKVED) {
+		this.codeKVED = codeKVED;
+	}
+
+	public PersonType getPersonType() {
+		return personType;
+	}
+
+	public void setPersonType(PersonType personType) {
+		this.personType = personType;
+	}
+
+	public Date getContractDate() {
+		return contractDate;
+	}
+
+	public void setContractDate(Date contractDate) {
+		this.contractDate = contractDate;
+	}
+
+	public String getContractNumber() {
+		return contractNumber;
+	}
+
+	public void setContractNumber(String contractNumber) {
+		this.contractNumber = contractNumber;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getFax() {
+		return fax;
+	}
+
+	public void setFax(String fax) {
+		this.fax = fax;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getDirectorFIO() {
+		return directorFIO;
+	}
+
+	public void setDirectorFIO(String directorFIO) {
+		this.directorFIO = directorFIO;
+	}
+
+	public String getAccountantFIO() {
+		return accountantFIO;
+	}
+
+	public void setAccountantFIO(String accountantFIO) {
+		this.accountantFIO = accountantFIO;
+	}
+
+	public String getDirectorINN() {
+		return directorINN;
+	}
+
+	public void setDirectorINN(String directorINN) {
+		this.directorINN = directorINN;
+	}
+
+	public String getAccountantINN() {
+		return accountantINN;
+	}
+
+	public void setAccountantINN(String accountantINN) {
+		this.accountantINN = accountantINN;
+	}
+
+	public String getIpn() {
+		return ipn;
+	}
+
+	public void setIpn(String ipn) {
+		this.ipn = ipn;
+	}
+
+	public String getNumSvdPDV() {
+		return numSvdPDV;
+	}
+
+	public void setNumSvdPDV(String numSvdPDV) {
+		this.numSvdPDV = numSvdPDV;
+	}
+
 	@Override
 	public String getTable() {
 		return TABLE;
-	}
-
-	public enum PersonType {
-		JURIDICAL_PERSON(1), PHYSICAL_PERSON(2), COOPERATION(3), RESIDENT_REPRESENTATIVE(4);
-
-		private int code;
-
-		PersonType(int code) {
-			this.code = code;
-		}
-
-		public int getCode() {
-			return code;
-		}
 	}
 }
