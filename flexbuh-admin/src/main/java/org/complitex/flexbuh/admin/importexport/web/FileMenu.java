@@ -47,6 +47,102 @@ public class FileMenu extends ResourceTemplateMenu {
                 }
         );
 
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("xsd_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return TemplateXSDList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
+		templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("xsl_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return TemplateXSLList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
+		templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("fo_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return TemplateFOList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
+		templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("control_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return TemplateControlList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
         return templateLinks;
     }
 
