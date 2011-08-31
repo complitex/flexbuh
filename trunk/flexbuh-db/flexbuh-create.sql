@@ -1,5 +1,38 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 
+-- --------------------------
+-- PersonType
+-- --------------------------
+
+DROP TABLE IF EXISTS `person_type`;
+
+CREATE TABLE `person_type` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(40) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_person_type__code` (`code`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- PersonTypeName
+-- --------------------------
+
+DROP TABLE IF EXISTS `person_type_name`;
+
+CREATE TABLE `person_type_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `language_id` BIGINT(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  `person_type_id` BIGINT(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_person_type_name__language_id` (`language_id`),
+  KEY `key_person_type_name__region_id` (`person_type_id`),
+  CONSTRAINT `fk_person_type_name__language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`),
+  CONSTRAINT `fk_person_type_name__person_type` FOREIGN KEY (`person_type_id`) REFERENCES `person_type` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 -- ------------------------------
 -- PersonProfile
 -- ------------------------------
@@ -206,7 +239,7 @@ CREATE TABLE `dictionary_type` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(40) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_dictionary_type__code` (`code`)
+  UNIQUE KEY `key_dictionary_type__code` (`code`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -410,7 +443,6 @@ CREATE TABLE `region` (
   KEY `key_region__code` (`code`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
 
 -- --------------------------
 -- RegionName
