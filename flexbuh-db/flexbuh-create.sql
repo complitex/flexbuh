@@ -3,7 +3,7 @@
 -- ------------------------------
 -- PersonProfile
 -- ------------------------------
-DROP TABLE IF EXISTS `session`;
+DROP TABLE IF EXISTS `person_profile`;
 
 CREATE TABLE  `person_profile` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор профайла',
@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS `session_person_profile`;
 
 CREATE TABLE  `session_person_profile` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор соответствия',
-  `session_id` VARCHAR(255) NOT NULL COMMENT 'Идентификотор сессии',
+  `session_id` BIGINT(20) NOT NULL COMMENT 'Идентификотор сессии',
   `person_profile_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор профайла',
   PRIMARY KEY (`id`),
   UNIQUE (`session_id`, `person_profile_id`),
