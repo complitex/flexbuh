@@ -1,6 +1,65 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 
 -- ------------------------------
+-- PersonProfile
+-- ------------------------------
+DROP TABLE IF EXISTS `session`;
+
+CREATE TABLE  `person_profile` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор профайла',
+  `name` VARCHAR(255) NOT NULL,
+  `codeTIN` VARCHAR(45),
+  `codeTaxInspection` INTEGER,
+  `codeKVED` VARCHAR(45),
+  `personType` INTEGER NOT NULL,
+  `contractDate` TIMESTAMP,
+  `contractNumber` VARCHAR(45),
+  `zipCode` VARCHAR(45),
+  `address` VARCHAR(1000),
+  `phone` VARCHAR(255),
+  `fax` VARCHAR(45),
+  `email` VARCHAR(255),
+  `directorFIO` VARCHAR(255),
+  `accountantFIO` VARCHAR(255),
+  `directorINN` VARCHAR(45),
+  `accountantINN` VARCHAR(45),
+  `ipn` VARCHAR(45),
+  `numSvdPDV` VARCHAR(45),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайл';
+
+-- ------------------------------
+-- Session
+-- ------------------------------
+DROP TABLE IF EXISTS `session`;
+
+CREATE TABLE  `session` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сессии',
+  `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии',
+  `person_profile_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор профайла',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_key_cookie` (`cookie`),
+  KEY `key_session__person_profile_id` (`person_profile_id`),
+  CONSTRAINT `fk_user__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Сессия';
+
+-- ------------------------------
+-- Session`s person profiles
+-- ------------------------------
+DROP TABLE IF EXISTS `session_person_profile`;
+
+CREATE TABLE  `session_person_profile` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор соответствия',
+  `session_id` VARCHAR(255) NOT NULL COMMENT 'Идентификотор сессии',
+  `person_profile_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор профайла',
+  PRIMARY KEY (`id`),
+  UNIQUE (`session_id`, `person_profile_id`),
+  KEY `key_session_person_profile__session_id` (`session_id`),
+  CONSTRAINT `fk_session_person_profile__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`),
+  CONSTRAINT `fk_session_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайлы сессии';
+
+-- ------------------------------
 -- User
 -- ------------------------------
 DROP TABLE IF EXISTS `user`;
@@ -9,11 +68,11 @@ CREATE TABLE  `user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор пользователя',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
   `password` VARCHAR(45) NOT NULL COMMENT 'MD5 хэш пароля',
-  `user_info_object_id` BIGINT(20) COMMENT 'Идентификатор объекта информация о пользователе',
+  `session_id` BIGINT(20) COMMENT 'Идентификатор сессии',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_login` (`login`),
-  KEY `key_user_info_object_id` (`user_info_object_id`),
-  CONSTRAINT `fk_user__user_info` FOREIGN KEY (`user_info_object_id`) REFERENCES `user_info` (`object_id`)
+  UNIQUE KEY `unique_session` (`session_id`),
+  CONSTRAINT `fk_user__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Пользователь';
 
 -- ------------------------------
@@ -198,8 +257,8 @@ CREATE TABLE `currency` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
-  `begin_date` DATETIME,
-  `end_date` DATETIME,
+  `begin_date` TIMESTAMP,
+  `end_date` TIMESTAMP,
   `code_number` INTEGER NOT NULL,
   `code_string` VARCHAR(40) NOT NULL,
   PRIMARY KEY (`id`)
