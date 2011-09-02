@@ -8,10 +8,17 @@ import org.complitex.flexbuh.document.entity.Declaration;
  *         Date: 17.08.11 15:57
  */
 public abstract class AbstractDeclarationModel<T> implements IModel<T>{
+    protected Integer rowRum;
     protected String name;
     protected Declaration declaration;
 
     protected AbstractDeclarationModel(String name, Declaration declaration) {
+        this.name = name;
+        this.declaration = declaration;
+    }
+
+    protected AbstractDeclarationModel(Integer rowRum, String name, Declaration declaration) {
+        this.rowRum = rowRum;
         this.name = name;
         this.declaration = declaration;
     }
