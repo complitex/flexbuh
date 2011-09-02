@@ -5,9 +5,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -39,7 +37,7 @@ public class Declaration implements Serializable{
     private Head head;
 
     @XmlTransient
-    private Map<String, DeclarationValue> valuesMap = new HashMap<String, DeclarationValue>();
+    private List<DeclarationValue> values = new ArrayList<>();
 
     @XmlElementWrapper(name = "DECLARBODY")
     @XmlAnyElement
@@ -52,21 +50,43 @@ public class Declaration implements Serializable{
     public void prepareXmlValues(){
         xmlValues.clear();
 
-        for (DeclarationValue v : valuesMap.values()){
-            xmlValues.add(new JAXBElement<DeclarationValue>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
+        for (DeclarationValue v : values){
+            xmlValues.add(new JAXBElement<>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
         }
     }
 
     public DeclarationValue getValue(String name){
-        return valuesMap.get(name);
+        return getValue(null, name);
+    }
+
+    public DeclarationValue getValue(Integer rowNum, String name){
+        for (DeclarationValue value : values){
+            if (name.equals(value.getName()) && (rowNum == null || rowNum.equals(value.getRowNum()))){
+                return value;
+            }
+        }
+
+        return null;
     }
 
     public void addValue(DeclarationValue value){
-        valuesMap.put(value.getName(), value);
+        values.add(value);
     }
 
     public void removeValue(String name){
-        valuesMap.remove(name);
+        removeValue(null, name);
+    }
+
+    public void removeValue(Integer rowNum, String name){
+        for (int i = 0, valuesSize = values.size(); i < valuesSize; i++) {
+            DeclarationValue value = values.get(i);
+
+            if (name.equals(value.getName()) && (rowNum == null || rowNum.equals(value.getRowNum()))) {
+                values.remove(i);
+                return;
+            }
+
+        }
     }
 
     /**
@@ -347,13 +367,5 @@ public class Declaration implements Serializable{
      */
     public void setSoftware(String software) {
         head.software = software;
-    }
-
-    public Map<String, DeclarationValue> getValuesMap() {
-        return valuesMap;
-    }
-
-    public void setValuesMap(Map<String, DeclarationValue> valuesMap) {
-        this.valuesMap = valuesMap;
     }
 }

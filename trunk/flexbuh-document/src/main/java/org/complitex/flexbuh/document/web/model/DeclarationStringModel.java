@@ -12,19 +12,23 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
         super(name, declaration);
     }
 
+     public DeclarationStringModel(Integer rowRum, String name, Declaration declaration) {
+        super(rowRum, name, declaration);
+    }
+
     @Override
     public String getObject() {
-        DeclarationValue value = declaration.getValue(name);
+        DeclarationValue value = declaration.getValue(rowRum, name);
 
         return value != null ? value.getValue() : null;
     }
 
     @Override
     public void setObject(String object) {
-        DeclarationValue value = declaration.getValue(name);
+        DeclarationValue value = declaration.getValue(rowRum, name);
 
         if (value == null){
-            value = new DeclarationValue(name);
+            value = new DeclarationValue(rowRum, name, null);
             declaration.addValue(value);
         }
 

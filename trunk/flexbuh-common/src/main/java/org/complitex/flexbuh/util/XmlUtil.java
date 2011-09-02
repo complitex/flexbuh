@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -27,14 +28,21 @@ import java.util.Iterator;
 public class XmlUtil {
     private final static Logger log = LoggerFactory.getLogger(XmlUtil.class);
 
-    public static String getString(Node node) throws TransformerException {
-        DOMSource domSource = new DOMSource(node);
-        StringWriter writer = new StringWriter();
-        StreamResult result = new StreamResult(writer);
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
-        transformer.transform(domSource, result);
-        return writer.toString();
+    public static String getString(Node node){
+        try {
+            DOMSource domSource = new DOMSource(node);
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.transform(domSource, result);
+
+            return writer.toString();
+        } catch (TransformerException e) {
+            log.error("Ошибка получения строки по DOM");
+        }
+
+        return null;
     }
 
     public static XPath newSchemaXPath() {
@@ -61,11 +69,15 @@ public class XmlUtil {
         return xPath;
     }
 
+    public static XPath newXPath(){
+        return XPathFactory.newInstance().newXPath();
+    }
+
     public static Element getElementByAttribute(String attributeName, String attributeValue, Node node, XPath xPath){
         try {
             return (Element) xPath.evaluate("//*[@" + attributeName + "= '" + attributeValue + "']", node, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
-            log.error("Ошибка получения элемента по идентификатору", e);
+            log.error("Ошибка получения элемента по атрибуту", e);
         }
 
         return null;
@@ -77,5 +89,19 @@ public class XmlUtil {
 
     public static Element getElementByName(String name, Node node, XPath xPath){
         return getElementByAttribute("name", name, node, xPath);
+    }
+
+    public static NodeList getElementsByAttribute(String attributeName, String attributeValue, Node node, XPath xPath){
+        try {
+            return (NodeList) xPath.evaluate("//*[@" + attributeName + "= '" + attributeValue + "']", node, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            log.error("Ошибка получения элемента по атрибуту", e);
+        }
+
+        return null;
+    }
+
+    public static NodeList getElementsById(String id, Node node, XPath xPath){
+        return getElementsByAttribute("id", id, node, xPath);
     }
 }
