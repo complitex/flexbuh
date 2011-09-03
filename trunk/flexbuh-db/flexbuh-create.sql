@@ -41,24 +41,26 @@ DROP TABLE IF EXISTS `person_profile`;
 CREATE TABLE  `person_profile` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор профайла',
   `name` VARCHAR(255) NOT NULL,
-  `codeTIN` VARCHAR(45),
-  `codeTaxInspection` INTEGER,
-  `codeKVED` VARCHAR(45),
-  `personType` INTEGER NOT NULL,
-  `contractDate` TIMESTAMP,
-  `contractNumber` VARCHAR(45),
-  `zipCode` VARCHAR(45),
+  `code_TIN` VARCHAR(45),
+  `code_tax_inspection` INTEGER,
+  `code_KVED` VARCHAR(45),
+  `person_type_id` BIGINT(20) NOT NULL,
+  `contract_date` TIMESTAMP,
+  `contract_number` VARCHAR(45),
+  `zip_code` VARCHAR(45),
   `address` VARCHAR(1000),
   `phone` VARCHAR(255),
   `fax` VARCHAR(45),
   `email` VARCHAR(255),
-  `directorFIO` VARCHAR(255),
-  `accountantFIO` VARCHAR(255),
-  `directorINN` VARCHAR(45),
-  `accountantINN` VARCHAR(45),
+  `director_FIO` VARCHAR(255),
+  `accountant_FIO` VARCHAR(255),
+  `director_INN` VARCHAR(45),
+  `accountant_INN` VARCHAR(45),
   `ipn` VARCHAR(45),
-  `numSvdPDV` VARCHAR(45),
-  PRIMARY KEY (`id`)
+  `num_svd_PDV` VARCHAR(45),
+  PRIMARY KEY (`id`),
+  KEY `key_person_profile__person_type_id` (`person_type_id`),
+  CONSTRAINT `fk_person_profile__person_type` FOREIGN KEY (`person_type_id`) REFERENCES `person_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайл';
 
 -- ------------------------------
@@ -69,11 +71,11 @@ DROP TABLE IF EXISTS `session`;
 CREATE TABLE  `session` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сессии',
   `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии',
-  `person_profile_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор профайла',
+  `person_profile_id` BIGINT(20) COMMENT 'Идентификатор профайла',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_cookie` (`cookie`),
-  KEY `key_session__person_profile_id` (`person_profile_id`),
-  CONSTRAINT `fk_user__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`)
+  UNIQUE KEY `key_session__person_profile_id` (`person_profile_id`),
+  CONSTRAINT `fk_user__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Сессия';
 
 -- ------------------------------

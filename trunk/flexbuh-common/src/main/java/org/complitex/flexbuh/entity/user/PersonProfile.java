@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.entity.user;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.entity.DomainObject;
 
 import java.util.Date;
@@ -9,7 +10,7 @@ import java.util.Date;
  *         Date: 31.08.11 14:26
  */
 public class PersonProfile extends DomainObject {
-	public static final String TABLE = "user";
+	public static final String TABLE = "person_profile";
 
 	private String name;
 	private String codeTIN; // Код ЕДРПОУ
@@ -177,5 +178,10 @@ public class PersonProfile extends DomainObject {
 	@Override
 	public String getTable() {
 		return TABLE;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

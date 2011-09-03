@@ -7,7 +7,7 @@ import org.complitex.flexbuh.entity.LocalizedString;
  *         Date: 31.08.11 18:13
  */
 public class PersonTypeName extends LocalizedString {
-	private static final String TABLE = "person_type_name";
+	public static final String TABLE = "person_type_name";
 
 	@Override
 	public String getTable() {

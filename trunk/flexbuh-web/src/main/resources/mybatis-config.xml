@@ -32,5 +32,10 @@
         <mapper resource="org/complitex/flexbuh/service/dictionary/DocumentVersionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/RegionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/TaxInspectionBean.xml"/>
+		<mapper resource="org/complitex/flexbuh/entity/user/PersonTypeName.xml"/>
+		<mapper resource="org/complitex/flexbuh/service/user/PersonProfileBean.xml"/>
+		<mapper resource="org/complitex/flexbuh/service/user/PersonTypeBean.xml"/>
+		<mapper resource="org/complitex/flexbuh/service/user/SessionBean.xml"/>
+		<mapper resource="org/complitex/flexbuh/service/user/UserBean.xml"/>
     </mappers>
 </configuration>

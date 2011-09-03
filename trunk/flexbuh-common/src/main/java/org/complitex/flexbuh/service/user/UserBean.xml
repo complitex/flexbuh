@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.service.user.UserBean">
+    <resultMap id="userResultMap"
+			   type="org.complitex.flexbuh.entity.user.User">
+		<id column="id" property="id"/>
+        <result column="login" property="login"/>
+        <result column="password" property="password"/>
+        <association property="userProfile" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
+					 resultMap="personProfileResultMap"/>
+		<collection property="companyProfile" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
+					resultMap="collectionPersonProfileResultMap"/>
+    </resultMap>
+
+	<resultMap id="personProfileResultMap"
+			   type="org.complitex.flexbuh.entity.user.PersonProfile">
+		<id column="person_profile_id" property="id"/>
+		<result column="name" property="name"/>
+        <result column="code_TIN" property="codeTIN"/>
+        <result column="code_tax_inspection" property="codeTaxInspection"/>
+        <result column="code_KVED" property="codeKVED"/>
+        <result column="contract_date" property="contractDate"/>
+        <result column="contract_number" property="contractNumber"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="fax" property="fax"/>
+        <result column="email" property="email"/>
+        <result column="director_FIO" property="directorFIO"/>
+        <result column="accountant_FIO" property="accountantFIO"/>
+        <result column="director_INN" property="directorINN"/>
+        <result column="accountant_INN" property="accountantINN"/>
+        <result column="ipn" property="ipn"/>
+        <result column="num_svd_PDV" property="numSvdPDV"/>
+		<association property="personType" column="person_type_id" javaType="org.complitex.flexbuh.entity.user.PersonType"
+					 select="org.complitex.flexbuh.service.user.PersonTypeBean.findById"/>
+	</resultMap>
+	
+	<resultMap id="collectionPersonProfileResultMap"
+			   type="org.complitex.flexbuh.entity.user.PersonProfile">
+		<id column="collection_person_profile_id" property="id"/>
+		<result column="collection_name" property="name"/>
+        <result column="collection_code_TIN" property="codeTIN"/>
+        <result column="collection_code_tax_inspection" property="codeTaxInspection"/>
+        <result column="collection_code_KVED" property="codeKVED"/>
+        <result column="collection_contract_date" property="contractDate"/>
+        <result column="collection_contract_number" property="contractNumber"/>
+        <result column="collection_zip_code" property="zipCode"/>
+        <result column="collection_address" property="address"/>
+        <result column="collection_phone" property="phone"/>
+        <result column="collection_fax" property="fax"/>
+        <result column="collection_email" property="email"/>
+        <result column="collection_director_FIO" property="directorFIO"/>
+        <result column="collection_accountant_FIO" property="accountantFIO"/>
+        <result column="collection_director_INN" property="directorINN"/>
+        <result column="collection_accountant_INN" property="accountantINN"/>
+        <result column="collection_ipn" property="ipn"/>
+        <result column="collection_num_svd_PDV" property="numSvdPDV"/>
+		<association property="personType" column="person_type_id" javaType="org.complitex.flexbuh.entity.user.PersonType"
+					 select="org.complitex.flexbuh.service.user.PersonTypeBean.findById"/>
+	</resultMap>
+
+	<delete id="delete" parameterType="org.complitex.flexbuh.entity.Stub"
+			flushCache="true">
+        delete from `${table}` where `id` = #{id}
+    </delete>
+
+    <insert id="create" parameterType="org.complitex.flexbuh.entity.user.User"
+			keyProperty="id" useGeneratedKeys="true"
+			flushCache="true">
+        insert into `${table}` (`login`, `password`, `session_id`)
+        	values (#{login}, #{password}, #{session.id})
+    </insert>
+
+	<insert id="createCompanyProfile" parameterType="map" flushCache="true">
+		insert into `${session_person_profile_table}` (`session_id`, `person_profile_id`)
+        	values (#{sessionId}, #{personProfileId})
+	</insert>
+
+	<select id="readAll" parameterType="map" resultMap="userResultMap"
+			useCache="true" flushCache="false">
+        select u.`id` as `id`,
+        	u.`login` as `login`,
+        	p.`id` as `person_profile_id`,
+        	p.`code_TIN` as `code_TIN`,
+  			p.`code_tax_inspection` as `code_tax_inspection`,
+  			p.`code_KVED` as `code_KVED`,
+  			p.`person_type_id` as `person_type_id`,
+  			p.`contract_date` as `contract_date`,
+			p.`contract_number` as `contract_number`,
+			p.`zip_code` as `zip_code`,
+			p.`address` as `address`,
+			p.`phone` as `phone`,
+			p.`fax` as `fax`,
+			p.`email` as `email`,
+			p.`director_FIO` as `director_FIO`,
+			p.`accountant_FIO` as `accountant_FIO`,
+			p.`director_INN` as `director_INN`,
+			p.`accountant_INN` as `accountant_INN`,
+			p.`ipn` as `ipn`,
+			p.`num_svd_PDV` as `num_svd_PDV`,
+			pp.`id` as `collection_person_profile_id`,
+        	pp.`code_TIN` as `collection_code_TIN`,
+  			pp.`code_tax_inspection` as `collection_code_tax_inspection`,
+  			pp.`code_KVED` as `collection_code_KVED`,
+  			pp.`person_type_id` as `collection_person_type_id`,
+  			pp.`contract_date` as `collection_contract_date`,
+			pp.`contract_number` as `collection_contract_number`,
+			pp.`zip_code` as `collection_zip_code`,
+			pp.`address` as `collection_address`,
+			pp.`phone` as `collection_phone`,
+			pp.`fax` as `collection_fax`,
+			pp.`email` as `collection_email`,
+			pp.`director_FIO` as `collection_director_FIO`,
+			pp.`accountant_FIO` as `collection_accountant_FIO`,
+			pp.`director_INN` as `collection_director_INN`,
+			pp.`accountant_INN` as `collection_accountant_INN`,
+			pp.`ipn` as `collection_ipn`,
+			pp.`num_svd_PDV` as `collection_num_svd_PDV`
+         from `${table}` u
+         left outer join `${session_table}` s on s.`id` = u.`session_id`
+         left outer join `${person_profile_table}` p on p.`id` = s.`person_profile_id`
+         left outer join `${session_person_profile_table}` sp on sp.`session_id` = u.`session_id`
+         left outer join `${person_profile_table}` pp on pp.`id` = sp.`person_profile_id`
+    </select>
+
+	<select id="findById" parameterType="map" resultMap="userResultMap"
+			useCache="true" flushCache="false">
+        select u.`id` as `id`,
+        	u.`login` as `login`,
+        	p.`id` as `person_profile_id`,
+        	p.`code_TIN` as `code_TIN`,
+  			p.`code_tax_inspection` as `code_tax_inspection`,
+  			p.`code_KVED` as `code_KVED`,
+  			p.`person_type_id` as `person_type_id`,
+  			p.`contract_date` as `contract_date`,
+			p.`contract_number` as `contract_number`,
+			p.`zip_code` as `zip_code`,
+			p.`address` as `address`,
+			p.`phone` as `phone`,
+			p.`fax` as `fax`,
+			p.`email` as `email`,
+			p.`director_FIO` as `director_FIO`,
+			p.`accountant_FIO` as `accountant_FIO`,
+			p.`director_INN` as `director_INN`,
+			p.`accountant_INN` as `accountant_INN`,
+			p.`ipn` as `ipn`,
+			p.`num_svd_PDV` as `num_svd_PDV`,
+			pp.`id` as `collection_person_profile_id`,
+        	pp.`code_TIN` as `collection_code_TIN`,
+  			pp.`code_tax_inspection` as `collection_code_tax_inspection`,
+  			pp.`code_KVED` as `collection_code_KVED`,
+  			pp.`person_type_id` as `collection_person_type_id`,
+  			pp.`contract_date` as `collection_contract_date`,
+			pp.`contract_number` as `collection_contract_number`,
+			pp.`zip_code` as `collection_zip_code`,
+			pp.`address` as `collection_address`,
+			pp.`phone` as `collection_phone`,
+			pp.`fax` as `collection_fax`,
+			pp.`email` as `collection_email`,
+			pp.`director_FIO` as `collection_director_FIO`,
+			pp.`accountant_FIO` as `collection_accountant_FIO`,
+			pp.`director_INN` as `collection_director_INN`,
+			pp.`accountant_INN` as `collection_accountant_INN`,
+			pp.`ipn` as `collection_ipn`,
+			pp.`num_svd_PDV` as `collection_num_svd_PDV`
+         from `${table}` u
+         left outer join `${session_table}` s on s.`id` = u.`session_id`
+         left outer join `${person_profile_table}` p on p.`id` = s.`person_profile_id`
+         left outer join `${session_person_profile_table}` sp on sp.`session_id` = u.`session_id`
+         left outer join `${person_profile_table}` pp on pp.`id` = sp.`person_profile_id`
+         where u.`id` = #{id}
+    </select>
+</mapper>

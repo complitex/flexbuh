@@ -10,7 +10,7 @@ import java.util.List;
  *         Date: 31.08.11 14:26
  */
 public class User extends DomainObject {
-	private static final String TABLE = "user";
+	public static final String TABLE = "user";
 
 	private String login;
 	private String password;
