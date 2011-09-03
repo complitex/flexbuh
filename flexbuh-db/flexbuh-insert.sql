@@ -33,3 +33,5 @@ INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `va
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (10, 2, 5, 'Справочник регионов');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (11, 1, 6, 'Довідник податкових інспекцій');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (12, 2, 6, 'Справочник налоговых инспекций');
+
+INSERT INTO person_type (`id`, `code`) VALUES (1, '1'),(2, '2'),(3, '3'),(4, '4');

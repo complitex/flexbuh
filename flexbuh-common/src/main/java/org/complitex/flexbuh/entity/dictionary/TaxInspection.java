@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.entity.dictionary;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -62,6 +63,30 @@ public class TaxInspection extends DictionaryOfLimitedTime {
 
 	public void setCodeTaxInspectionType(Integer codeTaxInspectionType) {
 		this.codeTaxInspectionType = codeTaxInspectionType;
+	}
+
+	public String getName(Locale locale) {
+		if (names == null) {
+			return null;
+		}
+		for (TaxInspectionName name : names) {
+			if (name.getLanguage().getLocale().equals(locale)) {
+				return name.getValue();
+			}
+		}
+		return getDefaultName();
+	}
+
+	public String getDefaultName() {
+		if (names == null) {
+			return null;
+		}
+		for (TaxInspectionName name : names) {
+			if (name.getLanguage().isDefaultLang()) {
+				return name.getValue();
+			}
+		}
+		return null;
 	}
 
 	@Override

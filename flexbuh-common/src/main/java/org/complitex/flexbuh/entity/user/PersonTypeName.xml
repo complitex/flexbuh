@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.entity.user.PersonTypeName">
+    <resultMap id="personTypeNameResultMap" type="org.complitex.flexbuh.entity.user.PersonTypeName">
+        <id column="id" property="id"/>
+        <result property="value" column="value"/>
+		<association property="language" column="language_id" javaType="org.complitex.flexbuh.entity.Language"
+					 select="org.complitex.flexbuh.service.LanguageBean.findById"/>
+    </resultMap>
+
+	<select id="selectPersonTypeNames" resultMap="personTypeNameResultMap"
+			useCache="true" flushCache="false">
+		select * from `person_type_name`
+	</select>
+
+	<select id="findById" parameterType="long" resultMap="personTypeNameResultMap"
+			useCache="true" flushCache="false">
+		select * from `person_type_name` where `person_type_id`=#{id}
+	</select>
+</mapper>

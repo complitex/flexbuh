@@ -3,6 +3,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://www.complitex.org/web/template http://www.complitex.org/web/template/complitex-template.xsd">
     <sidebar>
+        <menu class="org.complitex.flexbuh.admin.user.web.UserMenu"/>
         <menu class="org.complitex.flexbuh.document.web.DocumentMenu"/>
 		<menu class="org.complitex.flexbuh.admin.importexport.web.DictionaryMenu"/>
 		<menu class="org.complitex.flexbuh.admin.importexport.web.FileMenu"/>
