@@ -34,7 +34,7 @@ public class DocumentTermBean extends DictionaryBean<DocumentTerm> {
 	}
 
 	@Override
-	protected String getTable() {
+	public String getTable() {
 		return DocumentTerm.TABLE;
 	}
 }

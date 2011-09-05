@@ -41,7 +41,7 @@ public class RegionBean extends DictionaryBean<Region> {
 	}
 
 	@Override
-	protected String getTable() {
+	public String getTable() {
 		return Region.TABLE;
 	}
 }

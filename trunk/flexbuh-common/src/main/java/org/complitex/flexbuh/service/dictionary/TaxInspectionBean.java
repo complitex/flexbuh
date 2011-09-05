@@ -51,7 +51,7 @@ public class TaxInspectionBean extends DictionaryBean<TaxInspection> {
 	}
 
 	@Override
-	protected String getTable() {
+	public String getTable() {
 		return TaxInspection.TABLE;
 	}
 }

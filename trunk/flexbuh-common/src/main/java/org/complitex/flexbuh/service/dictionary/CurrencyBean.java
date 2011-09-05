@@ -42,7 +42,7 @@ public class CurrencyBean extends DictionaryBean<Currency> {
 
 
 	@Override
-	protected String getTable() {
+	public String getTable() {
 		return Currency.TABLE;
 	}
 }

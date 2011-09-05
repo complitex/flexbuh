@@ -35,5 +35,5 @@ public abstract class DictionaryBean<T extends Dictionary> extends AbstractBean 
 
 	abstract public void create(T dictionary);
 
-	abstract protected String getTable();
+	abstract public String getTable();
 }
