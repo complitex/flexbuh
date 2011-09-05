@@ -167,7 +167,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     @Override
     public IResourceStream getMarkupResourceStream(MarkupContainer container, Class<?> containerClass) {
-        return new MarkupResourceStream(stringResourceStream);
+        return stringResourceStream;
     }
 
     private void addInput(Element inputElement){
