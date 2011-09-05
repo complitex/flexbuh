@@ -74,7 +74,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private transient XPath templateXPath = XmlUtil.newXPath();
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
-    private transient MarkupResourceStream markupResourceStream;
+    private StringResourceStream stringResourceStream;
 
     private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
 
@@ -117,6 +117,10 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         //Form
         NodeList bodyNodeList = template.getElementsByTagName("body");
 
+        if (bodyNodeList.getLength() < 1){
+            bodyNodeList = template.getElementsByTagName("BODY");
+        }
+
         Element div = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
         div.setAttribute("xmlns:wicket", "http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd");
         div.setAttribute("wicket:id", "container");
@@ -139,16 +143,16 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         }
 
         //Markup
-        StringResourceStream stringResourceStream = new StringResourceStream(XmlUtil.getString(div), "text/html");
+        stringResourceStream = new StringResourceStream(XmlUtil.getString(div), "text/html");
         stringResourceStream.setCharset(Charset.forName("UTF-8"));
-
-        markupResourceStream = new MarkupResourceStream(stringResourceStream);
     }
 
     @Override
     protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
         //todo cache
         try {
+            MarkupResourceStream markupResourceStream = new MarkupResourceStream(stringResourceStream);
+
             Markup markup = getApplication().getMarkupSettings().getMarkupParserFactory().newMarkupParser(markupResourceStream).parse();
 
             MarkupStream associatedMarkupStream = new MarkupStream(markup);
@@ -163,7 +167,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     @Override
     public IResourceStream getMarkupResourceStream(MarkupContainer container, Class<?> containerClass) {
-        return markupResourceStream;
+        return new MarkupResourceStream(stringResourceStream);
     }
 
     private void addInput(Element inputElement){
