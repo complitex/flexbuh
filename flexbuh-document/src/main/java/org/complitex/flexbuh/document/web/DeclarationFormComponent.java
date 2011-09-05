@@ -6,6 +6,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -291,7 +292,11 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
                     @Override
                     protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        feedbackLabel.setDefaultModelObject(textField.getFeedbackMessage().getMessage());
+                        FeedbackMessage feedbackMessage = textField.getFeedbackMessage();
+
+                        if (feedbackMessage != null) {
+                            feedbackLabel.setDefaultModelObject(feedbackMessage.getMessage());
+                        }
 
                         target.addComponent(feedbackLabel);
 
@@ -386,6 +391,11 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 }else{
                     for (String id : ids){
                         TextField<String> textField = textFieldMap.get(id);
+
+                        //todo linked docs?
+                        if (textField == null){
+                            return;
+                        }
 
                         //todo add validation checking
                         String v = (StringUtil.isDecimal(textField.getValue())) ? textField.getValue() : "0";
