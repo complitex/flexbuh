@@ -8,7 +8,6 @@ import javax.ejb.Singleton;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -21,7 +20,7 @@ public class ImportTemplateXSDService extends ImportService {
 
 	private static final String SUB_DIR = "xsd";
 
-	private static final Pattern PATTERN = Pattern.compile("\\w{6}\\d{2}.[Xx][Ss][Dd]");
+	private static final Pattern PATTERN = Pattern.compile("(\\w{6}\\d{2})|(common_types).[Xx][Ss][Dd]");
 
 	@EJB
 	private ImportTemplateXSDFileService importTemplateFileService;
