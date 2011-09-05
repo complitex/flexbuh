@@ -1,14 +1,18 @@
 package org.complitex.flexbuh.admin.user.web;
 
 import org.apache.commons.lang.Validate;
+import org.apache.wicket.IClusterable;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.convert.MaskConverter;
 import org.apache.wicket.util.crypt.Base64;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.user.PersonProfile;
@@ -25,6 +29,7 @@ import javax.ejb.EJB;
 import javax.servlet.http.Cookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -48,6 +53,10 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
 
 	private PersonProfile personProfile = new PersonProfile();
 
+	private PersonProfilePhone phone = new PersonProfilePhone("");
+	private PersonProfilePhone fax = new PersonProfilePhone("");
+
+
     public CreateJuridicalPersonProfile() {
         add(new Label("title", getString("title")));
 		add(new FeedbackPanel("messages"));
@@ -56,16 +65,46 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
         add(form);
 
 		// Имя
-		PropertyModel<String> nameModel = new PropertyModel<String>(this.personProfile, "name");
-		form.add(new TextField<String>("name", nameModel).setRequired(true));
+		form.add(new TextField<String>("name", new PropertyModel<String>(this.personProfile, "name")).setRequired(true));
 
 		// Код ЕДРПОУ
-		PropertyModel<String> tinModel = new PropertyModel<String>(this.personProfile, "codeTIN");
-		form.add(new TextField<String>("codeTIN", tinModel).setRequired(true));
+		form.add(new TextField<String>("codeTIN", new PropertyModel<String>(this.personProfile, "codeTIN")).setRequired(true));
 
 		// Код основного виду економічної діяльності (за КВЕД)
-		PropertyModel<String> kvedModel = new PropertyModel<String>(this.personProfile, "codeKVED");
-		form.add(new TextField<String>("codeKVED", tinModel).setRequired(true));
+		form.add(new TextField<String>("codeKVED", new PropertyModel<String>(this.personProfile, "codeKVED")).setRequired(true));
+
+		// Поштовий індекс
+		form.add(new TextField<String>("zipCode", new PropertyModel<String>(this.personProfile, "zipCode")).setRequired(true));
+
+		// Адрес
+		form.add(new TextField<String>("address", new PropertyModel<String>(this.personProfile, "address")).setRequired(true));
+
+		// Телефон
+		form.add(new PhoneTextField("phone", new PropertyModel<PersonProfilePhone>(this, "phone")).setRequired(true));
+
+		// Факс
+		form.add(new PhoneTextField("fax", new PropertyModel<PersonProfilePhone>(this, "fax")));
+
+		// E-mail
+		form.add(new TextField<String>("email", new PropertyModel<String>(this.personProfile, "email")));
+
+		// ФИО директора предприятия
+		form.add(new TextField<String>("directorFIO", new PropertyModel<String>(this.personProfile, "directorFIO")).setRequired(true));
+
+		// ФИО бухгалтера
+		form.add(new TextField<String>("accountantFIO", new PropertyModel<String>(this.personProfile, "accountantFIO")).setRequired(true));
+
+		// Код ДРФО директора
+		form.add(new TextField<String>("directorINN", new PropertyModel<String>(this.personProfile, "directorINN")).setRequired(true));
+
+		// Код ДРФО бухгалтера
+		form.add(new TextField<String>("accountantINN", new PropertyModel<String>(this.personProfile, "accountantINN")).setRequired(true));
+
+		// Індивідуальний податковий номер
+		form.add(new TextField<String>("ipn", new PropertyModel<String>(this.personProfile, "ipn")).setRequired(true));
+
+		// Код ДРФО бухгалтера
+		form.add(new TextField<String>("numSvdPDV", new PropertyModel<String>(this.personProfile, "numSvdPDV")).setRequired(true));
 
         // Налоговая
 		final Model<TaxInspection> taxInspectionModel = new Model<TaxInspection>();
@@ -120,6 +159,8 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
 					Validate.isTrue(session != null, "Can not find session");
 				}
 
+				personProfile.setPhone(phone.getNumber());
+				personProfile.setFax(fax.getNumber());
 				userBean.createCompanyProfile(session, personProfile);
 
                 info(getString("profile_saved"));
@@ -128,4 +169,59 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
 
         form.add(new Button("cancel"));
     }
+
+	private class PhoneTextField extends TextField<PersonProfilePhone> {
+
+		public PhoneTextField(String id) {
+			super(id);
+		}
+
+		public PhoneTextField(String id, Class<PersonProfilePhone> type) {
+			super(id, type);
+		}
+
+		public PhoneTextField(String id, IModel<PersonProfilePhone> stringIModel) {
+			super(id, stringIModel);
+		}
+
+		public PhoneTextField(String id, IModel<PersonProfilePhone> stringIModel, Class<PersonProfilePhone> type) {
+			super(id, stringIModel, type);
+		}
+
+		@Override
+		public IConverter getConverter(Class<?> type) {
+			if (PersonProfilePhone.class.isAssignableFrom(type)) {
+				// telephone number mask
+				return new MaskConverter("###-###-####", PersonProfilePhone.class) {
+					@Override
+					public Object convertToObject(String value, Locale locale) {
+						return new PersonProfilePhone((String)super.convertToObject(value, locale));
+					}
+				};
+			}
+			else {
+				return super.getConverter(type);
+			}
+		}
+	}
+
+	private class PersonProfilePhone implements IClusterable {
+		private String number;
+
+		private PersonProfilePhone(String number) {
+			this.number = number;
+		}
+
+		public String getNumber() {
+			return number;
+		}
+
+		public void setNumber(String number) {
+			this.number = number;
+		}
+
+		public String toString() {
+			return number;
+		}
+	}
 }
