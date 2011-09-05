@@ -21,7 +21,7 @@ public abstract class AbstractBean {
         return sqlSessionFactoryBean.getSqlSessionManager();
     }
 
-    protected SqlSession sqlSession(){
+    public SqlSession sqlSession(){
         return sqlSessionFactoryBean.getSqlSessionManager();
     }
 }

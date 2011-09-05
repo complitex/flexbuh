@@ -42,7 +42,7 @@ public class DocumentVersionBean extends DictionaryBean<DocumentVersion> {
 
 
 	@Override
-	protected String getTable() {
+	public String getTable() {
 		return DocumentVersion.TABLE;
 	}
 }
