@@ -13,10 +13,13 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.loader.DefaultMarkupLoader;
+import org.apache.wicket.markup.loader.IMarkupLoader;
 import org.apache.wicket.markup.repeater.AbstractRepeater;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+import org.apache.wicket.util.time.Time;
 import org.apache.wicket.validation.IValidator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.Rule;
@@ -74,6 +77,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private transient XPath templateXPath = XmlUtil.newXPath();
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
+    private IMarkupLoader markupLoader = new DefaultMarkupLoader();
     private StringResourceStream stringResourceStream;
 
     private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
@@ -145,17 +149,13 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         //Markup
         stringResourceStream = new StringResourceStream(XmlUtil.getString(div), "text/html");
         stringResourceStream.setCharset(Charset.forName("UTF-8"));
+        stringResourceStream.setLastModified(Time.now());
     }
 
     @Override
     protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
-        //todo cache
         try {
-            MarkupResourceStream markupResourceStream = new MarkupResourceStream(stringResourceStream);
-
-            Markup markup = getApplication().getMarkupSettings().getMarkupParserFactory().newMarkupParser(markupResourceStream).parse();
-
-            MarkupStream associatedMarkupStream = new MarkupStream(markup);
+            MarkupStream associatedMarkupStream =  getAssociatedMarkupStream(true);
 
             renderComponentTagBody(associatedMarkupStream, (ComponentTag) associatedMarkupStream.get());
         } catch (Exception e) {
@@ -168,6 +168,20 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     @Override
     public IResourceStream getMarkupResourceStream(MarkupContainer container, Class<?> containerClass) {
         return stringResourceStream;
+    }
+
+    @Override
+    public MarkupStream getAssociatedMarkupStream(boolean throwException) {
+        try {
+            //todo cache
+            MarkupResourceStream markupResourceStream = new MarkupResourceStream(stringResourceStream);
+
+            Markup markup = getApplication().getMarkupSettings().getMarkupParserFactory().newMarkupParser(markupResourceStream).parse();
+
+            return new MarkupStream(markup);
+        } catch (Exception e) {
+            throw new WicketRuntimeException(e);
+        }
     }
 
     private void addInput(Element inputElement){
