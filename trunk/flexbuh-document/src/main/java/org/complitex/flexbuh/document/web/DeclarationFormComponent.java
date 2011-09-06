@@ -13,8 +13,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.loader.DefaultMarkupLoader;
-import org.apache.wicket.markup.loader.IMarkupLoader;
 import org.apache.wicket.markup.repeater.AbstractRepeater;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
@@ -50,8 +48,6 @@ import javax.xml.xpath.XPathExpressionException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -59,7 +55,6 @@ import java.util.regex.Pattern;
  */
 public class DeclarationFormComponent extends WebMarkupContainer implements IMarkupResourceStreamProvider{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
-    private Pattern compile = Pattern.compile("\\^(\\w*\\.?\\w*)");
 
     @EJB
     private TemplateService templateService;
@@ -77,14 +72,14 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private transient XPath templateXPath = XmlUtil.newXPath();
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
-    private IMarkupLoader markupLoader = new DefaultMarkupLoader();
-    private StringResourceStream stringResourceStream;
+    private transient StringResourceStream stringResourceStream;
 
     private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
 
     private Map<String, Rule> rulesMap;
     private Map<String, TextField<String>> textFieldMap = new HashMap<>();
     private Map<String, List<TextField<String>>> multiRowTextFieldMap = new HashMap<>();
+    private transient Map<Node, WebMarkupContainer> stretchTableParentMap = new HashMap<>();
 
     private WebMarkupContainer container;
 
@@ -273,12 +268,10 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                     textFieldMap.put(id, textField);
                 }
 
-                String feedbackContainerId = "feedback_container_" + id;
-
                 //Markup
                 if (updateMarkup) {
                     Element feedbackContainerElement = template.createElement("div");
-                    feedbackContainerElement.setAttribute("wicket:id", feedbackContainerId);
+                    feedbackContainerElement.setAttribute("wicket:id", "feedback_container_" + id);
                     feedbackContainerElement.setAttribute("style", "display: none; background-color: #f0e68c;");
                     inputElement.getParentNode().appendChild(feedbackContainerElement);
 
@@ -288,7 +281,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 }
 
                 //Feedback container
-                WebMarkupContainer feedbackContainer = new WebMarkupContainer(feedbackContainerId);
+                WebMarkupContainer feedbackContainer = new WebMarkupContainer("feedback_container_" + id);
                 feedbackContainer.setOutputMarkupId(true);
                 parent.add(feedbackContainer);
 
@@ -385,55 +378,65 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     }
 
     private void autoFill(AjaxRequestTarget target){
+        for (Rule rule : rulesMap.values()){
+            if ("SUMF".contains(rule.getExpression())){
+                continue;
+            }
+
+            if ("Y".equals(rule.getRowNum())){
+                List list =  multiRowTextFieldMap.get(rule.getCDocRowCId());
+
+                if (list != null){
+                    for (int i = 0; i < list.size(); ++i){
+                        applyRule(i, rule, target);
+                    }
+                }
+            }else {
+                applyRule(-1, rule, target);
+            }
+        }
+    }
+
+    private void applyRule(int index, Rule rule, AjaxRequestTarget target){
         try {
-            for (Rule rule : rulesMap.values()){
-                String expression = rule.getExpression();
+            String value = rule.getExpression();
 
-                //todo implement many row
-                if (expression.contains("SUMF")){
-                    continue;
+            if (value.contains("SUM")){
+                double sum = 0;
+
+                for (TextField<String> textField : multiRowTextFieldMap.get(rule.getExpressionIds().get(index > 0 ? index : 0))){
+                    sum += (StringUtil.isDecimal(textField.getValue())) ? Double.parseDouble(textField.getValue()) : 0;
                 }
 
-                List<String> ids = extractIds(expression);
+                value = sum + "";
+            }else{
+                for (String id : rule.getExpressionIds()){
+                    TextField<String> textField = index >= 0 ? multiRowTextFieldMap.get(id).get(index) : textFieldMap.get(id);
 
-                String value = "";
-
-                if (expression.contains("SUM") && ids.size() > 0){
-                    double sum = 0;
-
-                    for (TextField<String> textField : multiRowTextFieldMap.get(ids.get(0))){
-                        sum += (StringUtil.isDecimal(textField.getValue())) ? Double.parseDouble(textField.getValue()) : 0;
+                    //todo linked docs?
+                    if (textField == null){
+                        return;
                     }
 
-                    value = sum + "";
-                }else{
-                    for (String id : ids){
-                        TextField<String> textField = textFieldMap.get(id);
+                    //todo add validation checking
+                    String v = (StringUtil.isDecimal(textField.getValue())) ? textField.getValue() : "0";
 
-                        //todo linked docs?
-                        if (textField == null){
-                            return;
-                        }
-
-                        //todo add validation checking
-                        String v = (StringUtil.isDecimal(textField.getValue())) ? textField.getValue() : "0";
-
-                        expression = expression.replace("^" + id, v);
-                    }
-
-                    expression = expression.replace("ABS", "Math.abs");
-                    expression = StringEscapeUtils.unescapeXml(expression);
-
-                    value = scriptEngine.eval(expression).toString();
+                    value = value.replace("^" + id, v);
                 }
 
-                String autoFillId = rule.getCDocRowC().replace("^", "");
-                TextField<String> autoFill = textFieldMap.get(autoFillId);
+                value = value.replace("ABS", "Math.abs");
+                value = StringEscapeUtils.unescapeXml(value);
 
-                autoFill.getModel().setObject(value);
+                value = scriptEngine.eval(value).toString();
+            }
 
+            TextField<String> autoFill = index >= 0
+                    ? multiRowTextFieldMap.get(rule.getCDocRowCId()).get(index)
+                    : textFieldMap.get(rule.getCDocRowCId());
+
+            if (!value.equals(autoFill.getValue())) {
+                autoFill.setModelObject(value);
                 target.addComponent(autoFill);
-
                 target.appendJavascript("$('#" + autoFill.getMarkupId() +"').css('background-color', '#add8e6')");
             }
         } catch (ScriptException e) {
@@ -441,34 +444,35 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         }
     }
 
-    private List<String> extractIds(String expression){
-        List<String> ids = new ArrayList<>();
-
-        Matcher matcher = compile.matcher(expression);
-
-        while (matcher.find()){
-            ids.add(matcher.group(1));
-        }
-
-        return ids;
-    }
-
     private void addStretchTable(final int index){
         //Stretch table
         Element stretchElement = stretchElements.get(index);
+
+        final NodeList inputList = stretchElement.getElementsByTagName("input");
+
+        //skip if no input inside stretch table
+        if (inputList.getLength() == 0){
+            return;
+        }
 
         Node stretchTableElement = stretchElement.getParentNode();
         while (!"tbody".equalsIgnoreCase(stretchTableElement.getNodeName())){
             stretchTableElement = stretchTableElement.getParentNode();
         }
 
-        String stretchTableId = "stretch_table_" + index;
+        WebMarkupContainer stretchTable = stretchTableParentMap.get(stretchTableElement);
 
-        ((Element)stretchTableElement).setAttribute("wicket:id", stretchTableId);
+        if (stretchTable == null) {
+            String stretchTableId = "stretch_table_" + index;
 
-        final WebMarkupContainer stretchTable = new WebMarkupContainer(stretchTableId);
-        stretchTable.setOutputMarkupId(true);
-        container.add(stretchTable);
+            ((Element)stretchTableElement).setAttribute("wicket:id", stretchTableId);
+
+            stretchTable = new WebMarkupContainer(stretchTableId);
+            stretchTable.setOutputMarkupId(true);
+            container.add(stretchTable);
+
+            stretchTableParentMap.put(stretchTableElement, stretchTable);
+        }
 
         //Stretch row
         final String id = "stretch_row_" + index;
@@ -476,8 +480,6 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         stretchElement.setAttribute("wicket:id", id);
 
         final List<Component> rows = new ArrayList<>();
-
-        final NodeList inputList = stretchElement.getElementsByTagName("input");
 
         Element inputElement = (Element) inputList.item(0);
 
