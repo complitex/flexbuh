@@ -525,5 +525,54 @@ CREATE TABLE `tax_inspection_name` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+
+-- --------------------------
+-- Declaration
+-- --------------------------
+
+DROP TABLE IF EXISTS `declaration`;
+
+CREATE TABLE `declaration` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
+  `tin` VARCHAR(10),
+  `c_doc` VARCHAR(3),
+  `c_doc_sub` VARCHAR(3),
+  `c_doc_ver` VARCHAR(2),
+  `c_doc_type` INTEGER,
+  `c_doc_cnt` INTEGER,
+  `c_reg` INTEGER,
+  `c_raj` INTEGER,
+  `period_month` INTEGER,
+  `period_type` INTEGER,
+  `period_year` INTEGER,
+  `c_sti_orig` VARCHAR(10),
+  `c_doc_stan` INTEGER,
+  `d_fill` VARCHAR(8),
+  `software` VARCHAR(32),
+  PRIMARY KEY (`id`),
+  KEY `key_declaration__session_id` (`session_id`),
+  CONSTRAINT `fk_declaration__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Declaration Value
+-- --------------------------
+
+DROP TABLE IF EXISTS `declaration_value`;
+
+CREATE TABLE `declaration_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `declaration_id` BIGINT(20) NOT NULL,
+  `row_num` INTEGER,
+  `name` VARCHAR(20),
+  `value` VARCHAR(255),
+  PRIMARY KEY (`id`),
+  KEY `key_declaration_value__declaration_id` (`declaration_id`),
+  CONSTRAINT `fk_declaration_value__declaration` FOREIGN KEY (`declaration_id`) REFERENCES `declaration` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 

@@ -444,9 +444,9 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         }
     }
 
-    private void addStretchTable(final int index){
+    private void addStretchTable(final int stretchTableIndex){
         //Stretch table
-        Element stretchElement = stretchElements.get(index);
+        Element stretchElement = stretchElements.get(stretchTableIndex);
 
         final NodeList inputList = stretchElement.getElementsByTagName("input");
 
@@ -463,7 +463,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         WebMarkupContainer stretchTable = stretchTableParentMap.get(stretchTableElement);
 
         if (stretchTable == null) {
-            String stretchTableId = "stretch_table_" + index;
+            String stretchTableId = "stretch_table_" + stretchTableIndex;
 
             ((Element)stretchTableElement).setAttribute("wicket:id", stretchTableId);
 
@@ -475,7 +475,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         }
 
         //Stretch row
-        final String id = "stretch_row_" + index;
+        final String id = "stretch_row_" + stretchTableIndex;
 
         stretchElement.setAttribute("wicket:id", id);
 
@@ -506,7 +506,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         tdLeftElement.setAttribute("style", "width: 40px;");
 
         //Add rows
-        addRow(index, stretchTable, rows, 0);
+        addRow(stretchTableIndex, stretchTable, rows, 0);
 
         //Repeater
         stretchTable.add(new AbstractRepeater(id) {
@@ -550,11 +550,11 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         });
     }
 
-    private void addRow(final int index, final WebMarkupContainer stretchTable, final List<Component> rows, int addRowIndex) {
+    private void addRow(final int stretchTableIndex, final WebMarkupContainer stretchTable, final List<Component> rows, int addRowIndex) {
         final WebMarkupContainer row = new WebMarkupContainer(++rowNextMarkupId + "");
         rows.add(addRowIndex, row);
 
-        NodeList inputList = stretchElements.get(index).getElementsByTagName("input");
+        NodeList inputList = stretchElements.get(stretchTableIndex).getElementsByTagName("input");
 
         for (int i = 0; i < inputList.getLength(); ++i){
             addInput(rowNextMarkupId, (Element) inputList.item(i), row, addRowIndex == 0, false);
@@ -566,7 +566,8 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             protected void onAdd(AjaxRequestTarget target) {
                 setDeleteVisible(true);
 
-                addRow(index, stretchTable, rows, rows.indexOf(row) + 1);
+                addRow(stretchTableIndex, stretchTable, rows, rows.indexOf(row) + 1);
+                reorderRowNumModel();
 
                 target.addComponent(stretchTable);
             }
@@ -576,12 +577,23 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 rows.remove(row);
 
                 removeMultiRowTextField(row);
+                reorderRowNumModel();
 
                 autoFill(target);
 
                 target.addComponent(stretchTable);
             }
         });
+    }
+
+    private void reorderRowNumModel(){
+        for(List<TextField<String>> textFields : multiRowTextFieldMap.values()){
+            int index = 0;
+
+            for (TextField<String> textField : textFields){
+                ((DeclarationStringModel)textField.getModel()).setRowNum(index++);
+            }
+        }
     }
 
     private void addMultiRowTextField(String id, TextField<String> textField){
@@ -602,6 +614,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             if (component instanceof TextField){
                 TextField textField = (TextField) component;
 
+                //todo fix remove
                 for (List<TextField<String>> textFields : multiRowTextFieldMap.values()){
                     for (int i = 0, textFieldsSize = textFields.size(); i < textFieldsSize; i++) {
                         textFields.remove(textField);

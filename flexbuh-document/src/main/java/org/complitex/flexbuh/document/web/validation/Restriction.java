@@ -180,7 +180,7 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
         }
     }
 
-    private void error(IValidatable validatable, String key){
+    private void error(IValidatable<T> validatable, String key){
         Object argument = null;
 
         switch (key){
@@ -204,7 +204,12 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
                 break;
         }
 
+
+
         errorMessage = argument != null ? MessageFormat.format(getString(key), argument) : getString(key);
+
+        errorMessage += ": " + validatable.getValue();
+
         validatable.error(this);
     }
 

@@ -18,20 +18,30 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
 
     @Override
     public String getObject() {
-        DeclarationValue value = declaration.getValue(rowRum, name);
+        DeclarationValue value = declaration.getValue(rowNum, name);
 
         return value != null ? value.getValue() : null;
     }
 
     @Override
     public void setObject(String object) {
-        DeclarationValue value = declaration.getValue(rowRum, name);
+        DeclarationValue value = declaration.getValue(rowNum, name);
 
         if (value == null){
-            value = new DeclarationValue(rowRum, name, null);
+            value = new DeclarationValue(rowNum, name, null);
             declaration.addValue(value);
         }
 
         value.setValue(object);
+    }
+
+    public void setRowNum(Integer rowNum){
+        DeclarationValue value = declaration.getValue(this.rowNum, name);
+
+        if (value != null){
+            value.setRowNum(rowNum);
+        }
+
+        this.rowNum = rowNum;
     }
 }
