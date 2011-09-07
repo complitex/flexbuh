@@ -10,8 +10,15 @@
 
 <body>
 <wicket:extend>
+    <div wicket:id="feedback"></div>
+
     <form action="#" wicket:id="form">
         <div wicket:id="declaration"></div>
+
+        <div style="margin-top: 20px">
+            <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+            <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
     </form>
 </wicket:extend>
 </body>

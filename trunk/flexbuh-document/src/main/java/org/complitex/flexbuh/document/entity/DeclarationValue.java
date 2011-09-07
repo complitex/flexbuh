@@ -10,9 +10,20 @@ import java.io.Serializable;
 @XmlType
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class DeclarationValue implements Serializable{
-    @XmlAttribute(name = "ROWNUM") private Integer rowNum;
-    @XmlTransient private String name;
-    @XmlValue private String value;
+    @XmlTransient
+    private Long id;
+
+    @XmlTransient
+    private Long declarationId;
+
+    @XmlAttribute(name = "ROWNUM")
+    private Integer rowNum;
+
+    @XmlTransient
+    private String name;
+
+    @XmlValue
+    private String value;
 
     public DeclarationValue() {
     }
@@ -30,6 +41,22 @@ public class DeclarationValue implements Serializable{
         this.rowNum = rowNum;
         this.name = name;
         this.value = value;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getDeclarationId() {
+        return declarationId;
+    }
+
+    public void setDeclarationId(Long declarationId) {
+        this.declarationId = declarationId;
     }
 
     public String getName() {
