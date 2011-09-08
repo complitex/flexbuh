@@ -479,8 +479,6 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
         stretchElement.setAttribute("wicket:id", id);
 
-        final List<Component> rows = new ArrayList<>();
-
         Element inputElement = (Element) inputList.item(0);
 
         //wrap table
@@ -505,29 +503,32 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         wrapTableElement.setAttribute("cellspacing", "0");
         tdLeftElement.setAttribute("style", "width: 40px;");
 
+        //Stretch rows
+        final List<WebMarkupContainer> stretchRows = new ArrayList<>();
+
         //Add rows
-        addRow(stretchTableIndex, stretchTable, rows, 0);
+        addRow(stretchTableIndex, stretchTable, 0, stretchRows);
 
         //Repeater
         stretchTable.add(new AbstractRepeater(id) {
             @Override
             protected Iterator<? extends Component> renderIterator() {
-                return rows.iterator();
+                return stretchRows.iterator();
             }
 
             @Override
             protected void onPopulate() {
                 //remove
                 for (Iterator<? extends Component> it = iterator(); it.hasNext();){
-                    Component c = it.next();
+                    WebMarkupContainer c = (WebMarkupContainer) it.next();
 
-                    if (!rows.contains(c)){
+                    if (!stretchRows.contains(c)){
                         remove(c);
                     }
                 }
 
                 //add
-                for (Component row : rows) {
+                for (Component row : stretchRows) {
                     boolean found = false;
 
                     for (Iterator<? extends Component> it = iterator(); it.hasNext();){
@@ -543,41 +544,42 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 }
 
                 //delete visible
-                if (rows.size() == 1){
-                    ((AddRowPanel) ((WebMarkupContainer) rows.get(0)).get("add_row_panel")).setDeleteVisible(false);
+                if (stretchRows.size() == 1){
+                    ((AddRowPanel) (stretchRows.get(0)).get("add_row_panel")).setDeleteVisible(false);
                 }
             }
         });
     }
 
-    private void addRow(final int stretchTableIndex, final WebMarkupContainer stretchTable, final List<Component> rows, int addRowIndex) {
-        final WebMarkupContainer row = new WebMarkupContainer(++rowNextMarkupId + "");
-        rows.add(addRowIndex, row);
+    private void addRow(final int stretchTableIndex, final WebMarkupContainer stretchTable, final int addRowIndex,
+                        final List<WebMarkupContainer> stretchRows) {
+        final WebMarkupContainer stretchRow = new WebMarkupContainer(++rowNextMarkupId + "");
+        stretchRows.add(addRowIndex, stretchRow);
 
         NodeList inputList = stretchElements.get(stretchTableIndex).getElementsByTagName("input");
 
         for (int i = 0; i < inputList.getLength(); ++i){
-            addInput(rowNextMarkupId, (Element) inputList.item(i), row, addRowIndex == 0, false);
+            addInput(rowNextMarkupId, (Element) inputList.item(i), stretchRow, addRowIndex == 0, false);
         }
 
+        reorderMultiRowModel(stretchRows);
+
         //add row panel
-        row.add(new AddRowPanel("add_row_panel") {
+        stretchRow.add(new AddRowPanel("add_row_panel") {
             @Override
             protected void onAdd(AjaxRequestTarget target) {
                 setDeleteVisible(true);
 
-                addRow(stretchTableIndex, stretchTable, rows, rows.indexOf(row) + 1);
-                reorderRowNumModel();
+                addRow(stretchTableIndex, stretchTable, stretchRows.indexOf(stretchRow) + 1, stretchRows);
 
                 target.addComponent(stretchTable);
             }
 
             @Override
             protected void onDelete(AjaxRequestTarget target) {
-                rows.remove(row);
-
-                removeMultiRowTextField(row);
-                reorderRowNumModel();
+                stretchRows.remove(stretchRow);
+                removeMultiRowTextField(stretchRow);
+                reorderMultiRowModel(stretchRows);
 
                 autoFill(target);
 
@@ -586,12 +588,15 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         });
     }
 
-    private void reorderRowNumModel(){
-        for(List<TextField<String>> textFields : multiRowTextFieldMap.values()){
-            int index = 0;
+    private void reorderMultiRowModel(List<WebMarkupContainer> stretchRows){
+        //reorder model
+        for (int i = 0, size = stretchRows.size(); i < size; i++) {
+            for (Iterator<? extends Component> it = stretchRows.get(i).iterator(); it.hasNext(); ) {
+                Component c = it.next();
 
-            for (TextField<String> textField : textFields){
-                ((DeclarationStringModel)textField.getModel()).setRowNum(index++);
+                if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel) {
+                    ((DeclarationStringModel) ((TextField) c).getModel()).setRowNum(i+1);
+                }
             }
         }
     }
@@ -609,16 +614,12 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     private void removeMultiRowTextField(WebMarkupContainer row){
         for (Iterator<? extends Component> it = row.iterator();it.hasNext();){
-            Component component = it.next();
+            Component c = it.next();
 
-            if (component instanceof TextField){
-                TextField textField = (TextField) component;
-
-                //todo fix remove
-                for (List<TextField<String>> textFields : multiRowTextFieldMap.values()){
-                    for (int i = 0, textFieldsSize = textFields.size(); i < textFieldsSize; i++) {
-                        textFields.remove(textField);
-                    }
+            for (List list : multiRowTextFieldMap.values()){
+                if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel){
+                    ((DeclarationStringModel) ((TextField) c).getModel()).removeValue();
+                    list.remove(c);
                 }
             }
         }
