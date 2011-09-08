@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.AbstractRepeater;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
@@ -85,8 +86,6 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     private Integer rowNextMarkupId = 0;
 
-    private transient List<Element> stretchElements = new ArrayList<>();
-
     public DeclarationFormComponent(String id, String templateName, Declaration declaration){
         super(id);
 
@@ -136,9 +135,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         //Stretch table
         NodeList stretchList = XmlUtil.getElementsById("StretchTable", div, templateXPath);
         for (int i=0; i < stretchList.getLength(); ++i){
-            stretchElements.add((Element) stretchList.item(i));
-
-            addStretchTable(i);
+            addStretchTable(i, (Element) stretchList.item(i));
         }
 
         //Markup
@@ -444,44 +441,38 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         }
     }
 
-    private void addStretchTable(final int stretchTableIndex){
-        //Stretch table
-        Element stretchElement = stretchElements.get(stretchTableIndex);
-
-        final NodeList inputList = stretchElement.getElementsByTagName("input");
+    private void addStretchTable(final int stretchTableIndex, Element stretchTableElement){
+        final NodeList inputList = stretchTableElement.getElementsByTagName("input");
 
         //skip if no input inside stretch table
         if (inputList.getLength() == 0){
             return;
         }
 
-        Node stretchTableElement = stretchElement.getParentNode();
-        while (!"tbody".equalsIgnoreCase(stretchTableElement.getNodeName())){
-            stretchTableElement = stretchTableElement.getParentNode();
+        Node stretchTableParentElement = stretchTableElement.getParentNode();
+        while (!"tbody".equalsIgnoreCase(stretchTableParentElement.getNodeName())){
+            stretchTableParentElement = stretchTableParentElement.getParentNode();
         }
 
-        WebMarkupContainer stretchTable = stretchTableParentMap.get(stretchTableElement);
+        WebMarkupContainer stretchTableParent = stretchTableParentMap.get(stretchTableParentElement);
 
-        if (stretchTable == null) {
-            String stretchTableId = "stretch_table_" + stretchTableIndex;
+        if (stretchTableParent == null) {
+            String stretchTableId = "stretch_container_" + stretchTableIndex;
 
-            ((Element)stretchTableElement).setAttribute("wicket:id", stretchTableId);
+            ((Element)stretchTableParentElement).setAttribute("wicket:id", stretchTableId);
 
-            stretchTable = new WebMarkupContainer(stretchTableId);
-            stretchTable.setOutputMarkupId(true);
-            container.add(stretchTable);
+            stretchTableParent = new WebMarkupContainer(stretchTableId);
+            stretchTableParent.setOutputMarkupId(true);
+            container.add(stretchTableParent);
 
-            stretchTableParentMap.put(stretchTableElement, stretchTable);
+            stretchTableParentMap.put(stretchTableParentElement, stretchTableParent);
         }
 
         //Stretch row
-        final String id = "stretch_row_" + stretchTableIndex;
+        stretchTableElement.setAttribute("wicket:id", "stretch_table_" + stretchTableIndex);
 
-        stretchElement.setAttribute("wicket:id", id);
-
+        //Wrap table
         Element inputElement = (Element) inputList.item(0);
-
-        //wrap table
         Element inputParentElement = (Element) inputElement.getParentNode();
 
         Element wrapTableElement = template.createElement("table");
@@ -507,10 +498,10 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         final List<WebMarkupContainer> stretchRows = new ArrayList<>();
 
         //Add rows
-        addRow(stretchTableIndex, stretchTable, 0, stretchRows);
+        addRow(stretchTableIndex, stretchTableElement, stretchTableParent, 0, stretchRows);
 
         //Repeater
-        stretchTable.add(new AbstractRepeater(id) {
+        stretchTableParent.add(new AbstractRepeater("stretch_table_" + stretchTableIndex) {
             @Override
             protected Iterator<? extends Component> renderIterator() {
                 return stretchRows.iterator();
@@ -519,10 +510,10 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             @Override
             protected void onPopulate() {
                 //remove
-                for (Iterator<? extends Component> it = iterator(); it.hasNext();){
+                for (Iterator<? extends Component> it = iterator(); it.hasNext(); ) {
                     WebMarkupContainer c = (WebMarkupContainer) it.next();
 
-                    if (!stretchRows.contains(c)){
+                    if (!stretchRows.contains(c)) {
                         remove(c);
                     }
                 }
@@ -531,38 +522,56 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 for (Component row : stretchRows) {
                     boolean found = false;
 
-                    for (Iterator<? extends Component> it = iterator(); it.hasNext();){
-                        if (row.equals(it.next())){
+                    for (Iterator<? extends Component> it = iterator(); it.hasNext(); ) {
+                        if (row.equals(it.next())) {
                             found = true;
                             break;
                         }
                     }
 
-                    if (!found){
+                    if (!found) {
                         add(row);
                     }
                 }
 
                 //delete visible
-                if (stretchRows.size() == 1){
+                if (stretchRows.size() == 1) {
                     ((AddRowPanel) (stretchRows.get(0)).get("add_row_panel")).setDeleteVisible(false);
                 }
             }
         });
     }
 
-    private void addRow(final int stretchTableIndex, final WebMarkupContainer stretchTable, final int addRowIndex,
-                        final List<WebMarkupContainer> stretchRows) {
-        final WebMarkupContainer stretchRow = new WebMarkupContainer(++rowNextMarkupId + "");
+    private void addRow(final int stretchTableIndex, final Element stretchTableElement, final WebMarkupContainer stretchTable,
+                        final int addRowIndex, final List<WebMarkupContainer> stretchRows) {
+
+        final WebMarkupContainer stretchRow = new WebMarkupContainer("row_" + rowNextMarkupId++);
         stretchRows.add(addRowIndex, stretchRow);
 
-        NodeList inputList = stretchElements.get(stretchTableIndex).getElementsByTagName("input");
+        NodeList inputList = stretchTableElement.getElementsByTagName("input");
 
         for (int i = 0; i < inputList.getLength(); ++i){
             addInput(rowNextMarkupId, (Element) inputList.item(i), stretchRow, addRowIndex == 0, false);
         }
 
+        //reorder model
         reorderMultiRowModel(stretchRows);
+
+        //Row number
+        Element spRownumElement = XmlUtil.getElementById("spRownum", stretchTableElement, templateXPath);
+
+        final String rowNumId = "spRownum_" + stretchTableIndex;
+
+        if (spRownumElement != null){
+            spRownumElement.setAttribute("wicket:id", rowNumId);
+
+            stretchRow.add(new Label(rowNumId, new LoadableDetachableModel<String>() {
+                @Override
+                protected String load() {
+                    return String.valueOf(stretchRows.indexOf(stretchRow) + 1);
+                }
+            }).setOutputMarkupId(true));
+        }
 
         //add row panel
         stretchRow.add(new AddRowPanel("add_row_panel") {
@@ -570,9 +579,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             protected void onAdd(AjaxRequestTarget target) {
                 setDeleteVisible(true);
 
-                addRow(stretchTableIndex, stretchTable, stretchRows.indexOf(stretchRow) + 1, stretchRows);
-
-                target.addComponent(stretchTable);
+                addRow(stretchTableIndex, stretchTableElement, stretchTable, stretchRows.indexOf(stretchRow) + 1, stretchRows);
             }
 
             @Override
@@ -582,20 +589,31 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 reorderMultiRowModel(stretchRows);
 
                 autoFill(target);
+            }
 
+            @Override
+            protected void afterAction(AjaxRequestTarget target) {
                 target.addComponent(stretchTable);
+
+                //update row num
+                for (WebMarkupContainer row : stretchRows){
+                    Component c = row.get(rowNumId);
+
+                    if (c != null){
+                        target.addComponent(c);
+                    }
+                }
             }
         });
     }
 
     private void reorderMultiRowModel(List<WebMarkupContainer> stretchRows){
-        //reorder model
         for (int i = 0, size = stretchRows.size(); i < size; i++) {
             for (Iterator<? extends Component> it = stretchRows.get(i).iterator(); it.hasNext(); ) {
                 Component c = it.next();
 
                 if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel) {
-                    ((DeclarationStringModel) ((TextField) c).getModel()).setRowNum(i+1);
+                    ((DeclarationStringModel) ((TextField) c).getModel()).updateRowNum(i + 1);
                 }
             }
         }

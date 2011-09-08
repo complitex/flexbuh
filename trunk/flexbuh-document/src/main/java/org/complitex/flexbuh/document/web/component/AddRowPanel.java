@@ -18,6 +18,7 @@ public abstract class AddRowPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 onAdd(target);
+                afterAction(target);
             }
         });
 
@@ -25,6 +26,7 @@ public abstract class AddRowPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 onDelete(target);
+                afterAction(target);
             }
 
             @Override
@@ -45,4 +47,7 @@ public abstract class AddRowPanel extends Panel {
     protected abstract void onAdd(AjaxRequestTarget target);
 
     protected abstract void onDelete(AjaxRequestTarget target);
+
+    protected void afterAction(AjaxRequestTarget target){
+    }
 }
