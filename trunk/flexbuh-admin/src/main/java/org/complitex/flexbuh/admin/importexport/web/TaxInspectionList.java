@@ -41,8 +41,8 @@ public class TaxInspectionList extends TemplatePage {
                 item.add(new Label("region_code", Integer.toString(item.getModelObject().getRegionCode())));
                 item.add(new Label("area_code", Integer.toString(item.getModelObject().getCodeArea())));
                 item.add(new Label("tax_inspection_type_code", Integer.toString(item.getModelObject().getCodeTaxInspectionType())));
-                item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", item.getModelObject().getBeginDate()==null?"":DATE_FORMAT.format(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date", item.getModelObject().getEndDate()==null?"":DATE_FORMAT.format(item.getModelObject().getEndDate())));
 				for (TaxInspectionName taxInspectionName : item.getModelObject().getNames()) {
 					if ("uk".equals(taxInspectionName.getLanguage().getLangIsoCode())) {
 						item.add(new Label("name_uk", taxInspectionName.getValue()));

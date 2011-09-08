@@ -42,8 +42,8 @@ public class DocumentTermList extends TemplatePage {
                 item.add(new Label("period_year", Integer.toString(item.getModelObject().getPeriodYear())));
                 item.add(new Label("period_month", Integer.toString(item.getModelObject().getPeriodMonth())));
                 item.add(new Label("period_type", Integer.toString(item.getModelObject().getPeriodType())));
-                item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", item.getModelObject().getBeginDate()==null?"":DATE_FORMAT.format(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date", item.getModelObject().getEndDate()==null?"":DATE_FORMAT.format(item.getModelObject().getEndDate())));
             }
         };
 
