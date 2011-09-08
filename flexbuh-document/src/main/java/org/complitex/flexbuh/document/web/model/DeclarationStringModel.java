@@ -44,4 +44,8 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
 
         this.rowNum = rowNum;
     }
+
+    public void removeValue(){
+        declaration.removeValue(rowNum, name);
+    }
 }
