@@ -42,8 +42,8 @@ public class DocumentList extends TemplatePage {
                 item.add(new Label("parent_document_sub_type", item.getModelObject().getParentDocumentSubType()));
                 item.add(new Label("cnt_set", Boolean.toString(item.getModelObject().getCntSet())));
                 item.add(new Label("selected", Boolean.toString(item.getModelObject().getSelected())));
-                item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", item.getModelObject().getBeginDate()==null?"":DATE_FORMAT.format(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date", item.getModelObject().getEndDate()==null?"":DATE_FORMAT.format(item.getModelObject().getEndDate())));
 				for (DocumentName currencyName : item.getModelObject().getNames()) {
 					if ("uk".equals(currencyName.getLanguage().getLangIsoCode())) {
 						item.add(new Label("name_uk", currencyName.getValue()));

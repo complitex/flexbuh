@@ -37,8 +37,8 @@ public class RegionList extends TemplatePage {
             @Override
             protected void populateItem(ListItem<Region> item) {
                 item.add(new Label("code", Integer.toString(item.getModelObject().getCode())));
-                item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", item.getModelObject().getBeginDate()==null?"":DATE_FORMAT.format(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date", item.getModelObject().getEndDate()==null?"":DATE_FORMAT.format(item.getModelObject().getEndDate())));
 				for (RegionName regionName : item.getModelObject().getNames()) {
 					if ("uk".equals(regionName.getLanguage().getLangIsoCode())) {
 						item.add(new Label("name_uk", regionName.getValue()));
