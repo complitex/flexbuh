@@ -47,4 +47,31 @@
 			useCache="true" flushCache="false">
         select * from `${table}` where `id` = #{id}
     </select>
+
+	<select id="findCompanyProfilesBySessionCookie" parameterType="map" resultMap="personProfileResultMap"
+			useCache="true" flushCache="false">
+        select p.* from `${session_table}` s
+        	inner join `${session_person_profile_table}` sp on sp.`session_id` = s.`id`
+        	inner join `${table}` p on sp.`person_profile_id` = p.`id`
+        	where s.`cookie` = '${cookie}'
+    </select>
+
+	<select id="findCompanyProfilesBySessionCookieSize" parameterType="map" resultType="int"
+			useCache="true" flushCache="false">
+        select count(distinct p.id) from `${session_table}` s
+        	inner join `${session_person_profile_table}` sp on sp.`session_id` = s.`id`
+        	inner join `${table}` p on sp.`person_profile_id` = p.`id`
+        	where s.`cookie` = '${cookie}'
+    </select>
+
+	<select id="findCompanyProfilesBySessionCookieLimit" parameterType="map" resultMap="personProfileResultMap"
+			useCache="true" flushCache="false">
+        select distinct p.* from `${session_table}` s
+        	inner join `${session_person_profile_table}` sp on sp.`session_id` = s.`id`
+        	inner join `${table}` p on sp.`person_profile_id` = p.`id`
+        	where s.`cookie` = '${cookie}'
+        	order by p.name
+        	limit #{first}, #{count}
+    </select>
+
 </mapper>

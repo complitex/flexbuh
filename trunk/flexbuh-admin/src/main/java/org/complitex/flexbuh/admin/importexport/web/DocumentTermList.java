@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Pavel Sknar
@@ -38,17 +39,21 @@ public class DocumentTermList extends TemplatePage {
 				item.add(new Label("type", item.getModelObject().getDocumentType()));
                 item.add(new Label("sub_type", item.getModelObject().getDocumentSubType()));
                 item.add(new Label("version", Integer.toString(item.getModelObject().getDocumentVersion())));
-                item.add(new Label("date_term", DATE_FORMAT.format(item.getModelObject().getDateTerm())));
+                item.add(new Label("date_term", getStringDate(item.getModelObject().getDateTerm())));
                 item.add(new Label("period_year", Integer.toString(item.getModelObject().getPeriodYear())));
                 item.add(new Label("period_month", Integer.toString(item.getModelObject().getPeriodMonth())));
                 item.add(new Label("period_type", Integer.toString(item.getModelObject().getPeriodType())));
-                item.add(new Label("begin_date", item.getModelObject().getBeginDate()==null?"":DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", item.getModelObject().getEndDate()==null?"":DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
             }
         };
 
         datacontainer.add(listview);
         datacontainer.add(new AjaxPagingNavigator("navigator", listview));
         datacontainer.setVersioned(false);
+	}
+
+	private String getStringDate(Date date) {
+		return date != null? DATE_FORMAT.format(date): "";
 	}
 }

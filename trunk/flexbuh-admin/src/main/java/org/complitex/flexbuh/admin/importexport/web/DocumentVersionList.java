@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Pavel Sknar
@@ -39,8 +40,8 @@ public class DocumentVersionList extends TemplatePage {
                 item.add(new Label("type", item.getModelObject().getDocumentType()));
                 item.add(new Label("sub_type", item.getModelObject().getDocumentSubType()));
                 item.add(new Label("version", Integer.toString(item.getModelObject().getVersion())));
-                item.add(new Label("begin_date", item.getModelObject().getBeginDate()==null?"":DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", item.getModelObject().getEndDate()==null?"":DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date",getStringDate(item.getModelObject().getEndDate())));
 				for (NormativeDocumentName documentName : item.getModelObject().getNormativeDocumentNames()) {
 					if ("uk".equals(documentName.getLanguage().getLangIsoCode())) {
 						item.add(new Label("name_uk", documentName.getValue()));
@@ -52,5 +53,9 @@ public class DocumentVersionList extends TemplatePage {
         datacontainer.add(listview);
         datacontainer.add(new AjaxPagingNavigator("navigator", listview));
         datacontainer.setVersioned(false);
+	}
+
+	private String getStringDate(Date date) {
+		return date != null? DATE_FORMAT.format(date): "";
 	}
 }

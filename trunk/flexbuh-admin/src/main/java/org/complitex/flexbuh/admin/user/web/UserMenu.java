@@ -28,12 +28,36 @@ public class UserMenu extends ResourceTemplateMenu {
                 new ITemplateLink() {
                     @Override
                     public String getLabel(Locale locale) {
+                        return getString("user_profile", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return UserProfileView.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
+		templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
                         return getString("create_company_profile", locale);
                     }
 
                     @Override
                     public Class<? extends Page> getPage() {
-                        return CreateJuridicalPersonProfile.class;
+                        return JuridicalPersonProfileCreate.class;
                     }
 
                     @Override

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Pavel Sknar
@@ -36,12 +37,16 @@ public class TemplateControlList extends TemplatePage {
 			@Override
             protected void populateItem(ListItem<TemplateControl> item) {
                 item.add(new Label("file_name", item.getModelObject().getName()));
-                item.add(new Label("upload_date", DATE_FORMAT.format(item.getModelObject().getUploadDate())));
+                item.add(new Label("upload_date", getStringDate(item.getModelObject().getUploadDate())));
             }
         };
 
         datacontainer.add(listview);
         datacontainer.add(new AjaxPagingNavigator("navigator", listview));
         datacontainer.setVersioned(false);
+	}
+
+	private String getStringDate(Date date) {
+		return date != null? DATE_FORMAT.format(date): "";
 	}
 }

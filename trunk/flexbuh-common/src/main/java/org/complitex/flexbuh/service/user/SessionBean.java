@@ -51,6 +51,7 @@ public class SessionBean extends DomainObjectBean<Session> {
 		}
 		params.put("table", getTable());
 		sqlSession().insert(getNameSpace() + ".create", params);
+		o.setId((Long)params.get("id"));
 	}
 
 	@Override

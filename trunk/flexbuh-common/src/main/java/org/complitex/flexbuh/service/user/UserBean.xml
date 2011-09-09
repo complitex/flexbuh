@@ -9,7 +9,7 @@
         <result column="password" property="password"/>
         <association property="userProfile" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
 					 resultMap="personProfileResultMap"/>
-		<collection property="companyProfile" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
+		<collection property="companyProfiles" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
 					resultMap="collectionPersonProfileResultMap"/>
     </resultMap>
 
@@ -171,5 +171,53 @@
          left outer join `${session_person_profile_table}` sp on sp.`session_id` = u.`session_id`
          left outer join `${person_profile_table}` pp on pp.`id` = sp.`person_profile_id`
          where u.`id` = #{id}
+    </select>
+
+	<select id="findBySessionCookie" parameterType="map" resultMap="userResultMap"
+			useCache="true" flushCache="false">
+        select u.`id` as `id`,
+        	u.`login` as `login`,
+        	p.`id` as `person_profile_id`,
+        	p.`code_TIN` as `code_TIN`,
+  			p.`code_tax_inspection` as `code_tax_inspection`,
+  			p.`code_KVED` as `code_KVED`,
+  			p.`person_type_id` as `person_type_id`,
+  			p.`contract_date` as `contract_date`,
+			p.`contract_number` as `contract_number`,
+			p.`zip_code` as `zip_code`,
+			p.`address` as `address`,
+			p.`phone` as `phone`,
+			p.`fax` as `fax`,
+			p.`email` as `email`,
+			p.`director_FIO` as `director_FIO`,
+			p.`accountant_FIO` as `accountant_FIO`,
+			p.`director_INN` as `director_INN`,
+			p.`accountant_INN` as `accountant_INN`,
+			p.`ipn` as `ipn`,
+			p.`num_svd_PDV` as `num_svd_PDV`,
+			pp.`id` as `collection_person_profile_id`,
+        	pp.`code_TIN` as `collection_code_TIN`,
+  			pp.`code_tax_inspection` as `collection_code_tax_inspection`,
+  			pp.`code_KVED` as `collection_code_KVED`,
+  			pp.`person_type_id` as `collection_person_type_id`,
+  			pp.`contract_date` as `collection_contract_date`,
+			pp.`contract_number` as `collection_contract_number`,
+			pp.`zip_code` as `collection_zip_code`,
+			pp.`address` as `collection_address`,
+			pp.`phone` as `collection_phone`,
+			pp.`fax` as `collection_fax`,
+			pp.`email` as `collection_email`,
+			pp.`director_FIO` as `collection_director_FIO`,
+			pp.`accountant_FIO` as `collection_accountant_FIO`,
+			pp.`director_INN` as `collection_director_INN`,
+			pp.`accountant_INN` as `collection_accountant_INN`,
+			pp.`ipn` as `collection_ipn`,
+			pp.`num_svd_PDV` as `collection_num_svd_PDV`
+         from `${session_table}` s
+         left outer join `${table}` u on s.`id` = u.`session_id`
+         left outer join `${person_profile_table}` p on p.`id` = s.`person_profile_id`
+         left outer join `${session_person_profile_table}` sp on sp.`session_id` = u.`session_id`
+         left outer join `${person_profile_table}` pp on pp.`id` = sp.`person_profile_id`
+         where s.`cookie` = #{cookie}
     </select>
 </mapper>

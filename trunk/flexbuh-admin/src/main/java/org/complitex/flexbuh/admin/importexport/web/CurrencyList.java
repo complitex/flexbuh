@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author Pavel Sknar
  *         Date: 29.08.11 10:29
@@ -37,8 +39,8 @@ public class CurrencyList extends TemplatePage {
             protected void populateItem(ListItem<Currency> item) {
                 item.add(new Label("code_number", Integer.toString(item.getModelObject().getCodeNumber())));
                 item.add(new Label("code_string", item.getModelObject().getCodeString()));
-                item.add(new Label("begin_date", DATE_FORMAT.format(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", DATE_FORMAT.format(item.getModelObject().getEndDate())));
+                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
+                item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
 				for (CurrencyName currencyName : item.getModelObject().getNames()) {
 					if ("uk".equals(currencyName.getLanguage().getLangIsoCode())) {
 						item.add(new Label("name_uk", currencyName.getValue()));
@@ -52,5 +54,9 @@ public class CurrencyList extends TemplatePage {
         datacontainer.add(listview);
         datacontainer.add(new AjaxPagingNavigator("navigator", listview));
         datacontainer.setVersioned(false);
+	}
+
+	private String getStringDate(Date date) {
+		return date != null? DATE_FORMAT.format(date): "";
 	}
 }

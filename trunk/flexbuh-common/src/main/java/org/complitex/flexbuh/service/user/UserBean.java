@@ -3,10 +3,12 @@ package org.complitex.flexbuh.service.user;
 import com.google.common.collect.Maps;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.Session;
+import org.complitex.flexbuh.entity.user.SessionPersonProfile;
 import org.complitex.flexbuh.entity.user.User;
 import org.complitex.flexbuh.service.DomainObjectBean;
 
 import javax.ejb.EJB;
+import javax.ejb.FinderException;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +20,12 @@ import java.util.Map;
 @Stateless
 public class UserBean extends DomainObjectBean<User> {
 	public static final String NS = UserBean.class.getName();
-	private static final String SESSION_PERSON_PROFILE_TABLE = "session_person_profile";
 
 	@EJB
 	private PersonProfileBean personProfileBean;
+
+	@EJB
+	private SessionBean sessionBean;
 
 	@Override
 	public User read(long id) {
@@ -30,7 +34,7 @@ public class UserBean extends DomainObjectBean<User> {
 		params.put("table", getTable());
 		params.put("session_table", Session.TABLE);
 		params.put("person_profile_table", PersonProfile.TABLE);
-		params.put("session_person_profile_table", SESSION_PERSON_PROFILE_TABLE);
+		params.put("session_person_profile_table", SessionPersonProfile.TABLE);
 		return (User) sqlSession().selectOne(getNameSpace() + ".findById", params);
 	}
 
@@ -41,7 +45,7 @@ public class UserBean extends DomainObjectBean<User> {
 		params.put("table", getTable());
 		params.put("session_table", Session.TABLE);
 		params.put("person_profile_table", PersonProfile.TABLE);
-		params.put("session_person_profile_table", SESSION_PERSON_PROFILE_TABLE);
+		params.put("session_person_profile_table", SessionPersonProfile.TABLE);
 		return sqlSession().selectList(getNameSpace() + ".readAll", params);
 	}
 
@@ -52,8 +56,28 @@ public class UserBean extends DomainObjectBean<User> {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("sessionId", session.getId());
 		params.put("personProfileId", newCompanyProfile.getId());
-		params.put("session_person_profile_table", SESSION_PERSON_PROFILE_TABLE);
+		params.put("session_person_profile_table", SessionPersonProfile.TABLE);
 		sqlSession().insert(getNameSpace() + ".createCompanyProfile", params);
+	}
+
+	public User getUserByCookie(String cookie) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("cookie", cookie);
+		params.put("table", getTable());
+		params.put("session_table", Session.TABLE);
+		params.put("person_profile_table", PersonProfile.TABLE);
+		params.put("session_person_profile_table", SessionPersonProfile.TABLE);
+
+		User user = (User)sqlSession().selectOne(getNameSpace() + ".findBySessionCookie", params);
+
+		System.out.println("find user: " + user);
+		if (user == null && sessionBean.getSessionByCookie(cookie) != null) {
+			System.out.println("user not found. Create anonymous");
+			user = new User();
+			user.setCompanyProfiles(personProfileBean.findCompanyProfilesBySessionCookie(cookie));
+		}
+
+		return user;
 	}
 
 	@Override

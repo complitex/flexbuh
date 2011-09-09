@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.entity;
 
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**
@@ -9,10 +10,10 @@ import java.io.Serializable;
 public abstract class DomainObject implements Serializable {
 	private Long id;
 
+	@XmlTransient
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}

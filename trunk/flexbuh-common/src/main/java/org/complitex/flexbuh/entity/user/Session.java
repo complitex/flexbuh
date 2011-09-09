@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.entity.user;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.entity.DomainObject;
 
 /**
@@ -22,5 +23,10 @@ public class Session extends DomainObject {
 	@Override
 	public String getTable() {
 		return TABLE;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }
