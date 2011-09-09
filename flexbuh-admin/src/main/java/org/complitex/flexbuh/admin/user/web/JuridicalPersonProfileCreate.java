@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.admin.user.web;
 
-import org.apache.commons.lang.Validate;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.basic.Label;
@@ -19,7 +18,6 @@ import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.PersonType;
 import org.complitex.flexbuh.entity.user.Session;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
-import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.PersonTypeBean;
 import org.complitex.flexbuh.service.user.SessionBean;
 import org.complitex.flexbuh.service.user.UserBean;
@@ -29,18 +27,16 @@ import javax.ejb.EJB;
 import javax.servlet.http.Cookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Locale;
 
 /**
  * @author Pavel Sknar
  *         Date: 02.09.11 16:11
  */
-public class CreateJuridicalPersonProfile extends FormTemplatePage {
+public class JuridicalPersonProfileCreate extends FormTemplatePage {
     @EJB
     private TaxInspectionBean taxInspectionBean;
-
-	@EJB
-	private PersonProfileBean personProfileBean;
 
 	@EJB
 	private PersonTypeBean personTypeBean;
@@ -57,7 +53,7 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
 	private PersonProfilePhone fax = new PersonProfilePhone("");
 
 
-    public CreateJuridicalPersonProfile() {
+    public JuridicalPersonProfileCreate() {
         add(new Label("title", getString("title")));
 		add(new FeedbackPanel("messages"));
 
@@ -135,29 +131,27 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
 				personProfile.setPersonType(personType);
 
 				Session session;
-				Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(UserConstants.USER_COOKIE_NAME);
+				Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(UserConstants.SESSION_COOKIE_NAME);
 				if (cookie == null) {
-					MessageDigest digest = null;
-					try {
-						digest = MessageDigest.getInstance("MD5");
-					} catch (NoSuchAlgorithmException e) {
-						e.printStackTrace();
-						return;
-					}
-					digest.update(personProfile.toString().getBytes());
+					String cookieValue = generateEncodeBase64MD5(personProfile.toString().getBytes());
+					if (cookieValue == null) return;
 
-					session = new Session();
-					session.setCookie(new String(Base64.encodeBase64(digest.digest())));
+					session = createSession(cookieValue);
 
-					sessionBean.create(session);
-
-					((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.USER_COOKIE_NAME, session.getCookie()));
+					((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
 
 					//String s = personProfile.get
 				} else {
 					session = sessionBean.getSessionByCookie(cookie.getValue());
-					Validate.isTrue(session != null, "Can not find session");
+					if (session == null) {
+						session = createSession(cookie.getValue());
+						((WebResponse) RequestCycle.get().getResponse()).clearCookie(cookie);
+						((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
+					}
+					//Validate.isTrue(session != null, "Can not find session with cookie: '" + cookie.getValue() + "'");
 				}
+
+				System.out.println("Session: " + session);
 
 				personProfile.setPhone(phone.getNumber());
 				personProfile.setFax(fax.getNumber());
@@ -169,6 +163,31 @@ public class CreateJuridicalPersonProfile extends FormTemplatePage {
 
         form.add(new Button("cancel"));
     }
+
+	private String generateEncodeBase64MD5(byte[] bytes) {
+		MessageDigest digest = null;
+		try {
+			digest = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+		digest.update(bytes);
+		return new String(Base64.encodeBase64(digest.digest()));
+	}
+
+	private Session createSession(String cookieValue) {
+		if (sessionBean.getSessionByCookie(cookieValue) != null) {
+			do {
+				cookieValue = generateEncodeBase64MD5((cookieValue + new Date().toString()).getBytes());
+			} while (sessionBean.getSessionByCookie(cookieValue) != null);
+		}
+		Session session = new Session();
+		session.setCookie(cookieValue);
+
+		sessionBean.create(session);
+		return session;
+	}
 
 	private class PhoneTextField extends TextField<PersonProfilePhone> {
 

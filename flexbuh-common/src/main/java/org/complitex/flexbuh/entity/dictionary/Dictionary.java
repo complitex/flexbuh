@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.entity.DomainObject;
 
 import javax.validation.constraints.NotNull;
@@ -47,5 +48,10 @@ public abstract class Dictionary extends DomainObject {
 
 	public boolean validate() {
 		return uploadDate != null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

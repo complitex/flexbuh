@@ -27,7 +27,7 @@
 
 	<select id="findByCookie" parameterType="map" resultMap="sessionResultMap"
 			useCache="true" flushCache="false">
-        select * from `${table}` where `cookie` = #{cookie}
+        select * from `${table}` where `cookie` = '${cookie}'
     </select>
 
 	<select id="findByPersonProfile" parameterType="map" resultMap="sessionResultMap"

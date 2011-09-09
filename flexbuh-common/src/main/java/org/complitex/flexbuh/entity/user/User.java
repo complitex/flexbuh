@@ -1,20 +1,25 @@
 package org.complitex.flexbuh.entity.user;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.entity.DomainObject;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * @author Pavel Sknar
  *         Date: 31.08.11 14:26
  */
+@XmlRootElement(name = "ROWSET")
 public class User extends DomainObject {
 	public static final String TABLE = "user";
 
 	private String login;
 	private String password;
 	private PersonProfile userProfile;
+
 	private List<PersonProfile> companyProfiles;
 	private Session session;
 
@@ -42,10 +47,10 @@ public class User extends DomainObject {
 		this.userProfile = userProfile;
 	}
 
+	@XmlElement(name = "ROW")
 	public List<PersonProfile> getCompanyProfiles() {
 		return companyProfiles;
 	}
-
 	public void setCompanyProfiles(List<PersonProfile> companyProfiles) {
 		this.companyProfiles = companyProfiles;
 	}
@@ -65,5 +70,10 @@ public class User extends DomainObject {
 	@Override
 	public String getTable() {
 		return TABLE;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

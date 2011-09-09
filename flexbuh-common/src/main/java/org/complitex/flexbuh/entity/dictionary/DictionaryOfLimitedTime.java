@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import java.util.Date;
 
 /**
@@ -29,5 +31,10 @@ public abstract class DictionaryOfLimitedTime extends Dictionary {
 	@Override
 	public boolean validate() {
 		return super.validate() && (beginDate == null || endDate == null || beginDate.before(endDate));
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

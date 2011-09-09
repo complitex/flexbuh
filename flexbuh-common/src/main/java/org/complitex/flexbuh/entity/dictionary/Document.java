@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import java.util.List;
 
 /**
@@ -80,8 +82,12 @@ public class Document extends DictionaryOfLimitedTime {
 	@Override
 	public boolean validate() {
 		return  super.validate() &&
-				type != null && subType != null && names != null && names.size() > 0 && cntSet != null &&
-				selected != null;
+				type != null && subType != null && names != null && names.size() > 0 && cntSet != null && selected != null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 
 	@Override
