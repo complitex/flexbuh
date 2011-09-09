@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
+import org.complitex.flexbuh.security.CookieWebSession;
 import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.template.toolbar.HelpButton;
 import org.complitex.flexbuh.template.toolbar.ToolbarButton;
@@ -245,5 +246,13 @@ public abstract class TemplatePage extends WebPage {
 
     public boolean isUserAuthorized(){
         return getTemplateWebApplication().hasAnyRole(SecurityRole.AUTHORIZED);
+    }
+
+    public CookieWebSession getCookieWebSession(){
+        return (CookieWebSession) getSession();
+    }
+
+    public Long getSessionId(boolean create){
+        return getCookieWebSession().getSessionId(create);
     }
 }

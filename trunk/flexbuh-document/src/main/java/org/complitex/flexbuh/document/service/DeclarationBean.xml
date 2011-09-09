@@ -53,4 +53,12 @@
         insert into `declaration_value` (`declaration_id`, `row_num`, `name`, `value`)
           values (#{declarationId}, #{rowNum}, #{name}, #{value})
     </insert>
+
+    <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
+        select * from `declaration` where `session_id` = #{sessionId} limit #{first}, #{count}
+    </select>
+
+    <select id="selectDeclarationsCount" resultType="int" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
+        select count(*) from `declaration` where `session_id` = #{sessionId}
+    </select>
 </mapper>

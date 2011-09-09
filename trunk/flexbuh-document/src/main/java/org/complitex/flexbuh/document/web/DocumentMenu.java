@@ -27,12 +27,36 @@ public class DocumentMenu extends ResourceTemplateMenu{
                 new ITemplateLink() {
                     @Override
                     public String getLabel(Locale locale) {
-                        return getString("create_document", locale);
+                        return getString("declaration_create", locale);
                     }
 
                     @Override
                     public Class<? extends Page> getPage() {
-                        return DocumentList.class;
+                        return DeclarationCreate.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("declaration_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return DeclarationList.class;
                     }
 
                     @Override

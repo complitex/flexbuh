@@ -1,9 +1,6 @@
 package org.complitex.flexbuh.security;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.Session;
+import org.apache.wicket.*;
 import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.IRoleCheckingStrategy;
@@ -110,4 +107,8 @@ public abstract class ServletAuthWebApplication extends WebApplication implement
         RequestCycle.get().setResponsePage(getHomePage());
     }
 
+    @Override
+    public Session newSession(Request request, Response response) {
+        return new CookieWebSession(request);
+    }
 }

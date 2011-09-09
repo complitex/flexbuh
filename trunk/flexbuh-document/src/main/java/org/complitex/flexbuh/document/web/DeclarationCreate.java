@@ -16,11 +16,11 @@ import java.util.Arrays;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 12.08.11 15:19
  */
-public class DocumentList extends FormTemplatePage{
+public class DeclarationCreate extends FormTemplatePage{
     @EJB
     private TemplateBean templateBean;
 
-    public DocumentList() {
+    public DeclarationCreate() {
         add(new Label("title", getString("title")));
 
         Form form = new Form("form");
