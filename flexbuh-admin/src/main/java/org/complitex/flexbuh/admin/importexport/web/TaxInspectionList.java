@@ -1,15 +1,16 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.AreaName;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.dictionary.TaxInspectionName;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,14 +31,34 @@ public class TaxInspectionList extends TemplatePage {
 	TaxInspectionBean taxInspectionBean;
 
 	public TaxInspectionList() {
+		
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		//Модель
+        final DataProvider<TaxInspection> dataProvider = new DataProvider<TaxInspection>() {
 
-        PageableListView<TaxInspection> listview = new PageableListView<TaxInspection>("rows", taxInspectionBean.readAll(), 20) {
+			@SuppressWarnings("unchecked")
             @Override
-            protected void populateItem(ListItem<TaxInspection> item) {
+            protected Iterable<? extends TaxInspection> getData(int first, int count) {
+                return taxInspectionBean.read(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return taxInspectionBean.totalCount();
+            }
+        };
+        dataProvider.setSort("type", true);
+        dataProvider.setSort("sub_type", true);
+
+		//Таблица
+        DataView<TaxInspection> dataView = new DataView<TaxInspection>("dictionaries", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<TaxInspection> item) {
+
                 item.add(new Label("code", Integer.toString(item.getModelObject().getCode())));
                 item.add(new Label("region_code", Integer.toString(item.getModelObject().getRegionCode())));
                 item.add(new Label("area_code", Integer.toString(item.getModelObject().getCodeArea())));
@@ -56,10 +77,10 @@ public class TaxInspectionList extends TemplatePage {
 				}
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

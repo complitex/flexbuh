@@ -33,6 +33,13 @@ public abstract class DictionaryBean<T extends Dictionary> extends AbstractBean 
 		sqlSession().delete(NS + ".activateByUploadDate", params);
 	}
 
+	@SuppressWarnings("unchecked")
+	public int totalCount() {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("table", getTable());
+		return (Integer)sqlSession().selectOne(NS + ".readSize", params);
+	}
+
 	abstract public void create(T dictionary);
 
 	abstract public String getTable();

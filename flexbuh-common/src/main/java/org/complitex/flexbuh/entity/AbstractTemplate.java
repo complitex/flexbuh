@@ -1,12 +1,13 @@
 package org.complitex.flexbuh.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.07.11 16:02
  */
-public abstract class AbstractTemplate {
+public abstract class AbstractTemplate implements Serializable {
     private Long id;
     private String name;
     private String data;

@@ -1,13 +1,14 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.DocumentTerm;
 import org.complitex.flexbuh.service.dictionary.DocumentTermBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +30,34 @@ public class DocumentTermList extends TemplatePage {
 
 	public DocumentTermList() {
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-        PageableListView<DocumentTerm> listview = new PageableListView<DocumentTerm>("rows", documentTermBean.readAll(), 20) {
+		//Модель
+        final DataProvider<DocumentTerm> dataProvider = new DataProvider<DocumentTerm>() {
+
+			@SuppressWarnings("unchecked")
             @Override
-            protected void populateItem(ListItem<DocumentTerm> item) {
-				item.add(new Label("type", item.getModelObject().getDocumentType()));
+            protected Iterable<? extends DocumentTerm> getData(int first, int count) {
+                return documentTermBean.read(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return documentTermBean.totalCount();
+            }
+        };
+        dataProvider.setSort("type", true);
+        dataProvider.setSort("sub_type", true);
+
+		//Таблица
+        DataView<DocumentTerm> dataView = new DataView<DocumentTerm>("dictionaries", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<DocumentTerm> item) {
+
+                item.add(new Label("type", item.getModelObject().getDocumentType()));
                 item.add(new Label("sub_type", item.getModelObject().getDocumentSubType()));
                 item.add(new Label("version", Integer.toString(item.getModelObject().getDocumentVersion())));
                 item.add(new Label("date_term", getStringDate(item.getModelObject().getDateTerm())));
@@ -47,10 +68,10 @@ public class DocumentTermList extends TemplatePage {
                 item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

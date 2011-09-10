@@ -40,6 +40,15 @@ public class DocumentBean extends DictionaryBean<Document> {
 		return (Document)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Document> read(int first, int count) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("table", getTable());
+		params.put("first", first);
+		params.put("count", count);
+		return sqlSession().selectList(NS + ".readLimit", params);
+	}
+
 	@Override
 	public String getTable() {
 		return Document.TABLE;

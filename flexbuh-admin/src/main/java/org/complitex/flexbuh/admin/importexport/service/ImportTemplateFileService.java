@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,12 @@ public class ImportTemplateFileService implements ImportFileService {
 		}
 	}
 
-    protected String getData(File file) throws IOException {
+	@Override
+	public void process(ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
+		 throw new NotImplementedException("use process(ImportListener listener, File importFile, Date beginDate, Date endDate)");
+	}
+
+	protected String getData(File file) throws IOException {
         StringBuilder data = new StringBuilder();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), FILE_ENCODING));

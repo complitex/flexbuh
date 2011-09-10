@@ -1,13 +1,14 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.TemplateFO;
 import org.complitex.flexbuh.service.TemplateBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +30,40 @@ public class TemplateFOList extends TemplatePage {
 
 	public TemplateFOList() {
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-        PageableListView<TemplateFO> listview = new PageableListView<TemplateFO>("rows", templateBean.getAllTemplateFO(), 20) {
+		//Модель
+        final DataProvider<TemplateFO> dataProvider = new DataProvider<TemplateFO>() {
+
+			@SuppressWarnings("unchecked")
             @Override
-            protected void populateItem(ListItem<TemplateFO> item) {
+            protected Iterable<? extends TemplateFO> getData(int first, int count) {
+                return templateBean.getTemplateFO(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return templateBean.getTotalCountTemplateFO();
+            }
+        };
+        dataProvider.setSort("file_name", true);
+
+		//Таблица
+        DataView<TemplateFO> dataView = new DataView<TemplateFO>("templates", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<TemplateFO> item) {
+
                 item.add(new Label("file_name", item.getModelObject().getName()));
                 item.add(new Label("upload_date", getStringDate(item.getModelObject().getUploadDate())));
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

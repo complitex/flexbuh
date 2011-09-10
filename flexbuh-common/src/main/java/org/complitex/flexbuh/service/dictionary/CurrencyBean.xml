@@ -23,6 +23,13 @@
         select * from `${table}` where `status` = 0
     </select>
 
+	<select id="readLimit" parameterType="map" resultMap="currencyResultMap"
+			useCache="true" flushCache="false">
+        select * from `${table}` where `status` = 0
+        order by `code_number`
+        limit #{first}, #{count}
+    </select>
+
 	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="currencyResultMap"
 			useCache="true" flushCache="false">
         select * from `${table}` where `id` = #{id}

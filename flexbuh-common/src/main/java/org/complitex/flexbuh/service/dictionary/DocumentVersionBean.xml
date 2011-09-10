@@ -24,6 +24,13 @@
         select * from `${table}` where `status` = 0
     </select>
 
+	<select id="readLimit" parameterType="map" resultMap="documentVersionResultMap"
+			useCache="true" flushCache="false">
+        select * from `${table}` where `status` = 0
+        order by `document_type`, `document_sub_type`, `version`
+        limit #{first}, #{count}
+    </select>
+
 	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="documentVersionResultMap"
 			useCache="true" flushCache="false">
         select * from `${table}` where `id` = #{id}

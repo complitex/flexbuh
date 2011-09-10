@@ -1,14 +1,15 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.entity.dictionary.NormativeDocumentName;
 import org.complitex.flexbuh.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +30,34 @@ public class DocumentVersionList extends TemplatePage {
 	DocumentVersionBean documentVersionBean;
 
 	public DocumentVersionList() {
+		
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		//Модель
+        final DataProvider<DocumentVersion> dataProvider = new DataProvider<DocumentVersion>() {
 
-        PageableListView<DocumentVersion> listview = new PageableListView<DocumentVersion>("rows", documentVersionBean.readAll(), 20) {
+			@SuppressWarnings("unchecked")
             @Override
-            protected void populateItem(ListItem<DocumentVersion> item) {
+            protected Iterable<? extends DocumentVersion> getData(int first, int count) {
+                return documentVersionBean.read(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return documentVersionBean.totalCount();
+            }
+        };
+        dataProvider.setSort("type", true);
+        dataProvider.setSort("sub_type", true);
+
+		//Таблица
+        DataView<DocumentVersion> dataView = new DataView<DocumentVersion>("dictionaries", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<DocumentVersion> item) {
+
                 item.add(new Label("type", item.getModelObject().getDocumentType()));
                 item.add(new Label("sub_type", item.getModelObject().getDocumentSubType()));
                 item.add(new Label("version", Integer.toString(item.getModelObject().getVersion())));
@@ -49,10 +70,10 @@ public class DocumentVersionList extends TemplatePage {
 				}
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

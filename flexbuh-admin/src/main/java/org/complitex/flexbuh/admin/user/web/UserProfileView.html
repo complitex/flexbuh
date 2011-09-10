@@ -15,13 +15,15 @@
         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Zip</th>
-                <th>Address</th>
-                <th>Director</th>
-                <th>Phone</th>
-                <th>E-mail</th>
+                <th><wicket:message key="name"/></th>
+                <th><wicket:message key="zip"/></th>
+                <th><wicket:message key="address"/></th>
+                <th><wicket:message key="director"/></th>
+                <th><wicket:message key="phone"/></th>
+                <th><wicket:message key="email"/></th>
+                <!--
 				<th></th>
+				-->
             </tr>
             </thead>
             <tbody>
@@ -32,18 +34,28 @@
                 <td><span wicket:id="directorFIO"></span></td>
                 <td><span wicket:id="phone"></span></td>
                 <td><span wicket:id="email"></span></td>
+				<!--
                 <td>
                     <span wicket:id="action_edit"></span>
                 </td>
+                -->
             </tr>
             </tbody>
         </table>
         <div>
             <span wicket:id="paging"></span>
         </div>
-		<input type="submit" class="btnBig" wicket:id="import" wicket:message="value:import"/>
 		<input type="submit" class="btnBig" wicket:id="export" wicket:message="value:export"/>
+
     </form>
+
+	<form wicket:id="import_form">
+		<p>
+			<label><wicket:message key="select_file"/></label>
+			<input wicket:id="fileUpload" size="20" type="file"/>
+			<input type="submit" class="btnBig" wicket:message="value:import"/>
+		</p>
+	</form>
 </wicket:extend>
 </body>
 </html>

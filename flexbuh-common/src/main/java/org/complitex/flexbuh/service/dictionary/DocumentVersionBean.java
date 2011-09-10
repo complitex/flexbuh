@@ -40,6 +40,14 @@ public class DocumentVersionBean extends DictionaryBean<DocumentVersion> {
 		return (DocumentVersion)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<DocumentVersion> read(int first, int count) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("table", getTable());
+		params.put("first", first);
+		params.put("count", count);
+		return sqlSession().selectList(NS + ".readLimit", params);
+	}
 
 	@Override
 	public String getTable() {

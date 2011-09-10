@@ -12,6 +12,9 @@ import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.transaction.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -33,12 +36,23 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
 
 	@Override
 	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+		try {
+			process(listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
+		} catch (FileNotFoundException e) {
+			listener.begin();
+			log.warn("Can not find file: " + importFile, e);
+			listener.cancel();
+		}
+	}
+
+	@Override
+	public void process(ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
 		listener.begin();
 
 		Date importDate = new Date();
 		List<Dictionary> docDictionaries = Lists.newArrayList();
 		try {
-			org.w3c.dom.Document document = getDocument(importFile);
+			org.w3c.dom.Document document = getDocument(inputStream);
 			processDocument("ROW", beginDate, endDate, importDate, docDictionaries, document);
 			processDocument("row", beginDate, endDate, importDate, docDictionaries, document);
 			commit(docDictionaries, true);
@@ -46,7 +60,7 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
 
 			listener.completed();
 		} catch (Throwable th) {
-			log.warn("Cancel import currency: " + importFile, th);
+			log.warn("Cancel import dictionary: " + name, th);
 			listener.cancel();
 			deleteUploadedRecords(importDate);
 		}
