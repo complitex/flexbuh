@@ -40,6 +40,15 @@ public class RegionBean extends DictionaryBean<Region> {
 		return (Region)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Region> read(int first, int count) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("table", getTable());
+		params.put("first", first);
+		params.put("count", count);
+		return sqlSession().selectList(NS + ".readLimit", params);
+	}
+
 	@Override
 	public String getTable() {
 		return Region.TABLE;

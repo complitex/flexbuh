@@ -5,9 +5,10 @@
 
 <body>
 <wicket:extend>
-	<div>
-		<h1><wicket:message key="title"/></h1>
-		<table wicket:id="data">
+     <h1><wicket:message key="title"/></h1>
+
+	<form action="#" wicket:id="filter_form">
+		<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
 			<thead>
 				<tr>
 					<th>Code</th>
@@ -17,20 +18,18 @@
 				</tr>
 			</thead>
 			<tbody >
-				<tr wicket:id="rows">
-					<td wicket:id="code"></td>
-					<td wicket:id="begin_date"></td>
-					<td wicket:id="end_date"></td>
-					<td wicket:id="name_uk"></td>
+				<tr wicket:id="dictionaries">
+					<td><span wicket:id="code"></span></td>
+					<td><span wicket:id="begin_date"></span></td>
+					<td><span wicket:id="end_date"></span></td>
+					<td><span wicket:id="name_uk"></span></td>
 				</tr>
 			</tbody>
-			<tfoot>
-				<tr>
-					<td wicket:id="navigator" colspan="4"></td>
-				</tr>
-			</tfoot>
 		</table>
-	</div>
+		<div>
+            <span wicket:id="paging"></span>
+        </div>
+	</form>
 </wicket:extend>
 </body>
 </html>

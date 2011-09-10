@@ -1,13 +1,14 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.TemplateXSD;
 import org.complitex.flexbuh.service.TemplateBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +30,40 @@ public class TemplateXSDList extends TemplatePage {
 
 	public TemplateXSDList() {
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-        PageableListView<TemplateXSD> listview = new PageableListView<TemplateXSD>("rows", templateBean.getAllTemplateXSD(), 20) {
-			@Override
-            protected void populateItem(ListItem<TemplateXSD> item) {
+		//Модель
+        final DataProvider<TemplateXSD> dataProvider = new DataProvider<TemplateXSD>() {
+
+			@SuppressWarnings("unchecked")
+            @Override
+            protected Iterable<? extends TemplateXSD> getData(int first, int count) {
+                return templateBean.getTemplateXSD(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return templateBean.getTotalCountTemplateXSD();
+            }
+        };
+        dataProvider.setSort("file_name", true);
+
+		//Таблица
+        DataView<TemplateXSD> dataView = new DataView<TemplateXSD>("templates", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<TemplateXSD> item) {
+
                 item.add(new Label("file_name", item.getModelObject().getName()));
                 item.add(new Label("upload_date", getStringDate(item.getModelObject().getUploadDate())));
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

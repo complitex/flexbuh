@@ -6,9 +6,8 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Pavel Sknar
@@ -16,9 +15,9 @@ import java.io.IOException;
  */
 public abstract class ImportXMLService implements ImportFileService {
 
-	protected Document getDocument(File file) throws IOException, SAXException, ParserConfigurationException {
+	protected Document getDocument(InputStream inputStream) throws IOException, SAXException, ParserConfigurationException {
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		return documentBuilder.parse(new FileInputStream(file));
+		return documentBuilder.parse(inputStream);
     }
 
 }

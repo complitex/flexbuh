@@ -38,7 +38,7 @@ public class PersonProfile extends DomainObject {
 
 	private boolean selected;
 
-	@XmlElement(name = "NAME")
+	@XmlElement(name = "NAME", required = true)
 	public String getName() {
 		return name;
 	}
@@ -70,9 +70,8 @@ public class PersonProfile extends DomainObject {
 		this.codeKVED = codeKVED;
 	}
 
-	@XmlSchemaType(name="string")
 	@XmlJavaTypeAdapter( String2PersonType.class )
-	@XmlElement(name = "PERSON_TYPE")
+	@XmlElement(name = "PERSON_TYPE", required = true)
 	public PersonType getPersonType() {
 		return personType;
 	}

@@ -78,16 +78,56 @@
         select `name`, `upload_date` from `template_xsl`
     </select>
 
+	<select id="selectAllTemplateXSLLimit" parameterType="map" resultMap="templateXSLWithoutDataResultMap">
+        select `name`, `upload_date` from `template_xsl`
+        order by `name`
+        limit #{first}, #{count}
+    </select>
+
+	<select id="selectAllTemplateXSLSize" resultType="int">
+        select count(id) from `template_xsl`
+    </select>
+
     <select id="selectAllTemplateXSD" resultMap="templateXSDWithoutDataResultMap">
         select `name`, `upload_date` from `template_xsd`
+    </select>
+
+	<select id="selectAllTemplateXSDLimit" parameterType="map" resultMap="templateXSDWithoutDataResultMap">
+        select `name`, `upload_date` from `template_xsd`
+        order by `name`
+        limit #{first}, #{count}
+    </select>
+
+	<select id="selectAllTemplateXSDSize" resultType="int">
+        select count(id) from `template_xsd`
     </select>
 
     <select id="selectAllTemplateControl" resultMap="templateControlWithoutDataResultMap">
         select `name`, `upload_date` from `template_control`
     </select>
 
+	<select id="selectAllTemplateControlLimit" parameterType="map" resultMap="templateControlWithoutDataResultMap">
+        select `name`, `upload_date` from `template_control`
+        order by `name`
+        limit #{first}, #{count}
+    </select>
+
+	<select id="selectAllTemplateControlSize" resultType="int">
+        select count(id) from `template_control`
+    </select>
+
     <select id="selectAllTemplateFO" resultMap="templateFOWithoutDataResultMap">
         select `name`, `upload_date` from `template_fo`
+    </select>
+
+	<select id="selectAllTemplateFOLimit" parameterType="map" resultMap="templateFOWithoutDataResultMap">
+        select `name`, `upload_date` from `template_fo`
+        order by `name`
+        limit #{first}, #{count}
+    </select>
+
+	<select id="selectAllTemplateFOSize" resultType="int">
+        select count(id) from `template_fo`
     </select>
 
     <select id="selectTemplateXSLNames" resultType="string">

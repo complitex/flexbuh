@@ -27,6 +27,13 @@
         select * from `${table}` where `status` = 0
     </select>
 
+	<select id="readLimit" parameterType="map" resultMap="taxInspectionResultMap"
+			useCache="true" flushCache="false">
+        select * from `${table}` where `status` = 0
+        order by `code`
+        limit #{first}, #{count}
+    </select>
+
 	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="taxInspectionResultMap"
 			useCache="true" flushCache="false">
         select * from `${table}` where `id` = #{id}

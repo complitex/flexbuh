@@ -130,26 +130,8 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 				personProfile.setCodeTaxInspection(taxInspectionModel.getObject().getCode());
 				personProfile.setPersonType(personType);
 
-				Session session;
-				Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(UserConstants.SESSION_COOKIE_NAME);
-				if (cookie == null) {
-					String cookieValue = generateEncodeBase64MD5(personProfile.toString().getBytes());
-					if (cookieValue == null) return;
-
-					session = createSession(cookieValue);
-
-					((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
-
-					//String s = personProfile.get
-				} else {
-					session = sessionBean.getSessionByCookie(cookie.getValue());
-					if (session == null) {
-						session = createSession(cookie.getValue());
-						((WebResponse) RequestCycle.get().getResponse()).clearCookie(cookie);
-						((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
-					}
-					//Validate.isTrue(session != null, "Can not find session with cookie: '" + cookie.getValue() + "'");
-				}
+				Session session = getUserSession();
+				if (session == null) return;
 
 				System.out.println("Session: " + session);
 
@@ -159,35 +141,10 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 
                 info(getString("profile_saved"));
             }
-        });
+		});
 
         form.add(new Button("cancel"));
     }
-
-	private String generateEncodeBase64MD5(byte[] bytes) {
-		MessageDigest digest = null;
-		try {
-			digest = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-		digest.update(bytes);
-		return new String(Base64.encodeBase64(digest.digest()));
-	}
-
-	private Session createSession(String cookieValue) {
-		if (sessionBean.getSessionByCookie(cookieValue) != null) {
-			do {
-				cookieValue = generateEncodeBase64MD5((cookieValue + new Date().toString()).getBytes());
-			} while (sessionBean.getSessionByCookie(cookieValue) != null);
-		}
-		Session session = new Session();
-		session.setCookie(cookieValue);
-
-		sessionBean.create(session);
-		return session;
-	}
 
 	private class PhoneTextField extends TextField<PersonProfilePhone> {
 

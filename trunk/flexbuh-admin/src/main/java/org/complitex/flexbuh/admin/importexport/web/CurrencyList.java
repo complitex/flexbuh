@@ -1,14 +1,15 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.Currency;
 import org.complitex.flexbuh.entity.dictionary.CurrencyName;
 import org.complitex.flexbuh.service.dictionary.CurrencyBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,31 +30,51 @@ public class CurrencyList extends TemplatePage {
 	CurrencyBean currencyBean;
 
 	public CurrencyList() {
+		
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		//Модель
+        final DataProvider<Currency> dataProvider = new DataProvider<Currency>() {
 
-        PageableListView<Currency> listview = new PageableListView<Currency>("rows", currencyBean.readAll(), 20) {
+			@SuppressWarnings("unchecked")
             @Override
-            protected void populateItem(ListItem<Currency> item) {
+            protected Iterable<? extends Currency> getData(int first, int count) {
+                return currencyBean.read(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return currencyBean.totalCount();
+            }
+        };
+        dataProvider.setSort("name", true);
+
+		//Таблица
+        DataView<Currency> dataView = new DataView<Currency>("dictionaries", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<Currency> item) {
+
                 item.add(new Label("code_number", Integer.toString(item.getModelObject().getCodeNumber())));
                 item.add(new Label("code_string", item.getModelObject().getCodeString()));
                 item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
                 item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
-				for (CurrencyName currencyName : item.getModelObject().getNames()) {
-					if ("uk".equals(currencyName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", currencyName.getValue()));
-					} else if ("ru".equals(currencyName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_ru", currencyName.getValue()));
+
+				for (CurrencyName dictionaryName : item.getModelObject().getNames()) {
+					if ("uk".equals(dictionaryName.getLanguage().getLangIsoCode())) {
+						item.add(new Label("name_uk", dictionaryName.getValue()));
+					} else if ("ru".equals(dictionaryName.getLanguage().getLangIsoCode())) {
+						item.add(new Label("name_ru", dictionaryName.getValue()));
 					}
 				}
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

@@ -4,6 +4,8 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -11,15 +13,19 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.request.target.resource.ResourceStreamRequestTarget;
+import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.complitex.flexbuh.admin.importexport.service.ImportListener;
+import org.complitex.flexbuh.admin.importexport.service.ImportUserProfileXMLService;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.User;
 import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.UserBean;
+import org.complitex.flexbuh.template.UserConstants;
 import org.complitex.flexbuh.template.pages.ScrollListPage;
-import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
-import org.complitex.flexbuh.web.component.scroll.ScrollListBehavior;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.http.Cookie;
@@ -34,11 +40,19 @@ import java.util.Collections;
  */
 public class UserProfileView extends ScrollListPage {
 
+	 private final static Logger log = LoggerFactory.getLogger(UserProfileView.class);
+
 	@EJB
 	private UserBean userBean;
 
 	@EJB
 	private PersonProfileBean personProfileBean;
+
+	@EJB
+	private ImportUserProfileXMLService importUserProfileXMLService;
+
+	private FileUploadField fileUpload;
+
 
 	public UserProfileView() {
 		super();
@@ -95,10 +109,11 @@ public class UserProfileView extends ScrollListPage {
 				item.add(new Label("phone", profile.getPhone()));
 
 				item.add(new Label("email", profile.getEmail()));
-
+				/*
                 item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
                         ScrollListBehavior.SCROLL_PREFIX + String.valueOf(profile.getId()),
                         JuridicalPersonProfileEdit.class, new PageParameters("person_profile_id=" + profile.getId())));
+                        */
             }
         };
         filterForm.add(dataView);
@@ -106,14 +121,70 @@ public class UserProfileView extends ScrollListPage {
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView));
 
-		//Кнопка импортировать
-        Button importButton = new Button("import") {
-            @Override
-            public void onSubmit() {
+		// Импортировать профайл из файла пользователя
+		Form<?> form = new Form<Void>("import_form") {
+			 @Override
+			 protected void onSubmit() {
+
+				final FileUpload uploadedFile = fileUpload.getFileUpload();
+				if (uploadedFile != null) {
+
+
+					try {
+
+						final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
+						canceled.set(false);
+
+						importUserProfileXMLService.setSession(getUserSession());
+
+						importUserProfileXMLService.process(new ImportListener() {
+							@Override
+							public void begin() {
+							}
+
+							@Override
+							public void completed() {
+
+							}
+
+							@Override
+							public void completedWithError() {
+
+							}
+
+							@Override
+							public void cancel() {
+								canceled.set(true);
+							}
+
+							@Override
+							public ImportListener getChildImportListener(Object o) {
+								return null;
+							}
+						}, uploadedFile.getClientFileName(), uploadedFile.getInputStream(), null, null);
+						if (canceled.get()) {
+							log.error("Failed import");
+							error(getString("failed_import"));
+						} else {
+							info(getString("profile_imported"));
+						}
+					} catch (Exception e) {
+						log.error("Failed import", e);
+						error(getString("failed_import"));
+					}
+				 }
+
 			}
+
 		};
 
-		filterForm.add(importButton);
+		form.setMultiPart(true);
+
+		form.setMaxSize(Bytes.kilobytes(100));
+
+		form.add(fileUpload = new FileUploadField("fileUpload"));
+
+		add(form);
 
 		//Кнопка экспортировать
         Button exportButton = new Button("export") {
@@ -132,14 +203,13 @@ public class UserProfileView extends ScrollListPage {
 
 							System.out.println("User: " + user.toString());
 
-							JAXBContext context = null;
 							try {
-								context = JAXBContext.newInstance(User.class);
+								JAXBContext context = JAXBContext.newInstance(User.class);
 								Marshaller marshaller = context.createMarshaller();
 								marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 								marshaller.marshal(user, output);
 							} catch (Exception e) {
-								e.printStackTrace();
+								log.error("Cannot export person profile to xml", e);
 							}
 						}
 					}

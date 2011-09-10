@@ -1,14 +1,15 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.entity.dictionary.DocumentName;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +30,34 @@ public class DocumentList extends TemplatePage {
 	DocumentBean documentBean;
 
 	public DocumentList() {
+		
+		final Form form = new Form("filter_form");
+        form.setOutputMarkupId(true);
+        add(form);
 
-		WebMarkupContainer datacontainer = new WebMarkupContainer("data");
-        datacontainer.setOutputMarkupId(true);
-        add(datacontainer);
+		//Модель
+        final DataProvider<Document> dataProvider = new DataProvider<Document>() {
 
-        PageableListView<Document> listview = new PageableListView<Document>("rows", documentBean.readAll(), 20) {
+			@SuppressWarnings("unchecked")
             @Override
-            protected void populateItem(ListItem<Document> item) {
+            protected Iterable<? extends Document> getData(int first, int count) {
+                return documentBean.read(first, count);
+            }
+
+            @Override
+            protected int getSize() {
+                return documentBean.totalCount();
+            }
+        };
+        dataProvider.setSort("type", true);
+        dataProvider.setSort("sub_type", true);
+
+		//Таблица
+        DataView<Document> dataView = new DataView<Document>("dictionaries", dataProvider, 10) {
+
+            @Override
+            protected void populateItem(Item<Document> item) {
+
                 item.add(new Label("type", item.getModelObject().getType()));
                 item.add(new Label("sub_type", item.getModelObject().getSubType()));
                 item.add(new Label("parent_document_type", item.getModelObject().getParentDocumentType()));
@@ -45,17 +66,17 @@ public class DocumentList extends TemplatePage {
                 item.add(new Label("selected", Boolean.toString(item.getModelObject().getSelected())));
                 item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
                 item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
-				for (DocumentName currencyName : item.getModelObject().getNames()) {
-					if ("uk".equals(currencyName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", currencyName.getValue()));
+				for (DocumentName documentName : item.getModelObject().getNames()) {
+					if ("uk".equals(documentName.getLanguage().getLangIsoCode())) {
+						item.add(new Label("name_uk", documentName.getValue()));
 					}
 				}
             }
         };
+        form.add(dataView);
 
-        datacontainer.add(listview);
-        datacontainer.add(new AjaxPagingNavigator("navigator", listview));
-        datacontainer.setVersioned(false);
+        //Постраничная навигация
+        form.add(new PagingNavigator("paging", dataView));
 	}
 
 	private String getStringDate(Date date) {

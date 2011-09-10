@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.user.web;
+package org.complitex.flexbuh.template;
 
 /**
  * @author Pavel Sknar

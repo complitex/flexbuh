@@ -29,6 +29,15 @@ public class DocumentTermBean extends DictionaryBean<DocumentTerm> {
 		return (List<DocumentTerm>)sqlSession().selectList(NS + ".readAll", params);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<DocumentTerm> read(int first, int count) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("table", getTable());
+		params.put("first", first);
+		params.put("count", count);
+		return sqlSession().selectList(NS + ".readLimit", params);
+	}
+
 	public DocumentTerm read(long id) {
 		return (DocumentTerm)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
 	}

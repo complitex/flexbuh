@@ -18,4 +18,9 @@
         update `${table}` set `status`=0 where `upload_date` = #{uploadDate}
     </update>
 
+	<select id="readSize" resultType="int"
+			useCache="true" flushCache="false">
+        select count(id) from `${table}` where `status` = 0
+    </select>
+
 </mapper>
