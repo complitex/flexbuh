@@ -120,6 +120,7 @@ public class ConfigBean extends AbstractBean{
     }
 
     private String getValue(String name){
+		log.debug("Config parameter name: {}", name);
         return (String) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectConfigValue", name);
     }
 

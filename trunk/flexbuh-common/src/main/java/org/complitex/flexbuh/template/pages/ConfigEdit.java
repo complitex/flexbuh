@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.template.pages;
 
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -11,7 +10,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.entity.IConfig;
-import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.service.ConfigBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
 
@@ -25,7 +23,7 @@ import java.util.Map;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.10.2010 13:21:37
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+//@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class ConfigEdit extends FormTemplatePage {
     @EJB(name = "ConfigBean")
     private ConfigBean configBean;

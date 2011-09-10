@@ -1,4 +1,9 @@
 -- --------------------------------
+-- Config
+-- --------------------------------
+insert into `config` (`name`, `value`) values ('IMPORT_FILE_STORAGE_DIR', '/tmp/flexbuh');
+
+-- --------------------------------
 -- Language
 -- --------------------------------
 INSERT INTO `language` (`id`, `lang_iso_code`, `default_lang`) VALUES (1, 'uk', 1);
