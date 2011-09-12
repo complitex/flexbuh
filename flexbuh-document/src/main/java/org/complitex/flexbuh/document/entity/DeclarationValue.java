@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 @XmlType
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class DeclarationValue implements Serializable{
+public class DeclarationValue implements Serializable, Comparable{
     @XmlTransient
     private Long id;
 
@@ -81,5 +81,14 @@ public class DeclarationValue implements Serializable{
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (rowNum != null && o instanceof DeclarationValue && ((DeclarationValue) o).getRowNum() != null){
+            return rowNum.compareTo(((DeclarationValue) o).getRowNum());
+        }
+
+        return 0;
     }
 }

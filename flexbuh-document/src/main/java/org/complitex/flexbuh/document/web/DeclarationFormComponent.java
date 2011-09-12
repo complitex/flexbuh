@@ -86,10 +86,12 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
     private Integer rowNextMarkupId = 0;
 
-    public DeclarationFormComponent(String id, String templateName, Declaration declaration){
+    public DeclarationFormComponent(String id, Declaration declaration){
         super(id);
 
         try {
+            String templateName = declaration.getName();
+
             //Template
             template = templateService.getDocument(templateName, declaration);
 

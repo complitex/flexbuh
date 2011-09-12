@@ -26,15 +26,24 @@ public class DeclarationFormPage extends TemplatePage{
         add(new FeedbackPanel("feedback"));
 
         String name = pageParameters.getString("name");
+        Long id = pageParameters.getAsLong("id");
+
+        final Declaration declaration;
+
+        if (id != null) {
+            declaration = declarationBean.getDeclaration(id);
+
+        }else{
+            declaration = new Declaration();
+            declaration.setName(name);
+        }
 
         add(new Label("title", name));
 
         Form form = new Form("form");
         add(form);
 
-        final Declaration declaration = new Declaration();
-
-        DeclarationFormComponent declarationComponent = new DeclarationFormComponent("declaration", name, declaration);
+        DeclarationFormComponent declarationComponent = new DeclarationFormComponent("declaration", declaration);
         form.add(declarationComponent);
 
         form.add(new Button("submit"){
