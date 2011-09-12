@@ -13,21 +13,50 @@ import java.io.Serializable;
 @XmlType
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class DeclarationHead implements Serializable {
-    @XmlElement(name = "TIN") String tin;                   // код плательщика
-    @XmlElement(name = "C_DOC") String cDoc;                // код документа
-    @XmlElement(name = "C_DOC_SUB") String cDocSub;         // подтип документа
-    @XmlElement(name = "C_DOC_VER") String cDocVer;         // номер версии документа
-    @XmlElement(name = "C_DOC_TYPE") Integer cDocType;       // № исправительной документа (0 - основной (первого поданного))
-    @XmlElement(name = "C_DOC_CNT") Integer cDocCnt;         // № однотипных документов в периоде
-    @XmlElement(name = "C_REG") Integer cReg;                // код области
-    @XmlElement(name = "C_RAJ") Integer cRaj;                // код административного района
-    @XmlElement(name = "PERIOD_MONTH") Integer periodMonth;  // отчетный месяц (последний в отчетном периоде)
-    @XmlElement(name = "PERIOD_TYPE") Integer periodType;    // тип периода
-    @XmlElement(name = "PERIOD_YEAR") Integer periodYear;    // отчетный год
-    @XmlElement(name = "C_STI_ORIG") String cStiOrig;       // Код ГНИ, в которую подается оригинал документа
-    @XmlElement(name = "C_DOC_STAN") Integer cDocStan;       // законодательство
-    @XmlElement(name = "D_FILL") String dFill;              // дата заполненные документы плательщиком
-    @XmlElement(name = "SOFTWARE") String software;         // сигнатура программы
+    @XmlElement(name = "TIN")
+    private String tin; // код плательщика
+
+    @XmlElement(name = "C_DOC")
+    private String cDoc; // код документа
+
+    @XmlElement(name = "C_DOC_SUB")
+    private String cDocSub; // подтип документа
+
+    @XmlElement(name = "C_DOC_VER")
+    private String cDocVer; // номер версии документа
+
+    @XmlElement(name = "C_DOC_TYPE")
+    private Integer cDocType; // № исправительной документа (0 - основной (первого поданного))
+
+    @XmlElement(name = "C_DOC_CNT")
+    private Integer cDocCnt; // № однотипных документов в периоде
+
+    @XmlElement(name = "C_REG")
+    private Integer cReg; // код области
+
+    @XmlElement(name = "C_RAJ")
+    private Integer cRaj; // код административного района
+
+    @XmlElement(name = "PERIOD_MONTH")
+    private Integer periodMonth; // отчетный месяц (последний в отчетном периоде)
+
+    @XmlElement(name = "PERIOD_TYPE")
+    private Integer periodType; // тип периода
+
+    @XmlElement(name = "PERIOD_YEAR")
+    private Integer periodYear; // отчетный год
+
+    @XmlElement(name = "C_STI_ORIG")
+    private String cStiOrig; // Код ГНИ, в которую подается оригинал документа
+
+    @XmlElement(name = "C_DOC_STAN")
+    private Integer cDocStan; // законодательство
+
+    @XmlElement(name = "D_FILL")
+    private String dFill; // дата заполненные документы плательщиком
+
+    @XmlElement(name = "SOFTWARE")
+    private String software; // сигнатура программы
 
     public DeclarationHead() {
     }

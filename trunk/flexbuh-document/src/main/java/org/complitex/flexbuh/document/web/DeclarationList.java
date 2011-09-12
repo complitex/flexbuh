@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -12,6 +13,7 @@ import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
 
 import javax.ejb.EJB;
 import java.util.Iterator;
@@ -58,7 +60,10 @@ public class DeclarationList extends TemplatePage{
             protected void populateItem(Item<Declaration> item) {
                 Declaration declaration = item.getModelObject();
 
-                item.add(new Label("name", "[name] - " + declaration.getId()));
+                item.add(new Label("name", declaration.getName()));
+
+                item.add(new BookmarkablePageLinkPanel<>("edit", getString("edit"), DeclarationFormPage.class,
+                        new PageParameters("id=" + declaration.getId())));
             }
         };
 
