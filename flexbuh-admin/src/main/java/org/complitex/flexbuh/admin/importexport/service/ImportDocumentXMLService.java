@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
-import org.complitex.flexbuh.entity.dictionary.CurrencyName;
 import org.complitex.flexbuh.entity.dictionary.Dictionary;
 import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.entity.dictionary.DocumentName;
@@ -16,12 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.*;
 import java.io.File;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -44,9 +40,9 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService {
 	private Language ukLang = null;
 
 	@Override
-	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		initLang();
-		super.process(listener, importFile, beginDate, endDate);
+		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
 	@Override

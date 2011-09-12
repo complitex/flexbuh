@@ -1,22 +1,17 @@
 package org.complitex.flexbuh.admin.user.web;
 
 import org.apache.wicket.IClusterable;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.MaskConverter;
-import org.apache.wicket.util.crypt.Base64;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.PersonType;
-import org.complitex.flexbuh.entity.user.Session;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.service.user.PersonTypeBean;
 import org.complitex.flexbuh.service.user.SessionBean;
@@ -24,10 +19,6 @@ import org.complitex.flexbuh.service.user.UserBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
 
 import javax.ejb.EJB;
-import javax.servlet.http.Cookie;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -130,14 +121,10 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 				personProfile.setCodeTaxInspection(taxInspectionModel.getObject().getCode());
 				personProfile.setPersonType(personType);
 
-				Session session = getUserSession();
-				if (session == null) return;
-
-				System.out.println("Session: " + session);
-
 				personProfile.setPhone(phone.getNumber());
 				personProfile.setFax(fax.getNumber());
-				userBean.createCompanyProfile(session, personProfile);
+
+				userBean.createCompanyProfile(getSessionId(true), personProfile);
 
                 info(getString("profile_saved"));
             }

@@ -44,9 +44,9 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService 
 	private Language ukLang = null;
 
 	@Override
-	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		initLang();
-		super.process(listener, importFile, beginDate, endDate);
+		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
 	@Override

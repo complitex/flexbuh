@@ -8,7 +8,6 @@ import org.complitex.flexbuh.entity.user.User;
 import org.complitex.flexbuh.service.DomainObjectBean;
 
 import javax.ejb.EJB;
-import javax.ejb.FinderException;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,12 @@ public class UserBean extends DomainObjectBean<User> {
 		return sqlSession().selectList(getNameSpace() + ".readAll", params);
 	}
 
-	public void createCompanyProfile(Session session, PersonProfile newCompanyProfile) {
+	public void createCompanyProfile(Long sessionId, PersonProfile newCompanyProfile) {
 
 		personProfileBean.create(newCompanyProfile);
 
 		Map<String, Object> params = Maps.newHashMap();
-		params.put("sessionId", session.getId());
+		params.put("sessionId", sessionId);
 		params.put("personProfileId", newCompanyProfile.getId());
 		params.put("session_person_profile_table", SessionPersonProfile.TABLE);
 		sqlSession().insert(getNameSpace() + ".createCompanyProfile", params);
