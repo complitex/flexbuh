@@ -40,7 +40,7 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                declaration.setSessionId(-1L);
+                declaration.setSessionId(getSessionId(true));
                 declarationBean.save(declaration);
             }
         });

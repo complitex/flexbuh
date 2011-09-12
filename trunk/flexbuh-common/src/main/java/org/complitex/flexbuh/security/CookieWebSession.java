@@ -8,7 +8,6 @@ import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.crypt.Base64;
 import org.complitex.flexbuh.entity.user.Session;
 import org.complitex.flexbuh.service.user.SessionBean;
-import org.complitex.flexbuh.template.UserConstants;
 import org.complitex.flexbuh.util.EjbUtil;
 
 import javax.servlet.http.Cookie;
@@ -21,6 +20,8 @@ import java.util.Date;
  *         Date: 09.09.11 16:33
  */
 public class CookieWebSession extends WebSession{
+    public static final String SESSION_COOKIE_NAME = "FLEXBUH_SESSION";
+
     private Session session;
 
     public CookieWebSession(Request request) {
@@ -40,27 +41,26 @@ public class CookieWebSession extends WebSession{
     }
 
     protected Session getSession(boolean create) {
-        Session session;
+        Session session = null;
 
-        Cookie cookie = ((WebRequest)RequestCycle.get().getRequest()).getCookie(UserConstants.SESSION_COOKIE_NAME);
-        if (create && cookie == null) {
-            String cookieValue = generateEncodeBase64MD5((new Date()).toString().getBytes());
+        Cookie cookie = ((WebRequest)RequestCycle.get().getRequest()).getCookie(SESSION_COOKIE_NAME);
 
-            if (cookieValue == null){
-                return null;
+        if (cookie == null) {
+            if (create) {
+                String cookieValue = generateEncodeBase64MD5((new Date()).toString().getBytes());
+
+                session = createSession(cookieValue);
+
+                ((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(SESSION_COOKIE_NAME, session.getCookie()));
             }
-
-            session = createSession(cookieValue);
-
-            ((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
         } else {
             session = getSessionBean().getSessionByCookie(cookie.getValue());
 
-            if (session == null) {
+            if (session == null && create) {
                 session = createSession(cookie.getValue());
 
                 ((WebResponse) RequestCycle.get().getResponse()).clearCookie(cookie);
-                ((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
+                ((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(SESSION_COOKIE_NAME, session.getCookie()));
             }
         }
 
@@ -73,8 +73,7 @@ public class CookieWebSession extends WebSession{
         try {
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
 
         digest.update(bytes);
