@@ -3,7 +3,6 @@ package org.complitex.flexbuh.template;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.CSSPackageResource;
@@ -18,11 +17,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.crypt.Base64;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.flexbuh.entity.user.Session;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
 import org.complitex.flexbuh.security.CookieWebSession;
 import org.complitex.flexbuh.security.SecurityRole;
@@ -35,9 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.servlet.http.Cookie;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -268,53 +260,4 @@ public abstract class TemplatePage extends WebPage {
     public Long getSessionId(boolean create){
         return getCookieWebSession().getSessionId(create);
     }
-
-	protected Session getUserSession() {
-		Session session;
-		Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(UserConstants.SESSION_COOKIE_NAME);
-		if (cookie == null) {
-			String cookieValue = generateEncodeBase64MD5((new Date()).toString().getBytes());
-			if (cookieValue == null) return null;
-
-			session = createSession(cookieValue);
-
-			((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
-
-			//String s = personProfile.get
-		} else {
-			session = sessionBean.getSessionByCookie(cookie.getValue());
-			if (session == null) {
-				session = createSession(cookie.getValue());
-				((WebResponse) RequestCycle.get().getResponse()).clearCookie(cookie);
-				((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(UserConstants.SESSION_COOKIE_NAME, session.getCookie()));
-			}
-			//Validate.isTrue(session != null, "Can not find session with cookie: '" + cookie.getValue() + "'");
-		}
-		return session;
-	}
-
-	private String generateEncodeBase64MD5(byte[] bytes) {
-		MessageDigest digest = null;
-		try {
-			digest = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-		digest.update(bytes);
-		return new String(Base64.encodeBase64(digest.digest()));
-	}
-
-	private Session createSession(String cookieValue) {
-		if (sessionBean.getSessionByCookie(cookieValue) != null) {
-			do {
-				cookieValue = generateEncodeBase64MD5((cookieValue + new Date().toString()).getBytes());
-			} while (sessionBean.getSessionByCookie(cookieValue) != null);
-		}
-		Session session = new Session();
-		session.setCookie(cookieValue);
-
-		sessionBean.create(session);
-		return session;
-	}
 }

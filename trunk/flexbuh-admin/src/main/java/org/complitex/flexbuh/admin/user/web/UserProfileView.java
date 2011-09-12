@@ -135,9 +135,7 @@ public class UserProfileView extends ScrollListPage {
 						final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
 						canceled.set(false);
 
-						importUserProfileXMLService.setSession(getUserSession());
-
-						importUserProfileXMLService.process(new ImportListener() {
+						importUserProfileXMLService.process(getSessionId(true), new ImportListener() {
 							@Override
 							public void begin() {
 							}

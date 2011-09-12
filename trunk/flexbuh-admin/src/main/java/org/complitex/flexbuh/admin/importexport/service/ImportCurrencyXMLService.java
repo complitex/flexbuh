@@ -12,13 +12,10 @@ import org.complitex.flexbuh.service.dictionary.CurrencyBean;
 import org.complitex.flexbuh.service.dictionary.DictionaryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.*;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.text.ParseException;
@@ -48,9 +45,9 @@ public class ImportCurrencyXMLService extends ImportDictionaryXMLService {
 	private Language ruLang = null;
 
 	@Override
-	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		initLang();
-		super.process(listener, importFile, beginDate, endDate);
+		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
 	@Override

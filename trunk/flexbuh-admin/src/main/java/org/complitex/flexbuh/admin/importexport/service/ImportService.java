@@ -26,7 +26,7 @@ public abstract class ImportService {
     private ConfigBean configBean;
 
 	@Asynchronous
-	public void processFiles(@NotNull ImportListener listener, @Null Date beginDate, @Null Date endDate) {
+	public void processFiles(Long sessionId, @NotNull ImportListener listener, @Null Date beginDate, @Null Date endDate) {
 		listener.begin();
 		try {
 			File[] importFiles = listImportFiles();
@@ -34,7 +34,7 @@ public abstract class ImportService {
 			for (File importFile : importFiles) {
 				ImportListener childListener = listener.getChildImportListener(importFile);
 				try {
-					processFile(childListener, importFile, beginDate, endDate);
+					processFile(sessionId, childListener, importFile, beginDate, endDate);
 				} catch (Throwable th) {
 					childListener.cancel();
 					log.error("Cancel import file " + importFile.getName(), th);
@@ -48,7 +48,7 @@ public abstract class ImportService {
 	}
 
 	@Asynchronous
-	public void processFiles(@NotNull ImportListener listener, @NotNull List<String> importFileNames,
+	public void processFiles(Long sessionId, @NotNull ImportListener listener, @NotNull List<String> importFileNames,
 							 @Null Date beginDate, @Null Date endDate) {
 		log.debug("Start import files: {}", importFileNames);
 		listener.begin();
@@ -65,7 +65,7 @@ public abstract class ImportService {
 					listener.cancel();
 				} else {
 					try {
-						processFile(childListener, importFile, beginDate, endDate);
+						processFile(sessionId, childListener, importFile, beginDate, endDate);
 					} catch (Throwable th) {
 						log.error("Cancel processing file " + importFile, th);
 						childListener.cancel();
@@ -80,22 +80,22 @@ public abstract class ImportService {
 		log.debug("Import complete");
 	}
 
-	public void processFile(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void processFile(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		ImportFileService fileService = getImportFileService(importFile.getName());
 		if (fileService == null) {
 			throw new RuntimeException("Can not find service for processing file " + importFile.getName());
 		}
-		fileService.process(listener, importFile, beginDate, endDate);
+		fileService.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
-	public void processFile(ImportListener listener, String importFileName, Date beginDate, Date endDate) {
+	public void processFile(Long sessionId, ImportListener listener, String importFileName, Date beginDate, Date endDate) {
 		File importFile = new File(getImportDir(), importFileName);
 		if (!importFile.exists()) {
 			log.debug("Import file '{}' does not exist in root dir {}", importFile, getRootDir());
 			listener.cancel();
 			return;
 		}
-		processFile(listener, importFile, beginDate, endDate);
+		processFile(sessionId, listener, importFile, beginDate, endDate);
 	}
 
 	public File[] listImportFiles() {

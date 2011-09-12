@@ -35,9 +35,9 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
     protected UserTransaction userTransaction;
 
 	@Override
-	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		try {
-			process(listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
+			process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
 		} catch (FileNotFoundException e) {
 			listener.begin();
 			log.warn("Can not find file: " + importFile, e);
@@ -46,7 +46,7 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
 	}
 
 	@Override
-	public void process(ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
 		listener.begin();
 
 		Date importDate = new Date();

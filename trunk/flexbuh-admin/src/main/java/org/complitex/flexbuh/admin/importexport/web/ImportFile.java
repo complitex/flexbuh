@@ -85,27 +85,29 @@ public class ImportFile extends TemplatePage {
 
 				DictionaryImportListener importListener = new DictionaryImportListener();
 
+                final Long sessionId = getSessionId(true);
+
 				for (DataFile dataFile : dataFileModel.getObject()) {
 					switch (dataFile) {
 						case CONTROL:
 							log.debug("start import control");
 							importListener.addProcessingCountFiles(importTemplateControlService.listImportFiles().length);
-							importTemplateControlService.processFiles(importListener, null, null);
+							importTemplateControlService.processFiles(sessionId, importListener, null, null);
 							break;
 						case FO:
 							log.debug("start import fo");
 							importListener.addProcessingCountFiles(importTemplateFOService.listImportFiles().length);
-							importTemplateFOService.processFiles(importListener, null, null);
+							importTemplateFOService.processFiles(sessionId, importListener, null, null);
 							break;
 						case XSD:
 							log.debug("start import xsd");
 							importListener.addProcessingCountFiles(importTemplateXSDService.listImportFiles().length);
-							importTemplateXSDService.processFiles(importListener, null, null);
+							importTemplateXSDService.processFiles(sessionId, importListener, null, null);
 							break;
 						case XSL:
 							log.debug("start import xsl");
 							importListener.addProcessingCountFiles(importTemplateXSLService.listImportFiles().length);
-							importTemplateXSLService.processFiles(importListener, null, null);
+							importTemplateXSLService.processFiles(sessionId, importListener, null, null);
 							break;
 					}
 				}

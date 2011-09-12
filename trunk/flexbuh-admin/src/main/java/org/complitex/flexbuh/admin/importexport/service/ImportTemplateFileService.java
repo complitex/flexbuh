@@ -30,7 +30,7 @@ public class ImportTemplateFileService implements ImportFileService {
     protected UserTransaction userTransaction;
 
 	@Override
-	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		listener.begin();
 		try{
 			userTransaction.begin();
@@ -48,7 +48,7 @@ public class ImportTemplateFileService implements ImportFileService {
 	}
 
 	@Override
-	public void process(ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
 		 throw new NotImplementedException("use process(ImportListener listener, File importFile, Date beginDate, Date endDate)");
 	}
 

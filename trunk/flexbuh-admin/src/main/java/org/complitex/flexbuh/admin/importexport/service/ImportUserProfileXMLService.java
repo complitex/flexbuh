@@ -3,7 +3,6 @@ package org.complitex.flexbuh.admin.importexport.service;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.complitex.flexbuh.entity.user.PersonProfile;
-import org.complitex.flexbuh.entity.user.Session;
 import org.complitex.flexbuh.service.user.PersonTypeBean;
 import org.complitex.flexbuh.service.user.UserBean;
 import org.slf4j.Logger;
@@ -45,12 +44,10 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 	@EJB
 	private UserBean userBean;
 
-	private Session session;
-
 	@Override
-	public void process(ImportListener listener, File importFile, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		try {
-			process(listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
+			process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
 		} catch (FileNotFoundException e) {
 			listener.begin();
 			log.warn("Can not find file: " + importFile, e);
@@ -58,16 +55,16 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 		}
 	}
 
-	public void process(ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
 		listener.begin();
 
 		Date importDate = new Date();
 		List<PersonProfile> docDictionaries = Lists.newArrayList();
 		try {
 			org.w3c.dom.Document document = getDocument(inputStream);
-			processDocument("ROW", beginDate, endDate, importDate, docDictionaries, document);
-			processDocument("row", beginDate, endDate, importDate, docDictionaries, document);
-			commit(docDictionaries, true);
+			processDocument(sessionId, "ROW", beginDate, endDate, importDate, docDictionaries, document);
+			processDocument(sessionId, "row", beginDate, endDate, importDate, docDictionaries, document);
+			commit(sessionId, docDictionaries, true);
 
 			listener.completed();
 		} catch (Throwable th) {
@@ -76,15 +73,14 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 		}
 	}
 
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
-	private void processDocument(String tagName, Date beginDate, Date endDate, Date importDate, List<PersonProfile> docDictionaries, Document document) throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException, HeuristicMixedException {
+    private void processDocument(Long sessionId, String tagName, Date beginDate, Date endDate, Date importDate,
+                                 List<PersonProfile> docDictionaries, Document document)
+            throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException,
+            HeuristicMixedException {
 		NodeList nodeRows = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeRows.getLength(); i++) {
 			docDictionaries.add(processDictionaryNode(nodeRows.item(i), importDate, beginDate, endDate));
-			commit(docDictionaries, false);
+			commit(sessionId, docDictionaries, false);
 		}
 	}
 
@@ -146,7 +142,7 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 		return personProfile;
 	}
 
-	private void commit(List<PersonProfile> personProfiles, boolean finalTransaction)
+	private void commit(Long sessionId, List<PersonProfile> personProfiles, boolean finalTransaction)
 			throws SystemException, NotSupportedException, RollbackException,
 			HeuristicRollbackException, HeuristicMixedException {
 
@@ -156,7 +152,7 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 		userTransaction.begin();
 		try{
 			for (PersonProfile personProfile : personProfiles) {
-				userBean.createCompanyProfile(session, personProfile);
+				userBean.createCompanyProfile(sessionId, personProfile);
 			}
 		} catch (Throwable th) {
 			log.error("Rollback user transaction");

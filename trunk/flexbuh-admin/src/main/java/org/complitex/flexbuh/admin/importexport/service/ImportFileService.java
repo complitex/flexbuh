@@ -10,8 +10,8 @@ import java.util.Date;
  */
 public interface ImportFileService {
 
-	void process(ImportListener listener, File importFile, Date beginDate, Date endDate);
+	void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate);
 
-	void process(ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate);
+	void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate);
 
 }
