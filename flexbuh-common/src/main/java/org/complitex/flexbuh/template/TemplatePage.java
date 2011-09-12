@@ -100,7 +100,7 @@ public abstract class TemplatePage extends WebPage {
 
 
 //        todo empty panel
-        add(new EmptyPanel("current_user_fullname"));
+        add(new Label("current_user_fullname", "SID = " + getSessionId(false)));
         add(new EmptyPanel("current_user_department"));
         add(new EmptyPanel("profile"));
 
