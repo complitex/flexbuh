@@ -21,6 +21,7 @@ import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
 import org.apache.wicket.validation.IValidator;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.component.AddRowPanel;
@@ -93,7 +94,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             String templateName = declaration.getName();
 
             //Template
-            template = templateService.getDocument(templateName, declaration);
+            template = templateService.getDocument(templateName, new Declaration());
 
             //Schema
             schema = templateService.getSchema(templateName);
@@ -500,7 +501,9 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         final List<WebMarkupContainer> stretchRows = new ArrayList<>();
 
         //Add rows
-        addRow(stretchTableIndex, stretchTableElement, stretchTableParent, 0, stretchRows);
+        for (int i = 0, count = getRowCount(inputList); i <  count; ++i) {
+            addRow(stretchTableIndex, stretchTableElement, stretchTableParent, i, stretchRows);
+        }
 
         //Repeater
         stretchTableParent.add(new AbstractRepeater("stretch_table_" + stretchTableIndex) {
@@ -542,6 +545,24 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 }
             }
         });
+    }
+
+    private int getRowCount(NodeList inputList){
+        int count = 1;
+
+        for (int i = 0; i < inputList.getLength(); ++i){
+            String id = ((Element)inputList.item(i)).getAttribute("id");
+
+            if (id != null){
+                List<DeclarationValue> values = declaration.getValues(id);
+
+                if (values != null && !values.isEmpty()){
+                    count = values.size();
+                }
+            }
+        }
+
+        return count;
     }
 
     private void addRow(final int stretchTableIndex, final Element stretchTableElement, final WebMarkupContainer stretchTable,

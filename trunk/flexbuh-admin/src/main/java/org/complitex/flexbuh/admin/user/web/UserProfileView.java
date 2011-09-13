@@ -19,9 +19,9 @@ import org.complitex.flexbuh.admin.importexport.service.ImportListener;
 import org.complitex.flexbuh.admin.importexport.service.ImportUserProfileXMLService;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.User;
+import org.complitex.flexbuh.security.CookieWebSession;
 import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.UserBean;
-import org.complitex.flexbuh.template.UserConstants;
 import org.complitex.flexbuh.template.pages.ScrollListPage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
@@ -194,7 +194,7 @@ public class UserProfileView extends ScrollListPage {
 
 					@Override
 					public void write(OutputStream output) {
-						Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(UserConstants.SESSION_COOKIE_NAME);
+						Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(CookieWebSession.SESSION_COOKIE_NAME);
 
 						if (cookie != null) {
 							User user = userBean.getUserByCookie(cookie.getValue());
@@ -224,7 +224,7 @@ public class UserProfileView extends ScrollListPage {
 	}
 
 	private String getCookie() {
-		Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(UserConstants.SESSION_COOKIE_NAME);
+		Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(CookieWebSession.SESSION_COOKIE_NAME);
 		return cookie != null? cookie.getValue(): null;
 	}
 }

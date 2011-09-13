@@ -570,7 +570,7 @@ CREATE TABLE `declaration_value` (
   `value` VARCHAR(255),
   PRIMARY KEY (`id`),
   KEY `key_declaration_value__declaration_id` (`declaration_id`),
-  CONSTRAINT `fk_declaration_value__declaration` FOREIGN KEY (`declaration_id`) REFERENCES `declaration` (`id`)
+  CONSTRAINT `fk_declaration_value__declaration` FOREIGN KEY (`declaration_id`) REFERENCES `declaration` (`id`) ON DELETE CASCADE
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

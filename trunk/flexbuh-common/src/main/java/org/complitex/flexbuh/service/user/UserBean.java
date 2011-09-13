@@ -59,6 +59,7 @@ public class UserBean extends DomainObjectBean<User> {
 		sqlSession().insert(getNameSpace() + ".createCompanyProfile", params);
 	}
 
+    @Deprecated
 	public User getUserByCookie(String cookie) {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("cookie", cookie);
