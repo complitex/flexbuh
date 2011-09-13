@@ -61,4 +61,24 @@
     <select id="selectDeclarationsCount" resultType="int" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
         select count(*) from `declaration` where `session_id` = #{sessionId}
     </select>
+
+    <delete id="deleteDeclaration" parameterType="long">
+        delete from `declaration` where `id` = #{id}
+    </delete>
+
+    <delete id="deleteDeclarationValue" parameterType="long">
+        delete from `declaration_value` where `id` = #{id}
+    </delete>
+
+    <update id="updateDeclaration" parameterType="long">
+        update `declaration` set `session_id` = #{sessionId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc}, `c_doc_sub` = #{head.cDocSub},
+          `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType}, `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg},
+          `c_raj` = #{head.cRaj}, `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
+          `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill}, `software` = #{head.software}
+        where `id` = #{id}
+    </update>
+
+    <update id="updateDeclarationValue" parameterType="long">
+        update `declaration_value` set `row_num` = #{rowNum}, `name` = #{name}, `value` = #{value} where `id` = #{id}
+    </update>
 </mapper>

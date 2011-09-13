@@ -19,6 +19,10 @@ public class PersonProfileBean extends DomainObjectBean<PersonProfile> {
 	public static final String NS = PersonProfileBean.class.getName();
 
 	@SuppressWarnings("unchecked")
+    @Deprecated
+    /**
+     * @deprecated change to find by sessionId
+     */
 	public List<PersonProfile> findCompanyProfilesBySessionCookie(String cookie) {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("table", getTable());
@@ -29,6 +33,7 @@ public class PersonProfileBean extends DomainObjectBean<PersonProfile> {
 	}
 
 	@SuppressWarnings("unchecked")
+    @Deprecated
 	public List<PersonProfile> findCompanyProfilesBySessionCookie(String cookie, int first, int count) {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("table", getTable());
@@ -41,6 +46,7 @@ public class PersonProfileBean extends DomainObjectBean<PersonProfile> {
 	}
 
 	@SuppressWarnings("unchecked")
+    @Deprecated
 	public int countCompanyProfilesBySessionCookie(String cookie) {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("table", getTable());

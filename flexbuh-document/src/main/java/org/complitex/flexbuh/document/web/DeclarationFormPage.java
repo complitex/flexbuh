@@ -33,6 +33,13 @@ public class DeclarationFormPage extends TemplatePage{
         if (id != null) {
             declaration = declarationBean.getDeclaration(id);
 
+            //declaration not found
+            if (declaration == null){
+                error(getString("error_declaration_not_found"));
+                setResponsePage(DeclarationList.class);
+
+                return;
+            }
         }else{
             declaration = new Declaration();
             declaration.setName(name);
