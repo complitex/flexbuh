@@ -17,6 +17,4 @@ public abstract class DomainObject implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public abstract String getTable();
 }

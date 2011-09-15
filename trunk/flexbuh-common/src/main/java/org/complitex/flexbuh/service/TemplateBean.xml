@@ -2,60 +2,48 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.TemplateBean">
-    <resultMap id="templateXSLResultMap" type="org.complitex.flexbuh.entity.TemplateXSL">
+    <resultMap id="templateXSLResultMap" type="org.complitex.flexbuh.entity.template.TemplateXSL">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
         <result column="upload_date" property="uploadDate"/>
     </resultMap>
 
-    <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.entity.TemplateXSD">
+    <resultMap id="templateXSDResultMap" type="org.complitex.flexbuh.entity.template.TemplateXSD">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
 		<result column="upload_date" property="uploadDate"/>
     </resultMap>
 
-    <resultMap id="templateControlResultMap" type="org.complitex.flexbuh.entity.TemplateControl">
+    <resultMap id="templateControlResultMap" type="org.complitex.flexbuh.entity.template.TemplateControl">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
 		<result column="upload_date" property="uploadDate"/>
     </resultMap>
 
-	<resultMap id="templateFOResultMap" type="org.complitex.flexbuh.entity.TemplateFO">
+	<resultMap id="templateFOResultMap" type="org.complitex.flexbuh.entity.template.TemplateFO">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="data" property="data"/>
 		<result column="upload_date" property="uploadDate"/>
     </resultMap>
 
-	<resultMap id="templateXSLWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateXSL">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="upload_date" property="uploadDate"/>
-    </resultMap>
+    <insert id="insertTemplateXSL" parameterType="org.complitex.flexbuh.entity.template.AbstractTemplate">
+        insert into `template_xsl` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
+    </insert>
 
-    <resultMap id="templateXSDWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateXSD">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="upload_date" property="uploadDate"/>
-    </resultMap>
+    <insert id="insertTemplateXSD" parameterType="org.complitex.flexbuh.entity.template.AbstractTemplate">
+        insert into `template_xsd` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
+    </insert>
 
-    <resultMap id="templateControlWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateControl">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="upload_date" property="uploadDate"/>
-    </resultMap>
+    <insert id="insertTemplateFO" parameterType="org.complitex.flexbuh.entity.template.AbstractTemplate">
+        insert into `template_fo` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
+    </insert>
 
-	<resultMap id="templateFOWithoutDataResultMap" type="org.complitex.flexbuh.entity.TemplateFO">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-		<result column="upload_date" property="uploadDate"/>
-    </resultMap>
-
-    <insert id="insertTemplate" parameterType="org.complitex.flexbuh.entity.AbstractTemplate">
-        insert into `${table}` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
+    <insert id="insertTemplateControl" parameterType="org.complitex.flexbuh.entity.template.AbstractTemplate">
+        insert into `template_control` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
     </insert>
 
     <select id="selectTemplateXSL" parameterType="string" resultMap="templateXSLResultMap">
@@ -74,67 +62,55 @@
         select * from `template_fo` where `name` = #{name}
     </select>
 
-	<select id="selectAllTemplateXSL" resultMap="templateXSLWithoutDataResultMap">
+	<select id="selectAllTemplateXSLs" resultMap="templateXSLResultMap">
         select `name`, `upload_date` from `template_xsl`
     </select>
 
-	<select id="selectAllTemplateXSLLimit" parameterType="map" resultMap="templateXSLWithoutDataResultMap">
-        select `name`, `upload_date` from `template_xsl`
-        order by `name`
-        limit #{first}, #{count}
+	<select id="selectTemplateXSLs" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="templateXSLResultMap">
+        select `name`, `upload_date` from `template_xsl` order by `name` limit #{first}, #{count}
     </select>
 
-	<select id="selectAllTemplateXSLSize" resultType="int">
+	<select id="selectAllTemplateXSLsCount" resultType="int">
         select count(id) from `template_xsl`
     </select>
 
-    <select id="selectAllTemplateXSD" resultMap="templateXSDWithoutDataResultMap">
+    <select id="selectAllTemplateXSDs" resultMap="templateXSDResultMap">
         select `name`, `upload_date` from `template_xsd`
     </select>
 
-	<select id="selectAllTemplateXSDLimit" parameterType="map" resultMap="templateXSDWithoutDataResultMap">
-        select `name`, `upload_date` from `template_xsd`
-        order by `name`
-        limit #{first}, #{count}
+	<select id="selectTemplateXSDs" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="templateXSDResultMap">
+        select `name`, `upload_date` from `template_xsd` order by `name` limit #{first}, #{count}
     </select>
 
-	<select id="selectAllTemplateXSDSize" resultType="int">
+	<select id="selectAllTemplateXSDsCount" resultType="int">
         select count(id) from `template_xsd`
     </select>
 
-    <select id="selectAllTemplateControl" resultMap="templateControlWithoutDataResultMap">
+    <select id="selectAllTemplateControls" resultMap="templateControlResultMap">
         select `name`, `upload_date` from `template_control`
     </select>
 
-	<select id="selectAllTemplateControlLimit" parameterType="map" resultMap="templateControlWithoutDataResultMap">
-        select `name`, `upload_date` from `template_control`
-        order by `name`
-        limit #{first}, #{count}
+	<select id="selectTemplateControls" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="templateControlResultMap">
+        select `name`, `upload_date` from `template_control` order by `name` limit #{first}, #{count}
     </select>
 
-	<select id="selectAllTemplateControlSize" resultType="int">
+	<select id="selectAllTemplateControlsCount" resultType="int">
         select count(id) from `template_control`
     </select>
 
-    <select id="selectAllTemplateFO" resultMap="templateFOWithoutDataResultMap">
+    <select id="selectTemplateFOs" resultMap="templateFOResultMap">
         select `name`, `upload_date` from `template_fo`
     </select>
 
-	<select id="selectAllTemplateFOLimit" parameterType="map" resultMap="templateFOWithoutDataResultMap">
-        select `name`, `upload_date` from `template_fo`
-        order by `name`
-        limit #{first}, #{count}
+	<select id="selectTemplateFOs" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="templateFOaResultMap">
+        select `name`, `upload_date` from `template_fo` order by `name` limit #{first}, #{count}
     </select>
 
-	<select id="selectAllTemplateFOSize" resultType="int">
+	<select id="selectAllTemplateFOsCount" resultType="int">
         select count(id) from `template_fo`
     </select>
 
     <select id="selectTemplateXSLNames" resultType="string">
         select `name` from `template_xsl` where `name` like 'J%'
     </select>
-
-	<select id="isExist" resultType="long">
-		select count(id) from `${table}` where `name` = #{name}
-	</select>
 </mapper>

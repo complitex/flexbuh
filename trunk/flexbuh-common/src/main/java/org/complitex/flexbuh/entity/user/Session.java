@@ -8,8 +8,6 @@ import org.complitex.flexbuh.entity.DomainObject;
  *         Date: 31.08.11 14:27
  */
 public class Session extends DomainObject {
-	public static final String TABLE = "session";
-
 	private String cookie;
 
 	public String getCookie() {
@@ -18,11 +16,6 @@ public class Session extends DomainObject {
 
 	public void setCookie(String cookie) {
 		this.cookie = cookie;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

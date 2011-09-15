@@ -1,8 +1,7 @@
 package org.complitex.flexbuh.entity.user;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.entity.DomainObject;
+import org.complitex.flexbuh.entity.SessionObject;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,15 +12,13 @@ import java.util.List;
  *         Date: 31.08.11 14:26
  */
 @XmlRootElement(name = "ROWSET")
-public class User extends DomainObject {
-	public static final String TABLE = "user";
-
+public class User extends SessionObject {
 	private String login;
 	private String password;
+
 	private PersonProfile userProfile;
 
 	private List<PersonProfile> companyProfiles;
-	private Session session;
 
 	public String getLogin() {
 		return login;
@@ -53,23 +50,6 @@ public class User extends DomainObject {
 	}
 	public void setCompanyProfiles(List<PersonProfile> companyProfiles) {
 		this.companyProfiles = companyProfiles;
-	}
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
-	private boolean isAnonymous() {
-		return session != null && userProfile != null && StringUtils.isEmpty(login);
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

@@ -13,8 +13,6 @@ import java.util.Locale;
  *         Date: 05.08.11 11:21
  */
 public class Language extends DomainObject {
-	public static final String TABLE = "language";
-
 	private String langIsoCode;
 	private boolean defaultLang;
 
@@ -36,11 +34,6 @@ public class Language extends DomainObject {
 
 	public Locale getLocale() {
 		return LocaleUtils.toLocale(langIsoCode);
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	public boolean equals(Object o) {

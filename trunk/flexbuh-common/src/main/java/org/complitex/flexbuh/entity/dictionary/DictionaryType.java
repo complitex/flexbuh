@@ -11,8 +11,6 @@ import java.util.List;
  *         Date: 05.08.11 12:19
  */
 public class DictionaryType extends DomainObject {
-	public static final String TABLE = "dictionary_type";
-
 	private String code;
 	private List<DictionaryTypeName> names;
 	private List<String> fileNames;
@@ -51,11 +49,6 @@ public class DictionaryType extends DomainObject {
 
 	public void setFileNames(List<String> fileNames) {
 		this.fileNames = fileNames;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

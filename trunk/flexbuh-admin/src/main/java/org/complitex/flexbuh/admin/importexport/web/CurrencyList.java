@@ -41,12 +41,12 @@ public class CurrencyList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Currency> getData(int first, int count) {
-                return currencyBean.read(first, count);
+                return currencyBean.getCurrencies(first, count);
             }
 
             @Override
             protected int getSize() {
-                return currencyBean.totalCount();
+                return currencyBean.getCurrenciesCount();
             }
         };
         dataProvider.setSort("name", true);

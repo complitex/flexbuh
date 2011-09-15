@@ -1,8 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
 import com.google.common.collect.Lists;
-import org.complitex.flexbuh.entity.dictionary.Dictionary;
-import org.complitex.flexbuh.service.dictionary.DictionaryBean;
+import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -26,10 +25,8 @@ import java.util.List;
 @Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
-public abstract class ImportDictionaryXMLService extends ImportXMLService {
+public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> extends ImportXMLService {
 	private final static Logger log = LoggerFactory.getLogger(ImportDictionaryXMLService.class);
-
-	private final static int OBJECTS_TRANSACTION_SIZE = 1000;
 
 	@Resource
     protected UserTransaction userTransaction;
@@ -50,82 +47,41 @@ public abstract class ImportDictionaryXMLService extends ImportXMLService {
 		listener.begin();
 
 		Date importDate = new Date();
-		List<Dictionary> docDictionaries = Lists.newArrayList();
+		List<T> docDictionaries = Lists.newArrayList();
 		try {
 			org.w3c.dom.Document document = getDocument(inputStream);
 			processDocument("ROW", beginDate, endDate, importDate, docDictionaries, document);
 			processDocument("row", beginDate, endDate, importDate, docDictionaries, document);
-			commit(docDictionaries, true);
-			activateUploadedRecords(importDate);
+
+            //save
+            userTransaction.begin();
+            try{
+                for (T dictionary : docDictionaries) {
+                    create(dictionary);
+                }
+            } catch (Throwable th) {
+                log.error("Rollback user transaction");
+                userTransaction.rollback();
+                throw th;
+            }
+            userTransaction.commit();
 
 			listener.completed();
 		} catch (Throwable th) {
 			log.warn("Cancel import dictionary: " + name, th);
 			listener.cancel();
-			deleteUploadedRecords(importDate);
 		}
 	}
 
-	private void processDocument(String tagName, Date beginDate, Date endDate, Date importDate, List<Dictionary> docDictionaries, Document document) throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException, HeuristicMixedException {
+	private void processDocument(String tagName, Date beginDate, Date endDate, Date importDate, List<T> docDictionaries, Document document) throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException, HeuristicMixedException {
 		NodeList nodeRows = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeRows.getLength(); i++) {
-			List<Dictionary> dictionaries = processDictionaryNode(nodeRows.item(i).getChildNodes(), importDate, beginDate, endDate);
+			List<T> dictionaries = processDictionaryNode(nodeRows.item(i).getChildNodes(), importDate, beginDate, endDate);
 			docDictionaries.addAll(dictionaries);
-			commit(docDictionaries, false);
 		}
 	}
 
-	protected abstract List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException;
+	protected abstract List<T> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException;
 
-	protected void activateUploadedRecords(Date importDate) {
-		try {
-			userTransaction.begin();
-			getDictionaryBean().activate(importDate);
-			userTransaction.commit();
-		} catch (Exception e) {
-			try{
-				userTransaction.rollback();
-			} catch (Exception e2) {
-			}
-			log.error("Failed remove uploaded records. Import date: " + importDate, e);
-		}
-	}
-
-	protected void deleteUploadedRecords(Date importDate) {
-		try {
-			userTransaction.begin();
-			getDictionaryBean().delete(importDate);
-			userTransaction.commit();
-		} catch (Exception e) {
-			try{
-				userTransaction.rollback();
-			} catch (Exception e2) {
-			}
-			log.error("Failed remove uploaded records. Import date: " + importDate, e);
-		}
-	}
-
-	private void commit(List<Dictionary> dictionaries, boolean finalTransaction)
-			throws SystemException, NotSupportedException, RollbackException,
-			HeuristicRollbackException, HeuristicMixedException {
-
-		if (dictionaries.size() < OBJECTS_TRANSACTION_SIZE && !finalTransaction) {
-			return;
-		}
-		userTransaction.begin();
-		try{
-			for (Dictionary dictionary : dictionaries) {
-				getDictionaryBean().create(dictionary);
-			}
-		} catch (Throwable th) {
-			log.error("Rollback user transaction");
-			userTransaction.rollback();
-			throw th;
-		}
-		userTransaction.commit();
-		log.debug("Commit documents");
-		dictionaries.clear();
-	}
-
-	abstract protected DictionaryBean getDictionaryBean();
+    public abstract void create(T dictionary);
 }

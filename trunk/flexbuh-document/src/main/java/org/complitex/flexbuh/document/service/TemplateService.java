@@ -3,7 +3,7 @@ package org.complitex.flexbuh.document.service;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.entity.TemplateXSL;
+import org.complitex.flexbuh.entity.template.TemplateXSL;
 import org.complitex.flexbuh.service.TemplateBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -10,7 +10,7 @@ import java.util.Date;
  * @author Pavel Sknar
  *         Date: 04.08.11 21:54
  */
-public abstract class Dictionary extends DomainObject {
+public abstract class AbstractDictionary extends DomainObject {
 
 	public static final Integer ENABLE = 0;
 	public static final Integer DISABLE = 1;

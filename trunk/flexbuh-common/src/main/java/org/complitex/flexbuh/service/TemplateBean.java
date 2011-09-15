@@ -1,11 +1,13 @@
 package org.complitex.flexbuh.service;
 
-import com.google.common.collect.Maps;
-import org.complitex.flexbuh.entity.*;
+import org.complitex.flexbuh.entity.AbstractFilter;
+import org.complitex.flexbuh.entity.template.TemplateControl;
+import org.complitex.flexbuh.entity.template.TemplateFO;
+import org.complitex.flexbuh.entity.template.TemplateXSD;
+import org.complitex.flexbuh.entity.template.TemplateXSL;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -15,8 +17,20 @@ import java.util.Map;
 public class TemplateBean extends AbstractBean {
     public static final String NS = TemplateBean.class.getName();
 
-    public void save(AbstractTemplate template){
-        sqlSession().insert(NS + ".insertTemplate", template);
+    public void save(TemplateXSL templateXSL){
+        sqlSession().insert(NS + ".insertTemplateXSL", templateXSL);
+    }
+
+    public void save(TemplateXSD templateXSD){
+        sqlSession().insert(NS + ".insertTemplateXSD", templateXSD);
+    }
+
+    public void save(TemplateFO templateFO){
+        sqlSession().insert(NS + ".insertTemplateFO", templateFO);
+    }
+
+    public void save(TemplateControl templateControl){
+        sqlSession().insert(NS + ".insertTemplateControl", templateControl);
     }
 
     public TemplateXSL getTemplateXSL(String name){
@@ -41,21 +55,18 @@ public class TemplateBean extends AbstractBean {
 	 * @return xsl templates
 	 */
 	@SuppressWarnings("unchecked")
-	public List<TemplateXSL> getAllTemplateXSL(){
-        return sqlSession().selectList(NS + ".selectAllTemplateXSL");
+	public List<TemplateXSL> getTemplateXSLs(){
+        return sqlSession().selectList(NS + ".selectAllTemplateXSLs");
     }
 
 	@SuppressWarnings("unchecked")
 	public List<TemplateXSL> getTemplateXSL(int first, int count){
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("first", first);
-		params.put("count", count);
-        return sqlSession().selectList(NS + ".selectAllTemplateXSLLimit", params);
+        return sqlSession().selectList(NS + ".selectTemplateXSLs", new AbstractFilter(first, count));
     }
 
 	@SuppressWarnings("unchecked")
-	public int getTotalCountTemplateXSL() {
-		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateXSLSize");
+	public int getTemplateXSLsCount() {
+		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateXSLsCount");
 	}
 
 	/**
@@ -64,21 +75,18 @@ public class TemplateBean extends AbstractBean {
 	 * @return xsd templates
 	 */
 	@SuppressWarnings("unchecked")
-    public List<TemplateXSD> getAllTemplateXSD(){
-        return sqlSession().selectList(NS + ".selectAllTemplateXSD");
+    public List<TemplateXSD> getTemplateXSDs(){
+        return sqlSession().selectList(NS + ".selectAllTemplateXSDs");
     }
 
 	@SuppressWarnings("unchecked")
 	public List<TemplateXSD> getTemplateXSD(int first, int count){
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("first", first);
-		params.put("count", count);
-        return sqlSession().selectList(NS + ".selectAllTemplateXSDLimit", params);
+        return sqlSession().selectList(NS + ".selectTemplateXSDs", new AbstractFilter(first, count));
     }
 
 	@SuppressWarnings("unchecked")
-	public int getTotalCountTemplateXSD() {
-		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateXSDSize");
+	public int getTemplateXSDsCount() {
+		return (Integer)sqlSession().selectOne(NS + ".selectsAllTemplateXSDsCount");
 	}
 
 	/**
@@ -87,21 +95,18 @@ public class TemplateBean extends AbstractBean {
 	 * @return control templates
 	 */
 	@SuppressWarnings("unchecked")
-    public List<TemplateControl> getAllTemplateControl(){
+    public List<TemplateControl> getTemplateControls(){
         return  sqlSession().selectList(NS + ".selectAllTemplateControl");
     }
 
 	@SuppressWarnings("unchecked")
 	public List<TemplateControl> getTemplateControl(int first, int count){
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("first", first);
-		params.put("count", count);
-        return sqlSession().selectList(NS + ".selectAllTemplateControlLimit", params);
+        return sqlSession().selectList(NS + ".selectTemplateControls", new AbstractFilter(first, count));
     }
 
 	@SuppressWarnings("unchecked")
 	public int getTotalCountTemplateControl() {
-		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateControlSize");
+		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateControlsCount");
 	}
 
 	/**
@@ -111,24 +116,17 @@ public class TemplateBean extends AbstractBean {
 	 */
 	@SuppressWarnings("unchecked")
     public List<TemplateFO> getAllTemplateFO(){
-        return  sqlSession().selectList(NS + ".selectAllTemplateFO");
+        return  sqlSession().selectList(NS + ".selectAllTemplateFOs");
     }
 
 	@SuppressWarnings("unchecked")
 	public List<TemplateFO> getTemplateFO(int first, int count){
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("first", first);
-		params.put("count", count);
-        return sqlSession().selectList(NS + ".selectAllTemplateFOLimit", params);
+        return sqlSession().selectList(NS + ".selectTemplateFOs", new AbstractFilter(first, count));
     }
 
 	@SuppressWarnings("unchecked")
-	public int getTotalCountTemplateFO() {
-		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateFOSize");
-	}
-
-	public boolean isExist(AbstractTemplate template) {
-		return (Long)sqlSession().selectOne(NS + ".isExist", template) > 0;
+	public int getTemplateFOsCount() {
+		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateFOsCount");
 	}
 
     @SuppressWarnings({"unchecked"})

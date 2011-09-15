@@ -1,56 +1,44 @@
 package org.complitex.flexbuh.service.dictionary;
 
-import com.google.common.collect.Maps;
-import org.complitex.flexbuh.entity.Stub;
+import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.Currency;
 import org.complitex.flexbuh.entity.dictionary.CurrencyName;
+import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
  *         Date: 11.08.11 14:10
  */
 @Stateless
-public class CurrencyBean extends DictionaryBean<Currency> {
+public class CurrencyBean extends AbstractBean {
     public static final String NS = CurrencyBean.class.getName();
 
-	@Override
-    public void create(Currency currency) {
-        sqlSession().insert(NS + ".create", currency);
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("currencyId", currency.getId());
-		for (CurrencyName currencyName : currency.getNames()) {
-			params.put("languageId", currencyName.getLanguage().getId());
-			params.put("val", currencyName.getValue());
-			sqlSession().insert(CurrencyName.class.getName() + ".create", params);
-		}
+    public void save(Currency currency) {
+        sqlSession().insert(NS + ".insertCurrency", currency);
+
+        for (CurrencyName currencyName : currency.getNames()) {
+            sqlSession().insert(NS + ".insertCurrencyName", currencyName);
+        }
     }
 
-	@SuppressWarnings("unchecked")
-	public List<Currency> readAll() {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		return (List<Currency>)sqlSession().selectList(NS + ".readAll", params);
-	}
+    public Currency getCurrency(Long id) {
+        return (Currency)sqlSession().selectOne(NS + ".selectCurrency", id);
+    }
 
-	public Currency read(long id) {
-		return (Currency)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
-	}
+    @SuppressWarnings("unchecked")
+    public List<Currency> getCurrencies() {
+        return (List<Currency>)sqlSession().selectList(NS + ".selectAllCurrencies");
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<Currency> read(int first, int count) {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		params.put("first", first);
-		params.put("count", count);
-		return sqlSession().selectList(NS + ".readLimit", params);
-	}
+    public Integer getCurrenciesCount(){
+        return (Integer) sqlSession().selectOne(NS + ".selectAllCurrenciesCount");
+    }
 
-	@Override
-	public String getTable() {
-		return Currency.TABLE;
-	}
+    @SuppressWarnings("unchecked")
+    public List<Currency> getCurrencies(int first, int count) {
+        return sqlSession().selectList(NS + ".selectCurrencies", new AbstractFilter(first, count));
+    }
 }

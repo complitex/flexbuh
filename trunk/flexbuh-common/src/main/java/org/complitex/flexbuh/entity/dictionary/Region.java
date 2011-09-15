@@ -6,9 +6,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 05.08.11 12:24
  */
-public class Region extends DictionaryOfLimitedTime {
-	public static final String TABLE = "region";
-
+public class Region extends AbstractPeriodDictionary {
 	private Integer code;
 	private List<RegionName> names;
 
@@ -31,10 +29,5 @@ public class Region extends DictionaryOfLimitedTime {
 	@Override
 	public boolean validate() {
 		return super.validate() && code != null && names != null && names.size() > 0;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 }

@@ -8,18 +8,15 @@
 		<result column="default_lang" property="defaultLang"/>
     </resultMap>
 
-	<select id="readAll" resultMap="languageResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}`
+	<select id="selectAllLanguage" resultMap="languageResultMap">
+        select * from `language`
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="languageResultMap"
-			useCache="true" flushCache="false">
+	<select id="selectLanguage" parameterType="org.complitex.flexbuh.entity.Language" resultMap="languageResultMap">
         select * from `language` where `id` = #{id}
     </select>
 
-	<select id="findByLangIsoCode" parameterType="map" resultMap="languageResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `lang_iso_code` = #{langIsoCode}
+	<select id="selectLanguageByLangIsoCode" parameterType="map" resultMap="languageResultMap">
+        select * from `language` where `lang_iso_code` = #{langIsoCode}
     </select>
 </mapper>

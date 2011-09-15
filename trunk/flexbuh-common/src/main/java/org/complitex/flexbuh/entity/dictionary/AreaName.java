@@ -7,10 +7,13 @@ import org.complitex.flexbuh.entity.LocalizedString;
  *         Date: 05.08.11 13:59
  */
 public class AreaName extends LocalizedString {
-	private final static String TABLE = "area_name";
+    private Long taxInspectionId;
 
-	@Override
-	public String getTable() {
-		return TABLE;
-	}
+    public Long getTaxInspectionId() {
+        return taxInspectionId;
+    }
+
+    public void setTaxInspectionId(Long taxInspectionId) {
+        this.taxInspectionId = taxInspectionId;
+    }
 }

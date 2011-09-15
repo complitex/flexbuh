@@ -2,37 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentVersionBean">
-    <resultMap id="documentVersionResultMap"
-			   type="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
-			   extends="org.complitex.flexbuh.entity.dictionary.DictionaryOfLimitedTime.dictionaryOfLimitedTimeResultMap">
+    <resultMap id="documentVersionResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
+			   extends="abstractPeriodDictionaryResultMap">
         <result column="document_type" property="documentType"/>
         <result column="document_sub_type" property="documentSubType"/>
         <result column="version" property="version"/>
-		<collection property="normativeDocumentNames" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName"
-				column="id" select="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName.selectNormativeDocumentNames"/>
+
+		<collection property="normativeDocumentNames" ofType="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName"
+				column="id" select="selectNormativeDocumentNames"/>
     </resultMap>
 
-    <insert id="create" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`status`, `upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`, `version`)
-        	values (#{status}, #{uploadDate}, #{beginDate}, #{endDate}, #{documentType}, #{documentSubType}, #{version})
+    <resultMap id="normativeDocumentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName"
+               extends="localizedStringResultMap">
+        <result column="document_version_id" property="documentVersionId"/>
+    </resultMap>
+
+    <insert id="insertDocumentVersion" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into `document_version` (`upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`, `version`)
+        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{documentType}, #{documentSubType}, #{version})
     </insert>
 
-	<select id="readAll" resultMap="documentVersionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
+	<select id="selectAllDocumentVersions" resultMap="documentVersionResultMap">
+        select * from `document_version`
     </select>
 
-	<select id="readLimit" parameterType="map" resultMap="documentVersionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
-        order by `document_type`, `document_sub_type`, `version`
-        limit #{first}, #{count}
+	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentVersionResultMap">
+        select * from `document_version` order by `document_type`, `document_sub_type`, `version` limit #{first}, #{count}
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="documentVersionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+	<select id="selectDocumentVersion" parameterType="long" resultMap="documentVersionResultMap">
+        select * from `document_version` where `id` = #{id}
     </select>
+
+    <select id="selectAllDocumentVersionsCount">
+        select count(*) from `document_version`
+    </select>
+
+    <!--NormativeDocumentName-->
+
+    <select id="selectNormativeDocumentNames" parameterType="long" resultMap="normativeDocumentNameResultMap">
+		select * from `normative_document_name` where `document_version_id` = #{id}
+	</select>
+
+    <insert id="insertNormativeDocumentName" parameterType="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into `normative_document_name` (`document_version_id`, `language_id`, `value`)
+        	values (#{documentVersionId}, #{language.id}, #{value})
+    </insert>
 </mapper>

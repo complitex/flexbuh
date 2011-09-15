@@ -10,9 +10,7 @@ import java.util.Date;
  * @author Pavel Sknar
  *         Date: 05.08.11 17:54
  */
-public class DocumentTerm extends DictionaryOfLimitedTime {
-	public static final String TABLE = "document_term";
-
+public class DocumentTerm extends AbstractPeriodDictionary {
 	private String documentType;
 	private String documentSubType;
 	private Integer documentVersion;
@@ -87,11 +85,6 @@ public class DocumentTerm extends DictionaryOfLimitedTime {
 				&& periodMonth != null && periodMonth > 0
 				&& periodType != null && periodType > 0
 				&& periodYear != null && periodYear > 0;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

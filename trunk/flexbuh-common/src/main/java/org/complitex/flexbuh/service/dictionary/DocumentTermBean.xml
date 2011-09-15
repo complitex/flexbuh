@@ -2,9 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentTermBean">
-    <resultMap id="documentTermResultMap"
-			   type="org.complitex.flexbuh.entity.dictionary.DocumentTerm"
-			   extends="org.complitex.flexbuh.entity.dictionary.DictionaryOfLimitedTime.dictionaryOfLimitedTimeResultMap">
+    <resultMap id="documentTermResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentTerm"
+			   extends="abstractPeriodDictionaryResultMap">
         <result column="document_type" property="documentType"/>
         <result column="document_sub_type" property="documentSubType"/>
         <result column="document_version" property="documentVersion"/>
@@ -14,27 +13,27 @@
         <result column="period_year" property="periodYear"/>
     </resultMap>
 
-    <insert id="create" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentTerm"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`status`, `upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`, `document_version`, `date_term`, `period_month`, `period_type`, `period_year`)
-        	values (#{status}, #{uploadDate}, #{beginDate}, #{endDate}, #{documentType}, #{documentSubType}, #{documentVersion}, #{dateTerm}, #{periodMonth}, #{periodType}, #{periodYear})
+    <insert id="insertDocumentTerm" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentTerm" keyProperty="id" useGeneratedKeys="true">
+        insert into `document_term` (`upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`,
+          `document_version`, `date_term`, `period_month`, `period_type`, `period_year`)
+        values
+          (#{uploadDate}, #{beginDate}, #{endDate}, #{documentType}, #{documentSubType}, #{documentVersion}, #{dateTerm},
+            #{periodMonth}, #{periodType}, #{periodYear})
     </insert>
 
-	<select id="readAll" resultMap="documentTermResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
+	<select id="selectAllDocuments" resultMap="documentTermResultMap">
+        select * from `document_term`
     </select>
 
-	<select id="readLimit" parameterType="map" resultMap="documentTermResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
-        order by `document_type`, `document_sub_type`, `document_version`
-        limit #{first}, #{count}
+     <select id="selectAllDocumentsCount">
+        select count(*) from `document_term`
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="documentTermResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+	<select id="selectDocuments" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentTermResultMap">
+        select * from `document_term` order by `document_type`, `document_sub_type`, `document_version` limit #{first}, #{count}
+    </select>
+
+	<select id="selectDocument" parameterType="long" resultMap="documentTermResultMap">
+        select * from `document_term` where `id` = #{id}
     </select>
 </mapper>

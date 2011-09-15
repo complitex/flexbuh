@@ -40,12 +40,12 @@ public class DocumentTermList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends DocumentTerm> getData(int first, int count) {
-                return documentTermBean.read(first, count);
+                return documentTermBean.getDocumentTerms(first, count);
             }
 
             @Override
             protected int getSize() {
-                return documentTermBean.totalCount();
+                return documentTermBean.getAllDocumentTermsCount();
             }
         };
         dataProvider.setSort("type", true);

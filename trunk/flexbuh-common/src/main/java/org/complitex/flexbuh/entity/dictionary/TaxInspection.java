@@ -7,9 +7,7 @@ import java.util.Locale;
  * @author Pavel Sknar
  *         Date: 05.08.11 13:06
  */
-public class TaxInspection extends DictionaryOfLimitedTime {
-	public static final String TABLE = "tax_inspection";
-
+public class TaxInspection extends AbstractPeriodDictionary {
 	private Integer code;
 	private List<TaxInspectionName> names;
 	private Integer regionCode;
@@ -87,11 +85,6 @@ public class TaxInspection extends DictionaryOfLimitedTime {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

@@ -13,9 +13,9 @@ import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.PersonType;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
+import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.PersonTypeBean;
 import org.complitex.flexbuh.service.user.SessionBean;
-import org.complitex.flexbuh.service.user.UserBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
 
 import javax.ejb.EJB;
@@ -33,7 +33,7 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 	private PersonTypeBean personTypeBean;
 
 	@EJB
-	private UserBean userBean;
+	private PersonProfileBean personProfileBean;
 
 	@EJB
 	private SessionBean sessionBean;
@@ -96,7 +96,7 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
         // Налоговая
 		final Model<TaxInspection> taxInspectionModel = new Model<TaxInspection>();
         final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<TaxInspection>("taxInspection", taxInspectionModel,
-                taxInspectionBean.readAll(),
+                taxInspectionBean.getTaxInspections(),
 				new IChoiceRenderer<TaxInspection>() {
 
                     @Override
@@ -124,7 +124,8 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 				personProfile.setPhone(phone.getNumber());
 				personProfile.setFax(fax.getNumber());
 
-				userBean.createCompanyProfile(getSessionId(true), personProfile);
+                personProfile.setSessionId(getSessionId(true));
+                personProfileBean.save(personProfile);
 
                 info(getString("profile_saved"));
             }

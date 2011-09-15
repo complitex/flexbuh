@@ -1,56 +1,51 @@
 package org.complitex.flexbuh.service.dictionary;
 
-import com.google.common.collect.Maps;
-import org.complitex.flexbuh.entity.Stub;
+import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.entity.dictionary.DocumentName;
+import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
  *         Date: 22.08.11 12:15
  */
 @Stateless
-public class DocumentBean extends DictionaryBean<Document> {
+public class DocumentBean extends AbstractBean {
     public static final String NS = DocumentBean.class.getName();
 
-	@Override
-    public void create(Document document) {
-        sqlSession().insert(NS + ".create", document);
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("documentId", document.getId());
+    public void save(Document document) {
+        sqlSession().insert(NS + ".insertDocument", document);
+
 		for (DocumentName documentName : document.getNames()) {
-			params.put("languageId", documentName.getLanguage().getId());
-			params.put("val", documentName.getValue());
-			sqlSession().insert(DocumentName.class.getName() + ".create", params);
+            documentName.setDocumentId(document.getId());
+
+			sqlSession().insert(NS + ".insertDocumentName", documentName);
 		}
     }
 
-	@SuppressWarnings("unchecked")
-	public List<Document> readAll() {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		return (List<Document>)sqlSession().selectList(NS + ".readAll", params);
-	}
-
-	public Document read(long id) {
-		return (Document)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
+    public Document getDocument(Long id) {
+		return (Document)sqlSession().selectOne(NS + ".selectDocument", id);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Document> read(int first, int count) {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		params.put("first", first);
-		params.put("count", count);
-		return sqlSession().selectList(NS + ".readLimit", params);
+	public List<Document> getDocuments() {
+		return (List<Document>)sqlSession().selectList(NS + ".selectAllDocuments");
 	}
 
-	@Override
-	public String getTable() {
-		return Document.TABLE;
+    public Integer getDocumentsCount(){
+        return (Integer)sqlSession().selectOne(NS + ".selectAllDocumentsCount");
+    }
+
+	@SuppressWarnings("unchecked")
+	public List<Document> getDocuments(int first, int count) {
+		return sqlSession().selectList(NS + ".selectDocuments", new AbstractFilter(first, count));
 	}
+
+    @SuppressWarnings("unchecked")
+    public List<Document> getLinkedDocuments(Document parent){
+        return sqlSession().selectList(NS + ".selectLinkedDocuments", parent);
+    }
 }

@@ -4,7 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.Singleton;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.File;

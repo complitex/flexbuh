@@ -7,10 +7,13 @@ import org.complitex.flexbuh.entity.LocalizedString;
  *         Date: 10.08.11 14:41
  */
 public class NormativeDocumentName extends LocalizedString {
-	private static final String TABLE = "normative_document_name";
+    private Long documentVersionId;
 
-	@Override
-	public String getTable() {
-		return TABLE;
-	}
+    public Long getDocumentVersionId() {
+        return documentVersionId;
+    }
+
+    public void setDocumentVersionId(Long documentVersionId) {
+        this.documentVersionId = documentVersionId;
+    }
 }

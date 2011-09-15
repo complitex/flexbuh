@@ -7,10 +7,13 @@ import org.complitex.flexbuh.entity.LocalizedString;
  *         Date: 09.08.11 11:01
  */
 public class DictionaryTypeName extends LocalizedString {
-	private static final String TABLE = "dictionary_type_name";
+    private Long dictionaryTypeId;
 
-	@Override
-	public String getTable() {
-		return TABLE;
-	}
+    public Long getDictionaryTypeId() {
+        return dictionaryTypeId;
+    }
+
+    public void setDictionaryTypeId(Long dictionaryTypeId) {
+        this.dictionaryTypeId = dictionaryTypeId;
+    }
 }

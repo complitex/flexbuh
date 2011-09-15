@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.request.target.resource.ResourceStreamRequestTarget;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
@@ -19,7 +18,6 @@ import org.complitex.flexbuh.admin.importexport.service.ImportListener;
 import org.complitex.flexbuh.admin.importexport.service.ImportUserProfileXMLService;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.User;
-import org.complitex.flexbuh.security.CookieWebSession;
 import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.UserBean;
 import org.complitex.flexbuh.template.pages.ScrollListPage;
@@ -28,11 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.servlet.http.Cookie;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
-import java.util.Collections;
 
 /**
  * @author Pavel Sknar
@@ -72,21 +68,20 @@ public class UserProfileView extends ScrollListPage {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
+        final Long sessionId = getSessionId(true);
+
 		//Модель
         final DataProvider<PersonProfile> dataProvider = new DataProvider<PersonProfile>() {
 
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends PersonProfile> getData(int first, int count) {
-				String cookie = getCookie();
-                return cookie != null? personProfileBean.findCompanyProfilesBySessionCookie(cookie, first, count):
-						Collections.EMPTY_LIST;
+                return personProfileBean.getPersonProfiles(sessionId, first, count);
             }
 
             @Override
             protected int getSize() {
-				String cookie = getCookie();
-                return cookie != null ? personProfileBean.countCompanyProfilesBySessionCookie(cookie): 0;
+                return personProfileBean.getPersonalProfileCount(sessionId);
             }
         };
         dataProvider.setSort("name", true);
@@ -194,14 +189,10 @@ public class UserProfileView extends ScrollListPage {
 
 					@Override
 					public void write(OutputStream output) {
-						Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(CookieWebSession.SESSION_COOKIE_NAME);
+						User user = userBean.getUserBySessionId(sessionId);
 
-						if (cookie != null) {
-							User user = userBean.getUserByCookie(cookie.getValue());
-
-							System.out.println("User: " + user.toString());
-
-							try {
+                        if (user != null){
+                            try {
 								JAXBContext context = JAXBContext.newInstance(User.class);
 								Marshaller marshaller = context.createMarshaller();
 								marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -209,7 +200,7 @@ public class UserProfileView extends ScrollListPage {
 							} catch (Exception e) {
 								log.error("Cannot export person profile to xml", e);
 							}
-						}
+                        }
 					}
 
 					@Override
@@ -221,10 +212,5 @@ public class UserProfileView extends ScrollListPage {
 		};
 
 		filterForm.add(exportButton);
-	}
-
-	private String getCookie() {
-		Cookie cookie = ((WebRequest)getRequestCycle().getRequest()).getCookie(CookieWebSession.SESSION_COOKIE_NAME);
-		return cookie != null? cookie.getValue(): null;
 	}
 }

@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
-import org.complitex.flexbuh.entity.dictionary.Dictionary;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.entity.dictionary.NormativeDocumentName;
 import org.complitex.flexbuh.service.LanguageBean;
-import org.complitex.flexbuh.service.dictionary.DictionaryBean;
 import org.complitex.flexbuh.service.dictionary.DocumentVersionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ import java.util.List;
 @Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService {
+public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<DocumentVersion> {
 	private final static Logger log = LoggerFactory.getLogger(ImportDocumentVersionXMLService.class);
 
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
@@ -50,7 +48,7 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService 
 	}
 
 	@Override
-	protected List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<DocumentVersion> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
 		DocumentVersion documentVersion = new DocumentVersion();
 		documentVersion.setUploadDate(importDate);
 		//documentTerm.setBeginDate(beginDate);
@@ -80,23 +78,24 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService 
 			}
 		}
 		Validate.isTrue(documentVersion.validate(), "Invalid processing document term: " + documentVersion);
-		return Lists.newArrayList((Dictionary) documentVersion);
+
+		return Lists.newArrayList(documentVersion);
 	}
 
-	@NotNull
+    @Override
+    public void create(DocumentVersion dictionary) {
+        documentVersionBean.save(dictionary);
+    }
+
+    @NotNull
 	private Date parseDate(@NotNull String stringDate) throws ParseException {
 		return DATE_FORMAT.parse(stringDate);
 	}
 
 	private void initLang() {
 		if (ukLang == null) {
-			ukLang = languageBean.find("uk");
+			ukLang = languageBean.getLanguageByLangIsoCode("uk");
 			Validate.notNull(ukLang, "'uk' language not find");
 		}
-	}
-
-	@Override
-	protected DictionaryBean getDictionaryBean() {
-		return documentVersionBean;
 	}
 }

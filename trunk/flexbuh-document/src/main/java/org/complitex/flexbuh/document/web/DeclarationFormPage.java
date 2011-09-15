@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
+import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
 
 import javax.ejb.EJB;
@@ -19,6 +20,9 @@ import javax.ejb.EJB;
 public class DeclarationFormPage extends TemplatePage{
     @EJB
     private DeclarationBean declarationBean;
+
+    @EJB
+    private DocumentBean documentBean;
 
     public DeclarationFormPage(PageParameters pageParameters) {
         add(CSSPackageResource.getHeaderContribution(DeclarationFormPage.class, "declaration.css"));
@@ -50,8 +54,12 @@ public class DeclarationFormPage extends TemplatePage{
         Form form = new Form("form");
         add(form);
 
+//        List<Document> linkedDocuments = documentBean.getLinkedDocuments()
+
         DeclarationFormComponent declarationComponent = new DeclarationFormComponent("declaration", declaration);
         form.add(declarationComponent);
+
+        //todo add linked declaration, add wiquery accordion
 
         form.add(new Button("submit"){
             @Override

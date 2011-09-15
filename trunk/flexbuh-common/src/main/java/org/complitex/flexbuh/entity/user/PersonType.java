@@ -9,9 +9,7 @@ import java.util.List;
  *         Date: 31.08.11 18:10
  */
 public class PersonType extends DomainObject {
-	public static final String TABLE = "person_type";
-
-	private Integer code;
+    private Integer code;
 
 	private List<PersonTypeName> names;
 
@@ -41,10 +39,5 @@ public class PersonType extends DomainObject {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 }

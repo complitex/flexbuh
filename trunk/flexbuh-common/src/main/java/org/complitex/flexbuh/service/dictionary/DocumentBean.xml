@@ -2,40 +2,58 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentBean">
-    <resultMap id="documentResultMap"
-			   type="org.complitex.flexbuh.entity.dictionary.Document"
-			   extends="org.complitex.flexbuh.entity.dictionary.DictionaryOfLimitedTime.dictionaryOfLimitedTimeResultMap">
-        <result property="type" column="document_type"/>
-        <result property="subType" column="document_sub_type"/>
-		<result property="cntSet" column="cnt_set"/>
-		<result property="parentDocumentType" column="parent_document_type"/>
-        <result property="parentDocumentSubType" column="parent_document_sub_type"/>
-		<result property="selected" column="selected"/>
-		<collection property="names" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.dictionary.DocumentName"
-				column="id" select="org.complitex.flexbuh.entity.dictionary.DocumentName.selectDocumentNames"/>
+    <resultMap id="documentResultMap" type="org.complitex.flexbuh.entity.dictionary.Document" extends="abstractPeriodDictionaryResultMap">
+        <result property="cDoc" column="c_doc"/>
+        <result property="cDocSub" column="c_doc_sub"/>
+        <result property="cntSet" column="cnt_set"/>
+        <result property="parentCDoc" column="parent_c_doc"/>
+        <result property="parentCDocSub" column="parent_c_doc_sub"/>
+        <result property="selected" column="selected"/>
+
+        <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.DocumentName" column="id" select="selectDocumentNames"/>
     </resultMap>
 
-    <insert id="create" parameterType="org.complitex.flexbuh.entity.dictionary.Document"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`status`, `upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`,`cnt_set`, `parent_document_type`, `parent_document_sub_type`, `selected`)
-        	values (#{status}, #{uploadDate}, #{beginDate}, #{endDate}, #{type}, #{subType}, #{cntSet}, #{parentDocumentType}, #{parentDocumentSubType}, #{selected})
+    <resultMap id="documentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentName" extends="localizedStringResultMap">
+        <result column="document_id" property="documentId"/>
+    </resultMap>
+
+    <insert id="insertDocument" parameterType="org.complitex.flexbuh.entity.dictionary.Document" keyProperty="id" useGeneratedKeys="true">
+        insert into `document`
+          (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`,`cnt_set`, `parent_c_doc`,
+            `parent_c_doc_sub`, `selected`)
+        values
+          (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cntSet}, #{parentCDoc},
+            #{parentCDocSub}, #{selected})
     </insert>
 
-	<select id="readAll" resultMap="documentResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
+    <select id="selectAllDocuments" resultMap="documentResultMap">
+        select * from document
     </select>
 
-	<select id="readLimit" parameterType="map" resultMap="documentResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
-        order by `document_type`, `document_sub_type`
-        limit #{first}, #{count}
+    <select id="selectAllDocumentsCount">
+        select count(*) from `document`
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="documentResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+    <select id="selectDocuments" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentResultMap">
+        select * from `document` order by `cDoc`, `cDocSub` limit #{first}, #{count}
     </select>
+
+    <select id="selectDocument" parameterType="long" resultMap="documentResultMap">
+        select * from `document` where `id` = #{id}
+    </select>
+
+    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.entity.dictionary.Document" resultMap="documentResultMap">
+        select * from `document` where `parent_c_doc` = #{parentCDoc} and `parent_c_doc_sub` = #{parentCDocSub}
+    </select>
+
+    <!--DocumentName-->
+
+    <select id="selectDocumentNames" parameterType="long" resultMap="documentNameResultMap">
+		select * from `document_name` where `document_id`=#{id}
+	</select>
+
+    <insert id="insertDocumentName" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentName"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into `document_name` (`document_id`, `language_id`, `value`) values (#{documentId}, #{language.id}, #{value})
+    </insert>
 </mapper>

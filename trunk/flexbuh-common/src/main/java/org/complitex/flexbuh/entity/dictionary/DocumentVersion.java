@@ -6,9 +6,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 08.08.11 14:52
  */
-public class DocumentVersion extends DictionaryOfLimitedTime {
-	public static final String TABLE = "document_version";
-
+public class DocumentVersion extends AbstractPeriodDictionary {
 	private String documentType;
 	private String documentSubType;
 	private Integer version;
@@ -50,10 +48,5 @@ public class DocumentVersion extends DictionaryOfLimitedTime {
 	public boolean validate() {
 		return super.validate() && documentType != null && documentSubType != null && version != null &&
 				normativeDocumentNames != null && normativeDocumentNames.size() > 0;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 }

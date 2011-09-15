@@ -2,36 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.CurrencyBean">
-    <resultMap id="currencyResultMap"
-			   type="org.complitex.flexbuh.entity.dictionary.Currency"
-			   extends="org.complitex.flexbuh.entity.dictionary.DictionaryOfLimitedTime.dictionaryOfLimitedTimeResultMap">
+    <resultMap id="currencyResultMap" type="org.complitex.flexbuh.entity.dictionary.Currency" extends="abstractPeriodDictionaryResultMap">
         <result column="code_number" property="codeNumber"/>
         <result column="code_string" property="codeString"/>
-		<collection property="names" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.dictionary.CurrencyName"
-				column="id" select="org.complitex.flexbuh.entity.dictionary.CurrencyName.selectCurrencyNames"/>
+
+		<collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.CurrencyName" column="id"
+                    select="selectCurrencyNames"/>
     </resultMap>
 
-    <insert id="create" parameterType="org.complitex.flexbuh.entity.dictionary.Currency"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`status`, `upload_date`, `begin_date`, `end_date`, `code_number`, `code_string`)
-        	values (#{status}, #{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString})
+     <resultMap id="currencyNameResultMap" type="org.complitex.flexbuh.entity.dictionary.CurrencyName" extends="localizedStringResultMap">
+        <result column="currency_id" property="currencyId"/>
+    </resultMap>
+
+    <insert id="insertCurrency" parameterType="org.complitex.flexbuh.entity.dictionary.Currency" keyProperty="id" useGeneratedKeys="true">
+        insert into `currency` (`upload_date`, `begin_date`, `end_date`, `code_number`, `code_string`)
+        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString})
     </insert>
 
-	<select id="readAll" resultMap="currencyResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
+	<select id="selectAllCurrencies" resultMap="currencyResultMap">
+        select * from `currency`
     </select>
 
-	<select id="readLimit" parameterType="map" resultMap="currencyResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
-        order by `code_number`
-        limit #{first}, #{count}
+    <select id="selectAllCurrencyCount">
+        select count(*) from `currency`
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="currencyResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+	<select id="selectCurrencies" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="currencyResultMap">
+        select * from `currency` order by `code_number` limit #{first}, #{count}
     </select>
+
+	<select id="selectCurrency" parameterType="long" resultMap="currencyResultMap">
+        select * from `currency` where `id` = #{id}
+    </select>
+
+    <!--Currency Name-->
+
+    <select id="selectCurrencyNames" parameterType="long" resultMap="currencyNameResultMap">
+		select * from `currency_name` where `currency_id` = #{id}
+	</select>
+
+	<insert id="insertCurrencyName" parameterType="org.complitex.flexbuh.entity.dictionary.CurrencyName"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into `currency_name` (`currency_id`, `language_id`, `value`) values (#{currencyId}, #{language.id}, #{value})
+    </insert>
 </mapper>

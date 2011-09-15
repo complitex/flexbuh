@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
-import org.complitex.flexbuh.entity.dictionary.Dictionary;
 import org.complitex.flexbuh.entity.dictionary.Region;
 import org.complitex.flexbuh.entity.dictionary.RegionName;
 import org.complitex.flexbuh.service.LanguageBean;
-import org.complitex.flexbuh.service.dictionary.DictionaryBean;
 import org.complitex.flexbuh.service.dictionary.RegionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ import java.util.List;
 @Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ImportRegionXMLService extends ImportDictionaryXMLService {
+public class ImportRegionXMLService extends ImportDictionaryXMLService<Region> {
 	private final static Logger log = LoggerFactory.getLogger(ImportRegionXMLService.class);
 
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
@@ -50,7 +48,7 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService {
 	}
 
 	@Override
-	protected List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<Region> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
 		Region region = new Region();
 		region.setUploadDate(importDate);
 		region.setBeginDate(beginDate);
@@ -76,12 +74,12 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService {
 			}
 		}
 		Validate.isTrue(region.validate(), "Invalid processing document: " + region);
-		return Lists.newArrayList((Dictionary)region);
+		return Lists.newArrayList(region);
 	}
 
 	private void initLang() {
 		if (ukLang == null) {
-			ukLang = languageBean.find("uk");
+			ukLang = languageBean.getLanguageByLangIsoCode("uk");
 			Validate.notNull(ukLang, "'uk' language not find");
 		}
 	}
@@ -91,8 +89,8 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService {
 		return DATE_FORMAT.parse(stringDate);
 	}
 
-	@Override
-	protected DictionaryBean getDictionaryBean() {
-		return regionBean;
-	}
+    @Override
+    public void create(Region dictionary) {
+        regionBean.save(dictionary);
+    }
 }
