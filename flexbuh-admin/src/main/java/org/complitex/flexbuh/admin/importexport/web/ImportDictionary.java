@@ -58,7 +58,7 @@ public class ImportDictionary extends TemplatePage {
 
 		//Dictionary types
         final CheckBoxMultipleChoice<DictionaryType> dictionaryTypes =
-				new CheckBoxMultipleChoice<DictionaryType>("dictionaryTypes", dictionaryModel, dictionaryTypeService.readAll(),
+				new CheckBoxMultipleChoice<DictionaryType>("dictionaryTypes", dictionaryModel, dictionaryTypeService.getDictionaryTypes(),
 						new IChoiceRenderer<DictionaryType>() {
 
 							@Override

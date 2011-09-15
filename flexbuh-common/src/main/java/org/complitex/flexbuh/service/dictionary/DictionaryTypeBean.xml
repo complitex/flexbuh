@@ -5,29 +5,39 @@
     <resultMap id="dictionaryTypeResultMap" type="org.complitex.flexbuh.entity.dictionary.DictionaryType">
 		<id property="id" column="id"/>
 		<result column="code" property="code"/>
-		<collection property="names" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName"
-				column="id" select="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName.selectDictionaryTypeNames"/>
-		<collection property="fileNames" javaType="java.util.ArrayList" ofType="java.lang.String"
-				column="id" select="findFileName"/>
+		<collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName" column="id"
+                    select="selectDictionaryTypeNames"/>
+		<collection property="fileNames" ofType="java.lang.String" column="id" select="findFileName"/>
     </resultMap>
 
-	<select id="readAll" resultMap="dictionaryTypeResultMap" parameterType="map"
-			useCache="true" flushCache="false">
-        select * from `${table}`
+    <resultMap id="dictionaryTypeNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName"
+               extends="localizedStringResultMap">
+        <result column="dictionary_type_id" property="dictionaryTypeId"/>
+    </resultMap>
+
+	<select id="selectAllDictionaryTypes" resultMap="dictionaryTypeResultMap">
+        select * from `dictionary_type`
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="dictionaryTypeResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+	<select id="selectDictionaryTypes" parameterType="long" resultMap="dictionaryTypeResultMap">
+        select * from `dictionary_type` where `id` = #{id}
     </select>
 
-	<select id="findByCode" parameterType="map" resultMap="dictionaryTypeResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `code` = #{code}
+	<select id="selectDictionaryTypeByCode" parameterType="string" resultMap="dictionaryTypeResultMap">
+        select * from `dictionary_type` where `code` = #{code}
     </select>
 
-	<select id="findFileName" parameterType="long" resultType="String" useCache="true" flushCache="false">
+	<select id="selectDictionaryTypesFileName" parameterType="long" resultType="string">
 		select `file_name` from `dictionary_file_name` where `dictionary_type_id` = #{id}
 	</select>
 
+    <select id="selectDictionaryTypesCount">
+        select count(*) from `dictionary_type`
+    </select>
+
+    <!--DictionaryTypeName-->
+
+    <select id="selectDictionaryTypeNames" parameterType="long" resultMap="dictionaryTypeNameResultMap">
+		select * from `dictionary_type_name` where `dictionary_type_id` = #{id}
+	</select>
 </mapper>

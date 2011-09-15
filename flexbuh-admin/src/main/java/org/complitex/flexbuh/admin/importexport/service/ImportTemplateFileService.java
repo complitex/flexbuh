@@ -24,7 +24,7 @@ public class ImportTemplateFileService implements ImportFileService {
     public static final String FILE_ENCODING = "CP1251";
 
     @EJB
-    private TemplateFactory templateFactory;
+    private TemplateService templateService;
 
 	@Resource
     protected UserTransaction userTransaction;
@@ -34,7 +34,7 @@ public class ImportTemplateFileService implements ImportFileService {
 		listener.begin();
 		try{
 			userTransaction.begin();
-			templateFactory.instanceTemplate(importFile.getName(), getData(importFile));
+			templateService.save(importFile.getName(), getData(importFile));
 			userTransaction.commit();
 			listener.completed();
 		} catch (Throwable th) {

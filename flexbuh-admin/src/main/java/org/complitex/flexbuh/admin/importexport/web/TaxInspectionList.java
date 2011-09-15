@@ -42,12 +42,12 @@ public class TaxInspectionList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TaxInspection> getData(int first, int count) {
-                return taxInspectionBean.read(first, count);
+                return taxInspectionBean.getTaxInspections(first, count);
             }
 
             @Override
             protected int getSize() {
-                return taxInspectionBean.totalCount();
+                return taxInspectionBean.getTaxInspectionsCount();
             }
         };
         dataProvider.setSort("type", true);

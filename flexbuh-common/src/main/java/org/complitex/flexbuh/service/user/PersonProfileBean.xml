@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.user.PersonProfileBean">
-    <resultMap id="personProfileResultMap"
-			   type="org.complitex.flexbuh.entity.user.PersonProfile">
-		<id column="id" property="id"/>
+    <resultMap id="personProfileResultMap" type="org.complitex.flexbuh.entity.user.PersonProfile">
+        <id column="id" property="id"/>
         <result column="name" property="name"/>
+        <result column="session_id" property="sessionId"/>
         <result column="code_TIN" property="codeTIN"/>
         <result column="code_tax_inspection" property="codeTaxInspection"/>
         <result column="code_KVED" property="codeKVED"/>
@@ -22,56 +22,32 @@
         <result column="accountant_INN" property="accountantINN"/>
         <result column="ipn" property="ipn"/>
         <result column="num_svd_PDV" property="numSvdPDV"/>
-		<association property="personType" column="person_type_id" javaType="org.complitex.flexbuh.entity.user.PersonType"
-					 select="org.complitex.flexbuh.service.user.PersonTypeBean.findById"/>
+
+        <association property="personType" column="person_type_id" javaType="org.complitex.flexbuh.entity.user.PersonType"
+                     select="org.complitex.flexbuh.service.user.PersonTypeBean.findById"/>
     </resultMap>
 
-	<delete id="delete" parameterType="org.complitex.flexbuh.entity.Stub"
-			flushCache="true">
-        delete from `${table}` where `id` = #{id}
-    </delete>
-
-    <insert id="create" parameterType="org.complitex.flexbuh.entity.user.PersonProfile"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`name`, `code_TIN`, `code_tax_inspection`, `code_KVED`, `person_type_id`, `contract_date`, `contract_number`, `zip_code`, `address`, `phone`, `fax`, `email`, `director_FIO`, `accountant_FIO`, `director_INN`, `accountant_INN`, `ipn`, `num_svd_PDV`)
-        	values (#{name}, #{codeTIN}, #{codeTaxInspection}, #{codeKVED}, #{personType.id}, #{contractDate}, #{contractNumber}, #{zipCode}, #{address}, #{phone}, #{fax}, #{email}, #{directorFIO}, #{accountantFIO}, #{directorINN}, #{accountantINN}, #{ipn}, #{numSvdPDV})
+    <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.entity.user.PersonProfile" keyProperty="id" useGeneratedKeys="true">
+        insert into `person_profile`
+          (`name`, `code_TIN`, `code_tax_inspection`, `code_KVED`, `person_type_id`, `contract_date`,
+            `contract_number`, `zip_code`, `address`, `phone`, `fax`, `email`, `director_FIO`, `accountant_FIO`, `director_INN`,
+            `accountant_INN`, `ipn`, `num_svd_PDV`)
+        values
+          (#{name}, #{codeTIN}, #{codeTaxInspection}, #{codeKVED}, #{personType.id}, #{contractDate}, #{contractNumber},
+            #{zipCode}, #{address}, #{phone}, #{fax}, #{email}, #{directorFIO}, #{accountantFIO}, #{directorINN}, #{accountantINN},
+            #{ipn}, #{numSvdPDV})
     </insert>
 
-	<select id="readAll" resultMap="personProfileResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}`
+    <select id="selectPersonProfile" parameterType="long" resultMap="personProfileResultMap">
+        select * from `person_profile` where `id` = #{id}
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="personProfileResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+    <select id="selectPersonProfiles" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="personProfileResultMap">
+        select * from `person_profile` where `session_id` = #{sessionId} limit #{first}, #{count}
     </select>
 
-	<select id="findCompanyProfilesBySessionCookie" parameterType="map" resultMap="personProfileResultMap"
-			useCache="true" flushCache="false">
-        select p.* from `${session_table}` s
-        	inner join `${session_person_profile_table}` sp on sp.`session_id` = s.`id`
-        	inner join `${table}` p on sp.`person_profile_id` = p.`id`
-        	where s.`cookie` = '${cookie}'
-    </select>
-
-	<select id="findCompanyProfilesBySessionCookieSize" parameterType="map" resultType="int"
-			useCache="true" flushCache="false">
-        select count(distinct p.id) from `${session_table}` s
-        	inner join `${session_person_profile_table}` sp on sp.`session_id` = s.`id`
-        	inner join `${table}` p on sp.`person_profile_id` = p.`id`
-        	where s.`cookie` = '${cookie}'
-    </select>
-
-	<select id="findCompanyProfilesBySessionCookieLimit" parameterType="map" resultMap="personProfileResultMap"
-			useCache="true" flushCache="false">
-        select distinct p.* from `${session_table}` s
-        	inner join `${session_person_profile_table}` sp on sp.`session_id` = s.`id`
-        	inner join `${table}` p on sp.`person_profile_id` = p.`id`
-        	where s.`cookie` = '${cookie}'
-        	order by p.name
-        	limit #{first}, #{count}
+    <select id="selectPersonProfilesCount" parameterType="long" resultType="int">
+        select * from `person_profile` where `session_id` = #{sessionId}
     </select>
 
 </mapper>

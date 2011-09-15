@@ -1,13 +1,10 @@
 package org.complitex.flexbuh.service;
 
-import com.google.common.collect.Maps;
 import org.complitex.flexbuh.entity.Language;
-import org.complitex.flexbuh.entity.Stub;
 
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -18,20 +15,15 @@ public class LanguageBean extends AbstractBean {
 	public static final String NS = LanguageBean.class.getName();
 
 	@SuppressWarnings("unchecked")
-	public List<Language> readAll() {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", Language.TABLE);
-		return (List<Language>)sqlSession().selectList(NS + ".readAll", params);
+	public List<Language> getLanguages() {
+		return (List<Language>)sqlSession().selectList(NS + ".selectLanguages");
 	}
 
-	public Language read(long id) {
-		return (Language)sqlSession().selectOne(NS + ".findById", new Stub(id, Language.TABLE));
+	public Language getLanguage(Long id) {
+		return (Language)sqlSession().selectOne(NS + ".selectLanguage", id);
 	}
 
-	public Language find(@NotNull String langIsoCode) {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", Language.TABLE);
-		params.put("langIsoCode", langIsoCode);
-		return (Language)sqlSession().selectOne(NS + ".findByLangIsoCode", params);
+	public Language getLanguageByLangIsoCode(@NotNull String langIsoCode) {
+		return (Language)sqlSession().selectOne(NS + ".selectLanguageByLangIsoCode", langIsoCode);
 	}
 }

@@ -1,49 +1,39 @@
 package org.complitex.flexbuh.service.dictionary;
 
-import com.google.common.collect.Maps;
-import org.complitex.flexbuh.entity.Stub;
+import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.DocumentTerm;
+import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
  *         Date: 27.08.11 10:05
  */
 @Stateless
-public class DocumentTermBean extends DictionaryBean<DocumentTerm> {
+public class DocumentTermBean extends AbstractBean {
+    public static final String NS = DocumentTermBean.class.getName();
 
-	public static final String NS = DocumentTermBean.class.getName();
-
-	@Override
-    public void create(DocumentTerm documentTerm) {
-        sqlSession().insert(NS + ".create", documentTerm);
+    public void save(DocumentTerm documentTerm) {
+        sqlSession().insert(NS + ".insertDocumentTerm", documentTerm);
     }
 
-	@SuppressWarnings("unchecked")
-	public List<DocumentTerm> readAll() {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		return (List<DocumentTerm>)sqlSession().selectList(NS + ".readAll", params);
-	}
+    public DocumentTerm getDocumentTerm(Long id) {
+        return (DocumentTerm)sqlSession().selectOne(NS + ".selectDocumentTerm", id);
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<DocumentTerm> read(int first, int count) {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		params.put("first", first);
-		params.put("count", count);
-		return sqlSession().selectList(NS + ".readLimit", params);
-	}
+    @SuppressWarnings("unchecked")
+    public List<DocumentTerm> getDocumentTerms() {
+        return (List<DocumentTerm>)sqlSession().selectList(NS + ".selectAllDocumentTerms");
+    }
 
-	public DocumentTerm read(long id) {
-		return (DocumentTerm)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
-	}
+    public Integer getAllDocumentTermsCount(){
+        return (Integer)sqlSession().selectOne(NS + ".selectAllDocumentTermsCount");
+    }
 
-	@Override
-	public String getTable() {
-		return DocumentTerm.TABLE;
-	}
+    @SuppressWarnings("unchecked")
+    public List<DocumentTerm> getDocumentTerms(int first, int count) {
+        return sqlSession().selectList(NS + ".selectDocumentTerms", new AbstractFilter(first, count));
+    }
 }

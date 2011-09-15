@@ -3,11 +3,7 @@ package org.complitex.flexbuh.admin.importexport.service;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.complitex.flexbuh.entity.dictionary.Dictionary;
-import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.entity.dictionary.DocumentName;
 import org.complitex.flexbuh.entity.dictionary.DocumentTerm;
-import org.complitex.flexbuh.service.dictionary.DictionaryBean;
 import org.complitex.flexbuh.service.dictionary.DocumentTermBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.ejb.*;
-import javax.transaction.*;
 import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,7 +24,7 @@ import java.util.List;
 @Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ImportDocumentTermXMLService extends ImportDictionaryXMLService {
+public class ImportDocumentTermXMLService extends ImportDictionaryXMLService<DocumentTerm> {
 	private final static Logger log = LoggerFactory.getLogger(ImportDocumentTermXMLService.class);
 
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
@@ -39,7 +33,7 @@ public class ImportDocumentTermXMLService extends ImportDictionaryXMLService {
 	private DocumentTermBean documentTermBean;
 
 	@Override
-	protected List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<DocumentTerm> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
 		DocumentTerm documentTerm = new DocumentTerm();
 		documentTerm.setUploadDate(importDate);
 		documentTerm.setBeginDate(beginDate);
@@ -63,7 +57,8 @@ public class ImportDocumentTermXMLService extends ImportDictionaryXMLService {
 			}
 		}
 		Validate.isTrue(documentTerm.validate(), "Invalid processing document term: " + documentTerm);
-		return Lists.newArrayList((Dictionary)documentTerm);
+
+		return Lists.newArrayList(documentTerm);
 	}
 
 	@NotNull
@@ -71,8 +66,8 @@ public class ImportDocumentTermXMLService extends ImportDictionaryXMLService {
 		return DATE_FORMAT.parse(stringDate);
 	}
 
-	@Override
-	protected DictionaryBean getDictionaryBean() {
-		return documentTermBean;
-	}
+    @Override
+    public void create(DocumentTerm dictionary) {
+        documentTermBean.save(dictionary);
+    }
 }

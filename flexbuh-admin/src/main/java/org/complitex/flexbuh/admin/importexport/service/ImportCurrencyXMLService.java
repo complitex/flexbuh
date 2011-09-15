@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
+import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
 import org.complitex.flexbuh.entity.dictionary.Currency;
 import org.complitex.flexbuh.entity.dictionary.CurrencyName;
-import org.complitex.flexbuh.entity.dictionary.Dictionary;
 import org.complitex.flexbuh.service.LanguageBean;
 import org.complitex.flexbuh.service.dictionary.CurrencyBean;
-import org.complitex.flexbuh.service.dictionary.DictionaryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -51,7 +50,7 @@ public class ImportCurrencyXMLService extends ImportDictionaryXMLService {
 	}
 
 	@Override
-	protected List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<AbstractDictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
 		Currency currency = new Currency();
 		currency.setUploadDate(importDate);
 		for (int j = 0; j < contentNodeRow.getLength(); j++) {
@@ -83,16 +82,21 @@ public class ImportCurrencyXMLService extends ImportDictionaryXMLService {
 			}
 		}
 		Validate.isTrue(currency.validate(), "Invalid processing currency: " + currency);
-		return Lists.newArrayList((Dictionary)currency);
+		return Lists.newArrayList((AbstractDictionary)currency);
 	}
 
-	private void initLang() {
+    @Override
+    public void create(AbstractDictionary abstractDictionary) {
+        currencyBean.save((Currency) abstractDictionary);
+    }
+
+    private void initLang() {
 		if (ukLang == null) {
-			ukLang = languageBean.find("uk");
+			ukLang = languageBean.getLanguageByLangIsoCode("uk");
 			Validate.notNull(ukLang, "'uk' language not find");
 		}
 		if (ruLang == null) {
-			ruLang = languageBean.find("ru");
+			ruLang = languageBean.getLanguageByLangIsoCode("ru");
 			Validate.notNull(ukLang, "'ru' language not find");
 		}
 	}
@@ -100,10 +104,5 @@ public class ImportCurrencyXMLService extends ImportDictionaryXMLService {
 	@NotNull
 	private Date parseDate(@NotNull String stringDate) throws ParseException {
 		return DATE_FORMAT.parse(stringDate);
-	}
-
-	@Override
-	protected DictionaryBean getDictionaryBean() {
-		return currencyBean;
 	}
 }

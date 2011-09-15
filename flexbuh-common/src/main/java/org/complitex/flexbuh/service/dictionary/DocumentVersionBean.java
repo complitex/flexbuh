@@ -1,56 +1,46 @@
 package org.complitex.flexbuh.service.dictionary;
 
-import com.google.common.collect.Maps;
-import org.complitex.flexbuh.entity.Stub;
+import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.entity.dictionary.NormativeDocumentName;
+import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
  *         Date: 27.08.11 17:46
  */
 @Stateless
-public class DocumentVersionBean extends DictionaryBean<DocumentVersion> {
-	public static final String NS = DocumentVersionBean.class.getName();
+public class DocumentVersionBean extends AbstractBean {
+    public static final String NS = DocumentVersionBean.class.getName();
 
-	@Override
-    public void create(DocumentVersion documentVersion) {
-        sqlSession().insert(NS + ".create", documentVersion);
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("documentVersionId", documentVersion.getId());
-		for (NormativeDocumentName normativeDocumentName : documentVersion.getNormativeDocumentNames()) {
-			params.put("languageId", normativeDocumentName.getLanguage().getId());
-			params.put("val", normativeDocumentName.getValue());
-			sqlSession().insert(NormativeDocumentName.class.getName() + ".create", params);
-		}
+    public void save(DocumentVersion documentVersion) {
+        sqlSession().insert(NS + ".insertDocumentVersion", documentVersion);
+
+        for (NormativeDocumentName normativeDocumentName : documentVersion.getNormativeDocumentNames()) {
+            normativeDocumentName.setDocumentVersionId(documentVersion.getId());
+
+            sqlSession().insert(NS + ".insertNormativeDocumentName", normativeDocumentName);
+        }
     }
 
-	@SuppressWarnings("unchecked")
-	public List<DocumentVersion> readAll() {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		return (List<DocumentVersion>)sqlSession().selectList(NS + ".readAll", params);
-	}
+    public DocumentVersion getDocumentVersion(Long id) {
+        return (DocumentVersion) sqlSession().selectOne(NS + ".selectDocumentVersion", id);
+    }
 
-	public DocumentVersion read(long id) {
-		return (DocumentVersion)sqlSession().selectOne(NS + ".findById", new Stub(id, getTable()));
-	}
+    @SuppressWarnings("unchecked")
+    public List<DocumentVersion> getDocumentVersions() {
+        return (List<DocumentVersion>)sqlSession().selectList(NS + ".selectAllDocumentVersions");
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<DocumentVersion> read(int first, int count) {
-		Map<String, Object> params = Maps.newHashMap();
-		params.put("table", getTable());
-		params.put("first", first);
-		params.put("count", count);
-		return sqlSession().selectList(NS + ".readLimit", params);
-	}
+    public Integer getDocumentVersionsCount(){
+        return (Integer) sqlSession().selectOne(NS + ".selectAllDocumentVersionsCount");
+    }
 
-	@Override
-	public String getTable() {
-		return DocumentVersion.TABLE;
-	}
+    @SuppressWarnings("unchecked")
+    public List<DocumentVersion> getDocumentVersions(int first, int count) {
+        return sqlSession().selectList(NS + ".selectDocumentVersions", new AbstractFilter(first, count));
+    }
 }

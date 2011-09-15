@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Pavel Sknar
  *         Date: 08.08.11 15:21
  */
-public abstract class DictionaryOfLimitedTime extends Dictionary {
+public abstract class AbstractPeriodDictionary extends AbstractDictionary {
 	private Date beginDate;
 	private Date endDate;
 

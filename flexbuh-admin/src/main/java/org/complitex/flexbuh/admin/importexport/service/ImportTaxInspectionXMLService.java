@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
+import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
 import org.complitex.flexbuh.entity.dictionary.AreaName;
-import org.complitex.flexbuh.entity.dictionary.Dictionary;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.dictionary.TaxInspectionName;
 import org.complitex.flexbuh.service.LanguageBean;
-import org.complitex.flexbuh.service.dictionary.DictionaryBean;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +46,9 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService {
 	}
 
 	@Override
-	protected List<Dictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<AbstractDictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
 		Integer regionCode = null;
-		List<Dictionary> taxInspections = Lists.newArrayList();
+		List<AbstractDictionary> taxInspections = Lists.newArrayList();
 		for (int j = 0; j < contentNodeRow.getLength(); j++) {
 			Node currentNode = contentNodeRow.item(j);
 			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_REG")) {
@@ -59,14 +58,19 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService {
 			}
 		}
 		Validate.notNull(regionCode, "Can not find region code");
-		for (Dictionary taxInspection : taxInspections) {
+		for (AbstractDictionary taxInspection : taxInspections) {
 			((TaxInspection)taxInspection).setRegionCode(regionCode);
 			Validate.isTrue(taxInspection.validate(), "Invalid processing document: " + taxInspection);
 		}
 		return taxInspections;
 	}
 
-	private void processRowStiTags(List<Dictionary> taxInspections, NodeList contentNodeRow,
+    @Override
+    public void create(AbstractDictionary abstractDictionary) {
+        taxInspectionBean.save((TaxInspection) abstractDictionary);
+    }
+
+    private void processRowStiTags(List<AbstractDictionary> taxInspections, NodeList contentNodeRow,
 								   Date importDate, Date beginDate, Date endDate) throws ParseException {
 		for (int j = 0; j < contentNodeRow.getLength(); j++) {
 			Node currentNode = contentNodeRow.item(j);
@@ -116,14 +120,9 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService {
 
 	private void initLang() {
 		if (ukLang == null) {
-			ukLang = languageBean.find("uk");
+			ukLang = languageBean.getLanguageByLangIsoCode("uk");
 			Validate.notNull(ukLang, "'uk' language not find");
 		}
-	}
-
-	@Override
-	protected DictionaryBean getDictionaryBean() {
-		return taxInspectionBean;
 	}
 }
 

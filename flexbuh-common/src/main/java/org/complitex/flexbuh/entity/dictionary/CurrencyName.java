@@ -7,10 +7,13 @@ import org.complitex.flexbuh.entity.LocalizedString;
  *         Date: 05.08.11 11:56
  */
 public class CurrencyName extends LocalizedString {
-	private static final String TABLE = "currency_name";
+    private Long currencyId;
 
-	@Override
-	public String getTable() {
-		return TABLE;
-	}
+    public Long getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(Long currencyId) {
+        this.currencyId = currencyId;
+    }
 }

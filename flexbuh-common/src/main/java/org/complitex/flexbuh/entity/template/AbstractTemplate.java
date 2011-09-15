@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.entity;
+package org.complitex.flexbuh.entity.template;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,8 +21,6 @@ public abstract class AbstractTemplate implements Serializable {
         this.data = data;
 		this.uploadDate = uploadDate;
     }
-
-    public abstract String getTable();
 
     public Long getId() {
         return id;

@@ -2,37 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.user.SessionBean">
-    <resultMap id="sessionResultMap"
-			   type="org.complitex.flexbuh.entity.user.Session">
+    <resultMap id="sessionResultMap" type="org.complitex.flexbuh.entity.user.Session">
 		<id column="id" property="id"/>
         <result column="cookie" property="cookie"/>
     </resultMap>
 
-    <insert id="create" parameterType="map"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`cookie`, `person_profile_id`)
-        	values (#{cookie}, #{personProfileId})
+    <insert id="insertSession" parameterType="org.complitex.flexbuh.entity.user.Session" keyProperty="id" useGeneratedKeys="true">
+        insert into `session` (`cookie`) values (#{cookie})
     </insert>
 
-	<select id="readAll" resultMap="sessionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}`
+	<select id="selectSession" parameterType="org.complitex.flexbuh.entity.user.Session" resultMap="sessionResultMap">
+        select * from `session` where `id` = #{id}
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="sessionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+	<select id="selectSessionByCookie" parameterType="string" resultMap="sessionResultMap">
+        select * from `session` where `cookie` = #{cookie}
     </select>
-
-	<select id="findByCookie" parameterType="map" resultMap="sessionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `cookie` = '${cookie}'
-    </select>
-
-	<select id="findByPersonProfile" parameterType="map" resultMap="sessionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{personProfileId}
-    </select>
-
 </mapper>

@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.entity;
+package org.complitex.flexbuh.entity.template;
 
 import java.util.Date;
 
@@ -7,17 +7,10 @@ import java.util.Date;
  *         Date: 27.07.11 16:11
  */
 public class TemplateFO extends AbstractTemplate {
-    public static final String TABLE = "template_fo";
-
     public TemplateFO() {
     }
 
     public TemplateFO(String name, String data, Date uploadDate) {
         super(name, data, uploadDate);
-    }
-
-    @Override
-    public String getTable() {
-        return TABLE;
     }
 }

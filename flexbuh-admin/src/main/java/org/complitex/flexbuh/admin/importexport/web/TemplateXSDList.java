@@ -5,7 +5,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.complitex.flexbuh.entity.TemplateXSD;
+import org.complitex.flexbuh.entity.template.TemplateXSD;
 import org.complitex.flexbuh.service.TemplateBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
@@ -45,7 +45,7 @@ public class TemplateXSDList extends TemplatePage {
 
             @Override
             protected int getSize() {
-                return templateBean.getTotalCountTemplateXSD();
+                return templateBean.getTemplateXSDsCount();
             }
         };
         dataProvider.setSort("file_name", true);

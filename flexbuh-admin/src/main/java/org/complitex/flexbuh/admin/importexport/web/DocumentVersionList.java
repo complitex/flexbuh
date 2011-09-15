@@ -41,12 +41,12 @@ public class DocumentVersionList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends DocumentVersion> getData(int first, int count) {
-                return documentVersionBean.read(first, count);
+                return documentVersionBean.getDocumentVersions(first, count);
             }
 
             @Override
             protected int getSize() {
-                return documentVersionBean.totalCount();
+                return documentVersionBean.getDocumentVersionsCount();
             }
         };
         dataProvider.setSort("type", true);

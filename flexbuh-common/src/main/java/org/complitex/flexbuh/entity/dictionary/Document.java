@@ -8,35 +8,31 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 05.08.11 15:43
  */
-public class Document extends DictionaryOfLimitedTime {
-	public static final String TABLE = "document";
-
-	private String type;
-	private String subType;
+public class Document extends AbstractPeriodDictionary {
+	private String cDoc;
+	private String cDocSub;
 	private List<DocumentName> names;
 
-	/**
-	 * Чи може подаватись у звітному періоді більше одного разу
-	 */
+	// Может подаваться в отчетном периоде более одного раза
 	private Boolean cntSet;
-	private String parentDocumentType;
-	private String parentDocumentSubType;
+	private String parentCDoc;
+	private String parentCDocSub;
 	private Boolean selected;
 
-	public String getType() {
-		return type;
+	public String getCDoc() {
+		return cDoc;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setCDoc(String cDoc) {
+		this.cDoc = cDoc;
 	}
 
-	public String getSubType() {
-		return subType;
+	public String getCDocSub() {
+		return cDocSub;
 	}
 
-	public void setSubType(String subType) {
-		this.subType = subType;
+	public void setCDocSub(String cDocSub) {
+		this.cDocSub = cDocSub;
 	}
 
 	public List<DocumentName> getNames() {
@@ -55,20 +51,20 @@ public class Document extends DictionaryOfLimitedTime {
 		this.cntSet = cntSet;
 	}
 
-	public String getParentDocumentType() {
-		return parentDocumentType;
+	public String getParentCDoc() {
+		return parentCDoc;
 	}
 
-	public void setParentDocumentType(String parentDocumentType) {
-		this.parentDocumentType = parentDocumentType;
+	public void setParentCDoc(String parentCDoc) {
+		this.parentCDoc = parentCDoc;
 	}
 
-	public String getParentDocumentSubType() {
-		return parentDocumentSubType;
+	public String getParentCDocSub() {
+		return parentCDocSub;
 	}
 
-	public void setParentDocumentSubType(String parentDocumentSubType) {
-		this.parentDocumentSubType = parentDocumentSubType;
+	public void setParentCDocSub(String parentCDocSub) {
+		this.parentCDocSub = parentCDocSub;
 	}
 
 	public Boolean getSelected() {
@@ -82,16 +78,11 @@ public class Document extends DictionaryOfLimitedTime {
 	@Override
 	public boolean validate() {
 		return  super.validate() &&
-				type != null && subType != null && names != null && names.size() > 0 && cntSet != null && selected != null;
+				cDoc != null && cDocSub != null && names != null && names.size() > 0 && cntSet != null && selected != null;
 	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 }

@@ -41,12 +41,12 @@ public class RegionList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Region> getData(int first, int count) {
-                return regionBean.read(first, count);
+                return regionBean.getRegions(first, count);
             }
 
             @Override
             protected int getSize() {
-                return regionBean.totalCount();
+                return regionBean.getRegionsCount();
             }
         };
         dataProvider.setSort("type", true);

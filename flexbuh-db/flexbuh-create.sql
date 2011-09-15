@@ -40,6 +40,7 @@ DROP TABLE IF EXISTS `person_profile`;
 
 CREATE TABLE  `person_profile` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор профайла',
+  `session_id` BIGINT(20) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `code_TIN` VARCHAR(45),
   `code_tax_inspection` INTEGER,
@@ -59,7 +60,9 @@ CREATE TABLE  `person_profile` (
   `ipn` VARCHAR(45),
   `num_svd_PDV` VARCHAR(45),
   PRIMARY KEY (`id`),
+  KEY `key_session_id` (`session_id`),
   KEY `key_person_profile__person_type_id` (`person_type_id`),
+  CONSTRAINT `fk_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
   CONSTRAINT `fk_person_profile__person_type` FOREIGN KEY (`person_type_id`) REFERENCES `person_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайл';
 
@@ -70,29 +73,10 @@ DROP TABLE IF EXISTS `session`;
 
 CREATE TABLE  `session` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сессии',
-  `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии',
-  `person_profile_id` BIGINT(20) COMMENT 'Идентификатор профайла',
+  `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии'
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_key_cookie` (`cookie`),
-  UNIQUE KEY `key_session__person_profile_id` (`person_profile_id`),
-  CONSTRAINT `fk_user__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`) ON DELETE CASCADE
+  UNIQUE KEY `unique_key_cookie` (`cookie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Сессия';
-
--- ------------------------------
--- Session`s person profiles
--- ------------------------------
-DROP TABLE IF EXISTS `session_person_profile`;
-
-CREATE TABLE  `session_person_profile` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор соответствия',
-  `session_id` BIGINT(20) NOT NULL COMMENT 'Идентификотор сессии',
-  `person_profile_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор профайла',
-  PRIMARY KEY (`id`),
-  UNIQUE (`session_id`, `person_profile_id`),
-  KEY `key_session_person_profile__session_id` (`session_id`),
-  CONSTRAINT `fk_session_person_profile__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`),
-  CONSTRAINT `fk_session_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайлы сессии';
 
 -- ------------------------------
 -- User
@@ -101,12 +85,12 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE  `user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор пользователя',
+  `session_id` BIGINT(20) COMMENT 'Идентификатор сессии',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
   `password` VARCHAR(45) NOT NULL COMMENT 'MD5 хэш пароля',
-  `session_id` BIGINT(20) COMMENT 'Идентификатор сессии',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_key_login` (`login`),
   UNIQUE KEY `unique_session` (`session_id`),
+  UNIQUE KEY `unique_key_login` (`login`),
   CONSTRAINT `fk_user__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Пользователь';
 
@@ -290,7 +274,6 @@ DROP TABLE IF EXISTS `currency`;
 
 CREATE TABLE `currency` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
@@ -327,20 +310,19 @@ DROP TABLE IF EXISTS `document`;
 
 CREATE TABLE `document` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
-  `document_type` VARCHAR(40) NOT NULL,
-  `document_sub_type` VARCHAR(40) NOT NULL,
-  `parent_document_type` VARCHAR(40),
-  `parent_document_sub_type` VARCHAR(40),
+  `c_doc` VARCHAR(40) NOT NULL,
+  `c_doc_sub` VARCHAR(40) NOT NULL,
+  `parent_c_doc` VARCHAR(40),
+  `parent_c_doc_sub` VARCHAR(40),
   `cnt_set` TINYINT(1) NOT NULL,
   `selected` TINYINT(1),
   PRIMARY KEY (`id`),
-  UNIQUE (document_type, document_sub_type),
-  KEY `key_document` (document_type, document_sub_type),
-  KEY `key_document__parent_document` (parent_document_type, parent_document_sub_type)
+  UNIQUE (c_doc, c_doc_sub),
+  KEY `key_document` (c_doc, c_doc_sub),
+  KEY `key_document__parent_document` (parent_c_doc, parent_c_doc_sub)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -371,7 +353,6 @@ DROP TABLE IF EXISTS `document_term`;
 
 CREATE TABLE `document_term` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
@@ -395,7 +376,6 @@ DROP TABLE IF EXISTS `document_version`;
 
 CREATE TABLE `document_version` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
@@ -436,7 +416,6 @@ DROP TABLE IF EXISTS `region`;
 
 CREATE TABLE `region` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
@@ -473,7 +452,6 @@ DROP TABLE IF EXISTS `tax_inspection`;
 
 CREATE TABLE `tax_inspection` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `status` INTEGER NOT NULL,
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,

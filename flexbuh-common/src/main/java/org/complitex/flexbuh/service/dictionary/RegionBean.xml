@@ -2,35 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.RegionBean">
-    <resultMap id="regionResultMap"
-			   type="org.complitex.flexbuh.entity.dictionary.Region"
-			   extends="org.complitex.flexbuh.entity.dictionary.DictionaryOfLimitedTime.dictionaryOfLimitedTimeResultMap">
+    <resultMap id="regionResultMap" type="org.complitex.flexbuh.entity.dictionary.Region"
+			   extends="abstractPeriodDictionaryResultMap">
         <result property="code" column="code"/>
-        <collection property="names" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.dictionary.RegionName"
-				column="id" select="org.complitex.flexbuh.entity.dictionary.RegionName.selectRegionNames"/>
+
+        <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.RegionName" column="id"
+                    select="selectRegionNames"/>
     </resultMap>
 
-    <insert id="create" parameterType="org.complitex.flexbuh.entity.dictionary.Region"
-			keyProperty="id" useGeneratedKeys="true"
-			flushCache="true">
-        insert into `${table}` (`status`, `upload_date`, `begin_date`, `end_date`, `code`)
-        	values (#{status}, #{uploadDate}, #{beginDate}, #{endDate}, #{code})
+    <resultMap id="regionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.RegionName" extends="localizedStringResultMap">
+        <result column="region_id" property="regionId"/>
+    </resultMap>
+
+    <insert id="insertRegion" parameterType="org.complitex.flexbuh.entity.dictionary.Region" keyProperty="id" useGeneratedKeys="true">
+        insert into `region` (`upload_date`, `begin_date`, `end_date`, `code`)
+        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{code})
     </insert>
 
-	<select id="readAll" resultMap="regionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
+	<select id="selectAllRegions" resultMap="regionResultMap">
+        select * from `region`
     </select>
 
-	<select id="readLimit" parameterType="map" resultMap="regionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `status` = 0
-        order by `code`
-        limit #{first}, #{count}
+    <select id="selectAllRegionsCount">
+        select count(*) from `region`
     </select>
 
-	<select id="findById" parameterType="org.complitex.flexbuh.entity.Stub" resultMap="regionResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `id` = #{id}
+	<select id="selectRegions" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="regionResultMap">
+        select * from `region` order by `code` limit #{first}, #{count}
     </select>
+
+	<select id="selectRegion" parameterType="long" resultMap="regionResultMap">
+        select * from `region` where `id` = #{id}
+    </select>
+
+    <select id="selectRegionNames" parameterType="long" resultMap="regionNameResultMap">
+		select * from `region_name` where `region_id` = #{id}
+	</select>
+
+	<insert id="insertRegionName" parameterType="org.complitex.flexbuh.entity.dictionary.RegionName" keyProperty="id">
+        insert into `region_name` (`region_id`, `language_id`, `value`) values (#{regionId}, #{language.id}, #{value})
+    </insert>
 </mapper>

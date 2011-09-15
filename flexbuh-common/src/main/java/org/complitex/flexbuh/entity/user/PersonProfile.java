@@ -1,10 +1,12 @@
 package org.complitex.flexbuh.entity.user;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.entity.DomainObject;
+import org.complitex.flexbuh.entity.SessionObject;
 import org.complitex.flexbuh.service.user.String2PersonType;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
@@ -13,9 +15,7 @@ import java.util.Date;
  *         Date: 31.08.11 14:26
  */
 @XmlType()
-public class PersonProfile extends DomainObject {
-	public static final String TABLE = "person_profile";
-
+public class PersonProfile extends SessionObject {
 	private String name;
 	private String codeTIN; // Код ЕДРПОУ
 	private Integer codeTaxInspection; // Код ДПІ
@@ -189,11 +189,6 @@ public class PersonProfile extends DomainObject {
 	}
 	public void setSelected(boolean selected) {
 		this.selected = selected;
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

@@ -41,12 +41,12 @@ public class DocumentList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Document> getData(int first, int count) {
-                return documentBean.read(first, count);
+                return documentBean.getDocuments(first, count);
             }
 
             @Override
             protected int getSize() {
-                return documentBean.totalCount();
+                return documentBean.getDocumentsCount();
             }
         };
         dataProvider.setSort("type", true);
@@ -58,10 +58,10 @@ public class DocumentList extends TemplatePage {
             @Override
             protected void populateItem(Item<Document> item) {
 
-                item.add(new Label("type", item.getModelObject().getType()));
-                item.add(new Label("sub_type", item.getModelObject().getSubType()));
-                item.add(new Label("parent_document_type", item.getModelObject().getParentDocumentType()));
-                item.add(new Label("parent_document_sub_type", item.getModelObject().getParentDocumentSubType()));
+                item.add(new Label("type", item.getModelObject().getCDoc()));
+                item.add(new Label("sub_type", item.getModelObject().getCDocSub()));
+                item.add(new Label("parent_document_type", item.getModelObject().getParentCDoc()));
+                item.add(new Label("parent_document_sub_type", item.getModelObject().getParentCDocSub()));
                 item.add(new Label("cnt_set", Boolean.toString(item.getModelObject().getCntSet())));
                 item.add(new Label("selected", Boolean.toString(item.getModelObject().getSelected())));
                 item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));

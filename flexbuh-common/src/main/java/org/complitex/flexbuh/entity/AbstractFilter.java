@@ -7,17 +7,36 @@ import java.io.Serializable;
  *         Date: 09.09.11 18:09
  */
 public class AbstractFilter implements Serializable{
+    protected Long sessionId;
+
     protected int first;
     protected int count;
     protected String sortProperty;
     protected boolean ascending;
 
-    protected Long sessionId;
-
     public AbstractFilter() {
     }
 
     public AbstractFilter(Long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public AbstractFilter(int first, int count) {
+        this.first = first;
+        this.count = count;
+    }
+
+    public AbstractFilter(Long sessionId, int first, int count) {
+        this.sessionId = sessionId;
+        this.first = first;
+        this.count = count;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
     }
 
@@ -51,13 +70,5 @@ public class AbstractFilter implements Serializable{
 
     public void setAscending(boolean ascending) {
         this.ascending = ascending;
-    }
-
-    public Long getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(Long sessionId) {
-        this.sessionId = sessionId;
     }
 }

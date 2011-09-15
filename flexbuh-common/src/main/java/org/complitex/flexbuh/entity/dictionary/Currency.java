@@ -10,9 +10,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 05.08.11 10:57
  */
-public class Currency extends DictionaryOfLimitedTime {
-	public static final String TABLE = "currency";
-
+public class Currency extends AbstractPeriodDictionary {
 	private Integer codeNumber;
 	private String codeString;
 	private List<CurrencyName> names = Lists.newArrayList();
@@ -46,11 +44,6 @@ public class Currency extends DictionaryOfLimitedTime {
 		return super.validate() && codeNumber != null && codeString != null && names.size() > 0 &&
 				getBeginDate() != null && getEndDate() != null;
 
-	}
-
-	@Override
-	public String getTable() {
-		return TABLE;
 	}
 
 	@Override

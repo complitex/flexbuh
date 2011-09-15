@@ -5,23 +5,33 @@
     <resultMap id="personTypeResultMap" type="org.complitex.flexbuh.entity.user.PersonType">
 		<id property="id" column="id"/>
 		<result column="code" property="code"/>
-		<collection property="names" javaType="java.util.ArrayList" ofType="org.complitex.flexbuh.entity.user.PersonTypeName"
-				column="id" select="org.complitex.flexbuh.entity.user.PersonTypeName.findById"/>
+
+		<collection property="names" ofType="org.complitex.flexbuh.entity.user.PersonTypeName" column="id" select="selectPersonTypeName"/>
     </resultMap>
 
-	<select id="readAll" resultMap="personTypeResultMap" parameterType="map"
-			useCache="true" flushCache="false">
-        select * from `${table}`
-    </select>
+    <resultMap id="personTypeNameResultMap" type="org.complitex.flexbuh.entity.user.PersonTypeName">
+        <id column="id" property="id"/>
+        <result property="value" column="value"/>
 
-	<select id="findById" parameterType="long" resultMap="personTypeResultMap"
-			useCache="true" flushCache="false">
+        <association property="language" column="language_id" javaType="org.complitex.flexbuh.entity.Language"
+                     select="selectLanguage"/>
+    </resultMap>
+
+	<select id="selectPersonType" parameterType="long" resultMap="personTypeResultMap">
         select * from `person_type` where `id` = #{id}
     </select>
 
-	<select id="findByCode" parameterType="map" resultMap="personTypeResultMap"
-			useCache="true" flushCache="false">
-        select * from `${table}` where `code` = #{code}
+	<select id="selectPersonTypesByCode" parameterType="string" resultMap="personTypeResultMap">
+        select * from `person_type` where `code` = #{code}
     </select>
 
+    <!--PersonTypeName-->
+
+    <select id="selectPersonTypeNames" resultMap="personTypeNameResultMap">
+		select * from `person_type_name`
+	</select>
+
+    <select id="selectPersonTypeName" parameterType="long" resultMap="personTypeNameResultMap">
+		select * from `person_type_name` where `person_type_id` = #{id}
+	</select>
 </mapper>
