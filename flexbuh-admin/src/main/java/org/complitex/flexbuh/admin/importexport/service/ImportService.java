@@ -52,8 +52,7 @@ public abstract class ImportService {
 							 @Null Date beginDate, @Null Date endDate) {
 		log.debug("Start import files: {}", importFileNames);
 		listener.begin();
-		try {
-			File rootDir = getRootDir();
+		try {  //todo display error message to user interface
 			for (String importFileName : importFileNames) {
 
 				File importFile = new File(getImportDir(), importFileName);
@@ -74,7 +73,7 @@ public abstract class ImportService {
 			}
 			listener.completed();
 		} catch (Throwable th) {
-			log.debug("Import interrupted", th);
+			log.error("Import interrupted", th);
 			listener.cancel();
 		}
 		log.debug("Import complete");

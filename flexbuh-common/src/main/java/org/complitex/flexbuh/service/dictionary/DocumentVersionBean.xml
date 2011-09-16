@@ -3,24 +3,24 @@
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentVersionBean">
     <resultMap id="documentVersionResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
-			   extends="abstractPeriodDictionaryResultMap">
-        <result column="document_type" property="documentType"/>
-        <result column="document_sub_type" property="documentSubType"/>
-        <result column="version" property="version"/>
+			   extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
+        <result column="c_doc" property="cDoc"/>
+        <result column="c_doc_sub" property="cDocSub"/>
+        <result column="c_doc_ver" property="cDocVer"/>
 
 		<collection property="normativeDocumentNames" ofType="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName"
 				column="id" select="selectNormativeDocumentNames"/>
     </resultMap>
 
     <resultMap id="normativeDocumentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.NormativeDocumentName"
-               extends="localizedStringResultMap">
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="document_version_id" property="documentVersionId"/>
     </resultMap>
 
     <insert id="insertDocumentVersion" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
             keyProperty="id" useGeneratedKeys="true">
-        insert into `document_version` (`upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`, `version`)
-        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{documentType}, #{documentSubType}, #{version})
+        insert into `document_version` (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`, `c_doc_ver`)
+        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cDocVer})
     </insert>
 
 	<select id="selectAllDocumentVersions" resultMap="documentVersionResultMap">
@@ -28,14 +28,14 @@
     </select>
 
 	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentVersionResultMap">
-        select * from `document_version` order by `document_type`, `document_sub_type`, `version` limit #{first}, #{count}
+        select * from `document_version` order by `c_doc`, `c_doc_sub`, `c_doc_ver` limit #{first}, #{count}
     </select>
 
 	<select id="selectDocumentVersion" parameterType="long" resultMap="documentVersionResultMap">
         select * from `document_version` where `id` = #{id}
     </select>
 
-    <select id="selectAllDocumentVersionsCount">
+    <select id="selectAllDocumentVersionsCount" resultType="int">
         select count(*) from `document_version`
     </select>
 

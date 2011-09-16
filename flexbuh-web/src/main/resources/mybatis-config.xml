@@ -16,12 +16,10 @@
         <mapper resource="org/complitex/flexbuh/service/TemplateBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/LanguageBean.xml"/>
 
-        <mapper resource="org/complitex/flexbuh/entity/dictionary/Dictionary.xml"/>
-        <mapper resource="org/complitex/flexbuh/entity/dictionary/DictionaryOfLimitedTime.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/AbstractDictionary.xml"/>
+        <mapper resource="org/complitex/flexbuh/entity/dictionary/AbstractPeriodDictionary.xml"/>
 
-        <mapper resource="org/complitex/flexbuh/entity/dictionary/TaxInspectionName.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/CurrencyBean.xml"/>
-        <mapper resource="org/complitex/flexbuh/service/dictionary/DictionaryBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/DictionaryTypeBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/DocumentBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/DocumentTermBean.xml"/>
@@ -29,7 +27,6 @@
         <mapper resource="org/complitex/flexbuh/service/dictionary/RegionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/service/dictionary/TaxInspectionBean.xml"/>
 
-		<mapper resource="org/complitex/flexbuh/entity/user/PersonTypeName.xml"/>
 		<mapper resource="org/complitex/flexbuh/service/user/PersonProfileBean.xml"/>
 		<mapper resource="org/complitex/flexbuh/service/user/PersonTypeBean.xml"/>
 		<mapper resource="org/complitex/flexbuh/service/user/SessionBean.xml"/>

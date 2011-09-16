@@ -20,6 +20,8 @@ public class CurrencyBean extends AbstractBean {
         sqlSession().insert(NS + ".insertCurrency", currency);
 
         for (CurrencyName currencyName : currency.getNames()) {
+            currencyName.setCurrencyId(currency.getId());
+
             sqlSession().insert(NS + ".insertCurrencyName", currencyName);
         }
     }

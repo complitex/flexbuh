@@ -73,7 +73,7 @@ DROP TABLE IF EXISTS `session`;
 
 CREATE TABLE  `session` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сессии',
-  `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии'
+  `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_cookie` (`cookie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Сессия';
@@ -356,15 +356,15 @@ CREATE TABLE `document_term` (
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
-  `document_type` VARCHAR(40) NOT NULL,
-  `document_sub_type` VARCHAR(40) NOT NULL,
-  `document_version` INTEGER NOT NULL,
+  `c_doc` VARCHAR(40) NOT NULL,
+  `c_doc_sub` VARCHAR(40) NOT NULL,
+  `c_doc_ver` INTEGER NOT NULL,
   `date_term` TIMESTAMP NOT NULL,
   `period_month` INTEGER NOT NULL,
   `period_type` INTEGER NOT NULL,
   `period_year` INTEGER NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_document_term__document` (document_type, document_sub_type)
+  KEY `key_document_term__document` (`c_doc`, `c_doc_sub`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -379,13 +379,11 @@ CREATE TABLE `document_version` (
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
-  `document_type` VARCHAR(40) NOT NULL,
-  `document_sub_type` VARCHAR(40) NOT NULL,
-  `version` INTEGER NOT NULL,
-  UNIQUE (document_type, document_sub_type, version),
+  `c_doc` VARCHAR(40) NOT NULL,
+  `c_doc_sub` VARCHAR(40) NOT NULL,
+  `c_doc_ver` INTEGER NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_document_version__document` (document_type, document_sub_type),
-  KEY `key_document_version__document_version` (document_type, document_sub_type, version)
+  UNIQUE KEY `key_unique` (c_doc, c_doc_sub, c_doc_ver)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

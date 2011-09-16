@@ -76,7 +76,7 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
 				document.setParentCDoc(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "PARENT_C_DOC_SUB")) {
 				document.setParentCDocSub(currentNode.getTextContent());
-			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "SELECTED")) {
+			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "SELECTED")) {  //todo такого нет тега в Spr_doc.xml
 				document.setSelected(Boolean.parseBoolean(currentNode.getTextContent()));
 			}
 		}

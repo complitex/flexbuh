@@ -3,14 +3,15 @@
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.RegionBean">
     <resultMap id="regionResultMap" type="org.complitex.flexbuh.entity.dictionary.Region"
-			   extends="abstractPeriodDictionaryResultMap">
+               extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result property="code" column="code"/>
 
         <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.RegionName" column="id"
                     select="selectRegionNames"/>
     </resultMap>
 
-    <resultMap id="regionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.RegionName" extends="localizedStringResultMap">
+    <resultMap id="regionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.RegionName"
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="region_id" property="regionId"/>
     </resultMap>
 
@@ -23,7 +24,7 @@
         select * from `region`
     </select>
 
-    <select id="selectAllRegionsCount">
+    <select id="selectAllRegionsCount" resultType="int">
         select count(*) from `region`
     </select>
 

@@ -1,6 +1,9 @@
 package org.complitex.flexbuh.web;
 
 import org.apache.wicket.Page;
+import org.complitex.flexbuh.document.test.MarkupTestPage;
+import org.complitex.flexbuh.document.test.TransformationTestPage;
+import org.complitex.flexbuh.document.test.ValidationTestPage;
 import org.complitex.flexbuh.template.TemplateWebApplication;
 
 /**
@@ -12,6 +15,10 @@ public class FlexbuhWebApplication extends TemplateWebApplication{
     @Override
     protected void init() {
         super.init();
+
+        mountBookmarkablePage("test2", TransformationTestPage.class);
+        mountBookmarkablePage("test3", MarkupTestPage.class);
+        mountBookmarkablePage("test4", ValidationTestPage.class);
 
         getDebugSettings().setComponentUseCheck(true);
         getDebugSettings().setLinePreciseReportingOnAddComponentEnabled(true);

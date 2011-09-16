@@ -16,7 +16,7 @@ public class DictionaryTypeBean extends AbstractBean {
 
 	@SuppressWarnings("unchecked")
 	public List<DictionaryType> getDictionaryTypes() {
-		return (List<DictionaryType>)sqlSession().selectList(NS + ".selectAllDictionaryType");
+		return (List<DictionaryType>)sqlSession().selectList(NS + ".selectAllDictionaryTypes");
 	}
 
 	public DictionaryType getDictionaryTypesByCode(String code) {

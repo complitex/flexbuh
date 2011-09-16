@@ -3,10 +3,10 @@
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentTermBean">
     <resultMap id="documentTermResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentTerm"
-			   extends="abstractPeriodDictionaryResultMap">
-        <result column="document_type" property="documentType"/>
-        <result column="document_sub_type" property="documentSubType"/>
-        <result column="document_version" property="documentVersion"/>
+			   extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
+        <result column="c_doc" property="cDoc"/>
+        <result column="c_doc_sub" property="cDocSub"/>
+        <result column="c_doc_ver" property="cDocVer"/>
         <result column="date_term" property="dateTerm"/>
         <result column="period_month" property="periodMonth"/>
         <result column="period_type" property="periodType"/>
@@ -14,26 +14,26 @@
     </resultMap>
 
     <insert id="insertDocumentTerm" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentTerm" keyProperty="id" useGeneratedKeys="true">
-        insert into `document_term` (`upload_date`, `begin_date`, `end_date`, `document_type`, `document_sub_type`,
-          `document_version`, `date_term`, `period_month`, `period_type`, `period_year`)
+        insert into `document_term` (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `date_term`,
+          `period_month`, `period_type`, `period_year`)
         values
-          (#{uploadDate}, #{beginDate}, #{endDate}, #{documentType}, #{documentSubType}, #{documentVersion}, #{dateTerm},
-            #{periodMonth}, #{periodType}, #{periodYear})
+          (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cDocVer}, #{dateTerm}, #{periodMonth}, #{periodType},
+            #{periodYear})
     </insert>
 
-	<select id="selectAllDocuments" resultMap="documentTermResultMap">
+	<select id="selectAllDocumentTerms" resultMap="documentTermResultMap">
         select * from `document_term`
     </select>
 
-     <select id="selectAllDocumentsCount">
+     <select id="selectAllDocumentTermsCount" resultType="int">
         select count(*) from `document_term`
     </select>
 
-	<select id="selectDocuments" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentTermResultMap">
-        select * from `document_term` order by `document_type`, `document_sub_type`, `document_version` limit #{first}, #{count}
+	<select id="selectDocumentTerms" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentTermResultMap">
+        select * from `document_term` order by `c_doc`, `c_doc_sub`, `c_doc_ver` limit #{first}, #{count}
     </select>
 
-	<select id="selectDocument" parameterType="long" resultMap="documentTermResultMap">
+	<select id="selectDocumentTerm" parameterType="long" resultMap="documentTermResultMap">
         select * from `document_term` where `id` = #{id}
     </select>
 </mapper>

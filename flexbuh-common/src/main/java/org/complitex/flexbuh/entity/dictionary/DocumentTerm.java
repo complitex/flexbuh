@@ -11,36 +11,36 @@ import java.util.Date;
  *         Date: 05.08.11 17:54
  */
 public class DocumentTerm extends AbstractPeriodDictionary {
-	private String documentType;
-	private String documentSubType;
-	private Integer documentVersion;
+	private String cDoc;
+	private String cDocSub;
+	private Integer cDocVer;
 	private Date dateTerm;
 	private Integer periodMonth;
 	private Integer periodType;
 	private Integer periodYear;
 
-	public String getDocumentType() {
-		return documentType;
+	public String getCDoc() {
+		return cDoc;
 	}
 
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
+	public void setCDoc(String cDoc) {
+		this.cDoc = cDoc;
 	}
 
-	public String getDocumentSubType() {
-		return documentSubType;
+	public String getCDocSub() {
+		return cDocSub;
 	}
 
-	public void setDocumentSubType(String documentSubType) {
-		this.documentSubType = documentSubType;
+	public void setCDocSub(String cDocSub) {
+		this.cDocSub = cDocSub;
 	}
 
-	public Integer getDocumentVersion() {
-		return documentVersion;
+	public Integer getCDocVer() {
+		return cDocVer;
 	}
 
-	public void setDocumentVersion(Integer documentVersion) {
-		this.documentVersion = documentVersion;
+	public void setCDocVer(Integer cDocVer) {
+		this.cDocVer = cDocVer;
 	}
 
 	public Date getDateTerm() {
@@ -78,9 +78,9 @@ public class DocumentTerm extends AbstractPeriodDictionary {
 	@Override
 	public boolean validate() {
 		return super.validate() &&
-				StringUtils.isNotEmpty(documentType)
-				&& StringUtils.isNotEmpty(documentSubType)
-				&& documentVersion != null && documentVersion > 0
+				StringUtils.isNotEmpty(cDoc)
+				&& StringUtils.isNotEmpty(cDocSub)
+				&& cDocVer != null && cDocVer > 0
 				&& dateTerm != null
 				&& periodMonth != null && periodMonth > 0
 				&& periodType != null && periodType > 0
@@ -90,9 +90,9 @@ public class DocumentTerm extends AbstractPeriodDictionary {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).
-				append("documentType", documentType).
-				append("documentSubType", documentSubType).
-				append("documentVersion", documentVersion).
+				append("documentType", cDoc).
+				append("documentSubType", cDocSub).
+				append("documentVersion", cDocVer).
 				append("dateTerm", dateTerm).
 				append("periodMonth", periodMonth).
 				append("periodType", periodType).
