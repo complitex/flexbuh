@@ -57,9 +57,9 @@ public class DocumentTermList extends TemplatePage {
             @Override
             protected void populateItem(Item<DocumentTerm> item) {
 
-                item.add(new Label("type", item.getModelObject().getDocumentType()));
-                item.add(new Label("sub_type", item.getModelObject().getDocumentSubType()));
-                item.add(new Label("version", Integer.toString(item.getModelObject().getDocumentVersion())));
+                item.add(new Label("type", item.getModelObject().getCDoc()));
+                item.add(new Label("sub_type", item.getModelObject().getCDocSub()));
+                item.add(new Label("version", Integer.toString(item.getModelObject().getCDocVer()))); //todo NPE
                 item.add(new Label("date_term", getStringDate(item.getModelObject().getDateTerm())));
                 item.add(new Label("period_year", Integer.toString(item.getModelObject().getPeriodYear())));
                 item.add(new Label("period_month", Integer.toString(item.getModelObject().getPeriodMonth())));

@@ -58,9 +58,9 @@ public class DocumentVersionList extends TemplatePage {
             @Override
             protected void populateItem(Item<DocumentVersion> item) {
 
-                item.add(new Label("type", item.getModelObject().getDocumentType()));
-                item.add(new Label("sub_type", item.getModelObject().getDocumentSubType()));
-                item.add(new Label("version", Integer.toString(item.getModelObject().getVersion())));
+                item.add(new Label("type", item.getModelObject().getCDoc()));
+                item.add(new Label("sub_type", item.getModelObject().getCDocSub()));
+                item.add(new Label("version", Integer.toString(item.getModelObject().getCDocVer())));
                 item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
                 item.add(new Label("end_date",getStringDate(item.getModelObject().getEndDate())));
 				for (NormativeDocumentName documentName : item.getModelObject().getNormativeDocumentNames()) {

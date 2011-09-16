@@ -2,15 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.CurrencyBean">
-    <resultMap id="currencyResultMap" type="org.complitex.flexbuh.entity.dictionary.Currency" extends="abstractPeriodDictionaryResultMap">
+    <resultMap id="currencyResultMap" type="org.complitex.flexbuh.entity.dictionary.Currency"
+               extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result column="code_number" property="codeNumber"/>
         <result column="code_string" property="codeString"/>
 
-		<collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.CurrencyName" column="id"
+        <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.CurrencyName" column="id"
                     select="selectCurrencyNames"/>
     </resultMap>
 
-     <resultMap id="currencyNameResultMap" type="org.complitex.flexbuh.entity.dictionary.CurrencyName" extends="localizedStringResultMap">
+    <resultMap id="currencyNameResultMap" type="org.complitex.flexbuh.entity.dictionary.CurrencyName"
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="currency_id" property="currencyId"/>
     </resultMap>
 
@@ -19,19 +21,19 @@
         	values (#{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString})
     </insert>
 
-	<select id="selectAllCurrencies" resultMap="currencyResultMap">
+    <select id="selectAllCurrencies" resultMap="currencyResultMap">
         select * from `currency`
     </select>
 
-    <select id="selectAllCurrencyCount">
+    <select id="selectAllCurrenciesCount" resultType="int">
         select count(*) from `currency`
     </select>
 
-	<select id="selectCurrencies" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="currencyResultMap">
+    <select id="selectCurrencies" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="currencyResultMap">
         select * from `currency` order by `code_number` limit #{first}, #{count}
     </select>
 
-	<select id="selectCurrency" parameterType="long" resultMap="currencyResultMap">
+    <select id="selectCurrency" parameterType="long" resultMap="currencyResultMap">
         select * from `currency` where `id` = #{id}
     </select>
 
@@ -41,7 +43,7 @@
 		select * from `currency_name` where `currency_id` = #{id}
 	</select>
 
-	<insert id="insertCurrencyName" parameterType="org.complitex.flexbuh.entity.dictionary.CurrencyName"
+    <insert id="insertCurrencyName" parameterType="org.complitex.flexbuh.entity.dictionary.CurrencyName"
             keyProperty="id" useGeneratedKeys="true">
         insert into `currency_name` (`currency_id`, `language_id`, `value`) values (#{currencyId}, #{language.id}, #{value})
     </insert>

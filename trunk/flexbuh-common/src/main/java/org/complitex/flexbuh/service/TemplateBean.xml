@@ -98,11 +98,11 @@
         select count(id) from `template_control`
     </select>
 
-    <select id="selectTemplateFOs" resultMap="templateFOResultMap">
+    <select id="selectAllTemplateFOs" resultMap="templateFOResultMap">
         select `name`, `upload_date` from `template_fo`
     </select>
 
-	<select id="selectTemplateFOs" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="templateFOaResultMap">
+	<select id="selectTemplateFOs" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="templateFOResultMap">
         select `name`, `upload_date` from `template_fo` order by `name` limit #{first}, #{count}
     </select>
 

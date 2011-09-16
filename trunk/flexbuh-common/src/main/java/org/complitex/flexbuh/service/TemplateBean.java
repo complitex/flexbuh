@@ -86,7 +86,7 @@ public class TemplateBean extends AbstractBean {
 
 	@SuppressWarnings("unchecked")
 	public int getTemplateXSDsCount() {
-		return (Integer)sqlSession().selectOne(NS + ".selectsAllTemplateXSDsCount");
+		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateXSDsCount");
 	}
 
 	/**

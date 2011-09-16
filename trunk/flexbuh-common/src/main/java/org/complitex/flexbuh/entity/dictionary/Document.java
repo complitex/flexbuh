@@ -17,7 +17,7 @@ public class Document extends AbstractPeriodDictionary {
 	private Boolean cntSet;
 	private String parentCDoc;
 	private String parentCDocSub;
-	private Boolean selected;
+	private Boolean selected = false;
 
 	public String getCDoc() {
 		return cDoc;

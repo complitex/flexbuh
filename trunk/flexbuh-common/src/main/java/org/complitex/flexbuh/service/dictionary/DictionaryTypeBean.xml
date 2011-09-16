@@ -7,11 +7,11 @@
 		<result column="code" property="code"/>
 		<collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName" column="id"
                     select="selectDictionaryTypeNames"/>
-		<collection property="fileNames" ofType="java.lang.String" column="id" select="findFileName"/>
+		<collection property="fileNames" ofType="java.lang.String" column="id" select="selectDictionaryTypesFileName"/>
     </resultMap>
 
     <resultMap id="dictionaryTypeNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName"
-               extends="localizedStringResultMap">
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="dictionary_type_id" property="dictionaryTypeId"/>
     </resultMap>
 
@@ -31,7 +31,7 @@
 		select `file_name` from `dictionary_file_name` where `dictionary_type_id` = #{id}
 	</select>
 
-    <select id="selectDictionaryTypesCount">
+    <select id="selectAllDictionaryTypesCount" resultType="int">
         select count(*) from `dictionary_type`
     </select>
 

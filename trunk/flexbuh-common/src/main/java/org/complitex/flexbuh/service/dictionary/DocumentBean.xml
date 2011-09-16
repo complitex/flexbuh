@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DocumentBean">
-    <resultMap id="documentResultMap" type="org.complitex.flexbuh.entity.dictionary.Document" extends="abstractPeriodDictionaryResultMap">
+    <resultMap id="documentResultMap" type="org.complitex.flexbuh.entity.dictionary.Document"
+               extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result property="cDoc" column="c_doc"/>
         <result property="cDocSub" column="c_doc_sub"/>
         <result property="cntSet" column="cnt_set"/>
@@ -13,7 +14,8 @@
         <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.DocumentName" column="id" select="selectDocumentNames"/>
     </resultMap>
 
-    <resultMap id="documentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentName" extends="localizedStringResultMap">
+    <resultMap id="documentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentName"
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="document_id" property="documentId"/>
     </resultMap>
 
@@ -30,12 +32,12 @@
         select * from document
     </select>
 
-    <select id="selectAllDocumentsCount">
+    <select id="selectAllDocumentsCount" resultType="int">
         select count(*) from `document`
     </select>
 
     <select id="selectDocuments" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="documentResultMap">
-        select * from `document` order by `cDoc`, `cDocSub` limit #{first}, #{count}
+        select * from `document` order by `c_doc`, `c_doc_sub` limit #{first}, #{count}
     </select>
 
     <select id="selectDocument" parameterType="long" resultMap="documentResultMap">

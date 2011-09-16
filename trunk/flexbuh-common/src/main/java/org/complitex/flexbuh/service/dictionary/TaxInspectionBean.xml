@@ -3,24 +3,25 @@
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.TaxInspectionBean">
     <resultMap id="taxInspectionResultMap" type="org.complitex.flexbuh.entity.dictionary.TaxInspection"
-			   extends="dictionaryOfLimitedTimeResultMap">
+               extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result property="code" column="code"/>
         <result property="regionCode" column="region_code"/>
-		<result property="codeArea" column="code_area"/>
-		<result property="codeTaxInspectionType" column="code_tax_inspection_type"/>
+        <result property="codeArea" column="code_area"/>
+        <result property="codeTaxInspectionType" column="code_tax_inspection_type"/>
 
         <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.TaxInspectionName"
-				column="id" select="selectTaxInspectionNames"/>
-		<collection property="areaNames" ofType="org.complitex.flexbuh.entity.dictionary.AreaName"
-				column="id" select="selectAreaNames"/>
+                    column="id" select="selectTaxInspectionNames"/>
+        <collection property="areaNames" ofType="org.complitex.flexbuh.entity.dictionary.AreaName"
+                    column="id" select="selectAreaNames"/>
     </resultMap>
 
     <resultMap id="taxInspectionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.TaxInspectionName"
-               extends="localizedStringResultMap">
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="tax_inspection_id" property="taxInspectionId"/>
     </resultMap>
 
-    <resultMap id="areaNameResultMap" type="org.complitex.flexbuh.entity.dictionary.AreaName" extends="localizedStringResultMap">
+    <resultMap id="areaNameResultMap" type="org.complitex.flexbuh.entity.dictionary.AreaName"
+               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="tax_inspection_id" property="taxInspectionId"/>
     </resultMap>
 
@@ -31,19 +32,19 @@
           (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{regionCode}, #{codeArea}, #{codeTaxInspectionType})
     </insert>
 
-	<select id="selectAllTaxInspections" resultMap="taxInspectionResultMap">
+    <select id="selectAllTaxInspections" resultMap="taxInspectionResultMap">
         select * from `tax_inspection`
     </select>
 
-    <select id="selectAllTaxInspectionsCount">
+    <select id="selectAllTaxInspectionsCount" resultType="int">
         select count(*) from `tax_inspection`
     </select>
 
-	<select id="selectTaxInspections" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="taxInspectionResultMap">
+    <select id="selectTaxInspections" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="taxInspectionResultMap">
         select * from `tax_inspection` order by `code` limit #{first}, #{count}
     </select>
 
-	<select id="selectTaxInspection" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspection" resultMap="taxInspectionResultMap">
+    <select id="selectTaxInspection" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspection" resultMap="taxInspectionResultMap">
         select * from `tax_inspection` where `id` = #{id}
     </select>
 
@@ -53,7 +54,7 @@
 		select * from `tax_inspection_name` where `tax_inspection_id` = #{id}
 	</select>
 
-	<insert id="insertTaxInspectionName" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspectionName" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertTaxInspectionName" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspectionName" keyProperty="id" useGeneratedKeys="true">
         insert into `tax_inspection_name` (`tax_inspection_id`, `language_id`, `value`)
         	values (#{taxInspectionId}, #{language.id}, #{value})
     </insert>
@@ -64,7 +65,7 @@
 		select * from `area_name` where `tax_inspection_id` = #{id}
 	</select>
 
-	<insert id="insertAreaName" parameterType="org.complitex.flexbuh.entity.dictionary.AreaName" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertAreaName" parameterType="org.complitex.flexbuh.entity.dictionary.AreaName" keyProperty="id" useGeneratedKeys="true">
         insert into `area_name` (`tax_inspection_id`, `language_id`, `value`) values (#{taxInspectionId}, #{language.id}, #{value})
     </insert>
 </mapper>

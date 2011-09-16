@@ -7,33 +7,33 @@ import java.util.List;
  *         Date: 08.08.11 14:52
  */
 public class DocumentVersion extends AbstractPeriodDictionary {
-	private String documentType;
-	private String documentSubType;
-	private Integer version;
+	private String cDoc;
+	private String cDocSub;
+	private Integer cDocVer;
 	private List<NormativeDocumentName> normativeDocumentNames;
 
-	public String getDocumentType() {
-		return documentType;
+	public String getCDoc() {
+		return cDoc;
 	}
 
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
+	public void setCDoc(String cDoc) {
+		this.cDoc = cDoc;
 	}
 
-	public String getDocumentSubType() {
-		return documentSubType;
+	public String getCDocSub() {
+		return cDocSub;
 	}
 
-	public void setDocumentSubType(String documentSubType) {
-		this.documentSubType = documentSubType;
+	public void setCDocSub(String cDocSub) {
+		this.cDocSub = cDocSub;
 	}
 
-	public Integer getVersion() {
-		return version;
+	public Integer getCDocVer() {
+		return cDocVer;
 	}
 
-	public void setVersion(Integer version) {
-		this.version = version;
+	public void setCDocVer(Integer cDocVer) {
+		this.cDocVer = cDocVer;
 	}
 
 	public List<NormativeDocumentName> getNormativeDocumentNames() {
@@ -46,7 +46,7 @@ public class DocumentVersion extends AbstractPeriodDictionary {
 
 	@Override
 	public boolean validate() {
-		return super.validate() && documentType != null && documentSubType != null && version != null &&
+		return super.validate() && cDoc != null && cDocSub != null && cDocVer != null &&
 				normativeDocumentNames != null && normativeDocumentNames.size() > 0;
 	}
 }

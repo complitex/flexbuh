@@ -41,11 +41,11 @@ public class ImportDocumentTermXMLService extends ImportDictionaryXMLService<Doc
 		for (int j = 0; j < contentNodeRow.getLength(); j++) {
 			Node currentNode = contentNodeRow.item(j);
 			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC")) {
-				documentTerm.setDocumentType(currentNode.getTextContent());
+				documentTerm.setCDoc(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_SUB")) {
-				documentTerm.setDocumentSubType(currentNode.getTextContent());
+				documentTerm.setCDocSub(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_VER")) {
-				documentTerm.setDocumentVersion(Integer.decode(currentNode.getTextContent()));
+				documentTerm.setCDocVer(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_TERM")) {
 				documentTerm.setDateTerm(parseDate(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "PERIOD_MONTH")) {

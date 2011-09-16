@@ -6,8 +6,8 @@ insert into `config` (`name`, `value`) values ('IMPORT_FILE_STORAGE_DIR', '/tmp/
 -- --------------------------------
 -- Language
 -- --------------------------------
-INSERT INTO `language` (`id`, `lang_iso_code`, `default_lang`) VALUES (1, 'uk', 1);
-INSERT INTO `language` (`id`, `lang_iso_code`, `default_lang`) VALUES (2, 'ru', 0);
+INSERT INTO `language` (`id`, `lang_iso_code`, `default_lang`) VALUES (1, 'uk', 0);
+INSERT INTO `language` (`id`, `lang_iso_code`, `default_lang`) VALUES (2, 'ru', 1);
 
 --  -- --------------------------------
 -- DictionaryType
@@ -29,7 +29,7 @@ INSERT INTO dictionary_file_name (`id`, `dictionary_type_id`, `file_name`) VALUE
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (1, 1, 1, 'Довідник валют');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (2, 2, 1, 'Справочник валют');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (3, 1, 2, 'Довідник документів');
-INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (4, 2, 2, 'Справочник валют');
+INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (4, 2, 2, 'Справочник отчетных документов');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (5, 1, 3, 'Довідник звітних періодів документів');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (6, 2, 3, 'Справочник отчетных периодов документов');
 INSERT INTO dictionary_type_name (`id`, `language_id`, `dictionary_type_id`, `value`) VALUES (7, 1, 4, 'Довідник версій звітних документів');

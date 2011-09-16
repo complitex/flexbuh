@@ -56,11 +56,11 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 		for (int j = 0; j < contentNodeRow.getLength(); j++) {
 			Node currentNode = contentNodeRow.item(j);
 			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC")) {
-				documentVersion.setDocumentType(currentNode.getTextContent());
+				documentVersion.setCDoc(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_SUB")) {
-				documentVersion.setDocumentSubType(currentNode.getTextContent());
+				documentVersion.setCDocSub(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_VER")) {
-				documentVersion.setVersion(Integer.decode(currentNode.getTextContent()));
+				documentVersion.setCDocVer(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_BEGIN") &&
 					StringUtils.isNotEmpty(currentNode.getTextContent())) {
 				documentVersion.setBeginDate(parseDate(currentNode.getTextContent()));

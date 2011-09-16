@@ -23,13 +23,13 @@ public class TaxInspectionBean extends AbstractBean {
 		for (TaxInspectionName taxInspectionName : taxInspection.getNames()) {
             taxInspectionName.setTaxInspectionId(taxInspection.getId());
 
-			sqlSession().insert(NS + ".insertInspectionName", taxInspectionName);
+			sqlSession().insert(NS + ".insertTaxInspectionName", taxInspectionName);
 		}
 
 		for (AreaName areaName : taxInspection.getAreaNames()) {
             areaName.setTaxInspectionId(taxInspection.getId());
 
-			sqlSession().insert(NS + ".insertAreaNames", areaName);
+			sqlSession().insert(NS + ".insertAreaName", areaName);
 		}
     }
 
