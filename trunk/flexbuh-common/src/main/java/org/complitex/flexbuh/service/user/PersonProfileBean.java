@@ -24,11 +24,11 @@ public class PersonProfileBean extends AbstractBean {
         return sqlSession().selectList(NS + ".selectPersonProfiles", new AbstractFilter(sessionId, first, count));
     }
 
-    public Integer getPersonalProfileCount(Long sessionId){
-        return (Integer) sqlSession().selectOne(NS + ".selectPersonProfilesCount");
+    public int getPersonalProfileCount(Long sessionId){
+        return (Integer) sqlSession().selectOne(NS + ".selectPersonProfilesCount", sessionId);
     }
 
     public void save(PersonProfile personProfile){
-        sqlSession().insert(NS + ".insertPersonProfile");
+        sqlSession().insert(NS + ".insertPersonProfile", personProfile);
     }
 }

@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
  *         Date: 28.07.11 16:05
  */
 @XmlRootElement(name = "DECLAR")
-@XmlAccessorType(value = XmlAccessType.FIELD)
 @XmlSeeAlso(DeclarationValue.class)
+@XmlAccessorType(value = XmlAccessType.FIELD)
 public class Declaration implements Serializable{
     @XmlTransient
     private final Pattern NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
@@ -37,7 +37,15 @@ public class Declaration implements Serializable{
     @XmlAnyElement
     private List<JAXBElement<DeclarationValue>> xmlValues = new ArrayList<JAXBElement<DeclarationValue>>();
 
+    @XmlElementWrapper(name = "LINKED_DOCS")
+    @XmlElement(name = "DOC")
+    private List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
+
     public Declaration() {
+    }
+
+    public Declaration(String name) {
+        setName(name);
     }
 
     public void setName(String name){
@@ -46,14 +54,14 @@ public class Declaration implements Serializable{
         if (m.matches()){
             head.setCDoc(m.group(1));
             head.setCDocSub(m.group(2));
-            head.setCDocVer(m.group(3));
+            head.setCDocVer(Integer.valueOf(m.group(3)));
         }else {
             throw new IllegalArgumentException("Имя должно содержать ровно 8 символов");
         }
     }
 
     public String getName(){
-        return head.getCDoc() + head.getCDocSub() + head.getCDocVer();
+        return head.getCDoc() + head.getCDocSub() + (head.getCDocVer() < 10 ? "0" : "") + head.getCDocVer();
     }
 
     public void prepareXmlValues(){
@@ -62,6 +70,10 @@ public class Declaration implements Serializable{
         for (DeclarationValue v : values){
             xmlValues.add(new JAXBElement<>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
         }
+    }
+
+    public List<JAXBElement<DeclarationValue>> getXmlValues() {
+        return xmlValues;
     }
 
     public DeclarationValue getValue(String name){
@@ -141,5 +153,13 @@ public class Declaration implements Serializable{
 
     public void setHead(DeclarationHead head) {
         this.head = head;
+    }
+
+    public List<LinkedDeclaration> getLinkedDeclarations() {
+        return linkedDeclarations;
+    }
+
+    public void setLinkedDeclarations(List<LinkedDeclaration> linkedDeclarations) {
+        this.linkedDeclarations = linkedDeclarations;
     }
 }

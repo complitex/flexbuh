@@ -15,6 +15,13 @@
     <form action="#" wicket:id="form">
         <div wicket:id="declaration"></div>
 
+        <div wicket:id="accordion">
+            <div wicket:id="declarations">
+                <h3><a href="#"><span wicket:id="label"></span></a></h3>
+                <div wicket:id="linked_declaration"></div>
+            </div>
+        </div>
+
         <div style="margin-top: 20px">
             <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
             <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>

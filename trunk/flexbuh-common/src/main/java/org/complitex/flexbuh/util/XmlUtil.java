@@ -75,7 +75,7 @@ public class XmlUtil {
 
     public static Element getElementByAttribute(String attributeName, String attributeValue, Node node, XPath xPath){
         try {
-            return (Element) xPath.evaluate("//*[@" + attributeName + "= '" + attributeValue + "']", node, XPathConstants.NODE);
+            return (Element) xPath.evaluate(".//*[@" + attributeName + "= '" + attributeValue + "']", node, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
             log.error("Ошибка получения элемента по атрибуту", e);
         }
@@ -93,13 +93,24 @@ public class XmlUtil {
 
     public static NodeList getElementsByAttribute(String attributeName, String attributeValue, Node node, XPath xPath){
         try {
-            return (NodeList) xPath.evaluate("//*[@" + attributeName + "= '" + attributeValue + "']", node, XPathConstants.NODESET);
+            return (NodeList) xPath.evaluate(".//*[@" + attributeName + "= '" + attributeValue + "']", node, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             log.error("Ошибка получения элемента по атрибуту", e);
         }
 
         return null;
     }
+
+    public static NodeList getElementsByAttribute(String attributeName, Node node, XPath xPath){
+        try {
+            return (NodeList) xPath.evaluate(".//*[@" + attributeName + "]", node, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            log.error("Ошибка получения элемента по атрибуту", e);
+        }
+
+        return null;
+    }
+
 
     public static NodeList getElementsById(String id, Node node, XPath xPath){
         return getElementsByAttribute("id", id, node, xPath);

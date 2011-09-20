@@ -13,13 +13,22 @@ public class Document extends AbstractPeriodDictionary {
 	private String cDocSub;
 	private List<DocumentName> names;
 
-	// Может подаваться в отчетном периоде более одного раза
-	private Boolean cntSet;
+	private Boolean cntSet; // Может подаваться в отчетном периоде более одного раза
 	private String parentCDoc;
 	private String parentCDocSub;
 	private Boolean selected = false;
 
-	public String getCDoc() {
+    private List<DocumentVersion> documentVersions;
+
+    public Document() {
+    }
+
+    public Document(String cDoc, String cDocSub) {
+        this.cDoc = cDoc;
+        this.cDocSub = cDocSub;
+    }
+
+    public String getCDoc() {
 		return cDoc;
 	}
 
@@ -75,7 +84,15 @@ public class Document extends AbstractPeriodDictionary {
 		this.selected = selected;
 	}
 
-	@Override
+    public List<DocumentVersion> getDocumentVersions() {
+        return documentVersions;
+    }
+
+    public void setDocumentVersions(List<DocumentVersion> documentVersions) {
+        this.documentVersions = documentVersions;
+    }
+
+    @Override
 	public boolean validate() {
 		return  super.validate() &&
 				cDoc != null && cDocSub != null && names != null && names.size() > 0 && cntSet != null && selected != null;

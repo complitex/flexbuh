@@ -2,13 +2,12 @@ package org.complitex.flexbuh.document.test;
 
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
-import org.w3c.tidy.Tidy;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -16,31 +15,43 @@ import java.io.FileReader;
  */
 public class DeclarationTest {
     public static void main(String... args) throws JAXBException, FileNotFoundException {
-        testHtmlToXml();
+        testJavaToXml();
     }
 
     private static void testJavaToXml() throws JAXBException {
         Declaration declaration = new Declaration();
 
-        declaration.setTin("tin_0");
-        declaration.setCDoc("c_doc_1");
-        declaration.setCDocCnt("c_doc_cnt_2");
-        declaration.setCDocStan("c_doc_stan_3");
-        declaration.setCDocSub("c_doc_sub_4");
-        declaration.setCDocType("c_doc_type_5");
-        declaration.setCDocVer("c_doc_ver_6");
-        declaration.setCRaj("c_doc_raj_7");
-        declaration.setCReg("c_doc_reg_8");
-        declaration.setCStiOrig("c_stil_orig_9");
-        declaration.setDFill("d_fill_10");
-        declaration.setPeriodMonth("period_month_11");
-        declaration.setPeriodType("period_type_12");
-        declaration.setPeriodYear("period_year_13");
-        declaration.setSoftware("software_14");
+        declaration.getHead().setTin("tin_0");
+        declaration.getHead().setCDoc("c_doc_1");
+        declaration.getHead().setCDocCnt(1);
+        declaration.getHead().setCDocStan(2);
+        declaration.getHead().setCDocSub("c_doc_sub_4");
+        declaration.getHead().setCDocType(3);
+        declaration.getHead().setCDocVer(10);
+        declaration.getHead().setCRaj(4);
+        declaration.getHead().setCReg(5);
+        declaration.getHead().setCStiOrig("c_stil_orig_9");
+        declaration.getHead().setDFill("d_fill_10");
+        declaration.getHead().setPeriodMonth(6);
+        declaration.getHead().setPeriodType(7);
+        declaration.getHead().setPeriodYear(8);
+        declaration.getHead().setSoftware("software_14");
 
-        declaration.getValues().add(new DeclarationValue("name1", null, null));
-        declaration.getValues().add(new DeclarationValue("name2", "", "value2"));
-        declaration.getValues().add(new DeclarationValue("name3", "", "value3"));
+        declaration.getValues().add(new DeclarationValue(null, "name1", null));
+        declaration.getValues().add(new DeclarationValue(1, "name2", "value2"));
+        declaration.getValues().add(new DeclarationValue(2, "name3", "value3"));
+
+        //linked
+        LinkedDeclaration ld = new LinkedDeclaration();
+        ld.setCDocType("1");
+        ld.setFilename("2");
+        ld.setNum("3");
+        ld.setСDoc("doc");
+        ld.setСDocCnt("cnt");
+        ld.setType("type");
+        ld.setСDocVer("ver");
+
+        declaration.getLinkedDeclarations().add(ld);
 
         declaration.prepareXmlValues();
 
@@ -51,11 +62,4 @@ public class DeclarationTest {
         m.marshal(declaration, System.out);
     }
 
-    private static void testHtmlToXml() throws FileNotFoundException {
-        Tidy tidy = new Tidy();
-        tidy.setXHTML(true);
-        tidy.setOutputEncoding("UTF-8");
-
-        tidy.parse(new FileReader("c:\\TemplateTest.html"), System.out);
-    }
 }

@@ -39,6 +39,10 @@
         select count(*) from `document_version`
     </select>
 
+    <select id="selectDocumentVersionsByDocument" parameterType="map" resultMap="documentVersionResultMap">
+        select * from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
+    </select>
+
     <!--NormativeDocumentName-->
 
     <select id="selectNormativeDocumentNames" parameterType="long" resultMap="normativeDocumentNameResultMap">

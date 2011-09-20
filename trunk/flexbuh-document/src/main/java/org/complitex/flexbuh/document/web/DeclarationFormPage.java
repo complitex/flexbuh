@@ -5,13 +5,20 @@ import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
+import org.complitex.flexbuh.entity.dictionary.Document;
+import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.odlabs.wiquery.ui.accordion.Accordion;
 
 import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -33,6 +40,7 @@ public class DeclarationFormPage extends TemplatePage{
         Long id = pageParameters.getAsLong("id");
 
         final Declaration declaration;
+        final List<Declaration> linkedDeclarations = new ArrayList<>();
 
         if (id != null) {
             declaration = declarationBean.getDeclaration(id);
@@ -45,8 +53,13 @@ public class DeclarationFormPage extends TemplatePage{
                 return;
             }
         }else{
-            declaration = new Declaration();
-            declaration.setName(name);
+            declaration = new Declaration(name);
+
+            List<Document> linkedDocuments = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(), declaration.getHead().getCDocSub());
+
+            for (Document document : linkedDocuments){
+                linkedDeclarations.add(createDeclaration(document));
+            }
         }
 
         add(new Label("title", name));
@@ -54,12 +67,29 @@ public class DeclarationFormPage extends TemplatePage{
         Form form = new Form("form");
         add(form);
 
-//        List<Document> linkedDocuments = documentBean.getLinkedDocuments()
+        //Declaration
+        form.add(new DeclarationFormComponent("declaration", declaration));
 
-        DeclarationFormComponent declarationComponent = new DeclarationFormComponent("declaration", declaration);
-        form.add(declarationComponent);
+        //Linked declaration
+        Accordion accordion = new Accordion("accordion");
+        accordion.setClearStyle(true);
+        form.add(accordion);
 
-        //todo add linked declaration, add wiquery accordion
+        ListView listView = new ListView<Declaration>("declarations", linkedDeclarations) {
+
+            @Override
+            protected void populateItem(ListItem<Declaration> item) {
+                Declaration declaration = item.getModelObject();
+
+                item.add(new Label("label", declaration.getName()));
+
+                item.add(new DeclarationFormComponent("linked_declaration", declaration));
+//                item.add(new Label("linked_declaration", "HELLO" + declaration.getName()));
+
+                item.setRenderBodyOnly(true);
+            }
+        };
+        accordion.add(listView);
 
         form.add(new Button("submit"){
             @Override
@@ -75,5 +105,21 @@ public class DeclarationFormPage extends TemplatePage{
 
             }
         });
+    }
+
+    private Declaration createDeclaration(Document document){
+        Declaration declaration = new Declaration();
+
+        declaration.getHead().setCDoc(document.getCDoc());
+        declaration.getHead().setCDocSub(document.getCDocSub());
+
+        //todo select version
+        List<DocumentVersion> dv = document.getDocumentVersions();
+
+        if (dv != null && !dv.isEmpty()){
+            declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
+        }
+
+        return declaration;
     }
 }

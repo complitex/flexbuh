@@ -45,7 +45,17 @@ public class DocumentBean extends AbstractBean {
 	}
 
     @SuppressWarnings("unchecked")
-    public List<Document> getLinkedDocuments(Document parent){
-        return sqlSession().selectList(NS + ".selectLinkedDocuments", parent);
+    public List<Document> getLinkedDocuments(String cDoc, String cDocSub){
+        return sqlSession().selectList(NS + ".selectLinkedDocuments", new Document(cDoc, cDocSub));
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Document> getJuridicalDocuments(){
+        return sqlSession().selectList(NS + ".selectJuridicalDocuments");
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Document> getPhysicalDocuments(){
+        return sqlSession().selectList(NS + ".selectPhysicalDocuments");
     }
 }
