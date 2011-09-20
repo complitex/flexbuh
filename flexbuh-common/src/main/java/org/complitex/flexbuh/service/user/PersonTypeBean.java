@@ -14,6 +14,6 @@ public class PersonTypeBean extends AbstractBean {
 	public static final String NS = PersonTypeBean.class.getName();
 
 	public PersonType findByCode(String code) {
-		return (PersonType)sqlSession().selectOne(NS + ".findByCode", code);
+		return (PersonType)sqlSession().selectOne(NS + ".selectPersonTypesByCode", code);
 	}
 }

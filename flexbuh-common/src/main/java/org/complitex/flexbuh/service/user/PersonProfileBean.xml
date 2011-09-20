@@ -47,7 +47,7 @@
     </select>
 
     <select id="selectPersonProfilesCount" parameterType="long" resultType="int">
-        select * from `person_profile` where `session_id` = #{sessionId}
+        select count(*) from `person_profile` where `session_id` = #{sessionId}
     </select>
 
 </mapper>

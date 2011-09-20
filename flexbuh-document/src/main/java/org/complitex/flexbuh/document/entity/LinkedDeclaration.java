@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
+import javax.xml.bind.annotation.*;
+
 /**
  * Перечень связанных документов.
  * Данный элемент является узловым и состоит из ряда элементов с именем DOC , каждый из которых содержит информацию об отдельном документе.
@@ -8,15 +10,34 @@ package org.complitex.flexbuh.document.entity;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.07.11 17:29
  */
-public class LinkedDocument {
+@XmlType
+@XmlAccessorType(value = XmlAccessType.FIELD)
+public class LinkedDeclaration {
+    @XmlAttribute(name = "NUM")
     private String num;         // номер связано документа в перечня
+
+    @XmlAttribute(name = "TYPE")
     private String type;        // тип связи
+
+    @XmlElement(name = "C_DOC")
     private String cDoc;        // код документа
+
+    @XmlElement(name = "C_DOC_SUB")
     private String cDocSub;     // ПОДТИП ДОКУМЕНТА
+
+    @XmlElement(name = "C_DOC_VER")
     private String cDocVer;     // номер версии документа
+
+    @XmlElement(name = "C_DOC_TYPE")
     private String cDocType;    // № нового отчетного (уточняющих) документа (0 - отчетный)
+
+    @XmlElement(name = "C_DOC_CNT")
     private String cDocCnt;     // № однотипных документов в периоде
+
+    @XmlElement(name = "C_DOC_STAN")
     private String cDocStan;    // законодательство
+
+    @XmlElement(name = "FILENAME")
     private String filename;    // имя файла
 
     /**
@@ -52,7 +73,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#getCDoc()
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDoc()
      * @return Код документа
      */
     public String getСDoc() {
@@ -60,7 +81,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#setCDoc(String)
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDoc(String)
      * @param cDoc Код документа
      */
     public void setСDoc(String cDoc) {
@@ -68,7 +89,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#getCDocSub()
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocSub()
      * @return Подтип документа
      */
     public String getСDocSub() {
@@ -76,7 +97,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#setCDocSub(String)
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocSub(String)
      * @param cDocSub Подтип документа
      */
     public void setСDocSub(String cDocSub) {
@@ -84,7 +105,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#getCDocVer()
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocVer()
      * @return Номер версии документа
      */
     public String getСDocVer() {
@@ -92,7 +113,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#setCDocVer(String)
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocVer(String)
      * @param cDocVer Номер версии документа
      */
     public void setСDocVer(String cDocVer) {
@@ -100,7 +121,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#getCDocType()
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocType()
      * @return Номер нового отчетного (уточняющего) документа
      */
     public String getСDocType() {
@@ -108,7 +129,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#setCDocType(String)
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocType(String)
      * @param cDocType Номер нового отчетного (уточняющего) документа
      */
     public void setCDocType(String cDocType) {
@@ -116,7 +137,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#getCDocCnt()
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocCnt()
      * @return Номер однотипного документа в периоде
      */
     public String getСDocCnt() {
@@ -124,7 +145,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#setCDocCnt(String)
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocCnt(String)
      * @param cDocCnt Номер однотипного документа в периоде
      */
     public void setСDocCnt(String cDocCnt) {
@@ -132,7 +153,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#getCDocStan()
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocStan()
      * @return Законодательство
      */
     public String getСDocStan() {
@@ -140,7 +161,7 @@ public class LinkedDocument {
     }
 
     /**
-     * @see Declaration#setCDocStan(String)
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocStan(String)
      * @param cDocStan Законодательство
      */
     public void setСDocStan(String cDocStan) {

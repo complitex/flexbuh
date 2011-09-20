@@ -23,7 +23,7 @@ public class DeclarationHead implements Serializable {
     private String cDocSub; // подтип документа
 
     @XmlElement(name = "C_DOC_VER")
-    private String cDocVer; // номер версии документа
+    private Integer cDocVer; // номер версии документа
 
     @XmlElement(name = "C_DOC_TYPE")
     private Integer cDocType; // № исправительной документа (0 - основной (первого поданного))
@@ -120,7 +120,7 @@ public class DeclarationHead implements Serializable {
      * Фиксированное значение для действующей формы
      * @return номер версии документа
      */
-    public String getCDocVer() {
+    public Integer getCDocVer() {
         return cDocVer;
     }
 
@@ -129,7 +129,7 @@ public class DeclarationHead implements Serializable {
      * Фиксированное значение для действующей формы
      * @param cDocVer номер версии документа
      */
-    public void setCDocVer(String cDocVer) {
+    public void setCDocVer(Integer cDocVer) {
         this.cDocVer = cDocVer;
     }
 

@@ -514,7 +514,7 @@ CREATE TABLE `declaration` (
   `tin` VARCHAR(10),
   `c_doc` VARCHAR(3),
   `c_doc_sub` VARCHAR(3),
-  `c_doc_ver` VARCHAR(2),
+  `c_doc_ver` INTEGER,
   `c_doc_type` INTEGER,
   `c_doc_cnt` INTEGER,
   `c_reg` INTEGER,

@@ -13,6 +13,12 @@
 
         <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.DocumentName" column="id" select="selectDocumentNames"/>
     </resultMap>
+    
+    <resultMap id="linkedDocumentResultMap" type="org.complitex.flexbuh.entity.dictionary.Document" extends="documentResultMap">
+        <collection property="documentVersions" ofType="org.complitex.flexbuh.entity.dictionary.DocumentVersion"
+                    column="{cDoc=c_doc, cDocSub=c_doc_sub}"
+                    select="org.complitex.flexbuh.service.dictionary.DocumentVersionBean.selectDocumentVersionsByDocument"/>
+    </resultMap>
 
     <resultMap id="documentNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DocumentName"
                extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
@@ -44,8 +50,16 @@
         select * from `document` where `id` = #{id}
     </select>
 
-    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.entity.dictionary.Document" resultMap="documentResultMap">
-        select * from `document` where `parent_c_doc` = #{parentCDoc} and `parent_c_doc_sub` = #{parentCDocSub}
+    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.entity.dictionary.Document" resultMap="linkedDocumentResultMap">
+        select * from `document` where `parent_c_doc` = #{cDoc} and `parent_c_doc_sub` = #{cDocSub}
+    </select>
+
+    <select id="selectJuridicalDocuments" resultMap="documentResultMap">
+        select * from `document` where `cDoc` like 'J%'
+    </select>
+
+    <select id="selectPhysicalDocuments" resultMap="documentResultMap">
+        select * from `document` where `cDoc` like 'F%'
     </select>
 
     <!--DocumentName-->

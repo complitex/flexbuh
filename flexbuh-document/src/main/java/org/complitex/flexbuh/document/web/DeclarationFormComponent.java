@@ -457,18 +457,34 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             stretchTableParentElement = stretchTableParentElement.getParentNode();
         }
 
-        WebMarkupContainer stretchTableParent = stretchTableParentMap.get(stretchTableParentElement);
+        WebMarkupContainer stretchTableParentContainer = stretchTableParentMap.get(stretchTableParentElement);
 
-        if (stretchTableParent == null) {
+        if (stretchTableParentContainer == null) {
             String stretchTableId = "stretch_container_" + stretchTableIndex;
 
             ((Element)stretchTableParentElement).setAttribute("wicket:id", stretchTableId);
 
-            stretchTableParent = new WebMarkupContainer(stretchTableId);
-            stretchTableParent.setOutputMarkupId(true);
-            container.add(stretchTableParent);
+            stretchTableParentContainer = new WebMarkupContainer(stretchTableId);
+            stretchTableParentContainer.setOutputMarkupId(true);
+            container.add(stretchTableParentContainer);
 
-            stretchTableParentMap.put(stretchTableParentElement, stretchTableParent);
+            stretchTableParentMap.put(stretchTableParentElement, stretchTableParentContainer);
+
+            //change parent for internal not dynamic
+            NodeList componentList = XmlUtil.getElementsByAttribute("id", stretchTableParentElement, templateXPath);
+
+            for (int i = 0, size = componentList.getLength(); i < size; ++i){
+                Element element = (Element) componentList.item(i);
+                String wicketId = element.getAttribute("wicket:id");
+
+                if (wicketId != null && !wicketId.isEmpty()) {
+                    Component component = container.get(wicketId);
+
+                    if (component != null && !component.equals(stretchTableParentContainer)){
+                        stretchTableParentContainer.add(component);
+                    }
+                }
+            }
         }
 
         //Stretch row
@@ -502,11 +518,11 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
         //Add rows
         for (int i = 0, count = getRowCount(inputList); i <  count; ++i) {
-            addRow(stretchTableIndex, stretchTableElement, stretchTableParent, i, stretchRows);
+            addRow(stretchTableIndex, stretchTableElement, stretchTableParentContainer, i, stretchRows);
         }
 
         //Repeater
-        stretchTableParent.add(new AbstractRepeater("stretch_table_" + stretchTableIndex) {
+        stretchTableParentContainer.add(new AbstractRepeater("stretch_table_" + stretchTableIndex) {
             @Override
             protected Iterator<? extends Component> renderIterator() {
                 return stretchRows.iterator();
