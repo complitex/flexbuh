@@ -15,6 +15,7 @@ import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.odlabs.wiquery.ui.accordion.Accordion;
+import org.odlabs.wiquery.ui.accordion.AccordionActive;
 
 import javax.ejb.EJB;
 import java.util.ArrayList;
@@ -72,7 +73,9 @@ public class DeclarationFormPage extends TemplatePage{
 
         //Linked declaration
         Accordion accordion = new Accordion("accordion");
+        accordion.setCollapsible(true);
         accordion.setClearStyle(true);
+        accordion.setActive(new AccordionActive(false));
         form.add(accordion);
 
         ListView listView = new ListView<Declaration>("declarations", linkedDeclarations) {

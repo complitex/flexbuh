@@ -115,4 +115,28 @@ public class XmlUtil {
     public static NodeList getElementsById(String id, Node node, XPath xPath){
         return getElementsByAttribute("id", id, node, xPath);
     }
+
+    public static Node getParent(String tagName, Node node){
+        Node parent = node.getParentNode();
+
+        while (parent != null && !tagName.equalsIgnoreCase(parent.getNodeName())){
+            parent = parent.getParentNode();
+        }
+
+        return parent;
+    }
+
+    public static Node getParentById(String id, Node node){
+        Node parent = node.getParentNode();
+
+        while (parent != null){
+            if (parent instanceof Element && id.equalsIgnoreCase(((Element) parent).getAttribute("id"))) {
+                return parent;
+            } else {
+                parent = parent.getParentNode();
+            }
+        }
+
+        return parent;
+    }
 }
