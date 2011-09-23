@@ -17,18 +17,18 @@ public class DeclarationBooleanModel extends AbstractDeclarationModel<Boolean>{
 
     @Override
     public Boolean getObject() {
-        DeclarationValue value = declaration.getValue(name);
+        DeclarationValue value = declaration.getDeclarationValue(name);
 
         return value != null ? TRUE.equals(value.getValue()) : Boolean.FALSE;
     }
 
     @Override
     public void setObject(Boolean object) {
-        DeclarationValue value = declaration.getValue(name);
+        DeclarationValue value = declaration.getDeclarationValue(name);
 
         if (value == null){
             value = new DeclarationValue(name);
-            declaration.addValue(value);
+            declaration.addDeclarationValue(value);
         }
 
         value.setValue(object ? TRUE : FALSE);

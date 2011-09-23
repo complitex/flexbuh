@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
@@ -41,7 +42,6 @@ public class DeclarationFormPage extends TemplatePage{
         Long id = pageParameters.getAsLong("id");
 
         final Declaration declaration;
-        final List<Declaration> linkedDeclarations = new ArrayList<>();
 
         if (id != null) {
             declaration = declarationBean.getDeclaration(id);
@@ -54,13 +54,17 @@ public class DeclarationFormPage extends TemplatePage{
                 return;
             }
         }else{
+            final List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
+
             declaration = new Declaration(name);
 
             List<Document> linkedDocuments = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(), declaration.getHead().getCDocSub());
 
             for (Document document : linkedDocuments){
-                linkedDeclarations.add(createDeclaration(document));
+                linkedDeclarations.add(createLinkedDeclaration(document, declaration));
             }
+
+            declaration.setLinkedDeclarations(linkedDeclarations);
         }
 
         add(new Label("title", name));
@@ -75,19 +79,19 @@ public class DeclarationFormPage extends TemplatePage{
         Accordion accordion = new Accordion("accordion");
         accordion.setCollapsible(true);
         accordion.setClearStyle(true);
+        accordion.setNavigation(true);
         accordion.setActive(new AccordionActive(false));
         form.add(accordion);
 
-        ListView listView = new ListView<Declaration>("declarations", linkedDeclarations) {
+        ListView listView = new ListView<LinkedDeclaration>("declarations", declaration.getLinkedDeclarations()) {
 
             @Override
-            protected void populateItem(ListItem<Declaration> item) {
-                Declaration declaration = item.getModelObject();
+            protected void populateItem(ListItem<LinkedDeclaration> item) {
+                Declaration declaration = item.getModelObject().getDeclaration();
 
                 item.add(new Label("label", declaration.getName()));
 
                 item.add(new DeclarationFormComponent("linked_declaration", declaration));
-//                item.add(new Label("linked_declaration", "HELLO" + declaration.getName()));
 
                 item.setRenderBodyOnly(true);
             }
@@ -110,7 +114,7 @@ public class DeclarationFormPage extends TemplatePage{
         });
     }
 
-    private Declaration createDeclaration(Document document){
+    private LinkedDeclaration createLinkedDeclaration(Document document, Declaration parent){
         Declaration declaration = new Declaration();
 
         declaration.getHead().setCDoc(document.getCDoc());
@@ -123,6 +127,8 @@ public class DeclarationFormPage extends TemplatePage{
             declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
         }
 
-        return declaration;
+        declaration.setParent(parent);
+
+        return new LinkedDeclaration(declaration);
     }
 }

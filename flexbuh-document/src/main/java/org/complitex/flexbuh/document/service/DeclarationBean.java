@@ -21,10 +21,10 @@ public class DeclarationBean extends AbstractBean{
             Declaration old = getDeclaration(declaration.getId());
 
             //remove values
-            for (DeclarationValue vOld : old.getValues()){
+            for (DeclarationValue vOld : old.getDeclarationValues()){
                 boolean contain = false;
 
-                for (DeclarationValue v : declaration.getValues()){
+                for (DeclarationValue v : declaration.getDeclarationValues()){
                     if (vOld.getId().equals(v.getId())){
                         contain = true;
                         break;
@@ -37,7 +37,7 @@ public class DeclarationBean extends AbstractBean{
             }
 
             //save values
-            for (DeclarationValue v : declaration.getValues()){
+            for (DeclarationValue v : declaration.getDeclarationValues()){
                 if (v.getId() != null){ //to improve skip update unchanged value
                     sqlSession().update("updateDeclarationValue", v);
                 }else{
@@ -51,7 +51,7 @@ public class DeclarationBean extends AbstractBean{
         }else{
             sqlSession().insert(NS + ".insertDeclaration", declaration);
 
-            for (DeclarationValue value : declaration.getValues()){
+            for (DeclarationValue value : declaration.getDeclarationValues()){
                 value.setDeclarationId(declaration.getId());
                 sqlSession().insert(NS + ".insertDeclarationValue", value);
             }
