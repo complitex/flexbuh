@@ -11,33 +11,11 @@ import javax.xml.bind.annotation.*;
  *         Date: 28.07.11 17:29
  */
 @XmlType
-@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlAccessorType(value = XmlAccessType.PUBLIC_MEMBER)
 public class LinkedDeclaration {
-    @XmlAttribute(name = "NUM")
+    private Long id;
     private String num;         // номер связано документа в перечня
-
-    @XmlAttribute(name = "TYPE")
     private String type;        // тип связи
-
-    @XmlElement(name = "C_DOC")
-    private String cDoc;        // код документа
-
-    @XmlElement(name = "C_DOC_SUB")
-    private String cDocSub;     // ПОДТИП ДОКУМЕНТА
-
-    @XmlElement(name = "C_DOC_VER")
-    private Integer cDocVer;     // номер версии документа
-
-    @XmlElement(name = "C_DOC_TYPE")
-    private Integer cDocType;    // № нового отчетного (уточняющих) документа (0 - отчетный)
-
-    @XmlElement(name = "C_DOC_CNT")
-    private Integer cDocCnt;     // № однотипных документов в периоде
-
-    @XmlElement(name = "C_DOC_STAN")
-    private Integer cDocStan;    // законодательство
-
-    @XmlElement(name = "FILENAME")
     private String filename;    // имя файла
 
     @XmlTransient
@@ -48,26 +26,26 @@ public class LinkedDeclaration {
 
     public LinkedDeclaration(Declaration declaration) {
         this.declaration = declaration;
-        copyFieldsFromDeclaration();
     }
 
-    public void copyFieldsFromDeclaration(){
-        cDoc = declaration.getHead().getCDoc();
-        cDocSub = declaration.getHead().getCDocSub();
-        cDocVer = declaration.getHead().getCDocVer();
-        cDocType = declaration.getHead().getCDocType();
-        cDocCnt = declaration.getHead().getCDocCnt();
-        cDocStan = declaration.getHead().getCDocStan();
+    @XmlTransient
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName(){
-        return cDoc + cDocSub + (cDocVer < 10 ? "0" : "") + cDocVer;
+        return declaration.getName();
     }
 
     /**
      *
      * @return Номер связанного документа в перечне
      */
+    @XmlAttribute(name = "NUM")
     public String getNum() {
         return num;
     }
@@ -84,6 +62,7 @@ public class LinkedDeclaration {
      * Фиксированные значения: 1 - ссылка на приложение, 2 - ссылки на основной документ, 3 - ссылка на документ
      * @return тип связи
      */
+    @XmlAttribute(name = "TYPE")
     public String getType() {
         return type;
     }
@@ -100,8 +79,9 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDoc()
      * @return Код документа
      */
+    @XmlElement(name = "C_DOC")
     public String getСDoc() {
-        return cDoc;
+        return declaration.getHead().getCDoc();
     }
 
     /**
@@ -109,15 +89,16 @@ public class LinkedDeclaration {
      * @param cDoc Код документа
      */
     public void setСDoc(String cDoc) {
-        this.cDoc = cDoc;
+        declaration.getHead().setCDoc(cDoc);
     }
 
     /**
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocSub()
      * @return Подтип документа
      */
+    @XmlElement(name = "C_DOC_SUB")
     public String getСDocSub() {
-        return cDocSub;
+        return declaration.getHead().getCDocSub();
     }
 
     /**
@@ -125,15 +106,16 @@ public class LinkedDeclaration {
      * @param cDocSub Подтип документа
      */
     public void setСDocSub(String cDocSub) {
-        this.cDocSub = cDocSub;
+        declaration.getHead().setCDocSub(cDocSub);
     }
 
     /**
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocVer()
      * @return Номер версии документа
      */
+    @XmlElement(name = "C_DOC_VER")
     public Integer getСDocVer() {
-        return cDocVer;
+        return declaration.getHead().getCDocVer();
     }
 
     /**
@@ -141,15 +123,16 @@ public class LinkedDeclaration {
      * @param cDocVer Номер версии документа
      */
     public void setСDocVer(Integer cDocVer) {
-        this.cDocVer = cDocVer;
+        declaration.getHead().setCDocVer(cDocVer);
     }
 
     /**
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocType()
      * @return Номер нового отчетного (уточняющего) документа
      */
+    @XmlElement(name = "C_DOC_TYPE")
     public Integer getСDocType() {
-        return cDocType;
+        return declaration.getHead().getCDocType();
     }
 
     /**
@@ -157,15 +140,16 @@ public class LinkedDeclaration {
      * @param cDocType Номер нового отчетного (уточняющего) документа
      */
     public void setCDocType(Integer cDocType) {
-        this.cDocType = cDocType;
+        declaration.getHead().setCDocType(cDocType);
     }
 
     /**
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocCnt()
      * @return Номер однотипного документа в периоде
      */
+    @XmlElement(name = "C_DOC_CNT")
     public Integer getСDocCnt() {
-        return cDocCnt;
+        return declaration.getHead().getCDocCnt();
     }
 
     /**
@@ -173,15 +157,16 @@ public class LinkedDeclaration {
      * @param cDocCnt Номер однотипного документа в периоде
      */
     public void setСDocCnt(Integer cDocCnt) {
-        this.cDocCnt = cDocCnt;
+        declaration.getHead().setCDocCnt(cDocCnt);
     }
 
     /**
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocStan()
      * @return Законодательство
      */
+    @XmlElement(name = "C_DOC_STAN")
     public Integer getСDocStan() {
-        return cDocStan;
+        return declaration.getHead().getCDocStan();
     }
 
     /**
@@ -189,13 +174,14 @@ public class LinkedDeclaration {
      * @param cDocStan Законодательство
      */
     public void setСDocStan(Integer cDocStan) {
-        this.cDocStan = cDocStan;
+        declaration.getHead().setCDocStan(cDocStan);
     }
 
     /**
      *
      * @return Имя файла, содержащего связанный документ
      */
+    @XmlElement(name = "FILENAME")
     public String getFilename() {
         return filename;
     }
@@ -208,6 +194,7 @@ public class LinkedDeclaration {
         this.filename = filename;
     }
 
+    @XmlTransient
     public Declaration getDeclaration() {
         return declaration;
     }

@@ -42,6 +42,9 @@ public class Declaration implements Serializable{
     private List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
 
     @XmlTransient
+    private Long parentId;
+
+    @XmlTransient
     private Declaration parent;
 
     public Declaration() {
@@ -174,6 +177,14 @@ public class Declaration implements Serializable{
 
     public void setLinkedDeclarations(List<LinkedDeclaration> linkedDeclarations) {
         this.linkedDeclarations = linkedDeclarations;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Declaration getParent() {
