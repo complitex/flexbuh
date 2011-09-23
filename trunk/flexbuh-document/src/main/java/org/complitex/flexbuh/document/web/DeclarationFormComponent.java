@@ -361,12 +361,12 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 });
 
                 //Validation
-                IValidator<String> validator = getValidator(schemaType);
-                if (validator != null) {
-                    textField.add(validator);
-                }
+//                IValidator<String> validator = getValidator(schemaType);
+//                if (validator != null) {
+//                    textField.add(validator);
+//                }
             }
-        } catch (XPathExpressionException e) {
+        } catch (Exception e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
         }
     }

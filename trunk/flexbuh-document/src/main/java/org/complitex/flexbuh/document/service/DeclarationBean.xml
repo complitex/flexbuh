@@ -21,8 +21,20 @@
         <result column="d_fill" property="head.dFill"/>
         <result column="software" property="head.software"/>
 
-        <collection property="values" column="id" ofType="org.complitex.flexbuh.document.entity.DeclarationValue"
+        <collection property="declarationValues" column="id" ofType="org.complitex.flexbuh.document.entity.DeclarationValue"
                     select="selectDeclarationValues"/>
+
+        <collection property="linkedDeclarations" column="id" ofType="org.complitex.flexbuh.document.entity.LinkedDeclaration"
+                    select="selectLinkedDeclaration"/>
+    </resultMap>
+
+    <resultMap id="linkedDeclarationResultMap" type="org.complitex.flexbuh.document.entity.LinkedDeclaration">
+        <id column="id" property="id"/>
+        <result column="num" property="num"/>
+        <result column="type" property="type"/>
+        <result column="filename" property="filename"/>
+
+        <association property="declaration" column="id" select="selectDeclaration"/>
     </resultMap>
     
     <resultMap id="declarationValueResultMap" type="org.complitex.flexbuh.document.entity.DeclarationValue">
@@ -37,14 +49,18 @@
         select * from `declaration` where `id` = #{id}
     </select>
 
+    <select id="selectLinkedDeclaration" resultMap="linkedDeclarationResultMap" parameterType="long">
+        select * from `declaration` where `parent_id` = #{parentId}
+    </select>
+
     <select id="selectDeclarationValues" resultMap="declarationValueResultMap" parameterType="long">
         select * from `declaration_value` where `declaration_id` = #{declaration_id}
     </select>
 
     <insert id="insertDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration" keyProperty="id" useGeneratedKeys="true">
-        insert into `declaration` (`session_id`, `tin`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`,
+        insert into `declaration` (`parent_id`, `session_id`, `tin`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`,
           `period_month`, `period_type`, `period_year`, `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`)
-        values (#{sessionId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub}, #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg},
+        values (#{parentId}, #{sessionId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub}, #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg},
           #{head.cRaj}, #{head.periodMonth}, #{head.periodType}, #{head.periodYear}, #{head.cStiOrig}, #{head.cDocStan}, #{head.dFill},
           #{head.software})
     </insert>

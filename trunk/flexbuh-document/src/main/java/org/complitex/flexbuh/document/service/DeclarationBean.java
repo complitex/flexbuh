@@ -3,6 +3,7 @@ package org.complitex.flexbuh.document.service;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -16,7 +17,9 @@ import java.util.List;
 public class DeclarationBean extends AbstractBean{
     public final static String NS = DeclarationBean.class.getName();
 
-    public void save(Declaration declaration){
+    public void save(Long sessionId, Declaration declaration){
+        declaration.setSessionId(sessionId);
+
         if (declaration.getId() != null){
             Declaration old = getDeclaration(declaration.getId());
 
@@ -54,6 +57,15 @@ public class DeclarationBean extends AbstractBean{
             for (DeclarationValue value : declaration.getDeclarationValues()){
                 value.setDeclarationId(declaration.getId());
                 sqlSession().insert(NS + ".insertDeclarationValue", value);
+            }
+        }
+
+        //linked declaration
+        if (declaration.getLinkedDeclarations() != null){
+            for (LinkedDeclaration linkedDeclaration : declaration.getLinkedDeclarations()){
+                Declaration d = linkedDeclaration.getDeclaration();
+                d.setParentId(declaration.getId());
+                save(sessionId, d);
             }
         }
     }

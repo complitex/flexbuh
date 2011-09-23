@@ -510,6 +510,7 @@ DROP TABLE IF EXISTS `declaration`;
 
 CREATE TABLE `declaration` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` BIGINT(20),
   `session_id` BIGINT(20) NOT NULL,
   `tin` VARCHAR(10),
   `c_doc` VARCHAR(3),
@@ -526,8 +527,13 @@ CREATE TABLE `declaration` (
   `c_doc_stan` INTEGER,
   `d_fill` VARCHAR(8),
   `software` VARCHAR(32),
+  `num`  VARCHAR(10),
+  `type`  VARCHAR(32),
+  `filename`  VARCHAR(32),
   PRIMARY KEY (`id`),
+  KEY `key_declaration__parent_id` (`parent_id`),
   KEY `key_declaration__session_id` (`session_id`),
+  CONSTRAINT `fk_declaration__declaration` FOREIGN KEY (`parent_id`) REFERENCES `declaration` (`id`),
   CONSTRAINT `fk_declaration__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
