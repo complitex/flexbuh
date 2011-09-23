@@ -37,19 +37,19 @@ public class DeclarationTest {
         declaration.getHead().setPeriodYear(8);
         declaration.getHead().setSoftware("software_14");
 
-        declaration.getValues().add(new DeclarationValue(null, "name1", null));
-        declaration.getValues().add(new DeclarationValue(1, "name2", "value2"));
-        declaration.getValues().add(new DeclarationValue(2, "name3", "value3"));
+        declaration.getDeclarationValues().add(new DeclarationValue(null, "name1", null));
+        declaration.getDeclarationValues().add(new DeclarationValue(1, "name2", "value2"));
+        declaration.getDeclarationValues().add(new DeclarationValue(2, "name3", "value3"));
 
         //linked
         LinkedDeclaration ld = new LinkedDeclaration();
-        ld.setCDocType("1");
+        ld.setCDocType(1);
         ld.setFilename("2");
         ld.setNum("3");
         ld.setСDoc("doc");
-        ld.setСDocCnt("cnt");
+        ld.setСDocCnt(2);
         ld.setType("type");
-        ld.setСDocVer("ver");
+        ld.setСDocVer(3);
 
         declaration.getLinkedDeclarations().add(ld);
 

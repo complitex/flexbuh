@@ -22,11 +22,11 @@ public class DeclarationChoiceModel extends AbstractDeclarationModel<String>{
     @Override
     public void setObject(String object) {
         if (name != null && !name.equals(object)){
-            declaration.removeValue(name);
+            declaration.removeDeclarationValue(name);
         }
 
         name = object;
 
-        declaration.addValue(new DeclarationValue(name, CHECKED));
+        declaration.addDeclarationValue(new DeclarationValue(name, CHECKED));
     }
 }

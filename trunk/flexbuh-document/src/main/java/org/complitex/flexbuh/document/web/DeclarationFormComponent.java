@@ -49,6 +49,8 @@ import javax.xml.xpath.XPathExpressionException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -56,6 +58,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DeclarationFormComponent extends WebMarkupContainer implements IMarkupResourceStreamProvider{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
+
+    private Pattern LINKED_ID_PATTERN = Pattern.compile("(\\w*)\\.(\\w*)");
 
     @EJB
     private TemplateService templateService;
@@ -327,7 +331,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                     }
 
                     @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
+                    protected void onUpdate(final AjaxRequestTarget target) {
                         String value = textField.getValue();
 
                         if (value != null && !value.isEmpty()) {
@@ -336,6 +340,16 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
                             target.appendJavascript("$('#" + textField.getMarkupId() +"').css('background-color', '#99ff99')");
                             textField.setCssStyle("background-color: #99ff99");
+
+                            //Auto fill linked
+                            getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent>() {
+                                @Override
+                                public Object component(DeclarationFormComponent component) {
+                                    component.autoFill(target);
+
+                                    return IVisitor.CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
+                                }
+                            });
                         }else{
                             target.appendJavascript("$('#" + textField.getMarkupId() +"').css('background-color', '#cccccc')");
                             textField.setCssStyle("background-color: #cccccc");
@@ -422,15 +436,25 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 value = sum + "";
             }else{
                 for (String id : rule.getExpressionIds()){
-                    TextField<String> textField = index >= 0 ? multiRowTextFieldMap.get(id).get(index) : textFieldMap.get(id);
+                    String input = "";
 
-                    //todo linked docs?
-                    if (textField == null){
-                        return;
+                    //linked document
+                    if (id.contains(".")){
+                        Matcher m = LINKED_ID_PATTERN.matcher(id);
+                        if (m.matches()){
+                            Declaration d = declaration.getParent() != null ? declaration.getParent() : declaration;
+                            DeclarationValue dv = d.getLinkedDeclaration(m.group(1)).getDeclaration().getDeclarationValue(m.group(2));
+
+                            if (dv != null){
+                                input = dv.getValue();
+                            }
+                        }
+                    }else{
+                        input = index >= 0 ? multiRowTextFieldMap.get(id).get(index).getValue() : textFieldMap.get(id).getValue();
                     }
 
                     //todo add validation checking
-                    String v = (StringUtil.isDecimal(textField.getValue())) ? textField.getValue() : "0";
+                    String v = (StringUtil.isDecimal(input)) ? input : "0";
 
                     value = value.replace("^" + id, v);
                 }
@@ -586,7 +610,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
             String id = ((Element)inputList.item(i)).getAttribute("id");
 
             if (id != null){
-                List<DeclarationValue> values = declaration.getValues(id);
+                List<DeclarationValue> values = declaration.getDeclarationValues(id);
 
                 if (values != null && !values.isEmpty()){
                     count = values.size();

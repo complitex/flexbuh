@@ -28,7 +28,7 @@ public class Declaration implements Serializable{
     private Long sessionId;
 
     @XmlTransient
-    private List<DeclarationValue> values = new ArrayList<>();
+    private List<DeclarationValue> declarationValues = new ArrayList<>();
 
     @XmlElement(name = "DECLARHEAD")
     private DeclarationHead head = new DeclarationHead();
@@ -40,6 +40,9 @@ public class Declaration implements Serializable{
     @XmlElementWrapper(name = "LINKED_DOCS")
     @XmlElement(name = "DOC")
     private List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
+
+    @XmlTransient
+    private Declaration parent;
 
     public Declaration() {
     }
@@ -67,7 +70,7 @@ public class Declaration implements Serializable{
     public void prepareXmlValues(){
         xmlValues.clear();
 
-        for (DeclarationValue v : values){
+        for (DeclarationValue v : declarationValues){
             xmlValues.add(new JAXBElement<>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
         }
     }
@@ -76,26 +79,26 @@ public class Declaration implements Serializable{
         return xmlValues;
     }
 
-    public DeclarationValue getValue(String name){
-        return getValue(null, name);
+    public DeclarationValue getDeclarationValue(String name){
+        return getDeclarationValue(null, name);
     }
 
-    public DeclarationValue getValue(Integer rowNum, String name){
-        for (DeclarationValue value : values){
-            if (value.getName().equals(name) && (rowNum == null || value.getRowNum().equals(rowNum))){
-                return value;
+    public DeclarationValue getDeclarationValue(Integer rowNum, String name){
+        for (DeclarationValue declarationValue : declarationValues){
+            if (declarationValue.getName().equals(name) && (rowNum == null || declarationValue.getRowNum().equals(rowNum))){
+                return declarationValue;
             }
         }
 
         return null;
     }
 
-    public List<DeclarationValue> getValues(String name){
+    public List<DeclarationValue> getDeclarationValues(String name){
         List<DeclarationValue> list = new ArrayList<>();
 
-        for (DeclarationValue value : values){
-            if (value.getName().equals(name)){
-                list.add(value);
+        for (DeclarationValue declarationValue : declarationValues){
+            if (declarationValue.getName().equals(name)){
+                list.add(declarationValue);
             }
         }
 
@@ -104,23 +107,33 @@ public class Declaration implements Serializable{
         return list;
     }
 
-    public void addValue(DeclarationValue value){
-        values.add(value);
+    public void addDeclarationValue(DeclarationValue value){
+        declarationValues.add(value);
     }
 
-    public void removeValue(String name){
-        removeValue(null, name);
+    public void removeDeclarationValue(String name){
+        removeDeclarationValue(null, name);
     }
 
-    public void removeValue(Integer rowNum, String name){
-        for (int i = 0, valuesSize = values.size(); i < valuesSize; i++) {
-            DeclarationValue value = values.get(i);
+    public void removeDeclarationValue(Integer rowNum, String name){
+        for (int i = 0, valuesSize = declarationValues.size(); i < valuesSize; i++) {
+            DeclarationValue value = declarationValues.get(i);
 
             if (name.equals(value.getName()) && (rowNum == null || rowNum.equals(value.getRowNum()))) {
-                values.remove(i);
+                declarationValues.remove(i);
                 return;
             }
         }
+    }
+
+    public LinkedDeclaration getLinkedDeclaration(String name){
+        for (LinkedDeclaration linkedDeclaration : linkedDeclarations){
+            if (name.equals(linkedDeclaration.getName())){
+                return linkedDeclaration;
+            }
+        }
+
+        return null;
     }
 
     public Long getId() {
@@ -139,12 +152,12 @@ public class Declaration implements Serializable{
         this.sessionId = sessionId;
     }
 
-    public List<DeclarationValue> getValues() {
-        return values;
+    public List<DeclarationValue> getDeclarationValues() {
+        return declarationValues;
     }
 
-    public void setValues(List<DeclarationValue> values) {
-        this.values = values;
+    public void setDeclarationValues(List<DeclarationValue> declarationValues) {
+        this.declarationValues = declarationValues;
     }
 
     public DeclarationHead getHead() {
@@ -161,5 +174,13 @@ public class Declaration implements Serializable{
 
     public void setLinkedDeclarations(List<LinkedDeclaration> linkedDeclarations) {
         this.linkedDeclarations = linkedDeclarations;
+    }
+
+    public Declaration getParent() {
+        return parent;
+    }
+
+    public void setParent(Declaration parent) {
+        this.parent = parent;
     }
 }

@@ -26,19 +26,43 @@ public class LinkedDeclaration {
     private String cDocSub;     // ПОДТИП ДОКУМЕНТА
 
     @XmlElement(name = "C_DOC_VER")
-    private String cDocVer;     // номер версии документа
+    private Integer cDocVer;     // номер версии документа
 
     @XmlElement(name = "C_DOC_TYPE")
-    private String cDocType;    // № нового отчетного (уточняющих) документа (0 - отчетный)
+    private Integer cDocType;    // № нового отчетного (уточняющих) документа (0 - отчетный)
 
     @XmlElement(name = "C_DOC_CNT")
-    private String cDocCnt;     // № однотипных документов в периоде
+    private Integer cDocCnt;     // № однотипных документов в периоде
 
     @XmlElement(name = "C_DOC_STAN")
-    private String cDocStan;    // законодательство
+    private Integer cDocStan;    // законодательство
 
     @XmlElement(name = "FILENAME")
     private String filename;    // имя файла
+
+    @XmlTransient
+    private Declaration declaration;
+
+    public LinkedDeclaration() {
+    }
+
+    public LinkedDeclaration(Declaration declaration) {
+        this.declaration = declaration;
+        copyFieldsFromDeclaration();
+    }
+
+    public void copyFieldsFromDeclaration(){
+        cDoc = declaration.getHead().getCDoc();
+        cDocSub = declaration.getHead().getCDocSub();
+        cDocVer = declaration.getHead().getCDocVer();
+        cDocType = declaration.getHead().getCDocType();
+        cDocCnt = declaration.getHead().getCDocCnt();
+        cDocStan = declaration.getHead().getCDocStan();
+    }
+
+    public String getName(){
+        return cDoc + cDocSub + (cDocVer < 10 ? "0" : "") + cDocVer;
+    }
 
     /**
      *
@@ -108,7 +132,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocVer()
      * @return Номер версии документа
      */
-    public String getСDocVer() {
+    public Integer getСDocVer() {
         return cDocVer;
     }
 
@@ -116,7 +140,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocVer(String)
      * @param cDocVer Номер версии документа
      */
-    public void setСDocVer(String cDocVer) {
+    public void setСDocVer(Integer cDocVer) {
         this.cDocVer = cDocVer;
     }
 
@@ -124,7 +148,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocType()
      * @return Номер нового отчетного (уточняющего) документа
      */
-    public String getСDocType() {
+    public Integer getСDocType() {
         return cDocType;
     }
 
@@ -132,7 +156,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocType(String)
      * @param cDocType Номер нового отчетного (уточняющего) документа
      */
-    public void setCDocType(String cDocType) {
+    public void setCDocType(Integer cDocType) {
         this.cDocType = cDocType;
     }
 
@@ -140,7 +164,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocCnt()
      * @return Номер однотипного документа в периоде
      */
-    public String getСDocCnt() {
+    public Integer getСDocCnt() {
         return cDocCnt;
     }
 
@@ -148,7 +172,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocCnt(String)
      * @param cDocCnt Номер однотипного документа в периоде
      */
-    public void setСDocCnt(String cDocCnt) {
+    public void setСDocCnt(Integer cDocCnt) {
         this.cDocCnt = cDocCnt;
     }
 
@@ -156,7 +180,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocStan()
      * @return Законодательство
      */
-    public String getСDocStan() {
+    public Integer getСDocStan() {
         return cDocStan;
     }
 
@@ -164,7 +188,7 @@ public class LinkedDeclaration {
      * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocStan(String)
      * @param cDocStan Законодательство
      */
-    public void setСDocStan(String cDocStan) {
+    public void setСDocStan(Integer cDocStan) {
         this.cDocStan = cDocStan;
     }
 
@@ -182,5 +206,13 @@ public class LinkedDeclaration {
      */
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public Declaration getDeclaration() {
+        return declaration;
+    }
+
+    public void setDeclaration(Declaration declaration) {
+        this.declaration = declaration;
     }
 }
