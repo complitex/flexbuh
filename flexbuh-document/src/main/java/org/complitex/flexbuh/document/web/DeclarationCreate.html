@@ -12,6 +12,8 @@
 <wicket:extend>
     <h1><wicket:message key="title"/></h1>
 
+    <div wicket:id="messages"></div>
+
     <form action="#" wicket:id="form">
         <table class="tbForm">
             <tr>
@@ -20,19 +22,19 @@
             </tr>
             <tr>
                 <th><wicket:message key="document"/> </th>
-                <td><select wicket:id="document"></select></td>
+                <td><select wicket:id="document" size="7" style="width: 100%"></select></td>
             </tr>
             <tr>
-                <th><wicket:message key="period"/> </th>
-                <td><select wicket:id="period"></select></td>
+                <th><wicket:message key="period_type"/> </th>
+                <td><select wicket:id="period_type"></select></td>
             </tr>
             <tr>
-                <th><wicket:message key="quarter"/> </th>
-                <td><select wicket:id="quarter"></select></td>
+                <th><wicket:message key="period_month"/></th>
+                <td><input wicket:id="period_month"/></td>
             </tr>
             <tr>
-                <th><wicket:message key="year"/> </th>
-                <td><select wicket:id="year"></select></td>
+                <th><wicket:message key="period_year"/></th>
+                <td><input wicket:id="period_year"/></td>
             </tr>
         </table>
 
