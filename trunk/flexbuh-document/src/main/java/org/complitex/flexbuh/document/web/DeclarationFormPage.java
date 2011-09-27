@@ -38,7 +38,7 @@ public class DeclarationFormPage extends TemplatePage{
 
         add(new FeedbackPanel("feedback"));
 
-        String name = pageParameters.getString("name");
+        String name = pageParameters.getString("tn");
         Long id = pageParameters.getAsLong("id");
 
         final Declaration declaration;
@@ -89,7 +89,7 @@ public class DeclarationFormPage extends TemplatePage{
             protected void populateItem(ListItem<LinkedDeclaration> item) {
                 Declaration declaration = item.getModelObject().getDeclaration();
 
-                item.add(new Label("label", declaration.getName()));
+                item.add(new Label("label", declaration.getTemplateName()));
 
                 item.add(new DeclarationFormComponent("linked_declaration", declaration));
 

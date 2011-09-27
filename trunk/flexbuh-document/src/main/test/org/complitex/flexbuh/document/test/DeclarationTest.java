@@ -43,13 +43,10 @@ public class DeclarationTest {
 
         //linked
         LinkedDeclaration ld = new LinkedDeclaration();
-        ld.setCDocType(1);
+        ld.setDeclaration(declaration);
         ld.setFilename("2");
         ld.setNum("3");
-        ld.setСDoc("doc");
-        ld.setСDocCnt(2);
         ld.setType("type");
-        ld.setСDocVer(3);
 
         declaration.getLinkedDeclarations().add(ld);
 

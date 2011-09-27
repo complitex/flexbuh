@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 
 /**
  * Перечень связанных документов.
@@ -12,7 +13,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlType
 @XmlAccessorType(value = XmlAccessType.PUBLIC_MEMBER)
-public class LinkedDeclaration {
+public class LinkedDeclaration implements Serializable{
     private Long id;
     private String num;         // номер связано документа в перечня
     private String type;        // тип связи
@@ -38,7 +39,7 @@ public class LinkedDeclaration {
     }
 
     public String getName(){
-        return declaration.getName();
+        return declaration.getTemplateName();
     }
 
     /**

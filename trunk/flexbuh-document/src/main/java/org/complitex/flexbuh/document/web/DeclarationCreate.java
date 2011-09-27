@@ -2,13 +2,15 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
-import org.complitex.flexbuh.service.TemplateBean;
+import org.apache.wicket.model.PropertyModel;
+import org.complitex.flexbuh.document.entity.DeclarationFilter;
+import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
+import org.complitex.flexbuh.web.component.declaration.PeriodTypeChoice;
 
 import javax.ejb.EJB;
 import java.util.Arrays;
@@ -19,47 +21,63 @@ import java.util.Arrays;
  */
 public class DeclarationCreate extends FormTemplatePage{
     @EJB
-    private TemplateBean templateBean;
-
-    @EJB
     private DocumentBean documentBean;
 
     public DeclarationCreate() {
         add(new Label("title", getString("title")));
+        add(new FeedbackPanel("messages"));
+
+        final DeclarationFilter declarationFilter = new DeclarationFilter();
 
         Form form = new Form("form");
         add(form);
 
         //Тип лица
-        DropDownChoice<String> person = new DropDownChoice<String>("person", new Model<String>("Юридическое лицо"),
+        DropDownChoice<String> person = new DropDownChoice<String>("person", new Model<>("Юридическое лицо"),
                 Arrays.asList("Физическое лицо", "Юридическое лицо"));
         form.add(person);
 
         //Отчетный документ
-        final DropDownChoice<String> document = new DropDownChoice<String>("document", new Model<String>(""),
-                templateBean.getTemplateXSLNames());
+        final DropDownChoice document = new DropDownChoice<>("document",
+                new PropertyModel<Document>(declarationFilter, "document"),
+                documentBean.getJuridicalDocuments(), new IChoiceRenderer<Document>() {
+            @Override
+            public Object getDisplayValue(Document object) {
+                return object.getCDoc() +" " + object.getCDocSub() + " " + object.getNames().get(0).getValue();
+            }
+
+            @Override
+            public String getIdValue(Document object, int index) {
+                return object.getId().toString();
+            }
+        });
         document.setRequired(true);
         form.add(document);
 
         //Период
-        DropDownChoice<String> period = new DropDownChoice<String>("period", new Model<String>("квартал"),
-                Arrays.asList("квартал", "полугодие", "9 месяцев", "год"));
-        form.add(period);
+        form.add(new PeriodTypeChoice("period_type", new PropertyModel<Integer>(declarationFilter, "periodType")));
 
         //Квартал
-        DropDownChoice<String> quarter = new DropDownChoice<String>("quarter", new Model<String>("3"),
-                Arrays.asList("1", "2", "3", "4"));
-        form.add(quarter);
+        form.add(new TextField<>("period_month", new PropertyModel<Integer>(declarationFilter, "periodMonth"), Integer.class));
 
         //Год
-        DropDownChoice<String> year = new DropDownChoice<String>("year", new Model<String>("2011"),
-                Arrays.asList("2010", "2011"));
-        form.add(year);
+        form.add(new TextField<>("period_year", new PropertyModel<Integer>(declarationFilter, "periodMonth"), Integer.class));
 
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                setResponsePage(DeclarationFormPage.class, new PageParameters("name="+document.getModelObject()));
+                PageParameters pageParameters = new PageParameters();
+                //todo version select
+                String templateName = declarationFilter.getDocument().getCDoc()
+                        + declarationFilter.getDocument().getCDocSub()
+                        + "0" + declarationFilter.getDocument().getDocumentVersions().get(0).getCDocVer();
+
+                pageParameters.put("tn", templateName);
+                pageParameters.put("pt", declarationFilter.getPeriodType());
+                pageParameters.put("pm", declarationFilter.getPeriodMonth());
+                pageParameters.put("py", declarationFilter.getPeriodYear());
+
+                setResponsePage(DeclarationFormPage.class, pageParameters);
             }
         });
 

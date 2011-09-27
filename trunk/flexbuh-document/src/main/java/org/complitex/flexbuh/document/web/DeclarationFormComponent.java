@@ -95,7 +95,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         super(id);
 
         try {
-            String templateName = declaration.getName();
+            String templateName = declaration.getTemplateName();
 
             //Template
             template = templateService.getDocument(templateName, new Declaration());

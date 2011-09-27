@@ -5,6 +5,7 @@
     <resultMap id="declarationResultMap" type="org.complitex.flexbuh.document.entity.Declaration">
         <id column="id" property="id"/>
         <result column="session_id" property="sessionId"/>
+        <result column="name" property="name"/>
         <result column="tin" property="head.tin"/>
         <result column="c_doc" property="head.cDoc"/>
         <result column="c_doc_sub" property="head.cDocSub"/>
@@ -34,7 +35,7 @@
         <result column="type" property="type"/>
         <result column="filename" property="filename"/>
 
-        <association property="declaration" column="id" select="selectDeclaration"/>
+        <association property="declaration" resultMap="declarationResultMap"/>
     </resultMap>
     
     <resultMap id="declarationValueResultMap" type="org.complitex.flexbuh.document.entity.DeclarationValue">
@@ -45,8 +46,14 @@
         <result column="value" property="value"/>            
     </resultMap>
 
+    <sql id="sqlSelectDeclaration">
+        select de.*, dn.`value` as `name` from `declaration` de
+          left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+          left join `document_name` dn on (dn.`document_id` = do.`id` and dn.`language_id` = 1)
+    </sql>
+
     <select id="selectDeclaration" resultMap="declarationResultMap" parameterType="long">
-        select * from `declaration` where `id` = #{id}
+        <include refid="sqlSelectDeclaration"/> where de.`id` = #{id}
     </select>
 
     <select id="selectLinkedDeclaration" resultMap="linkedDeclarationResultMap" parameterType="long">
@@ -71,7 +78,7 @@
     </insert>
 
     <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
-        select * from `declaration` where `session_id` = #{sessionId} limit #{first}, #{count}
+        <include refid="sqlSelectDeclaration"/> where `session_id` = #{sessionId} limit #{first}, #{count}
     </select>
 
     <select id="selectDeclarationsCount" resultType="int" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">

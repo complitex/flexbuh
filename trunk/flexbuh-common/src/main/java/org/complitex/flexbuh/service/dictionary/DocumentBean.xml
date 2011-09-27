@@ -54,12 +54,12 @@
         select * from `document` where `parent_c_doc` = #{cDoc} and `parent_c_doc_sub` = #{cDocSub}
     </select>
 
-    <select id="selectJuridicalDocuments" resultMap="documentResultMap">
-        select * from `document` where `cDoc` like 'J%'
+    <select id="selectJuridicalDocuments" resultMap="linkedDocumentResultMap">
+        select * from `document` where `c_doc` like 'J%'
     </select>
 
-    <select id="selectPhysicalDocuments" resultMap="documentResultMap">
-        select * from `document` where `cDoc` like 'F%'
+    <select id="selectPhysicalDocuments" resultMap="linkedDocumentResultMap">
+        select * from `document` where `c_doc` like 'F%'
     </select>
 
     <!--DocumentName-->

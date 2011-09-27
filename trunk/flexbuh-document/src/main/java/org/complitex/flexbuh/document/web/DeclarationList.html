@@ -14,16 +14,58 @@
     <div wicket:id="messages"></div>
 
     <form action="#" wicket:id="filter_form">
-        <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+            <thead>
+            <tr>
+                <th>
+                    <span wicket:id="header.name"><wicket:message key="name"/></span>
+                </th>
+                <th>
+                    <span wicket:id="header.period_type"><wicket:message key="period_type"/></span>
+                </th>
+                <th>
+                    <span wicket:id="header.period_month"><wicket:message key="period_month"/></span>
+                </th>
+                <th>
+                    <span wicket:id="header.period_year"><wicket:message key="period_year"/></span>
+                </th>
+                <th>
+                    <span wicket:id="header.date"><wicket:message key="date"/></span>
+                </th>
+                <th class="center">
+                    <input class="btnSmall"  wicket:id="reset" type="button" wicket:message="value:reset"/>
+                </th>
+            </tr>
+            <tr>
+                <th><input type="text" wicket:id="name"/></th>
+                <th><select wicket:id="period_type"></select></th>
+                <th><input wicket:id="period_month" size="2"/></th>
+                <th><input wicket:id="period_year" size="4"/></th>
+                <th><input wicket:id="date" size="10"/></th>
+
+                <th class="center">
+                    <input class="btnSmall default" type="submit" tabindex="0" wicket:message="value:filter"/>
+                </th>
+            </tr>
+            </thead>
             <tbody>
             <tr wicket:id="declarations">
                 <td><span wicket:id="name"></span></td>
-                <td><span wicket:id="edit"></span></td>
+                <td><span wicket:id="period_type"></span></td>
+                <td><span wicket:id="period_month"></span></td>
+                <td><span wicket:id="period_year"></span></td>
+                <td><span wicket:id="date"></span></td>
+                <td>
+                    <span wicket:id="action_edit"></span>
+                    <span wicket:id="action_download"></span>
+                </td>
             </tr>
             </tbody>
         </table>
+        <div>
+            <span wicket:id="paging"></span>
+        </div>
     </form>
-
 </wicket:extend>
 </body>
 </html>

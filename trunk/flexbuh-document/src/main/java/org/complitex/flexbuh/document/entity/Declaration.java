@@ -6,6 +6,7 @@ import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +20,7 @@ import java.util.regex.Pattern;
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class Declaration implements Serializable{
     @XmlTransient
-    private final Pattern NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
+    private final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
 
     @XmlTransient
     private Long id;
@@ -47,15 +48,21 @@ public class Declaration implements Serializable{
     @XmlTransient
     private Declaration parent;
 
+    @XmlTransient
+    private Date date;
+
+    @XmlTransient
+    private String name;
+
     public Declaration() {
     }
 
     public Declaration(String name) {
-        setName(name);
+        setTemplateName(name);
     }
 
-    public void setName(String name){
-        Matcher m = NAME_PATTERN.matcher(name);
+    public void setTemplateName(String name){
+        Matcher m = TEMPLATE_NAME_PATTERN.matcher(name);
 
         if (m.matches()){
             head.setCDoc(m.group(1));
@@ -66,7 +73,7 @@ public class Declaration implements Serializable{
         }
     }
 
-    public String getName(){
+    public String getTemplateName(){
         return head.getCDoc() + head.getCDocSub() + (head.getCDocVer() < 10 ? "0" : "") + head.getCDocVer();
     }
 
@@ -193,5 +200,21 @@ public class Declaration implements Serializable{
 
     public void setParent(Declaration parent) {
         this.parent = parent;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
