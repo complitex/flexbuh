@@ -5,6 +5,7 @@ import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.service.AbstractBean;
+import org.complitex.flexbuh.util.DateUtil;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -19,6 +20,7 @@ public class DeclarationBean extends AbstractBean{
 
     public void save(Long sessionId, Declaration declaration){
         declaration.setSessionId(sessionId);
+        declaration.setDate(DateUtil.getCurrentDate());
 
         if (declaration.getId() != null){
             Declaration old = getDeclaration(declaration.getId());

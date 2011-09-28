@@ -21,6 +21,7 @@
         <result column="c_doc_stan" property="head.cDocStan"/>
         <result column="d_fill" property="head.dFill"/>
         <result column="software" property="head.software"/>
+        <result column="date" property="date"/>
 
         <collection property="declarationValues" column="id" ofType="org.complitex.flexbuh.document.entity.DeclarationValue"
                     select="selectDeclarationValues"/>
@@ -66,10 +67,10 @@
 
     <insert id="insertDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration" keyProperty="id" useGeneratedKeys="true">
         insert into `declaration` (`parent_id`, `session_id`, `tin`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`,
-          `period_month`, `period_type`, `period_year`, `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`)
+          `period_month`, `period_type`, `period_year`, `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`, `date`)
         values (#{parentId}, #{sessionId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub}, #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg},
           #{head.cRaj}, #{head.periodMonth}, #{head.periodType}, #{head.periodYear}, #{head.cStiOrig}, #{head.cDocStan}, #{head.dFill},
-          #{head.software})
+          #{head.software}, #{date})
     </insert>
 
     <insert id="insertDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
@@ -97,7 +98,8 @@
         update `declaration` set `session_id` = #{sessionId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc}, `c_doc_sub` = #{head.cDocSub},
           `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType}, `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg},
           `c_raj` = #{head.cRaj}, `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
-          `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill}, `software` = #{head.software}
+          `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill}, `software` = #{head.software},
+          `date` = #{date}
         where `id` = #{id}
     </update>
 

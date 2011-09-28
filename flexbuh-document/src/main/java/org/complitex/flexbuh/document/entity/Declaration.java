@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
+import org.complitex.flexbuh.entity.dictionary.Document;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
@@ -54,11 +56,14 @@ public class Declaration implements Serializable{
     @XmlTransient
     private String name;
 
+    @XmlTransient
+    private Document document;
+
     public Declaration() {
     }
 
-    public Declaration(String name) {
-        setTemplateName(name);
+    public Declaration(String templateName) {
+        setTemplateName(templateName);
     }
 
     public void setTemplateName(String name){
@@ -144,6 +149,17 @@ public class Declaration implements Serializable{
         }
 
         return null;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+
+        head.setCDoc(document.getCDoc());
+        head.setCDocSub(document.getCDocSub());
     }
 
     public Long getId() {

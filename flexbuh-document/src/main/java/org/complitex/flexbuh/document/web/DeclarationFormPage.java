@@ -11,16 +11,12 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
-import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -33,41 +29,34 @@ public class DeclarationFormPage extends TemplatePage{
     @EJB
     private DocumentBean documentBean;
 
+    private final Declaration declaration;
+
+    public DeclarationFormPage(Declaration declaration){
+        this.declaration = declaration;
+
+        init();
+    }
+
     public DeclarationFormPage(PageParameters pageParameters) {
+        Long id = pageParameters.getAsLong("id");
+
+        declaration = declarationBean.getDeclaration(id);
+
+        if (declaration != null){
+            init();
+        }else{
+            //declaration not found
+            error(getString("error_declaration_not_found"));
+            setResponsePage(DeclarationList.class);
+        }
+    }
+
+    private void init(){
         add(CSSPackageResource.getHeaderContribution(DeclarationFormPage.class, "declaration.css"));
 
         add(new FeedbackPanel("feedback"));
 
-        String name = pageParameters.getString("tn");
-        Long id = pageParameters.getAsLong("id");
-
-        final Declaration declaration;
-
-        if (id != null) {
-            declaration = declarationBean.getDeclaration(id);
-
-            //declaration not found
-            if (declaration == null){
-                error(getString("error_declaration_not_found"));
-                setResponsePage(DeclarationList.class);
-
-                return;
-            }
-        }else{
-            final List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
-
-            declaration = new Declaration(name);
-
-            List<Document> linkedDocuments = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(), declaration.getHead().getCDocSub());
-
-            for (Document document : linkedDocuments){
-                linkedDeclarations.add(createLinkedDeclaration(document, declaration));
-            }
-
-            declaration.setLinkedDeclarations(linkedDeclarations);
-        }
-
-        add(new Label("title", name));
+        add(new Label("title", declaration.getName()));
 
         Form form = new Form("form");
         add(form);
@@ -111,23 +100,5 @@ public class DeclarationFormPage extends TemplatePage{
 
             }
         });
-    }
-
-    private LinkedDeclaration createLinkedDeclaration(Document document, Declaration parent){
-        Declaration declaration = new Declaration();
-
-        declaration.getHead().setCDoc(document.getCDoc());
-        declaration.getHead().setCDocSub(document.getCDocSub());
-
-        //todo select version
-        List<DocumentVersion> dv = document.getDocumentVersions();
-
-        if (dv != null && !dv.isEmpty()){
-            declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
-        }
-
-        declaration.setParent(parent);
-
-        return new LinkedDeclaration(declaration);
     }
 }

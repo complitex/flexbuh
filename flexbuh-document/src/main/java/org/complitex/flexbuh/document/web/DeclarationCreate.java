@@ -1,19 +1,30 @@
 package org.complitex.flexbuh.document.web;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.complitex.flexbuh.document.entity.DeclarationFilter;
+import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.entity.dictionary.Document;
+import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
 import org.complitex.flexbuh.web.component.declaration.PeriodTypeChoice;
 
 import javax.ejb.EJB;
+import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -23,11 +34,16 @@ public class DeclarationCreate extends FormTemplatePage{
     @EJB
     private DocumentBean documentBean;
 
+    private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
+
+    private final static int MIN_YEAR = 1990;
+    private final static int MAX_YEAR = Calendar.getInstance().get(Calendar.YEAR);
+
     public DeclarationCreate() {
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        final DeclarationFilter declarationFilter = new DeclarationFilter();
+        final Declaration declaration = new Declaration();
 
         Form form = new Form("form");
         add(form);
@@ -38,11 +54,12 @@ public class DeclarationCreate extends FormTemplatePage{
         form.add(person);
 
         //Отчетный документ
-        final DropDownChoice document = new DropDownChoice<>("document",
-                new PropertyModel<Document>(declarationFilter, "document"),
+        form.add(new DropDownChoice<>("document",
+                new PropertyModel<Document>(declaration, "document"),
                 documentBean.getJuridicalDocuments(), new IChoiceRenderer<Document>() {
             @Override
             public Object getDisplayValue(Document object) {
+                //todo add locale
                 return object.getCDoc() +" " + object.getCDocSub() + " " + object.getNames().get(0).getValue();
             }
 
@@ -50,37 +67,95 @@ public class DeclarationCreate extends FormTemplatePage{
             public String getIdValue(Document object, int index) {
                 return object.getId().toString();
             }
+        }).setRequired(true));
+
+        //Месяц (для 1,2,3,4 кварталов это 3,6,9,12 месяц соответственно, для года - 12)
+        final DropDownChoice periodMonthChoice = new DropDownChoice<>("period_month",
+                new PropertyModel<Integer>(declaration, "head.periodMonth"),
+                new LoadableDetachableModel<List<Integer>>() {
+                    @Override
+                    protected List<Integer> load() {
+                        switch (declaration.getHead().getPeriodType()){
+                            case 1: return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+                            case 2: return Arrays.asList(3, 6, 9, 12);
+                            case 3: return Arrays.asList(6);
+                            case 4: return Arrays.asList(9);
+                            case 5: return Arrays.asList(12);
+                        }
+
+                        return null;
+                    }
+                }, new IChoiceRenderer<Integer>() {
+            @Override
+            public Object getDisplayValue(Integer object) {
+                return dateFormatSymbols.getMonths()[object - 1];
+            }
+
+            @Override
+            public String getIdValue(Integer object, int index) {
+                return object.toString();
+            }
         });
-        document.setRequired(true);
-        form.add(document);
+        periodMonthChoice.setOutputMarkupId(true);
+        form.add(periodMonthChoice);
 
-        //Период
-        form.add(new PeriodTypeChoice("period_type", new PropertyModel<Integer>(declarationFilter, "periodType")));
-
-        //Квартал
-        form.add(new TextField<>("period_month", new PropertyModel<Integer>(declarationFilter, "periodMonth"), Integer.class));
+        //Период (1-месяц, 2-квартал, 3-полугодие, 4-9 месяцев, 5-год)
+        PeriodTypeChoice periodTypeChoice = new PeriodTypeChoice("period_type", new PropertyModel<Integer>(declaration, "head.periodType"));
+        periodTypeChoice.setRequired(true);
+        periodTypeChoice.setOutputMarkupId(true);
+        form.add(periodTypeChoice);
+        periodTypeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.addComponent(periodMonthChoice);
+            }
+        });
 
         //Год
-        form.add(new TextField<>("period_year", new PropertyModel<Integer>(declarationFilter, "periodMonth"), Integer.class));
+        List<Integer> years = new ArrayList<>();
+        for (int i = MIN_YEAR; i <= MAX_YEAR; ++i){
+            years.add(i);
+        }
+        form.add(new DropDownChoice<>("period_year", new PropertyModel<Integer>(declaration, "head.periodYear"), years).setRequired(true));
 
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                PageParameters pageParameters = new PageParameters();
-                //todo version select
-                String templateName = declarationFilter.getDocument().getCDoc()
-                        + declarationFilter.getDocument().getCDocSub()
-                        + "0" + declarationFilter.getDocument().getDocumentVersions().get(0).getCDocVer();
+                final List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
 
-                pageParameters.put("tn", templateName);
-                pageParameters.put("pt", declarationFilter.getPeriodType());
-                pageParameters.put("pm", declarationFilter.getPeriodMonth());
-                pageParameters.put("py", declarationFilter.getPeriodYear());
+                List<Document> linkedDocuments = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(), declaration.getHead().getCDocSub());
 
-                setResponsePage(DeclarationFormPage.class, pageParameters);
+                for (Document document : linkedDocuments){
+                    linkedDeclarations.add(createLinkedDeclaration(document, declaration));
+                }
+
+                declaration.setLinkedDeclarations(linkedDeclarations);
+
+                //todo add version
+                declaration.getHead().setCDocVer(declaration.getDocument().getDocumentVersions().get(0).getCDocVer());
+
+                setResponsePage(new DeclarationFormPage(declaration));
             }
         });
 
         form.add(new Button("cancel"));
+    }
+
+    private LinkedDeclaration createLinkedDeclaration(Document document, Declaration parent){
+        Declaration declaration = new Declaration();
+
+        declaration.getHead().setCDoc(document.getCDoc());
+        declaration.getHead().setCDocSub(document.getCDocSub());
+
+        //todo add version
+        List<DocumentVersion> dv = document.getDocumentVersions();
+
+        if (dv != null && !dv.isEmpty()){
+            declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
+        }
+
+        declaration.setParent(parent);
+
+        return new LinkedDeclaration(declaration);
     }
 }
