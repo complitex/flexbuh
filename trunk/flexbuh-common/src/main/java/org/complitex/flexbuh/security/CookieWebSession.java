@@ -21,6 +21,7 @@ import java.util.Date;
  */
 public class CookieWebSession extends WebSession{
     public static final String SESSION_COOKIE_NAME = "FLEXBUH_SESSION";
+    private static final int SESSION_MAX_AGE = 2592000;
 
     private Session session;
 
@@ -51,7 +52,10 @@ public class CookieWebSession extends WebSession{
 
                 session = createSession(cookieValue);
 
-                ((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(SESSION_COOKIE_NAME, session.getCookie()));
+                cookie = new Cookie(SESSION_COOKIE_NAME, session.getCookie());
+                cookie.setMaxAge(SESSION_MAX_AGE);
+
+                ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
             }
         } else {
             session = getSessionBean().getSessionByCookie(cookie.getValue());

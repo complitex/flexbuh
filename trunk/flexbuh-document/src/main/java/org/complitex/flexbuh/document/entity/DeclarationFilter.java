@@ -11,9 +11,9 @@ import java.util.Date;
  */
 public class DeclarationFilter extends AbstractFilter{
     private String name;
-    private Integer periodMonth;
-    private Integer periodType;
-    private Integer periodYear;
+    private Integer periodMonth = 1;
+    private Integer periodType = 1;
+    private Integer periodYear = 2011;
     private Date date;
 
     private Document document;

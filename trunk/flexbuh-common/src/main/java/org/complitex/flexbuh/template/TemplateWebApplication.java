@@ -5,7 +5,6 @@ import org.apache.wicket.Session;
 import org.complitex.flexbuh.inject.JavaEE6ModuleNamingStrategy;
 import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.security.ServletAuthWebApplication;
-import org.complitex.flexbuh.template.pages.expired.SessionExpiredPage;
 import org.odlabs.wiquery.ui.themes.IThemableApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,8 @@ public abstract class TemplateWebApplication extends ServletAuthWebApplication i
 
         addComponentInstantiationListener(new JavaEEComponentInjector(this, new JavaEE6ModuleNamingStrategy()));
 
-        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
+//        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
+        getApplicationSettings().setPageExpiredErrorPage(getHomePage());
     }
 
     @Override
@@ -61,7 +61,7 @@ public abstract class TemplateWebApplication extends ServletAuthWebApplication i
             TemplateLoader templateLoader = new TemplateLoader(inputStream);
             List<String> menuClassNames = templateLoader.getMenuClassNames();
 
-            menuClasses = new ArrayList<Class<ITemplateMenu>>();
+            menuClasses = new ArrayList<>();
             for (String menuClassName : menuClassNames) {
                 try {
                     Class menuClass = getApplicationSettings().getClassResolver().resolveClass(menuClassName);

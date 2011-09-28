@@ -38,13 +38,13 @@ public class DeclarationHead implements Serializable {
     private Integer cRaj; // код административного района
 
     @XmlElement(name = "PERIOD_MONTH")
-    private Integer periodMonth; // отчетный месяц (последний в отчетном периоде)
+    private Integer periodMonth = 1; // отчетный месяц (последний в отчетном периоде)
 
     @XmlElement(name = "PERIOD_TYPE")
-    private Integer periodType; // тип периода
+    private Integer periodType = 1; // тип периода
 
     @XmlElement(name = "PERIOD_YEAR")
-    private Integer periodYear; // отчетный год
+    private Integer periodYear = 2011; // отчетный год
 
     @XmlElement(name = "C_STI_ORIG")
     private String cStiOrig; // Код ГНИ, в которую подается оригинал документа
