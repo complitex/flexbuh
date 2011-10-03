@@ -267,36 +267,11 @@ public class DeclarationFormComponent extends Panel{
                     textFieldMap.put(id, textField);
                 }
 
-                //Markup
-                if (updateMarkup) {
-                    Element feedbackContainerElement = template.createElement("div");
-                    feedbackContainerElement.setAttribute("wicket:id", "feedback_container_" + id);
-                    feedbackContainerElement.setAttribute("style", "display: none; background-color: #f0e68c;");
-                    inputElement.getParentNode().appendChild(feedbackContainerElement);
-
-                    Element feedbackElement = template.createElement("span");
-                    feedbackElement.setAttribute("wicket:id", "feedback_" + id);
-                    feedbackContainerElement.appendChild(feedbackElement);
-                }
-
-                //Feedback container
-                WebMarkupContainer feedbackContainer = new WebMarkupContainer("feedback_container_" + id);
-                feedbackContainer.setOutputMarkupId(true);
-                parent.add(feedbackContainer);
-
-                //Feedback label
-                final Label feedbackLabel = new Label("feedback_" + id, new Model<String>());
-                feedbackLabel.setOutputMarkupId(true);
-                feedbackContainer.add(feedbackLabel);
-
                 //Rule
                 final Rule rule = rulesMap.get(id);
                 if (rule != null) {
-                    feedbackLabel.setDefaultModelObject(rule.getDescription());
+                    textField.setTitle(rule.getDescription());
                 }
-
-                //Tooltip
-//                textField.add(new TooltipBehavior().setTip(feedbackContainer));
 
                 //Ajax update
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -305,10 +280,10 @@ public class DeclarationFormComponent extends Panel{
                         FeedbackMessage feedbackMessage = textField.getFeedbackMessage();
 
                         if (feedbackMessage != null) {
-                            feedbackLabel.setDefaultModelObject(feedbackMessage.getMessage());
+                            textField.setTitle(feedbackMessage.getMessage().toString());
                         }
 
-                        target.add(feedbackLabel);
+                        target.add(textField);
 
                         target.appendJavaScript("$('#" + textField.getMarkupId() + "').css('background-color', '#ff9999')");
                         textField.setCssStyle("background-color: #ff9999");
@@ -340,16 +315,17 @@ public class DeclarationFormComponent extends Panel{
                             textField.setCssStyle("background-color: #cccccc");
                         }
 
-                        feedbackLabel.setDefaultModelObject(rule != null ? rule.getDescription() : "");
-                        target.add(feedbackLabel);
+                        textField.setTitle(rule != null ? rule.getDescription() : "");
+
+                        target.add(textField);
                     }
                 });
 
                 //Validation
-//                IValidator<String> validator = getValidator(schemaType);
-//                if (validator != null) {
-//                    textField.add(validator);
-//                }
+                IValidator<String> validator = getValidator(schemaType);
+                if (validator != null) {
+                    textField.add(validator);
+                }
             }
         } catch (Exception e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
