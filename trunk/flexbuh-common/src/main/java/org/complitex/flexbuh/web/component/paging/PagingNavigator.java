@@ -1,13 +1,12 @@
 package org.complitex.flexbuh.web.component.paging;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigationIncrementLink;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigationLink;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -25,6 +24,7 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,16 +85,16 @@ public class PagingNavigator extends Panel {
 
         // Add additional page links
         pageBar.add(newPagingNavigationLink("first", dataView, 0).
-                add(new Image("firstImage", new ResourceReference("images/pageNavStart.gif"))).
+                add(new Image("firstImage", new PackageResourceReference("images/pageNavStart.gif"))).
                 add(new TitleResourceAppender("PagingNavigator.first")));
         pageBar.add(newPagingNavigationIncrementLink("prev", dataView, -1).
-                add(new Image("prevImage", new ResourceReference("images/pageNavPrev.gif"))).
+                add(new Image("prevImage", new PackageResourceReference("images/pageNavPrev.gif"))).
                 add(new TitleResourceAppender("PagingNavigator.previous")));
         pageBar.add(newPagingNavigationIncrementLink("next", dataView, 1).
-                add(new Image("nextImage", new ResourceReference("images/pageNavNext.gif"))).
+                add(new Image("nextImage", new PackageResourceReference("images/pageNavNext.gif"))).
                 add(new TitleResourceAppender("PagingNavigator.next")));
         pageBar.add(newPagingNavigationLink("last", dataView, -1).
-                add(new Image("lastImage", new ResourceReference("images/pageNavEnd.gif"))).
+                add(new Image("lastImage", new PackageResourceReference("images/pageNavEnd.gif"))).
                 add(new TitleResourceAppender("PagingNavigator.last")));
 
         //navigation before
@@ -181,6 +181,11 @@ public class PagingNavigator extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 //update model - newPageNumberModel
                 updatePageComponents(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //wtf
             }
         };
 
@@ -269,10 +274,10 @@ public class PagingNavigator extends Panel {
     protected void updatePageComponents(AjaxRequestTarget target) {
         if (toUpdate != null) {
             for (Component container : toUpdate) {
-                target.addComponent(container);
+                target.add(container);
             }
         }
-        target.addComponent(this);
+        target.add(this);
     }
 
     /**
@@ -306,7 +311,7 @@ public class PagingNavigator extends Panel {
 
     protected void appendScrollupJavascript(AjaxRequestTarget target) {
             String javascript = "scrollTo(0, {axis:'y'});";
-            target.appendJavascript(javascript);
+            target.appendJavaScript(javascript);
     }
 
     @Override
@@ -338,7 +343,7 @@ public class PagingNavigator extends Panel {
      *
      * @author igor.vaynberg
      */
-    private final class TitleResourceAppender extends AbstractBehavior {
+    private final class TitleResourceAppender extends Behavior {
 
         private static final long serialVersionUID = 1L;
         private final String resourceKey;
@@ -365,7 +370,7 @@ public class PagingNavigator extends Panel {
      *
      * @author igor.vaynberg
      */
-    private final class TitlePageNumberAppender extends AbstractBehavior {
+    private final class TitlePageNumberAppender extends Behavior {
 
         private static final long serialVersionUID = 1L;
         /** resource key for the message */

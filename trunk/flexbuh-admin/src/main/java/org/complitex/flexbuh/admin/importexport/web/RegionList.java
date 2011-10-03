@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
@@ -49,8 +50,8 @@ public class RegionList extends TemplatePage {
                 return regionBean.getRegionsCount();
             }
         };
-        dataProvider.setSort("type", true);
-        dataProvider.setSort("sub_type", true);
+        dataProvider.setSort("type", SortOrder.ASCENDING);
+        dataProvider.setSort("sub_type", SortOrder.ASCENDING);
 
 		//Таблица
         DataView<Region> dataView = new DataView<Region>("dictionaries", dataProvider, 10) {

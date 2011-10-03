@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
@@ -48,7 +49,7 @@ public class TemplateXSLList extends TemplatePage {
                 return templateBean.getTemplateXSLsCount();
             }
         };
-        dataProvider.setSort("file_name", true);
+        dataProvider.setSort("file_name", SortOrder.ASCENDING);
 
 		//Таблица
         DataView<TemplateXSL> dataView = new DataView<TemplateXSL>("templates", dataProvider, 10) {

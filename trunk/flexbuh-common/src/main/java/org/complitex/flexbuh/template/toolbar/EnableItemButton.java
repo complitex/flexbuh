@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.template.toolbar;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  *
@@ -12,7 +12,7 @@ public abstract class EnableItemButton extends ToolbarButton {
     private static final String TITLE_KEY = "image.title.enableItem";
 
     public EnableItemButton(String id) {
-        super(id, new ResourceReference(IMAGE_SRC), TITLE_KEY);
+        super(id, new PackageResourceReference(IMAGE_SRC), TITLE_KEY);
     }
 
 }

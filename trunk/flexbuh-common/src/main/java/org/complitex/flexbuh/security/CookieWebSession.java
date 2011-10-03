@@ -1,10 +1,10 @@
 package org.complitex.flexbuh.security;
 
-import org.apache.wicket.Request;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.util.crypt.Base64;
 import org.complitex.flexbuh.entity.user.Session;
 import org.complitex.flexbuh.service.user.SessionBean;
@@ -44,7 +44,10 @@ public class CookieWebSession extends WebSession{
     protected Session getSession(boolean create) {
         Session session = null;
 
-        Cookie cookie = ((WebRequest)RequestCycle.get().getRequest()).getCookie(SESSION_COOKIE_NAME);
+        WebResponse webResponse = ((WebResponse) RequestCycle.get().getResponse());
+        WebRequest webRequest = (WebRequest) RequestCycle.get().getRequest();
+
+        Cookie cookie = webRequest.getCookie(SESSION_COOKIE_NAME);
 
         if (cookie == null) {
             if (create) {
@@ -55,7 +58,7 @@ public class CookieWebSession extends WebSession{
                 cookie = new Cookie(SESSION_COOKIE_NAME, session.getCookie());
                 cookie.setMaxAge(SESSION_MAX_AGE);
 
-                ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
+                webResponse.addCookie(cookie);
             }
         } else {
             session = getSessionBean().getSessionByCookie(cookie.getValue());
@@ -63,8 +66,8 @@ public class CookieWebSession extends WebSession{
             if (session == null && create) {
                 session = createSession(cookie.getValue());
 
-                ((WebResponse) RequestCycle.get().getResponse()).clearCookie(cookie);
-                ((WebResponse) RequestCycle.get().getResponse()).addCookie(new Cookie(SESSION_COOKIE_NAME, session.getCookie()));
+                webResponse.clearCookie(cookie);
+                webResponse.addCookie(new Cookie(SESSION_COOKIE_NAME, session.getCookie()));
             }
         }
 

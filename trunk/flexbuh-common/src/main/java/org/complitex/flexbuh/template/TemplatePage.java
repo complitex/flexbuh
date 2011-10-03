@@ -3,10 +3,9 @@ package org.complitex.flexbuh.template;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.CSSPackageResource;
-import org.apache.wicket.markup.html.JavascriptPackageResource;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -17,15 +16,16 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
+import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.security.CookieWebSession;
 import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.service.user.SessionBean;
 import org.complitex.flexbuh.template.toolbar.HelpButton;
 import org.complitex.flexbuh.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.util.ResourceUtil;
-import org.odlabs.wiquery.core.commons.CoreJavaScriptResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +51,6 @@ public abstract class TemplatePage extends WebPage {
 	private SessionBean sessionBean;
 
     protected TemplatePage() {
-        add(JavascriptPackageResource.getHeaderContribution(CoreJavaScriptResourceReference.get()));
-        add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.COMMON_JS));
-        add(JavascriptPackageResource.getHeaderContribution(TemplatePage.class, TemplatePage.class.getSimpleName() + ".js"));
-        add(CSSPackageResource.getHeaderContribution(WebCommonResourceInitializer.STYLE_CSS));
-
         add(new Link("home") {
 
             @Override
@@ -112,6 +107,15 @@ public abstract class TemplatePage extends WebPage {
                 getTemplateWebApplication().logout();
             }
         }.setVisible(isUserAuthorized()));
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
+        response.renderJavaScriptReference(new PackageResourceReference(TemplatePage.class, "TemplatePage.js"));
+
+        response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
+        response.renderCSSReference(new ThemeResourceReference());
     }
 
     /**

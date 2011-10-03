@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.document.web;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -14,13 +14,13 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.util.StringUtil;
 import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.flexbuh.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.web.component.paging.PagingNavigator;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -90,8 +90,11 @@ public class DeclarationList extends TemplatePage{
                 item.add(new Label("period_year", StringUtil.getString(declaration.getHead().getPeriodYear())));
                 item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy"));
 
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.set("id", declaration.getId());
+                
                 item.add(new BookmarkablePageLinkPanel<>("action_edit", getString("edit"), DeclarationFormPage.class,
-                        new PageParameters("id=" + declaration.getId())));
+                        pageParameters));
                 item.add(new EmptyPanel("action_download"));
             }
         };
@@ -99,11 +102,11 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(dataView);
 
         //Названия колонок и сортировка
-        filterForm.add(new ArrowOrderByBorder("header.name", "login", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.period_type", "periodType", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.period_month", "periodMonth", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.period_year", "periodYear", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.date", "date", dataProvider, dataView, filterForm));
+        filterForm.add(new OrderByBorder("header.name", "login", dataProvider));
+        filterForm.add(new OrderByBorder("header.period_type", "periodType", dataProvider));
+        filterForm.add(new OrderByBorder("header.period_month", "periodMonth", dataProvider));
+        filterForm.add(new OrderByBorder("header.period_year", "periodYear", dataProvider));
+        filterForm.add(new OrderByBorder("header.date", "date", dataProvider));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, DeclarationList.class.getName(), filterForm));

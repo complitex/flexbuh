@@ -107,7 +107,7 @@ public class DeclarationCreate extends FormTemplatePage{
         periodTypeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(periodMonthChoice);
+                target.add(periodMonthChoice);
             }
         });
 

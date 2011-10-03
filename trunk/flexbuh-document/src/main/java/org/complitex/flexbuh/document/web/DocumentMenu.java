@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.template.ITemplateLink;
 import org.complitex.flexbuh.template.ResourceTemplateMenu;
 

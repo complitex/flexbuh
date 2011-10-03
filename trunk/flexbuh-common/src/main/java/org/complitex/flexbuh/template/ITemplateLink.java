@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.template;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import java.io.Serializable;
 import java.util.Locale;

@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.admin.user.web;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -11,7 +11,9 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.target.resource.ResourceStreamRequestTarget;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.admin.importexport.service.ImportListener;
@@ -20,12 +22,13 @@ import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.User;
 import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.UserBean;
-import org.complitex.flexbuh.template.pages.ScrollListPage;
+import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
@@ -34,34 +37,33 @@ import java.io.OutputStream;
  * @author Pavel Sknar
  *         Date: 08.09.11 11:55
  */
-public class UserProfileView extends ScrollListPage {
+public class UserProfileView extends TemplatePage {
 
-	 private final static Logger log = LoggerFactory.getLogger(UserProfileView.class);
+    private final static Logger log = LoggerFactory.getLogger(UserProfileView.class);
 
-	@EJB
-	private UserBean userBean;
+    @EJB
+    private UserBean userBean;
 
-	@EJB
-	private PersonProfileBean personProfileBean;
+    @EJB
+    private PersonProfileBean personProfileBean;
 
-	@EJB
-	private ImportUserProfileXMLService importUserProfileXMLService;
+    @EJB
+    private ImportUserProfileXMLService importUserProfileXMLService;
 
-	private FileUploadField fileUpload;
+    private FileUploadField fileUpload;
 
 
-	public UserProfileView() {
-		super();
-		init();
-	}
+    public UserProfileView() {
+        super();
+        init();
+    }
 
-	public UserProfileView(PageParameters params) {
-		super(params);
-		init();
-	}
+    public UserProfileView(PageParameters params) {
+        init();
+    }
 
-	private void init() {
-		add(new Label("title", new ResourceModel("title")));
+    private void init() {
+        add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
         final Form filterForm = new Form("filter_form");
@@ -70,10 +72,10 @@ public class UserProfileView extends ScrollListPage {
 
         final Long sessionId = getSessionId(true);
 
-		//Модель
+        //Модель
         final DataProvider<PersonProfile> dataProvider = new DataProvider<PersonProfile>() {
 
-			@SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends PersonProfile> getData(int first, int count) {
                 return personProfileBean.getPersonProfiles(sessionId, first, count);
@@ -84,9 +86,9 @@ public class UserProfileView extends ScrollListPage {
                 return personProfileBean.getPersonalProfileCount(sessionId);
             }
         };
-        dataProvider.setSort("name", true);
+        dataProvider.setSort("name", SortOrder.ASCENDING);
 
-		//Таблица
+        //Таблица
         DataView<PersonProfile> dataView = new DataView<PersonProfile>("companyProfiles", dataProvider, 10) {
 
             @Override
@@ -95,20 +97,20 @@ public class UserProfileView extends ScrollListPage {
 
                 item.add(new Label("name", profile.getName()));
 
-				item.add(new Label("zipCode", profile.getZipCode()));
+                item.add(new Label("zipCode", profile.getZipCode()));
 
-				item.add(new Label("address", profile.getAddress()));
+                item.add(new Label("address", profile.getAddress()));
 
-				item.add(new Label("directorFIO", profile.getDirectorFIO()));
+                item.add(new Label("directorFIO", profile.getDirectorFIO()));
 
-				item.add(new Label("phone", profile.getPhone()));
+                item.add(new Label("phone", profile.getPhone()));
 
-				item.add(new Label("email", profile.getEmail()));
-				/*
-                item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
-                        ScrollListBehavior.SCROLL_PREFIX + String.valueOf(profile.getId()),
-                        JuridicalPersonProfileEdit.class, new PageParameters("person_profile_id=" + profile.getId())));
-                        */
+                item.add(new Label("email", profile.getEmail()));
+                /*
+        item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
+                ScrollListBehavior.SCROLL_PREFIX + String.valueOf(profile.getId()),
+                JuridicalPersonProfileEdit.class, new PageParameters("person_profile_id=" + profile.getId())));
+                */
             }
         };
         filterForm.add(dataView);
@@ -116,101 +118,102 @@ public class UserProfileView extends ScrollListPage {
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView));
 
-		// Импортировать профайл из файла пользователя
-		Form<?> form = new Form<Void>("import_form") {
-			 @Override
-			 protected void onSubmit() {
+        // Импортировать профайл из файла пользователя
+        Form<?> form = new Form<Void>("import_form") {
+            @Override
+            protected void onSubmit() {
 
-				final FileUpload uploadedFile = fileUpload.getFileUpload();
-				if (uploadedFile != null) {
+                final FileUpload uploadedFile = fileUpload.getFileUpload();
+                if (uploadedFile != null) {
 
 
-					try {
+                    try {
 
-						final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
-						canceled.set(false);
+                        final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
+                        canceled.set(false);
 
-						importUserProfileXMLService.process(getSessionId(true), new ImportListener() {
-							@Override
-							public void begin() {
-							}
+                        importUserProfileXMLService.process(getSessionId(true), new ImportListener() {
+                            @Override
+                            public void begin() {
+                            }
 
-							@Override
-							public void completed() {
+                            @Override
+                            public void completed() {
 
-							}
+                            }
 
-							@Override
-							public void completedWithError() {
+                            @Override
+                            public void completedWithError() {
 
-							}
+                            }
 
-							@Override
-							public void cancel() {
-								canceled.set(true);
-							}
+                            @Override
+                            public void cancel() {
+                                canceled.set(true);
+                            }
 
-							@Override
-							public ImportListener getChildImportListener(Object o) {
-								return null;
-							}
-						}, uploadedFile.getClientFileName(), uploadedFile.getInputStream(), null, null);
-						if (canceled.get()) {
-							log.error("Failed import");
-							error(getString("failed_import"));
-						} else {
-							info(getString("profile_imported"));
-						}
-					} catch (Exception e) {
-						log.error("Failed import", e);
-						error(getString("failed_import"));
-					}
-				 }
+                            @Override
+                            public ImportListener getChildImportListener(Object o) {
+                                return null;
+                            }
+                        }, uploadedFile.getClientFileName(), uploadedFile.getInputStream(), null, null);
+                        if (canceled.get()) {
+                            log.error("Failed import");
+                            error(getString("failed_import"));
+                        } else {
+                            info(getString("profile_imported"));
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed import", e);
+                        error(getString("failed_import"));
+                    }
+                }
 
-			}
+            }
 
-		};
+        };
 
-		form.setMultiPart(true);
+        form.setMultiPart(true);
 
-		form.setMaxSize(Bytes.kilobytes(100));
+        form.setMaxSize(Bytes.kilobytes(100));
 
-		form.add(fileUpload = new FileUploadField("fileUpload"));
+        form.add(fileUpload = new FileUploadField("fileUpload"));
 
-		add(form);
+        add(form);
 
-		//Кнопка экспортировать
+        //Кнопка экспортировать
         Button exportButton = new Button("export") {
 
             @Override
             public void onSubmit() {
+                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                        new AbstractResourceStreamWriter() {
+                            @Override
+                            public void write(Response output) {
+                                User user = userBean.getUserBySessionId(sessionId);
 
-				getRequestCycle().setRequestTarget(new ResourceStreamRequestTarget(new AbstractResourceStreamWriter() {
+                                if (user != null) {
+                                    try {
+                                        OutputStream os = ((HttpServletResponse)output.getContainerResponse()).getOutputStream();
 
-					@Override
-					public void write(OutputStream output) {
-						User user = userBean.getUserBySessionId(sessionId);
+                                        JAXBContext context = JAXBContext.newInstance(User.class);
+                                        Marshaller marshaller = context.createMarshaller();
+                                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                                        marshaller.marshal(user, os);
+                                    } catch (Exception e) {
+                                        log.error("Cannot export person profile to xml", e);
+                                    }
+                                }
+                            }
 
-                        if (user != null){
-                            try {
-								JAXBContext context = JAXBContext.newInstance(User.class);
-								Marshaller marshaller = context.createMarshaller();
-								marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-								marshaller.marshal(user, output);
-							} catch (Exception e) {
-								log.error("Cannot export person profile to xml", e);
-							}
-                        }
-					}
+                            @Override
+                            public String getContentType() {
+                                return "text/xml";
+                            }
+                        }, "SETTINGS.XML"));
+            }
+        };
 
-					@Override
-					public String getContentType() {
-						return "text/xml";
-					}
-				}, "SETTINGS.XML"));
-			}
-		};
-
-		filterForm.add(exportButton);
-	}
+        filterForm.add(exportButton);
+    }
 }

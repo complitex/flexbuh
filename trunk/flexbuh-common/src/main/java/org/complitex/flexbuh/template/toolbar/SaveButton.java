@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.template.toolbar;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -12,6 +12,6 @@ public abstract class SaveButton extends ToolbarButton {
     private static final String TITLE_KEY = "title";
 
     public SaveButton(String id, boolean useAjax) {
-        super(id, new ResourceReference(IMAGE_SRC), TITLE_KEY, useAjax);
+        super(id, new PackageResourceReference(IMAGE_SRC), TITLE_KEY, useAjax);
     }
 }

@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
@@ -49,8 +50,7 @@ public class DocumentVersionList extends TemplatePage {
                 return documentVersionBean.getDocumentVersionsCount();
             }
         };
-        dataProvider.setSort("type", true);
-        dataProvider.setSort("sub_type", true);
+        dataProvider.setSort("type", SortOrder.ASCENDING);
 
 		//Таблица
         DataView<DocumentVersion> dataView = new DataView<DocumentVersion>("dictionaries", dataProvider, 10) {
