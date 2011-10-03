@@ -1,16 +1,12 @@
 package org.complitex.flexbuh.template.pages.expired;
 
-import org.apache.wicket.markup.html.CSSPackageResource;
-import org.apache.wicket.markup.html.JavascriptPackageResource;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
 import org.complitex.flexbuh.template.TemplateWebApplication;
-import org.odlabs.wiquery.core.commons.CoreJavaScriptResourceReference;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -23,10 +19,6 @@ public final class SessionExpiredPage extends WebPage {
     }
 
     private void init() {
-        add(JavascriptPackageResource.getHeaderContribution(CoreJavaScriptResourceReference.get()));
-        add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.COMMON_JS));
-        add(CSSPackageResource.getHeaderContribution(WebCommonResourceInitializer.STYLE_CSS));
-
         add(new Label("title", new ResourceModel("session_expired.title")));
         add(new Link("homePageLink") {
 
@@ -37,14 +29,10 @@ public final class SessionExpiredPage extends WebPage {
         });
     }
 
-    /**
-     * @see org.apache.wicket.markup.html.WebPage#configureResponse()
-     */
     @Override
-    protected void configureResponse() {
-        super.configureResponse();
-        getWebRequestCycle().getWebResponse().getHttpServletResponse().setStatus(
-                HttpServletResponse.SC_NOT_FOUND);
+    public void renderHead(IHeaderResponse response) {
+        response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
+        response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
     }
 
     /**

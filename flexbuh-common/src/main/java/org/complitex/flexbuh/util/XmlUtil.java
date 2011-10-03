@@ -40,9 +40,8 @@ public class XmlUtil {
             return writer.toString();
         } catch (TransformerException e) {
             log.error("Ошибка получения строки по DOM");
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     public static XPath newSchemaXPath() {

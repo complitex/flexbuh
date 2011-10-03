@@ -1,11 +1,8 @@
 package org.complitex.flexbuh.template;
 
-import org.apache.wicket.ResourceReference;
-import org.apache.wicket.Session;
 import org.complitex.flexbuh.inject.JavaEE6ModuleNamingStrategy;
 import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.security.ServletAuthWebApplication;
-import org.odlabs.wiquery.ui.themes.IThemableApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wicketstuff.javaee.injection.JavaEEComponentInjector;
@@ -20,7 +17,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 22.07.2010 18:36:29
  */
-public abstract class TemplateWebApplication extends ServletAuthWebApplication implements IThemableApplication {
+public abstract class TemplateWebApplication extends ServletAuthWebApplication{
 
     private static final Logger log = LoggerFactory.getLogger(TemplateWebApplication.class);
     private static final String TEMPLATE_CONFIG_FILE_NAME = "template-config.xml";
@@ -32,16 +29,10 @@ public abstract class TemplateWebApplication extends ServletAuthWebApplication i
         super.init();
 
         initializeTemplateConfig();
-
-        addComponentInstantiationListener(new JavaEEComponentInjector(this, new JavaEE6ModuleNamingStrategy()));
+        getComponentInstantiationListeners().add(new JavaEEComponentInjector(this, new JavaEE6ModuleNamingStrategy()));
 
 //        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
         getApplicationSettings().setPageExpiredErrorPage(getHomePage());
-    }
-
-    @Override
-    public ResourceReference getTheme(Session session) {
-        return theme;
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})

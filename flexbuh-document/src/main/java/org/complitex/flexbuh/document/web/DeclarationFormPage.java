@@ -1,13 +1,14 @@
 package org.complitex.flexbuh.document.web;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.CSSPackageResource;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
@@ -38,7 +39,7 @@ public class DeclarationFormPage extends TemplatePage{
     }
 
     public DeclarationFormPage(PageParameters pageParameters) {
-        Long id = pageParameters.getAsLong("id");
+        Long id = pageParameters.get("id").toLongObject();
 
         declaration = declarationBean.getDeclaration(id);
 
@@ -51,9 +52,14 @@ public class DeclarationFormPage extends TemplatePage{
         }
     }
 
-    private void init(){
-        add(CSSPackageResource.getHeaderContribution(DeclarationFormPage.class, "declaration.css"));
+    @Override
+    public void renderHead(IHeaderResponse response) {        
+        super.renderHead(response);
+        
+        response.renderCSSReference(new PackageResourceReference(DeclarationFormPage.class, "declaration.css"));
+    }
 
+    private void init(){
         add(new FeedbackPanel("feedback"));
 
         add(new Label("title", declaration.getName()));

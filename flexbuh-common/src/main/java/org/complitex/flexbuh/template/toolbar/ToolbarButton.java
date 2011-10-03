@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.template.toolbar;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -10,6 +9,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  *
@@ -21,11 +21,11 @@ public abstract class ToolbarButton extends Panel {
     private static final String LINK_MARKUP_ID = "link";
     private boolean useAjax;
 
-    public ToolbarButton(String id, ResourceReference imageSrc, String titleKey) {
+    public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey) {
        this(id, imageSrc, titleKey, false);
     }
 
-    public ToolbarButton(String id, ResourceReference imageSrc, String titleKey, boolean useAjax) {
+    public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey, boolean useAjax) {
         super(id);
 
         this.useAjax = useAjax;
@@ -36,7 +36,7 @@ public abstract class ToolbarButton extends Panel {
         add(link);
     }
 
-    public ToolbarButton(String id, ResourceReference imageSrc, String titleKey, String tagId) {
+    public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey, String tagId) {
         super(id);
         this.tagId = tagId;
         AbstractLink link = addLink();
@@ -78,7 +78,7 @@ public abstract class ToolbarButton extends Panel {
         }
     }
 
-    protected Image addImage(ResourceReference imageSrc, final IModel<String> title) {
+    protected Image addImage(PackageResourceReference imageSrc, final IModel<String> title) {
         return new Image("image", imageSrc) {
 
             @Override

@@ -20,7 +20,7 @@
 
     <properties>
         <!-- wicket version -->
-        <wicket.version>1.4.18</wicket.version>
+        <wicket.version>1.5.1</wicket.version>
 
         <!-- source encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -94,7 +94,7 @@
             <!--Wicket-->
             <dependency>
                 <groupId>org.apache.wicket</groupId>
-                <artifactId>wicket</artifactId>
+                <artifactId>wicket-core</artifactId>
                 <version>${wicket.version}</version>
             </dependency>
             <dependency>
@@ -124,15 +124,22 @@
             </dependency>
             <dependency>
                 <groupId>org.wicketstuff</groupId>
-                <artifactId>javaee-inject</artifactId>
-                <version>1.4.17.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.odlabs.wiquery</groupId>
-                <artifactId>wiquery</artifactId>
-                <version>1.2.4</version>
+                <artifactId>wicketstuff-javaee-inject</artifactId>
+                <version>1.5.0</version>
             </dependency>
 
+            <!--WiQuery-->
+
+            <dependency>
+                    <groupId>org.odlabs.wiquery</groupId>
+                    <artifactId>wiquery-core</artifactId>
+                    <version>1.5.0</version>
+            </dependency>
+            <dependency>
+                    <groupId>org.odlabs.wiquery</groupId>
+                    <artifactId>wiquery-jquery-ui</artifactId>
+                    <version>1.5.0</version>
+            </dependency>
             <dependency>
                 <groupId>com.wiquery-plugins</groupId>
                 <artifactId>other-plugins</artifactId>

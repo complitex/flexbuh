@@ -3,7 +3,7 @@ package org.complitex.flexbuh;
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
 import org.apache.wicket.SharedResources;
-import org.apache.wicket.markup.html.PackageResource;
+import org.apache.wicket.request.resource.PackageResource;
 import org.apache.wicket.util.file.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +50,15 @@ public final class WebImageInitializer implements IInitializer {
                 String relatedPath = IMAGES_DIRECTORY_NAME + "/" + image.getName();
                 //Now resource name is equal to physical related path but it is not required and may will be changed in future.
                 String resourceName = relatedPath;
-                sharedResources.add(resourceName, PackageResource.get(getClass(), relatedPath));
+                sharedResources.add(resourceName, new PackageResource(getClass(), relatedPath, null, null, null){});
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void destroy(Application application) {
+        //destroy
     }
 }

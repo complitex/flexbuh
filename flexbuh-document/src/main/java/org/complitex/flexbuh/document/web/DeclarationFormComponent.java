@@ -7,18 +7,22 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.feedback.FeedbackMessage;
-import org.apache.wicket.markup.*;
+import org.apache.wicket.markup.Markup;
+import org.apache.wicket.markup.MarkupParser;
+import org.apache.wicket.markup.MarkupResourceStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.AbstractRepeater;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.IValidator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
@@ -39,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.wiquery.plugin.jquertytools.tooltip.TooltipBehavior;
 
 import javax.ejb.EJB;
 import javax.script.ScriptEngine;
@@ -56,8 +59,10 @@ import java.util.regex.Pattern;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.08.11 15:58
  */
-public class DeclarationFormComponent extends WebMarkupContainer implements IMarkupResourceStreamProvider{
+public class DeclarationFormComponent extends Panel{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
+    
+    private final static String WICKET_NAMESPACE_URI = "http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd";
 
     private Pattern LINKED_ID_PATTERN = Pattern.compile("(\\w*)\\.(\\w*)");
 
@@ -77,8 +82,6 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private transient XPath templateXPath = XmlUtil.newXPath();
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
-    private transient StringResourceStream stringResourceStream;
-
     private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
 
     private Map<String, Rule> rulesMap;
@@ -90,6 +93,8 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     private WebMarkupContainer container;
 
     private Integer rowNextMarkupId = 0;
+    
+    private transient StringResourceStream stringResourceStream;
 
     public DeclarationFormComponent(String id, Declaration declaration){
         super(id);
@@ -119,16 +124,18 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
     }
 
     private void init(){
-        //Form
+        //Body
         NodeList bodyNodeList = template.getElementsByTagName("body");
-
         if (bodyNodeList.getLength() < 1){
             bodyNodeList = template.getElementsByTagName("BODY");
         }
 
+        Element panel = template.createElement("wicket:panel");
+        panel.setAttribute("xmlns:wicket", WICKET_NAMESPACE_URI);
+
         Element div = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
-        div.setAttribute("xmlns:wicket", "http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd");
         div.setAttribute("wicket:id", "container");
+        panel.appendChild(div);
 
         container = new WebMarkupContainer("container");
         add(container);
@@ -155,40 +162,17 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
         for (Element tbody : tbodyElements){
             addRows(index++, tbody);
         }
-
+        
         //Markup
-        stringResourceStream = new StringResourceStream(XmlUtil.getString(div), "text/html");
+        stringResourceStream = new StringResourceStream(XmlUtil.getString(panel), "text/html");
         stringResourceStream.setCharset(Charset.forName("UTF-8"));
         stringResourceStream.setLastModified(Time.now());
     }
 
     @Override
-    protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
+    public Markup getAssociatedMarkup() {
         try {
-            MarkupStream associatedMarkupStream =  getAssociatedMarkupStream(true);
-
-            renderComponentTagBody(associatedMarkupStream, (ComponentTag) associatedMarkupStream.get());
-        } catch (Exception e) {
-            log.error("Ошибка создания страницы", e);
-
-            throw new WicketRuntimeException(e);
-        }
-    }
-
-    @Override
-    public IResourceStream getMarkupResourceStream(MarkupContainer container, Class<?> containerClass) {
-        return stringResourceStream;
-    }
-
-    @Override
-    public MarkupStream getAssociatedMarkupStream(boolean throwException) {
-        try {
-            //todo cache
-            MarkupResourceStream markupResourceStream = new MarkupResourceStream(stringResourceStream);
-
-            Markup markup = getApplication().getMarkupSettings().getMarkupParserFactory().newMarkupParser(markupResourceStream).parse();
-
-            return new MarkupStream(markup);
+            return new MarkupParser( new MarkupResourceStream(stringResourceStream)).parse();
         } catch (Exception e) {
             throw new WicketRuntimeException(e);
         }
@@ -312,7 +296,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                 }
 
                 //Tooltip
-                textField.add(new TooltipBehavior().setTip(feedbackContainer));
+//                textField.add(new TooltipBehavior().setTip(feedbackContainer));
 
                 //Ajax update
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -324,9 +308,9 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                             feedbackLabel.setDefaultModelObject(feedbackMessage.getMessage());
                         }
 
-                        target.addComponent(feedbackLabel);
+                        target.add(feedbackLabel);
 
-                        target.appendJavascript("$('#" + textField.getMarkupId() +"').css('background-color', '#ff9999')");
+                        target.appendJavaScript("$('#" + textField.getMarkupId() + "').css('background-color', '#ff9999')");
                         textField.setCssStyle("background-color: #ff9999");
                     }
 
@@ -338,25 +322,26 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                             //Auto fill
                             autoFill(target);
 
-                            target.appendJavascript("$('#" + textField.getMarkupId() +"').css('background-color', '#99ff99')");
+                            target.appendJavaScript("$('#" + textField.getMarkupId() + "').css('background-color', '#99ff99')");
                             textField.setCssStyle("background-color: #99ff99");
 
                             //Auto fill linked
-                            getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent>() {
+                            getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
+
                                 @Override
-                                public Object component(DeclarationFormComponent component) {
+                                public void component(DeclarationFormComponent component, IVisit visit) {
                                     component.autoFill(target);
 
-                                    return IVisitor.CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
+                                    visit.dontGoDeeper();
                                 }
                             });
                         }else{
-                            target.appendJavascript("$('#" + textField.getMarkupId() +"').css('background-color', '#cccccc')");
+                            target.appendJavaScript("$('#" + textField.getMarkupId() +"').css('background-color', '#cccccc')");
                             textField.setCssStyle("background-color: #cccccc");
                         }
 
                         feedbackLabel.setDefaultModelObject(rule != null ? rule.getDescription() : "");
-                        target.addComponent(feedbackLabel);
+                        target.add(feedbackLabel);
                     }
                 });
 
@@ -471,8 +456,8 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
             if (!value.equals(autoFill.getValue())) {
                 autoFill.setModelObject(value);
-                target.addComponent(autoFill);
-                target.appendJavascript("$('#" + autoFill.getMarkupId() +"').css('background-color', '#add8e6')");
+                target.add(autoFill);
+                target.appendJavaScript("$('#" + autoFill.getMarkupId() +"').css('background-color', '#add8e6')");
             }
         } catch (ScriptException e) {
             log.error("Ошибка автозаполнения", e);
@@ -685,7 +670,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
 
             @Override
             protected void afterAction(AjaxRequestTarget target) {
-                target.addComponent(tbodyContainer);
+                target.add(tbodyContainer);
 
                 //update row num
                 for (WebMarkupContainer row : stretchRows){
@@ -693,7 +678,7 @@ public class DeclarationFormComponent extends WebMarkupContainer implements IMar
                         Component c = row.get(rowNumId);
 
                         if (c != null){
-                            target.addComponent(c);
+                            target.add(c);
                         }
                     }
                 }

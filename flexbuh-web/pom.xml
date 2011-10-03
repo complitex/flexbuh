@@ -51,7 +51,7 @@
         <!--Wicket-->
         <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket</artifactId>
+            <artifactId>wicket-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
@@ -71,11 +71,15 @@
         </dependency>
         <dependency>
             <groupId>org.odlabs.wiquery</groupId>
-            <artifactId>wiquery</artifactId>
+            <artifactId>wiquery-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.odlabs.wiquery</groupId>
+            <artifactId>wiquery-jquery-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wicketstuff</groupId>
-            <artifactId>javaee-inject</artifactId>
+            <artifactId>wicketstuff-javaee-inject</artifactId>
         </dependency>
 
         <!--Debug-->

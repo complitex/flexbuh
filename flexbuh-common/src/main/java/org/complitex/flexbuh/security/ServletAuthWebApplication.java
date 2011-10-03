@@ -1,13 +1,19 @@
 package org.complitex.flexbuh.security;
 
-import org.apache.wicket.*;
+import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.Session;
 import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.authorization.strategies.role.IRoleCheckingStrategy;
-import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy;
-import org.apache.wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.authroles.authorization.strategies.role.IRoleCheckingStrategy;
+import org.apache.wicket.authroles.authorization.strategies.role.RoleAuthorizationStrategy;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
 import org.complitex.flexbuh.template.pages.login.Login;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +39,7 @@ public abstract class ServletAuthWebApplication extends WebApplication
 
     @Override
     public boolean hasAnyRole(Roles roles) {
-        HttpServletRequest request = ((WebRequestCycle) RequestCycle.get()).getWebRequest().getHttpServletRequest();
+        HttpServletRequest request = ((ServletWebRequest) RequestCycle.get().getRequest()).getContainerRequest();
         if (roles != null) {
             for (String role : roles) {
                 if (request.isUserInRole(role)) {
@@ -50,11 +56,13 @@ public abstract class ServletAuthWebApplication extends WebApplication
 
     @Override
     public void onUnauthorizedInstantiation(Component component) {
-        WebRequestCycle webRequestCycle = (WebRequestCycle) RequestCycle.get();
-        HttpServletRequest servletRequest = webRequestCycle.getWebRequest().getHttpServletRequest();
+        WebRequest servletWebRequest = (WebRequest) RequestCycle.get().getRequest();
+        //todo test
+        HttpServletRequest servletRequest = (HttpServletRequest) servletWebRequest.getContainerRequest();
 
         if (servletRequest.getUserPrincipal() == null) {
-            RequestCycle.get().setRedirect(true);
+            //todo redirect
+//            RequestCycle.get().getResponse().setRedirect(true);
             Session.get().invalidate();
             throw new RestartResponseException(Login.class);
         } else {

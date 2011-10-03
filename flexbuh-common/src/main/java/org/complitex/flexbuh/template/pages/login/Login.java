@@ -1,14 +1,13 @@
 package org.complitex.flexbuh.template.pages.login;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.CSSPackageResource;
-import org.apache.wicket.markup.html.JavascriptPackageResource;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
-import org.odlabs.wiquery.core.commons.CoreJavaScriptResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +30,18 @@ public final class Login extends WebPage {
     }
 
     private void init(boolean isError) {
-        add(JavascriptPackageResource.getHeaderContribution(CoreJavaScriptResourceReference.get()));
-        add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.COMMON_JS));
-        add(JavascriptPackageResource.getHeaderContribution(getClass(), getClass().getSimpleName() + ".js"));
-        add(CSSPackageResource.getHeaderContribution(WebCommonResourceInitializer.STYLE_CSS));
-
         add(new Label("login.title", new ResourceModel("login.title")));
         add(new Label("login.header", new ResourceModel(isError ? "login.errorLabel" : "login.enterLabel")));
         WebMarkupContainer errorPanel = new WebMarkupContainer("errorPanel");
         errorPanel.setVisible(isError);
         add(errorPanel);
+    }
 
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
+        response.renderJavaScriptReference(new PackageResourceReference(getClass(), "Login.js"));
+        response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
     }
 }
 
