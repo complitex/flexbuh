@@ -47,14 +47,11 @@
         <result column="value" property="value"/>            
     </resultMap>
 
-    <sql id="sqlSelectDeclaration">
-        select de.*, dn.`value` as `name` from `declaration` de
-          left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-          left join `document_name` dn on (dn.`document_id` = do.`id` and dn.`language_id` = 1)
-    </sql>
-
     <select id="selectDeclaration" resultMap="declarationResultMap" parameterType="long">
-        <include refid="sqlSelectDeclaration"/> where de.`id` = #{id}
+        select de.*, dn.`value` as `name` from `declaration` de
+             left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+             left join `document_name` dn on (dn.`document_id` = do.`id` and dn.`language_id` = 1)
+        where de.`id` = #{id}
     </select>
 
     <select id="selectLinkedDeclaration" resultMap="linkedDeclarationResultMap" parameterType="long">
@@ -78,12 +75,26 @@
           values (#{declarationId}, #{rowNum}, #{name}, #{value})
     </insert>
 
+    <sql id="selectDeclarationsFromWhere">
+        from `declaration` de
+             left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+             left join `document_name` dn on (dn.`document_id` = do.`id` and dn.`language_id` = 1)
+         <where>
+             <if test="name != null">dn.`value` like  concat('%', #{name}, '%')</if>
+             <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
+             <if test="periodType != null">and `period_type` = #{periodType}</if>
+             <if test="periodYear != null">and `period_year` = #{periodYear}</if>
+             <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
+             and `session_id` = #{sessionId}
+         </where>
+    </sql>
+
     <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
-        <include refid="sqlSelectDeclaration"/> where `session_id` = #{sessionId} limit #{first}, #{count}
+        select de.*, dn.`value` as `name` <include refid = "selectDeclarationsFromWhere"/> limit #{first}, #{count}
     </select>
 
     <select id="selectDeclarationsCount" resultType="int" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
-        select count(*) from `declaration` where `session_id` = #{sessionId}
+        select count(*) <include refid = "selectDeclarationsFromWhere"/>
     </select>
 
     <delete id="deleteDeclaration" parameterType="long">

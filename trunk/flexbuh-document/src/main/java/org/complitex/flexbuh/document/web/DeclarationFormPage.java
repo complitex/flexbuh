@@ -84,7 +84,7 @@ public class DeclarationFormPage extends TemplatePage{
             protected void populateItem(ListItem<LinkedDeclaration> item) {
                 Declaration declaration = item.getModelObject().getDeclaration();
 
-                item.add(new Label("label", declaration.getTemplateName()));
+                item.add(new Label("label", declaration.getTemplateName() + " " + declaration.getName()));
 
                 item.add(new DeclarationFormComponent("linked_declaration", declaration));
 
@@ -97,6 +97,8 @@ public class DeclarationFormPage extends TemplatePage{
             @Override
             public void onSubmit() {
                 declarationBean.save(getSessionId(true), declaration);
+
+                getSession().info(getString("info_saved"));
             }
         });
 
