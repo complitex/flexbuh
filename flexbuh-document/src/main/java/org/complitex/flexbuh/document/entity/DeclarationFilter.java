@@ -1,7 +1,6 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.entity.AbstractFilter;
-import org.complitex.flexbuh.entity.dictionary.Document;
 
 import java.util.Date;
 
@@ -11,18 +10,24 @@ import java.util.Date;
  */
 public class DeclarationFilter extends AbstractFilter{
     private String name;
-    private Integer periodMonth = 1;
-    private Integer periodType = 1;
-    private Integer periodYear = 2011;
+    private Integer periodMonth;
+    private Integer periodType;
+    private Integer periodYear;
     private Date date;
-
-    private Document document;
 
     public DeclarationFilter() {
     }
 
     public DeclarationFilter(Long sessionId) {
         super(sessionId);
+    }
+
+    public void clear(){
+        name = null;
+        periodMonth = null;
+        periodType = null;
+        periodYear = null;
+        date = null;
     }
 
     public String getName() {
@@ -63,13 +68,5 @@ public class DeclarationFilter extends AbstractFilter{
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public void setDocument(Document document) {
-        this.document = document;
     }
 }

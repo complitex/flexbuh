@@ -21,10 +21,7 @@ import org.complitex.flexbuh.web.component.declaration.PeriodTypeChoice;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -83,7 +80,7 @@ public class DeclarationCreate extends FormTemplatePage{
                             case 5: return Arrays.asList(12);
                         }
 
-                        return null;
+                        return Collections.emptyList();
                     }
                 }, new IChoiceRenderer<Integer>() {
             @Override
@@ -144,8 +141,7 @@ public class DeclarationCreate extends FormTemplatePage{
     private LinkedDeclaration createLinkedDeclaration(Document document, Declaration parent){
         Declaration declaration = new Declaration();
 
-        declaration.getHead().setCDoc(document.getCDoc());
-        declaration.getHead().setCDocSub(document.getCDocSub());
+        declaration.setDocument(document);
 
         //todo add version
         List<DocumentVersion> dv = document.getDocumentVersions();

@@ -271,6 +271,7 @@ public class DeclarationFormComponent extends Panel{
                 final Rule rule = rulesMap.get(id);
                 if (rule != null) {
                     textField.setTitle(rule.getDescription());
+                    textField.setCssStyle("background-color: #add8e6");
                 }
 
                 //Ajax update
@@ -532,8 +533,8 @@ public class DeclarationFormComponent extends Panel{
             @Override
             protected void onPopulate() {
                 //remove
-                for (Iterator<? extends Component> it = iterator(); it.hasNext(); ) {
-                    WebMarkupContainer c = (WebMarkupContainer) it.next();
+                for (Component component : this) {
+                    WebMarkupContainer c = (WebMarkupContainer) component;
 
                     if (!stretchRows.contains(c)) {
                         remove(c);
@@ -544,8 +545,8 @@ public class DeclarationFormComponent extends Panel{
                 for (Component row : stretchRows) {
                     boolean found = false;
 
-                    for (Iterator<? extends Component> it = iterator(); it.hasNext(); ) {
-                        if (row.equals(it.next())) {
+                    for (Component component : this) {
+                        if (row.equals(component)) {
                             found = true;
                             break;
                         }
@@ -590,7 +591,7 @@ public class DeclarationFormComponent extends Panel{
 
         final List<String> rowNumIds = new ArrayList<>();
 
-        final WebMarkupContainer stretchRow = new WebMarkupContainer("row_" + rowNextMarkupId++);
+        final WebMarkupContainer stretchRow = new WebMarkupContainer("" + rowNextMarkupId++);
         stretchRows.add(addRowIndex, stretchRow);
 
         for (int j = rows - addRow; j < rows; ++j) {
