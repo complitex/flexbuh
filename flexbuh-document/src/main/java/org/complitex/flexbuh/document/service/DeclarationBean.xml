@@ -105,7 +105,7 @@
         delete from `declaration_value` where `id` = #{id}
     </delete>
 
-    <update id="updateDeclaration" parameterType="long">
+    <update id="updateDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration">
         update `declaration` set `session_id` = #{sessionId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc}, `c_doc_sub` = #{head.cDocSub},
           `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType}, `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg},
           `c_raj` = #{head.cRaj}, `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
@@ -114,7 +114,7 @@
         where `id` = #{id}
     </update>
 
-    <update id="updateDeclarationValue" parameterType="long">
+    <update id="updateDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
         update `declaration_value` set `row_num` = #{rowNum}, `name` = #{name}, `value` = #{value} where `id` = #{id}
     </update>
 </mapper>
