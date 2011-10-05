@@ -44,10 +44,6 @@
             <artifactId>wiquery-jquery-ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wiquery-plugins</groupId>
-            <artifactId>other-plugins</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wicketstuff</groupId>
             <artifactId>wicketstuff-javaee-inject</artifactId>
         </dependency>

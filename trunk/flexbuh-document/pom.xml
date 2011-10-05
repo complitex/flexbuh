@@ -48,11 +48,6 @@
             <artifactId>wiquery-jquery-ui</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.wiquery-plugins</groupId>
-            <artifactId>other-plugins</artifactId>
-        </dependency>
-
         <!--Debug-->
         <dependency>
             <groupId>org.apache.wicket</groupId>
