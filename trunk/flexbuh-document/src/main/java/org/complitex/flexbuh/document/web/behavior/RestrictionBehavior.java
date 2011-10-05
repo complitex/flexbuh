@@ -1,9 +1,10 @@
-package org.complitex.flexbuh.document.web.validation;
+package org.complitex.flexbuh.document.web.behavior;
 
-import org.apache.wicket.validation.IErrorMessageSource;
-import org.apache.wicket.validation.INullAcceptingValidator;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.Component;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.util.value.IValueMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,8 +18,13 @@ import java.util.regex.Pattern;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 22.08.11 17:13
  */
-public class Restriction<T> implements INullAcceptingValidator<T>, IValidationError {
+public class RestrictionBehavior extends Behavior{
     private final static List<String> NUMBER_BASE = Arrays.asList("xs:nonNegativeInteger", "xs:integer", "xs:unsignedLong");
+    private final static Map<String, ResourceBundle> resourceBundleMap = new ConcurrentHashMap<>();
+
+    private final static String COLOR_ERROR = "#F5A9A9";
+    private final static String COLOR_VALIDATED = "#BCF5A9";
+    private final static String COLOR_DEFAULT = "#cccccc";
 
     private String name;
     private String documentation;
@@ -36,27 +42,23 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
     private boolean requiredRowNum = false;
 
     private Element typeElement;
-
-    private String errorMessage;
-
     private Locale locale;
+    private String errorMessage;
+    private String title;
 
-    private final static Map<String, ResourceBundle> resourceBundleMap = new ConcurrentHashMap<>();
+    private String defaultColor;
 
-    public Restriction(Element typeElement) {
-        this(typeElement, Locale.getDefault());
-    }
-
-    public Restriction(Element typeElement, Locale locale) {
+    public RestrictionBehavior(Element typeElement, Locale locale, String title) {
         this.typeElement = typeElement;
         this.locale = locale;
+        this.title = title;
 
-        parse();
+        if (typeElement != null) {
+            parse();
+        }
     }
 
     private void parse(){
-        complex = "xs:complexType".equals(typeElement.getTagName());
-
         name = typeElement.getAttribute("name");
 
         NodeList documentationNodeList = typeElement.getElementsByTagName("xs:documentation");
@@ -64,14 +66,6 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
             documentation = documentationNodeList.item(0).getTextContent();
         }
 
-        if (!complex){
-            parseSimpleType();
-        }else {
-            parseComplexType();
-        }
-    }
-
-    private void parseSimpleType(){
         NodeList restrictionNodeList =  typeElement.getElementsByTagName("xs:restriction");
 
         if (restrictionNodeList.getLength() > 0){
@@ -118,115 +112,90 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
         }
     }
 
-    private void parseComplexType(){
-        Element extension = (Element) typeElement.getElementsByTagName("xs:extension").item(0);
+    public void validate(String value) {
+        errorMessage = null;
 
-        base = extension.getAttribute("base");
-
-        NodeList attributeNodeList = extension.getElementsByTagName("xs:attribute");
-
-        if (attributeNodeList.getLength() > 0){
-            Element attribute = (Element) attributeNodeList.item(0);
-
-            requiredRowNum = "ROWNUM".equals(attribute.getAttribute("name")) && "required".equals(attribute.getAttribute("use"));
+        if (length != null && value.length() != length){
+            error("length", length);
         }
-    }
 
-    @Override
-    public void validate(IValidatable<T> validatable) {
-        if (validatable.getValue() != null) {
-            String valueString = validatable.getValue().toString();
+        if (minLength != null && value.length() < minLength){
+            error("minLength", minLength);
+        }
 
-            if (length != null && valueString.length() != length){
-                error(validatable, "length");
-            }
+        if (maxLength != null && value.length() > maxLength){
+            error("maxLength", maxLength);
+        }
 
-            if (minLength != null && valueString.length() < minLength){
-                error(validatable, "minLength");
-            }
+        if (totalDigits != null && value.length() == totalDigits){
+            error("totalDigits", totalDigits);
+        }
 
-            if (maxLength != null && valueString.length() > maxLength){
-                error(validatable, "maxLength");
-            }
+        if (pattern != null && !pattern.matcher(value).matches()){
+            error("pattern", pattern);
+        }
 
-            if (totalDigits != null && valueString.length() == totalDigits){
-                error(validatable, "totalDigits");
-            }
+        if (enumeration.size() > 0 && !enumeration.contains(value)){
+            error("enumeration", null);
+        }
 
-            if (pattern != null && !pattern.matcher(valueString).matches()){
-                error(validatable, "pattern");
-            }
+        if (NUMBER_BASE.contains(base)){
+            try {
+                Long number = Long.valueOf(value);
 
-            if (enumeration.size() > 0 && !enumeration.contains(valueString)){
-                error(validatable, "enumeration");
-            }
-
-            if (NUMBER_BASE.contains(base)){
-                try {
-                    Long number = Long.valueOf(valueString);
-
-                    if (minInclusive != null && number < minInclusive){
-                        error(validatable, "minInclusive");
-                    }
-
-                    if (maxInclusive != null && number > maxInclusive){
-                        error(validatable, "maxInclusive");
-                    }
-
-                } catch (NumberFormatException e) {
-                    error(validatable, "notNumber");
+                if (minInclusive != null && number < minInclusive){
+                    error("minInclusive", minInclusive);
                 }
+
+                if (maxInclusive != null && number > maxInclusive){
+                    error("maxInclusive", maxInclusive);
+                }
+
+            } catch (NumberFormatException e) {
+                error("notNumber", null);
             }
         }
     }
 
-    private void error(IValidatable<T> validatable, String key){
-        Object argument = null;
-
-        switch (key){
-            case "minLength":
-                argument = minLength;
-                break;
-            case "maxLength":
-                argument = maxLength;
-                break;
-            case "totalDigits":
-                argument = totalDigits;
-                break;
-            case "length":
-                argument = length;
-                break;
-            case "minInclusive":
-                argument = minInclusive;
-                break;
-            case "maxInclusive":
-                argument = maxInclusive;
-                break;
-        }
-
-
-
-        errorMessage = argument != null ? MessageFormat.format(getString(key), argument) : getString(key);
-
-        errorMessage += ": " + validatable.getValue();
-
-        validatable.error(this);
-    }
-
-    @Override
-    public String getErrorMessage(IErrorMessageSource messageSource) {
-        return errorMessage;
+    private void error(String key, Object argument){
+        errorMessage = (argument != null ? MessageFormat.format(getString(key), argument) : getString(key)) +
+                (documentation != null ? " \n" + documentation : "");
     }
 
     private String getString(String key){
         ResourceBundle resourceBundle = resourceBundleMap.get(locale.getLanguage());
 
         if (resourceBundle == null){
-            resourceBundle = ResourceBundle.getBundle(Restriction.class.getName());
+            resourceBundle = ResourceBundle.getBundle(RestrictionBehavior.class.getName());
             resourceBundleMap.put(locale.getLanguage(), resourceBundle);
         }
 
         return resourceBundle.getString(key);
+    }
+
+    @Override
+    public void onComponentTag(Component component, ComponentTag tag) {
+        if (component instanceof FormComponent){
+            FormComponent formComponent = (FormComponent) component;
+            IValueMap attributes = tag.getAttributes();
+
+            String value = formComponent.getValue();
+
+            if (value != null && !value.isEmpty()) {
+                validate(value);
+
+                if (errorMessage != null){
+                    attributes.put("style", "background-color: " + COLOR_ERROR);
+                    attributes.put("title", errorMessage);
+                }else {
+                    attributes.put("style", "background-color: " + COLOR_VALIDATED);
+                    attributes.put("title", title);
+                }
+            }else{
+                attributes.put("style", "background-color: " + (defaultColor != null ? defaultColor : COLOR_DEFAULT));
+                attributes.put("title", title);
+            }
+        }
     }
 
     public String getName() {
@@ -355,5 +324,21 @@ public class Restriction<T> implements INullAcceptingValidator<T>, IValidationEr
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDefaultColor() {
+        return defaultColor;
+    }
+
+    public void setDefaultColor(String defaultColor) {
+        this.defaultColor = defaultColor;
     }
 }

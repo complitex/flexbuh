@@ -153,7 +153,7 @@ public class DeclarationList extends TemplatePage{
                 item.add(new Label("period_type", getString("period_type_" + declaration.getHead().getPeriodType())));
                 item.add(new Label("period_month", dateFormatSymbols.getMonths()[declaration.getHead().getPeriodMonth()-1]));
                 item.add(new Label("period_year", StringUtil.getString(declaration.getHead().getPeriodYear())));
-                item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy"));
+                item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy HH:mm"));
 
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", declaration.getId());

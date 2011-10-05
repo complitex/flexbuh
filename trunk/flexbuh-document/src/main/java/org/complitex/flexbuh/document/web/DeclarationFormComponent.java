@@ -6,7 +6,6 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.MarkupParser;
 import org.apache.wicket.markup.MarkupResourceStream;
@@ -23,16 +22,15 @@ import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.apache.wicket.validation.IValidator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.service.TemplateService;
+import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.AddRowPanel;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
-import org.complitex.flexbuh.document.web.validation.Restriction;
 import org.complitex.flexbuh.util.ScriptUtil;
 import org.complitex.flexbuh.util.StringUtil;
 import org.complitex.flexbuh.util.XmlUtil;
@@ -51,7 +49,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,8 +78,6 @@ public class DeclarationFormComponent extends Panel{
     private transient XPath schemaXPath = XmlUtil.newSchemaXPath();
     private transient XPath templateXPath = XmlUtil.newXPath();
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
-
-    private static Map<String, IValidator> validatorMap = new ConcurrentHashMap<>();
 
     private Map<String, Rule> rulesMap;
     private Map<String, TextField<String>> textFieldMap = new HashMap<>();
@@ -266,28 +261,12 @@ public class DeclarationFormComponent extends Panel{
                 }else {
                     textFieldMap.put(id, textField);
                 }
-
-                //Rule
-                final Rule rule = rulesMap.get(id);
-                if (rule != null) {
-                    textField.setTitle(rule.getDescription());
-                    textField.setCssStyle("background-color: #add8e6");
-                }
-
+                
                 //Ajax update
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
                     @Override
                     protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        FeedbackMessage feedbackMessage = textField.getFeedbackMessage();
-
-                        if (feedbackMessage != null) {
-                            textField.setTitle(feedbackMessage.getMessage().toString());
-                        }
-
                         target.add(textField);
-
-                        target.appendJavaScript("$('#" + textField.getMarkupId() + "').css('background-color', '#ff9999')");
-                        textField.setCssStyle("background-color: #ff9999");
                     }
 
                     @Override
@@ -297,9 +276,6 @@ public class DeclarationFormComponent extends Panel{
                         if (value != null && !value.isEmpty()) {
                             //Auto fill
                             autoFill(target);
-
-                            target.appendJavaScript("$('#" + textField.getMarkupId() + "').css('background-color', '#99ff99')");
-                            textField.setCssStyle("background-color: #99ff99");
 
                             //Auto fill linked
                             getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
@@ -311,57 +287,30 @@ public class DeclarationFormComponent extends Panel{
                                     visit.dontGoDeeper();
                                 }
                             });
-                        }else{
-                            target.appendJavaScript("$('#" + textField.getMarkupId() +"').css('background-color', '#cccccc')");
-                            textField.setCssStyle("background-color: #cccccc");
                         }
-
-                        textField.setTitle(rule != null ? rule.getDescription() : "");
 
                         target.add(textField);
                     }
                 });
-
-                //Validation
-                IValidator<String> validator = getValidator(schemaType);
-                if (validator != null) {
-                    textField.add(validator);
-                }
+                              
+                //Restriction
+                Rule rule = rulesMap.get(id);
+                textField.add(createRestrictionBehavior(schemaType, rule != null ? rule.getDescription() : ""));
             }
         } catch (Exception e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
         }
     }
 
-    @SuppressWarnings({"unchecked"})
-    private <T> IValidator<T> getValidator(String id) throws XPathExpressionException {
-        IValidator<T> validator = validatorMap.get(id);
-
-        if (validator == null){
-            validator = createValidator(id);
-
-            if (validator != null) {
-                validatorMap.put(id, validator);
-            }
-        }
-
-        return validator;
-    }
-
-    private <T> IValidator<T> createValidator(String schemaType) throws XPathExpressionException {
+    private RestrictionBehavior createRestrictionBehavior(String schemaType, String title) throws XPathExpressionException {
         Element typeElement = XmlUtil.getElementByName(schemaType, commonTypes, schemaXPath);
 
-        if (typeElement != null) {
-            Restriction<T> restriction = new Restriction<>(typeElement);
-
-            if (restriction.isComplex()){
-                return createValidator(restriction.getBase());
-            }
-
-            return restriction;
+        if (typeElement != null && "xs:complexType".equals(typeElement.getTagName())){
+            Element extension = (Element) typeElement.getElementsByTagName("xs:extension").item(0);
+            typeElement = XmlUtil.getElementByName(extension.getAttribute("base"), commonTypes, schemaXPath);
         }
 
-        return null;
+        return new RestrictionBehavior(typeElement, getLocale(), title);
     }
 
     private void autoFill(AjaxRequestTarget target){
@@ -434,7 +383,7 @@ public class DeclarationFormComponent extends Panel{
             if (!value.equals(autoFill.getValue())) {
                 autoFill.setModelObject(value);
                 target.add(autoFill);
-                target.appendJavaScript("$('#" + autoFill.getMarkupId() +"').css('background-color', '#add8e6')");
+                target.appendJavaScript("$('#" + autoFill.getMarkupId() + "').css('background-color', '#add8e6')");
             }
         } catch (ScriptException e) {
             log.error("Ошибка автозаполнения", e);
