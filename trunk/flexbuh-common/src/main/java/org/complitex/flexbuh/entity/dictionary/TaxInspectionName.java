@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.complitex.flexbuh.entity.LocalizedString;
 
 /**
@@ -16,4 +18,11 @@ public class TaxInspectionName extends LocalizedString {
     public void setTaxInspectionId(Long taxInspectionId) {
         this.taxInspectionId = taxInspectionId;
     }
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).
+				append("taxInspectionId", getTaxInspectionId()).
+				append(super.toString()).toString();
+	}
 }

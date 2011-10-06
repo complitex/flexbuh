@@ -23,6 +23,7 @@ import org.complitex.flexbuh.entity.user.User;
 import org.complitex.flexbuh.service.user.PersonProfileBean;
 import org.complitex.flexbuh.service.user.UserBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,12 +107,12 @@ public class UserProfileView extends TemplatePage {
                 item.add(new Label("phone", profile.getPhone()));
 
                 item.add(new Label("email", profile.getEmail()));
-                /*
-        item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
-                ScrollListBehavior.SCROLL_PREFIX + String.valueOf(profile.getId()),
-                JuridicalPersonProfileEdit.class, new PageParameters("person_profile_id=" + profile.getId())));
-                */
-            }
+
+				PageParameters pageParameters = new PageParameters();
+                pageParameters.set("id", profile.getId());
+				item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
+						JuridicalPersonProfilePage.class, pageParameters));
+			}
         };
         filterForm.add(dataView);
 

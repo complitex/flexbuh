@@ -82,7 +82,7 @@ public class UserMenu extends ResourceTemplateMenu {
 
                     @Override
                     public Class<? extends Page> getPage() {
-                        return JuridicalPersonProfileCreate.class;
+                        return JuridicalPersonProfilePage.class;
                     }
 
                     @Override

@@ -15,6 +15,12 @@
                     column="id" select="selectAreaNames"/>
     </resultMap>
 
+	<resultMap id="taxInspectionResultMap2" type="org.complitex.flexbuh.entity.dictionary.TaxInspection">
+        <result property="code" column="tax_inspection_code"/>
+
+        <collection property="names" resultMap="taxInspectionNameResultMap"/>
+    </resultMap>
+
     <resultMap id="taxInspectionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.TaxInspectionName"
                extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
         <result column="tax_inspection_id" property="taxInspectionId"/>
@@ -32,8 +38,12 @@
           (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{regionCode}, #{codeArea}, #{codeTaxInspectionType})
     </insert>
 
-    <select id="selectAllTaxInspections" resultMap="taxInspectionResultMap">
-        select * from `tax_inspection`
+    <select id="selectAllTaxInspectionsCodeWithName" resultMap="taxInspectionResultMap2">
+		select distinct ti.`code` as `tax_inspection_code`, tin.`value` as `value`, tin.`language_id` as `language_id`
+		    from `tax_inspection` ti
+		    inner join `tax_inspection_name` tin on ti.`id` = tin.`tax_inspection_id`
+        	where (ti.`begin_date` &lt; now() or ti.`begin_date` is null) and (ti.`end_date` &gt; now() or ti.`end_date` is null)
+        	order by tin.`value`
     </select>
 
     <select id="selectAllTaxInspectionsCount" resultType="int">
@@ -44,8 +54,12 @@
         select * from `tax_inspection` order by `code` limit #{first}, #{count}
     </select>
 
-    <select id="selectTaxInspection" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspection" resultMap="taxInspectionResultMap">
+    <select id="selectTaxInspection" parameterType="long" resultMap="taxInspectionResultMap">
         select * from `tax_inspection` where `id` = #{id}
+    </select>
+
+	<select id="selectTaxInspectionByCode" parameterType="int" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` where `code` = #{code}
     </select>
 
     <!--TaxInspectionName-->

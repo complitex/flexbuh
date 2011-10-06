@@ -24,19 +24,27 @@
         <result column="num_svd_PDV" property="numSvdPDV"/>
 
         <association property="personType" column="person_type_id" javaType="org.complitex.flexbuh.entity.user.PersonType"
-                     select="org.complitex.flexbuh.service.user.PersonTypeBean.findById"/>
+                     select="org.complitex.flexbuh.service.user.PersonTypeBean.selectPersonType"/>
     </resultMap>
 
     <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.entity.user.PersonProfile" keyProperty="id" useGeneratedKeys="true">
         insert into `person_profile`
-          (`name`, `code_TIN`, `code_tax_inspection`, `code_KVED`, `person_type_id`, `contract_date`,
+          (`name`, `session_id`, `code_TIN`, `code_tax_inspection`, `code_KVED`, `person_type_id`, `contract_date`,
             `contract_number`, `zip_code`, `address`, `phone`, `fax`, `email`, `director_FIO`, `accountant_FIO`, `director_INN`,
             `accountant_INN`, `ipn`, `num_svd_PDV`)
         values
-          (#{name}, #{codeTIN}, #{codeTaxInspection}, #{codeKVED}, #{personType.id}, #{contractDate}, #{contractNumber},
+          (#{name}, #{sessionId}, #{codeTIN}, #{codeTaxInspection}, #{codeKVED}, #{personType.id}, #{contractDate}, #{contractNumber},
             #{zipCode}, #{address}, #{phone}, #{fax}, #{email}, #{directorFIO}, #{accountantFIO}, #{directorINN}, #{accountantINN},
             #{ipn}, #{numSvdPDV})
     </insert>
+
+	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.entity.user.PersonProfile">
+        update `person_profile` set `name`=#{name}, `session_id`=#{sessionId}, `code_TIN`=#{codeTIN}, `code_tax_inspection`=#{codeTaxInspection},
+            `code_KVED`=#{codeKVED}, `person_type_id`=#{personType.id}, `contract_date`=#{contractDate}, `contract_number`=#{contractNumber},
+            `zip_code`=#{zipCode}, `address`=#{address}, `phone`=#{phone}, `fax`=#{fax}, `email`=#{email}, `director_FIO`=#{directorFIO},
+            `accountant_FIO`=#{accountantFIO}, `director_INN`=#{directorINN}, `accountant_INN`=#{accountantINN}, `ipn`=#{ipn}, `num_svd_PDV`=#{numSvdPDV}
+        where `id` = #{id}
+    </update>
 
     <select id="selectPersonProfile" parameterType="long" resultMap="personProfileResultMap">
         select * from `person_profile` where `id` = #{id}

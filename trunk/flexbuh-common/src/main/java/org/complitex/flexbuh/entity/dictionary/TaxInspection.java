@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -92,5 +94,10 @@ public class TaxInspection extends AbstractPeriodDictionary {
 		return super.validate() &&
 				code != null && names != null && names.size() > 0 && regionCode != null &&
 				codeArea != null && areaNames != null && areaNames.size() > 0 && codeTaxInspectionType != null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }
