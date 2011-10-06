@@ -38,8 +38,19 @@ public class TaxInspectionBean extends AbstractBean {
 	}
 
 	@SuppressWarnings("unchecked")
+	public TaxInspection getTaxInspectionByCode(Integer code) {
+		List<TaxInspection> resultCollection = sqlSession().selectList(NS + ".selectTaxInspectionByCode", code);
+		return resultCollection.isEmpty()? null: resultCollection.get(0);
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspections() {
 		return (List<TaxInspection>)sqlSession().selectList(NS + ".selectAllTaxInspections");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TaxInspection> getTaxInspectionsUniqueCodeWithName() {
+		return (List<TaxInspection>)sqlSession().selectList(NS + ".selectAllTaxInspectionsCodeWithName");
 	}
 
     public Integer getTaxInspectionsCount(){

@@ -4,13 +4,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
     <wicket:head>
-        <title wicket:id="title"></title>
+        <title wicket:id="title_create"></title>
+        <title wicket:id="title_edit"></title>
     </wicket:head>
 </head>
 
 <body>
 <wicket:extend>
-    <h1><wicket:message key="title"/></h1>
+    <h1>
+		<span wicket:id="title_create2"></span>
+		<span wicket:id="title_edit2"></span>
+	</h1>
 	<div wicket:id="messages"></div>
 
     <form action="#" wicket:id="form">

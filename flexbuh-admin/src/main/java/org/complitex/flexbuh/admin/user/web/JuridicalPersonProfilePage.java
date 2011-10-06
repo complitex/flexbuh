@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.PersonType;
@@ -20,7 +21,7 @@ import javax.ejb.EJB;
  * @author Pavel Sknar
  *         Date: 02.09.11 16:11
  */
-public class JuridicalPersonProfileCreate extends FormTemplatePage {
+public class JuridicalPersonProfilePage extends FormTemplatePage {
     @EJB
     private TaxInspectionBean taxInspectionBean;
 
@@ -33,10 +34,57 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 	@EJB
 	private SessionBean sessionBean;
 
-	private PersonProfile personProfile = new PersonProfile();
+	private PersonProfile personProfile;
 
-    public JuridicalPersonProfileCreate() {
-        add(new Label("title", getString("title")));
+	public JuridicalPersonProfilePage() {
+		personProfile = new PersonProfile();
+		init();
+	}
+
+	public JuridicalPersonProfilePage(PersonProfile personProfile) {
+		this.personProfile = personProfile;
+		init();
+	}
+
+	public JuridicalPersonProfilePage(PageParameters pageParameters) {
+		if (!pageParameters.isEmpty()) {
+			Long id = pageParameters.get("id").toLongObject();
+			personProfile = personProfileBean.getPersonProfile(id);
+
+			if (personProfile != null && !personProfile.getSessionId().equals(getSessionId(false))){
+				// person profile not found
+				error(getString("error_person_profile_failed_session"));
+				setResponsePage(UserProfileView.class);
+			} if (personProfile != null) {
+				init();
+			} else {
+				// person profile not found
+				error(getString("error_person_profile_not_found"));
+				setResponsePage(UserProfileView.class);
+			}
+		} else {
+			personProfile = new PersonProfile();
+			init();
+		}
+	}
+
+	public void init() {
+		final Label titleCreate = new Label("title_create", getString("title_create"));
+		add(titleCreate);
+        final Label titleCreate2 = new Label("title_create2", getString("title_create"));
+		add(titleCreate2);
+		final Label titleEdit = new Label("title_edit", getString("title_edit"));
+		add(titleEdit);
+		final Label titleEdit2 = new Label("title_edit2", getString("title_edit"));
+		add(titleEdit2);
+
+		if (personProfile.getId() == null) {
+        	titleEdit.setVisible(false);
+        	titleEdit2.setVisible(false);
+		} else {
+			titleCreate.setVisible(false);
+			titleCreate2.setVisible(false);
+		}
 		add(new FeedbackPanel("messages"));
 
         Form form = new Form("form");
@@ -85,19 +133,22 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 		form.add(new TextField<>("numSvdPDV", new PropertyModel<String>(personProfile, "numSvdPDV")).setRequired(true));
 
         // Налоговая
-		final Model<TaxInspection> taxInspectionModel = new Model<TaxInspection>();
-        final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<TaxInspection>("taxInspection", taxInspectionModel,
-                taxInspectionBean.getTaxInspections(),
+		final Model<TaxInspection> taxInspectionModel = personProfile.getCodeTaxInspection() != null?
+				new Model<TaxInspection>(taxInspectionBean.getTaxInspectionByCode(personProfile.getCodeTaxInspection())):
+				new Model<TaxInspection>();
+        final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<>("taxInspection", taxInspectionModel,
+                taxInspectionBean.getTaxInspectionsUniqueCodeWithName(),
 				new IChoiceRenderer<TaxInspection>() {
 
                     @Override
                     public Object getDisplayValue(TaxInspection object) {
+						System.out.println("Locale: " + getLocale() + ", TaxInspection: " + object.toString());
                         return object.getName(getLocale());
                     }
 
                     @Override
                     public String getIdValue(TaxInspection object, int index) {
-                        return Long.toString(object.getId());
+                        return Integer.toString(object.getCode());
                     }
                 });
         taxInspection.setRequired(true);
@@ -110,12 +161,28 @@ public class JuridicalPersonProfileCreate extends FormTemplatePage {
 				PersonType personType = personTypeBean.findByCode("1");
 
 				personProfile.setCodeTaxInspection(taxInspectionModel.getObject().getCode());
-				personProfile.setPersonType(personType);
+				if (personProfile.getPersonType() == null) {
+					personProfile.setPersonType(personType);
+				}
 
-                personProfile.setSessionId(getSessionId(true));
-                personProfileBean.save(personProfile);
+				if (personProfile.getId() == null) {
+					personProfile.setSessionId(getSessionId(true));
+					personProfileBean.save(personProfile);
+				} else {
+					personProfileBean.update(personProfile);
+				}
+
+				titleEdit.setVisible(true);
+				titleEdit2.setVisible(true);
+				titleCreate.setVisible(false);
+				titleCreate2.setVisible(false);
 
                 info(getString("profile_saved"));
+				/*
+				PageParameters pageParameters = new PageParameters();
+                pageParameters.set("id", personProfile.getId());
+				setResponsePage(JuridicalPersonProfilePage.class, pageParameters);
+				*/
             }
 		});
 

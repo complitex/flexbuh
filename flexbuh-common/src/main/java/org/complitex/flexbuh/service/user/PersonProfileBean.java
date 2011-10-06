@@ -16,7 +16,7 @@ public class PersonProfileBean extends AbstractBean {
 	public static final String NS = PersonProfileBean.class.getName();
 
     public PersonProfile getPersonProfile(Long id){
-        return (PersonProfile) sqlSession().selectOne(NS + "selectPersonProfile", id);
+        return (PersonProfile) sqlSession().selectOne(NS + ".selectPersonProfile", id);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -30,5 +30,9 @@ public class PersonProfileBean extends AbstractBean {
 
     public void save(PersonProfile personProfile){
         sqlSession().insert(NS + ".insertPersonProfile", personProfile);
+    }
+
+	public void update(PersonProfile personProfile){
+        sqlSession().insert(NS + ".updatePersonProfile", personProfile);
     }
 }
