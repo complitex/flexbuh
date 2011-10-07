@@ -6,6 +6,8 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.convert.MaskConverter;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.entity.user.PersonType;
@@ -22,6 +24,9 @@ import javax.ejb.EJB;
  *         Date: 02.09.11 16:11
  */
 public class JuridicalPersonProfilePage extends FormTemplatePage {
+
+	private final static String PHONE_MASK = "###-###-####";
+
     @EJB
     private TaxInspectionBean taxInspectionBean;
 
@@ -106,10 +111,22 @@ public class JuridicalPersonProfilePage extends FormTemplatePage {
 		form.add(new TextField<>("address", new PropertyModel<String>(personProfile, "address")).setRequired(true));
 
 		// Телефон
-		form.add(new TextField<>("phone", new PropertyModel<String>(personProfile, "phone")).setRequired(true));
+		form.add(new TextField<String>("phone", new PropertyModel<String>(personProfile, "phone")){
+			@Override
+			public <String> IConverter<String> getConverter(final Class<String> type) {
+				// US telephone number mask
+				return new MaskConverter<>(PHONE_MASK);
+			}
+		}.setRequired(true));
 
 		// Факс
-		form.add(new TextField<>("fax", new PropertyModel<String>(personProfile, "fax")));
+		form.add(new TextField<String>("fax", new PropertyModel<String>(personProfile, "fax")){
+			@Override
+			public <String> IConverter<String> getConverter(final Class<String> type) {
+				// US telephone number mask
+				return new MaskConverter<>(PHONE_MASK);
+			}
+		});
 
 		// E-mail
 		form.add(new TextField<>("email", new PropertyModel<String>(personProfile, "email")));
@@ -186,6 +203,11 @@ public class JuridicalPersonProfilePage extends FormTemplatePage {
             }
 		});
 
-        form.add(new Button("cancel"));
+        form.add(new Button("cancel"){
+			@Override
+			public void onSubmit() {
+
+			}
+		});
     }
 }
