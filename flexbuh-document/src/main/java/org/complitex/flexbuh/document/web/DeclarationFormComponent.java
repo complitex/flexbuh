@@ -98,7 +98,7 @@ public class DeclarationFormComponent extends Panel{
             String templateName = declaration.getTemplateName();
 
             //Template
-            template = templateService.getDocument(templateName, new Declaration());
+            template = templateService.getDocumentXSL(templateName, new Declaration());
 
             //Schema
             schema = templateService.getSchema(templateName);
@@ -266,7 +266,7 @@ public class DeclarationFormComponent extends Panel{
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
                     @Override
                     protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        target.add(textField);
+                        //wtf
                     }
 
                     @Override
@@ -614,9 +614,7 @@ public class DeclarationFormComponent extends Panel{
 
     private void reorderMultiRowModel(List<WebMarkupContainer> stretchRows){
         for (int i = 0, size = stretchRows.size(); i < size; i++) {
-            for (Iterator<? extends Component> it = stretchRows.get(i).iterator(); it.hasNext(); ) {
-                Component c = it.next();
-
+            for (Component c : stretchRows.get(i)) {
                 if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel) {
                     ((DeclarationStringModel) ((TextField) c).getModel()).updateRowNum(i + 1);
                 }
@@ -636,11 +634,9 @@ public class DeclarationFormComponent extends Panel{
     }
 
     private void removeMultiRowTextField(WebMarkupContainer row){
-        for (Iterator<? extends Component> it = row.iterator();it.hasNext();){
-            Component c = it.next();
-
-            for (List list : multiRowTextFieldMap.values()){
-                if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel){
+        for (Component c : row) {
+            for (List list : multiRowTextFieldMap.values()) {
+                if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel) {
                     ((DeclarationStringModel) ((TextField) c).getModel()).removeValue();
                     list.remove(c);
                 }

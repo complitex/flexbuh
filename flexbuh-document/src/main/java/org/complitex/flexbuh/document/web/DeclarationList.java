@@ -149,7 +149,7 @@ public class DeclarationList extends TemplatePage{
             protected void populateItem(Item<Declaration> item) {
                 Declaration declaration = item.getModelObject();
 
-                item.add(new Label("name", declaration.getName()));
+                item.add(new Label("name", declaration.getTemplateName() + " " + declaration.getName()));
                 item.add(new Label("period_type", getString("period_type_" + declaration.getHead().getPeriodType())));
                 item.add(new Label("period_month", dateFormatSymbols.getMonths()[declaration.getHead().getPeriodMonth()-1]));
                 item.add(new Label("period_year", StringUtil.getString(declaration.getHead().getPeriodYear())));

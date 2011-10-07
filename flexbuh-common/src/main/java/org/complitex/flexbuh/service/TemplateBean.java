@@ -45,8 +45,8 @@ public class TemplateBean extends AbstractBean {
         return  (TemplateControl) sqlSession().selectOne(NS + ".selectTemplateControl", name);
     }
 
-    public TemplateControl getTemplateFO(String name){
-        return  (TemplateControl) sqlSession().selectOne(NS + ".selectTemplateFO", name);
+    public TemplateFO getTemplateFO(String name){
+        return  (TemplateFO) sqlSession().selectOne(NS + ".selectTemplateFO", name);
     }
 
 	/**
