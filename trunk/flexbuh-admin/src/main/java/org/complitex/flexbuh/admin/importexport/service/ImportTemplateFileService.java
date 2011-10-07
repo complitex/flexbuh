@@ -107,6 +107,6 @@ public class ImportTemplateFileService implements ImportFileService {
 	}
 
 	private String getName(@NotNull String fileName){
-        return fileName.substring(0, fileName.lastIndexOf('.'));
+        return fileName.substring(0, fileName.lastIndexOf('.')).toUpperCase();
     }
 }

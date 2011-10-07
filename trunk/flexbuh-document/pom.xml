@@ -78,5 +78,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+
+        <!--FOP-->
+        <dependency>
+            <groupId>fop</groupId>
+            <artifactId>fop</artifactId>
+        </dependency>
     </dependencies>
 </project>
