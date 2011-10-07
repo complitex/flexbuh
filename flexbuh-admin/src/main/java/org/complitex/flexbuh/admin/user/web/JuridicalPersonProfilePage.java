@@ -2,6 +2,7 @@ package org.complitex.flexbuh.admin.user.web;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -203,11 +204,16 @@ public class JuridicalPersonProfilePage extends FormTemplatePage {
             }
 		});
 
-        form.add(new Button("cancel"){
-			@Override
-			public void onSubmit() {
+        form.add(new Link("cancel") {
 
-			}
+            @Override
+            public void onClick() {
+                if (personProfile.getId() != null) {
+					personProfile = personProfileBean.getPersonProfile(personProfile.getId());
+				} else {
+					personProfile = new PersonProfile();
+				}
+            }
 		});
     }
 }
