@@ -1,7 +1,6 @@
 package org.complitex.flexbuh.document.test;
 
 import org.apache.fop.apps.Driver;
-import org.apache.fop.apps.Options;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
@@ -49,8 +48,6 @@ public class FopTestPage extends WebPage{
 
         try {
             FopConfiguration.init();
-
-            new Options(new File("C:\\OPZ\\fop\\conf\\userconfig.xml"));
 
             Driver driver = new Driver();
             //Setup logging here: driver.setLogger(...
