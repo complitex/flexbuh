@@ -24,12 +24,12 @@ import java.util.Date;
 public class ImportTemplateFileService implements ImportFileService {
 	private final static Logger log = LoggerFactory.getLogger(ImportTemplateFileService.class);
 
-    public static final String FILE_ENCODING = "CP1251";
+    public static final String DEFAULT_FILE_ENCODING = "CP1251";
 
     @EJB
     private TemplateBean templateBean;
 
-	@Resource
+    @Resource
     protected UserTransaction userTransaction;
 
 	@Override
@@ -55,10 +55,23 @@ public class ImportTemplateFileService implements ImportFileService {
 		 throw new NotImplementedException("use process(ImportListener listener, File importFile, Date beginDate, Date endDate)");
 	}
 
-	protected String getData(File file) throws IOException {
+
+    protected String getData(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+
+        if (br.readLine().toUpperCase().contains("UTF-8")) {
+            br.close();
+
+            return getData(file, "UTF-8");
+        }
+
+        return getData(file, DEFAULT_FILE_ENCODING);
+    }
+
+	protected String getData(File file, String encoding) throws IOException {
         StringBuilder data = new StringBuilder();
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), FILE_ENCODING));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
 
         String line;
 

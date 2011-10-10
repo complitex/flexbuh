@@ -7,7 +7,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -147,7 +146,7 @@ public class DeclarationList extends TemplatePage{
         DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
             @Override
             protected void populateItem(Item<Declaration> item) {
-                Declaration declaration = item.getModelObject();
+                final Declaration declaration = item.getModelObject();
 
                 item.add(new Label("name", declaration.getTemplateName() + " " + declaration.getName()));
                 item.add(new Label("period_type", getString("period_type_" + declaration.getHead().getPeriodType())));
@@ -158,9 +157,10 @@ public class DeclarationList extends TemplatePage{
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", declaration.getId());
 
-                item.add(new BookmarkablePageLinkPanel<>("action_edit", getString("edit"), DeclarationFormPage.class,
+                item.add(new BookmarkablePageLinkPanel<>("action_edit", getString("action_edit"), DeclarationFormPage.class,
                         pageParameters));
-                item.add(new EmptyPanel("action_download"));
+
+                item.add(new DeclarationPdfLink("action_pdf", declaration));
             }
         };
 
