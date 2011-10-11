@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.Region;
-import org.complitex.flexbuh.entity.dictionary.RegionName;
 import org.complitex.flexbuh.service.dictionary.RegionBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
@@ -58,15 +57,12 @@ public class RegionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<Region> item) {
+                Region region = item.getModelObject();
 
-                item.add(new Label("code", Integer.toString(item.getModelObject().getCode())));
-                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
-				for (RegionName regionName : item.getModelObject().getNames()) {
-					if ("uk".equals(regionName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", regionName.getValue()));
-					}
-				}
+                item.add(new Label("code", Integer.toString(region.getCode())));
+                item.add(new Label("begin_date", getStringDate(region.getBeginDate())));
+                item.add(new Label("end_date", getStringDate(region.getEndDate())));
+                item.add(new Label("name_uk", region.getNameUk()));
             }
         };
         form.add(dataView);

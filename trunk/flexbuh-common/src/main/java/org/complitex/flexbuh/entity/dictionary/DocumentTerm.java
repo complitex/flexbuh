@@ -99,7 +99,7 @@ public class DocumentTerm extends AbstractPeriodDictionary {
 				append("periodYear", periodYear).
 				append("beginDate", getBeginDate()).
 				append("endDate", getEndDate()).
-				append("uploadDate", getUploadDate()).
-				append("status", getStatus()).toString();
+				append("uploadDate", getUploadDate())
+                .toString();
 	}
 }

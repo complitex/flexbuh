@@ -6,8 +6,6 @@ import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
 import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
 import org.complitex.flexbuh.entity.dictionary.Currency;
-import org.complitex.flexbuh.entity.dictionary.CurrencyName;
-import org.complitex.flexbuh.service.LanguageBean;
 import org.complitex.flexbuh.service.dictionary.CurrencyBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,79 +28,53 @@ import java.util.List;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportCurrencyXMLService extends ImportDictionaryXMLService {
-	private final static Logger log = LoggerFactory.getLogger(ImportCurrencyXMLService.class);
+    private final static Logger log = LoggerFactory.getLogger(ImportCurrencyXMLService.class);
 
-	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
 
-	@EJB
-	private LanguageBean languageBean;
+    @EJB
+    private CurrencyBean currencyBean;
 
-	@EJB
-	private CurrencyBean currencyBean;
+    private Language ukLang = null;
+    private Language ruLang = null;
 
-	private Language ukLang = null;
-	private Language ruLang = null;
+    @Override
+    public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
+        super.process(sessionId, listener, importFile, beginDate, endDate);
+    }
 
-	@Override
-	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		initLang();
-		super.process(sessionId, listener, importFile, beginDate, endDate);
-	}
+    @Override
+    protected List<AbstractDictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+        Currency currency = new Currency();
+        currency.setUploadDate(importDate);
+        for (int j = 0; j < contentNodeRow.getLength(); j++) {
+            Node currentNode = contentNodeRow.item(j);
+            if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_CURRN_N")) {
+                currency.setCodeNumber(Integer.parseInt(currentNode.getTextContent()));
+            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_CURRN_C")) {
+                currency.setCodeString(currentNode.getTextContent());
+            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_CUR")) {
+                currency.setNameUk(currentNode.getTextContent());
+            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_RUS")) {
+                currency.setNameRu(currentNode.getTextContent());
+            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_BEGIN")) {
+                currency.setBeginDate(parseDate(currentNode.getTextContent()));
+            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_END")) {
+                currency.setEndDate(parseDate(currentNode.getTextContent()));
+            }
+        }
+        Validate.isTrue(currency.validate(), "Invalid processing currency: " + currency);
 
-	@Override
-	protected List<AbstractDictionary> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
-		Currency currency = new Currency();
-		currency.setUploadDate(importDate);
-		for (int j = 0; j < contentNodeRow.getLength(); j++) {
-			Node currentNode = contentNodeRow.item(j);
-			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_CURRN_N")) {
-				currency.setCodeNumber(Integer.parseInt(currentNode.getTextContent()));
-			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_CURRN_C")) {
-				currency.setCodeString(currentNode.getTextContent());
-			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_CUR")) {
-				if (currency.getNames() == null) {
-					currency.setNames(Lists.<CurrencyName>newArrayList());
-				}
-				CurrencyName ukName = new CurrencyName();
-				ukName.setLanguage(ukLang);
-				ukName.setValue(currentNode.getTextContent());
-				currency.getNames().add(ukName);
-			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_RUS")) {
-				if (currency.getNames() == null) {
-					currency.setNames(Lists.<CurrencyName>newArrayList());
-				}
-				CurrencyName ruName = new CurrencyName();
-				ruName.setLanguage(ruLang);
-				ruName.setValue(currentNode.getTextContent());
-				currency.getNames().add(ruName);
-			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_BEGIN")) {
-				currency.setBeginDate(parseDate(currentNode.getTextContent()));
-			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_END")) {
-				currency.setEndDate(parseDate(currentNode.getTextContent()));
-			}
-		}
-		Validate.isTrue(currency.validate(), "Invalid processing currency: " + currency);
-		return Lists.newArrayList((AbstractDictionary)currency);
-	}
+        return Lists.newArrayList((AbstractDictionary)currency);
+    }
 
     @Override
     public void create(AbstractDictionary abstractDictionary) {
         currencyBean.save((Currency) abstractDictionary);
     }
 
-    private void initLang() {
-		if (ukLang == null) {
-			ukLang = languageBean.getLanguageByLangIsoCode("uk");
-			Validate.notNull(ukLang, "'uk' language not find");
-		}
-		if (ruLang == null) {
-			ruLang = languageBean.getLanguageByLangIsoCode("ru");
-			Validate.notNull(ukLang, "'ru' language not find");
-		}
-	}
-
-	@NotNull
-	private Date parseDate(@NotNull String stringDate) throws ParseException {
-		return DATE_FORMAT.parse(stringDate);
-	}
+    @NotNull
+    private Date parseDate(@NotNull String stringDate) throws ParseException {
+        return DATE_FORMAT.parse(stringDate);
+    }
 }

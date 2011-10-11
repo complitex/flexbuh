@@ -5,19 +5,11 @@
     <resultMap id="regionResultMap" type="org.complitex.flexbuh.entity.dictionary.Region"
                extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result property="code" column="code"/>
-
-        <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.RegionName" column="id"
-                    select="selectRegionNames"/>
-    </resultMap>
-
-    <resultMap id="regionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.RegionName"
-               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
-        <result column="region_id" property="regionId"/>
     </resultMap>
 
     <insert id="insertRegion" parameterType="org.complitex.flexbuh.entity.dictionary.Region" keyProperty="id" useGeneratedKeys="true">
-        insert into `region` (`upload_date`, `begin_date`, `end_date`, `code`)
-        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{code})
+        insert into `region` (`upload_date`, `begin_date`, `end_date`, `code`, `name_ru`, `name_uk`)
+        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{nameRu}, #{nameUk})
     </insert>
 
 	<select id="selectAllRegions" resultMap="regionResultMap">
@@ -35,12 +27,4 @@
 	<select id="selectRegion" parameterType="long" resultMap="regionResultMap">
         select * from `region` where `id` = #{id}
     </select>
-
-    <select id="selectRegionNames" parameterType="long" resultMap="regionNameResultMap">
-		select * from `region_name` where `region_id` = #{id}
-	</select>
-
-	<insert id="insertRegionName" parameterType="org.complitex.flexbuh.entity.dictionary.RegionName" keyProperty="id">
-        insert into `region_name` (`region_id`, `language_id`, `value`) values (#{regionId}, #{language.id}, #{value})
-    </insert>
 </mapper>

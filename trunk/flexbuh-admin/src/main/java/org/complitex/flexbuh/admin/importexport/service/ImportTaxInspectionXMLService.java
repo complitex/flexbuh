@@ -5,10 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
 import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
-import org.complitex.flexbuh.entity.dictionary.AreaName;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.entity.dictionary.TaxInspectionName;
-import org.complitex.flexbuh.service.LanguageBean;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +29,12 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService {
 	private final static Logger log = LoggerFactory.getLogger(ImportTaxInspectionXMLService.class);
 
 	@EJB
-	private LanguageBean languageBean;
-
-	@EJB
 	private TaxInspectionBean taxInspectionBean;
 
 	private Language ukLang = null;
 
 	@Override
 	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		initLang();
 		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
@@ -94,21 +87,9 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService {
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "T_STI")) {
 				taxInspection.setCodeTaxInspectionType(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_STI")) {
-				if (taxInspection.getNames() == null) {
-					taxInspection.setNames(Lists.<TaxInspectionName>newArrayList());
-				}
-				TaxInspectionName ruName = new TaxInspectionName();
-				ruName.setLanguage(ukLang);
-				ruName.setValue(currentNode.getTextContent());
-				taxInspection.getNames().add(ruName);
+                taxInspection.setNameUk(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_RAJ")) {
-				if (taxInspection.getAreaNames() == null) {
-					taxInspection.setAreaNames(Lists.<AreaName> newArrayList());
-				}
-				AreaName ruName = new AreaName();
-				ruName.setLanguage(ukLang);
-				ruName.setValue(currentNode.getTextContent());
-				taxInspection.getAreaNames().add(ruName);
+                taxInspection.setAreaNameUk(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_BEGIN")) {
 				taxInspection.setBeginDate(beginDate);
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_END")) {
@@ -116,13 +97,6 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService {
 			}
 		}
 		return taxInspection;
-	}
-
-	private void initLang() {
-		if (ukLang == null) {
-			ukLang = languageBean.getLanguageByLangIsoCode("uk");
-			Validate.notNull(ukLang, "'uk' language not find");
-		}
 	}
 }
 

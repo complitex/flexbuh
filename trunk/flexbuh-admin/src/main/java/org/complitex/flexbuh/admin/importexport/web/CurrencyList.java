@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.Currency;
-import org.complitex.flexbuh.entity.dictionary.CurrencyName;
 import org.complitex.flexbuh.service.dictionary.CurrencyBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
@@ -57,19 +56,15 @@ public class CurrencyList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<Currency> item) {
+                Currency currency = item.getModelObject();
 
-                item.add(new Label("code_number", Integer.toString(item.getModelObject().getCodeNumber())));
-                item.add(new Label("code_string", item.getModelObject().getCodeString()));
-                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
+                item.add(new Label("code_number", Integer.toString(currency.getCodeNumber())));
+                item.add(new Label("code_string", currency.getCodeString()));
+                item.add(new Label("begin_date", getStringDate(currency.getBeginDate())));
+                item.add(new Label("end_date", getStringDate(currency.getEndDate())));
 
-				for (CurrencyName dictionaryName : item.getModelObject().getNames()) {
-					if ("uk".equals(dictionaryName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", dictionaryName.getValue()));
-					} else if ("ru".equals(dictionaryName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_ru", dictionaryName.getValue()));
-					}
-				}
+                item.add(new Label("name_uk", currency.getNameUk()));
+                item.add(new Label("name_ru", currency.getNameRu()));
             }
         };
         form.add(dataView);

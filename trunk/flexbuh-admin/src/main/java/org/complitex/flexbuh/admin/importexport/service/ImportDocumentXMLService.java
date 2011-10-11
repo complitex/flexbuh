@@ -2,11 +2,8 @@ package org.complitex.flexbuh.admin.importexport.service;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
 import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.entity.dictionary.DocumentName;
-import org.complitex.flexbuh.service.LanguageBean;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +27,12 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
 	private final static Logger log = LoggerFactory.getLogger(ImportDocumentXMLService.class);
 
 	@EJB
-	private LanguageBean languageBean;
-
-	@EJB
 	private DocumentBean documentBean;
 
 	private Language ukLang = null;
 
 	@Override
 	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		initLang();
 		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
@@ -57,13 +50,7 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_SUB")) {
 				document.setCDocSub(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME")) {
-				if (document.getNames() == null) {
-					document.setNames(Lists.<DocumentName>newArrayList());
-				}
-				DocumentName ukName = new DocumentName();
-				ukName.setLanguage(ukLang);
-				ukName.setValue(currentNode.getTextContent());
-				document.getNames().add(ukName);
+                document.setNameUk(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_DOC_CNT_SET")) {
 				if ("0".equals(currentNode.getTextContent())) {
 					document.setCntSet(Boolean.FALSE);
@@ -85,13 +72,6 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
 //		Validate.isTrue(document.validate(), "Invalid processing document: " + document);
 
 		return Lists.newArrayList(document);
-	}
-
-	private void initLang() {
-		if (ukLang == null) {
-			ukLang = languageBean.getLanguageByLangIsoCode("uk");
-			Validate.notNull(ukLang, "'uk' language not find");
-		}
 	}
 
     @Override

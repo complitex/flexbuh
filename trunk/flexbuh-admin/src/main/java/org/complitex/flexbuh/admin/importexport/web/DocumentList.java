@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.entity.dictionary.DocumentName;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
@@ -58,20 +57,18 @@ public class DocumentList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<Document> item) {
+                Document document = item.getModelObject();
 
-                item.add(new Label("type", item.getModelObject().getCDoc()));
-                item.add(new Label("sub_type", item.getModelObject().getCDocSub()));
-                item.add(new Label("parent_document_type", item.getModelObject().getParentCDoc()));
-                item.add(new Label("parent_document_sub_type", item.getModelObject().getParentCDocSub()));
-                item.add(new Label("cnt_set", Boolean.toString(item.getModelObject().getCntSet())));
-                item.add(new Label("selected", Boolean.toString(item.getModelObject().getSelected())));
-                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
-				for (DocumentName documentName : item.getModelObject().getNames()) {
-					if ("uk".equals(documentName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", documentName.getValue()));
-					}
-				}
+                item.add(new Label("type", document.getCDoc()));
+                item.add(new Label("sub_type", document.getCDocSub()));
+                item.add(new Label("parent_document_type", document.getParentCDoc()));
+                item.add(new Label("parent_document_sub_type", document.getParentCDocSub()));
+                item.add(new Label("cnt_set", Boolean.toString(document.getCntSet())));
+                item.add(new Label("selected", Boolean.toString(document.getSelected())));
+                item.add(new Label("begin_date", getStringDate(document.getBeginDate())));
+                item.add(new Label("end_date", getStringDate(document.getEndDate())));
+
+                item.add(new Label("name_uk", document.getNameUk()));
             }
         };
         form.add(dataView);

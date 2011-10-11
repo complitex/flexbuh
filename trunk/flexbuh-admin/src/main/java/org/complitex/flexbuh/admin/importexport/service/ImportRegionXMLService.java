@@ -3,10 +3,7 @@ package org.complitex.flexbuh.admin.importexport.service;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.complitex.flexbuh.entity.Language;
 import org.complitex.flexbuh.entity.dictionary.Region;
-import org.complitex.flexbuh.entity.dictionary.RegionName;
-import org.complitex.flexbuh.service.LanguageBean;
 import org.complitex.flexbuh.service.dictionary.RegionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +31,10 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService<Region> {
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
 
 	@EJB
-	private LanguageBean languageBean;
-
-	@EJB
 	private RegionBean regionBean;
-
-	private Language ukLang = null;
 
 	@Override
 	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		initLang();
 		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
@@ -58,13 +49,7 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService<Region> {
 			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "CODE")) {
 				region.setCode(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME")) {
-				if (region.getNames() == null) {
-					region.setNames(Lists.<RegionName>newArrayList());
-				}
-				RegionName ruName = new RegionName();
-				ruName.setLanguage(ukLang);
-				ruName.setValue(currentNode.getTextContent());
-				region.getNames().add(ruName);
+                region.setNameUk(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_BEGIN") &&
 					StringUtils.isNotEmpty(currentNode.getTextContent())) {
 				region.setBeginDate(parseDate(currentNode.getTextContent()));
@@ -75,13 +60,6 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService<Region> {
 		}
 		Validate.isTrue(region.validate(), "Invalid processing document: " + region);
 		return Lists.newArrayList(region);
-	}
-
-	private void initLang() {
-		if (ukLang == null) {
-			ukLang = languageBean.getLanguageByLangIsoCode("uk");
-			Validate.notNull(ukLang, "'uk' language not find");
-		}
 	}
 
 	@NotNull

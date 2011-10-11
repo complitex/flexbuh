@@ -63,7 +63,7 @@ public class ImportDictionary extends TemplatePage {
 
 							@Override
 							public Object getDisplayValue(DictionaryType object) {
-								return object.getDefaultName();
+								return object.getName(getLocale());
 							}
 
 							@Override
@@ -98,7 +98,7 @@ public class ImportDictionary extends TemplatePage {
 				log.debug("Begin date {}, end date {}", beginDateModel.getObject(), endDateModel.getObject());
 
 				for (DictionaryType dictionaryType : dictionaryModel.getObject()) {
-					fileNames.addAll(dictionaryType.getFileNames());
+					fileNames.add(dictionaryType.getFileName());
 				}
 
 				DictionaryImportListener importListener = new DictionaryImportListener(fileNames.size());

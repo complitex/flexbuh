@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
-import org.complitex.flexbuh.entity.dictionary.NormativeDocumentName;
 import org.complitex.flexbuh.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
@@ -57,17 +56,14 @@ public class DocumentVersionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<DocumentVersion> item) {
+                DocumentVersion documentVersion = item.getModelObject();
 
-                item.add(new Label("type", item.getModelObject().getCDoc()));
-                item.add(new Label("sub_type", item.getModelObject().getCDocSub()));
-                item.add(new Label("version", Integer.toString(item.getModelObject().getCDocVer())));
-                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date",getStringDate(item.getModelObject().getEndDate())));
-				for (NormativeDocumentName documentName : item.getModelObject().getNormativeDocumentNames()) {
-					if ("uk".equals(documentName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", documentName.getValue()));
-					}
-				}
+                item.add(new Label("type", documentVersion.getCDoc()));
+                item.add(new Label("sub_type", documentVersion.getCDocSub()));
+                item.add(new Label("version", Integer.toString(documentVersion.getCDocVer())));
+                item.add(new Label("begin_date", getStringDate(documentVersion.getBeginDate())));
+                item.add(new Label("end_date",getStringDate(documentVersion.getEndDate())));
+                item.add(new Label("name_uk", documentVersion.getNameUk()));
             }
         };
         form.add(dataView);
