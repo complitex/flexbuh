@@ -1,9 +1,7 @@
 package org.complitex.flexbuh.service.dictionary;
 
 import org.complitex.flexbuh.entity.AbstractFilter;
-import org.complitex.flexbuh.entity.dictionary.AreaName;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.entity.dictionary.TaxInspectionName;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -19,18 +17,6 @@ public class TaxInspectionBean extends AbstractBean {
 
     public void save(TaxInspection taxInspection) {
         sqlSession().insert(NS + ".insertTaxInspection", taxInspection);
-
-		for (TaxInspectionName taxInspectionName : taxInspection.getNames()) {
-            taxInspectionName.setTaxInspectionId(taxInspection.getId());
-
-			sqlSession().insert(NS + ".insertTaxInspectionName", taxInspectionName);
-		}
-
-		for (AreaName areaName : taxInspection.getAreaNames()) {
-            areaName.setTaxInspectionId(taxInspection.getId());
-
-			sqlSession().insert(NS + ".insertAreaName", areaName);
-		}
     }
 
     public TaxInspection getTaxInspection(Long id) {

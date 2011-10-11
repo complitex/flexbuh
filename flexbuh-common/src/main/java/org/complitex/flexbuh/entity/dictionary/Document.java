@@ -11,7 +11,6 @@ import java.util.List;
 public class Document extends AbstractPeriodDictionary {
 	private String cDoc;
 	private String cDocSub;
-	private List<DocumentName> names;
 
 	private Boolean cntSet; // Может подаваться в отчетном периоде более одного раза
 	private String parentCDoc;
@@ -42,14 +41,6 @@ public class Document extends AbstractPeriodDictionary {
 
 	public void setCDocSub(String cDocSub) {
 		this.cDocSub = cDocSub;
-	}
-
-	public List<DocumentName> getNames() {
-		return names;
-	}
-
-	public void setNames(List<DocumentName> names) {
-		this.names = names;
 	}
 
 	public Boolean getCntSet() {
@@ -94,8 +85,7 @@ public class Document extends AbstractPeriodDictionary {
 
     @Override
 	public boolean validate() {
-		return  super.validate() &&
-				cDoc != null && cDocSub != null && names != null && names.size() > 0 && cntSet != null && selected != null;
+		return  super.validate() && cDoc != null && cDocSub != null && cntSet != null && selected != null;
 	}
 
 	@Override

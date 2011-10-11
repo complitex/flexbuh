@@ -9,41 +9,24 @@
         <result property="codeArea" column="code_area"/>
         <result property="codeTaxInspectionType" column="code_tax_inspection_type"/>
 
-        <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.TaxInspectionName"
-                    column="id" select="selectTaxInspectionNames"/>
-        <collection property="areaNames" ofType="org.complitex.flexbuh.entity.dictionary.AreaName"
-                    column="id" select="selectAreaNames"/>
-    </resultMap>
-
-	<resultMap id="taxInspectionResultMap2" type="org.complitex.flexbuh.entity.dictionary.TaxInspection">
-        <result property="code" column="tax_inspection_code"/>
-
-        <collection property="names" resultMap="taxInspectionNameResultMap"/>
-    </resultMap>
-
-    <resultMap id="taxInspectionNameResultMap" type="org.complitex.flexbuh.entity.dictionary.TaxInspectionName"
-               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
-        <result column="tax_inspection_id" property="taxInspectionId"/>
-    </resultMap>
-
-    <resultMap id="areaNameResultMap" type="org.complitex.flexbuh.entity.dictionary.AreaName"
-               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
-        <result column="tax_inspection_id" property="taxInspectionId"/>
+        <result property="areaNameRu" column="area_name_ru"/>
+        <result property="areaNameUk" column="area_name_uk"/>
     </resultMap>
 
     <insert id="insertTaxInspection" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspection" keyProperty="id" useGeneratedKeys="true">
-        insert into `tax_inspection` (`upload_date`, `begin_date`, `end_date`, `code`, `region_code`,`code_area`,
-          `code_tax_inspection_type`)
+        insert into `tax_inspection`
+          (`upload_date`, `begin_date`, `end_date`, `code`, `region_code`,`code_area`, `code_tax_inspection_type`,
+            `name_ru`, `name_uk`, `area_name_ru`, `area_name_uk`)
         values
-          (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{regionCode}, #{codeArea}, #{codeTaxInspectionType})
+          (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{regionCode}, #{codeArea}, #{codeTaxInspectionType},
+            #{nameRu}, #{nameUk}, #{areaNameRu}, #{areaNameUk})
     </insert>
 
-    <select id="selectAllTaxInspectionsCodeWithName" resultMap="taxInspectionResultMap2">
-		select distinct ti.`code` as `tax_inspection_code`, tin.`value` as `value`, tin.`language_id` as `language_id`
-		    from `tax_inspection` ti
-		    inner join `tax_inspection_name` tin on ti.`id` = tin.`tax_inspection_id`
-        	where (ti.`begin_date` &lt; now() or ti.`begin_date` is null) and (ti.`end_date` &gt; now() or ti.`end_date` is null)
-        	order by tin.`value`
+    <select id="selectAllTaxInspectionsCodeWithName" resultMap="taxInspectionResultMap">
+		select distinct `code`, `name_ru`, `name_uk`
+		    from `tax_inspection`
+        	where (`begin_date` &lt; now() or `begin_date` is null) and (`end_date` &gt; now() or `end_date` is null)
+        	order by `name_uk`, `name_ru`
     </select>
 
     <select id="selectAllTaxInspectionsCount" resultType="int">
@@ -61,25 +44,4 @@
 	<select id="selectTaxInspectionByCode" parameterType="int" resultMap="taxInspectionResultMap">
         select * from `tax_inspection` where `code` = #{code}
     </select>
-
-    <!--TaxInspectionName-->
-
-    <select id="selectTaxInspectionNames" parameterType="long" resultMap="taxInspectionNameResultMap">
-		select * from `tax_inspection_name` where `tax_inspection_id` = #{id}
-	</select>
-
-    <insert id="insertTaxInspectionName" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspectionName" keyProperty="id" useGeneratedKeys="true">
-        insert into `tax_inspection_name` (`tax_inspection_id`, `language_id`, `value`)
-        	values (#{taxInspectionId}, #{language.id}, #{value})
-    </insert>
-
-    <!--AreaName-->
-
-    <select id="selectAreaNames" parameterType="long" resultMap="areaNameResultMap">
-		select * from `area_name` where `tax_inspection_id` = #{id}
-	</select>
-
-    <insert id="insertAreaName" parameterType="org.complitex.flexbuh.entity.dictionary.AreaName" keyProperty="id" useGeneratedKeys="true">
-        insert into `area_name` (`tax_inspection_id`, `language_id`, `value`) values (#{taxInspectionId}, #{language.id}, #{value})
-    </insert>
 </mapper>

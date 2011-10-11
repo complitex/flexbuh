@@ -57,7 +57,7 @@ public class DeclarationCreate extends FormTemplatePage{
             @Override
             public Object getDisplayValue(Document object) {
                 //todo add locale
-                return object.getCDoc() +" " + object.getCDocSub() + " " + object.getNames().get(0).getValue();
+                return object.getCDoc() +" " + object.getCDocSub() + " " + object.getName(getLocale());
             }
 
             @Override

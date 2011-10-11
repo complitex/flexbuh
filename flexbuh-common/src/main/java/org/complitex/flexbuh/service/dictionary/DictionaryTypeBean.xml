@@ -2,17 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.service.dictionary.DictionaryTypeBean">
-    <resultMap id="dictionaryTypeResultMap" type="org.complitex.flexbuh.entity.dictionary.DictionaryType">
-		<id property="id" column="id"/>
+    <resultMap id="dictionaryTypeResultMap" type="org.complitex.flexbuh.entity.dictionary.DictionaryType"
+            extends="org.complitex.flexbuh.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
 		<result column="code" property="code"/>
-		<collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName" column="id"
-                    select="selectDictionaryTypeNames"/>
-		<collection property="fileNames" ofType="java.lang.String" column="id" select="selectDictionaryTypesFileName"/>
-    </resultMap>
-
-    <resultMap id="dictionaryTypeNameResultMap" type="org.complitex.flexbuh.entity.dictionary.DictionaryTypeName"
-               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
-        <result column="dictionary_type_id" property="dictionaryTypeId"/>
+        <result column="file_name" property="fileName"/>
     </resultMap>
 
 	<select id="selectAllDictionaryTypes" resultMap="dictionaryTypeResultMap">
@@ -34,10 +27,4 @@
     <select id="selectAllDictionaryTypesCount" resultType="int">
         select count(*) from `dictionary_type`
     </select>
-
-    <!--DictionaryTypeName-->
-
-    <select id="selectDictionaryTypeNames" parameterType="long" resultMap="dictionaryTypeNameResultMap">
-		select * from `dictionary_type_name` where `dictionary_type_id` = #{id}
-	</select>
 </mapper>

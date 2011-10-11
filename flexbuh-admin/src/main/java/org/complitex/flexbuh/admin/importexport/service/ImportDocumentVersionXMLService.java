@@ -5,8 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.Language;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
-import org.complitex.flexbuh.entity.dictionary.NormativeDocumentName;
-import org.complitex.flexbuh.service.LanguageBean;
 import org.complitex.flexbuh.service.dictionary.DocumentVersionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +34,10 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 	@EJB
 	private DocumentVersionBean documentVersionBean;
 
-	@EJB
-	private LanguageBean languageBean;
-
 	private Language ukLang = null;
 
 	@Override
 	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		initLang();
 		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
@@ -68,13 +62,7 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 					StringUtils.isNotEmpty(currentNode.getTextContent())) {
 				documentVersion.setEndDate(parseDate(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NORM_DOC")) {
-				if (documentVersion.getNormativeDocumentNames() == null) {
-					documentVersion.setNormativeDocumentNames(Lists.<NormativeDocumentName>newArrayList());
-				}
-				NormativeDocumentName ukName = new NormativeDocumentName();
-				ukName.setLanguage(ukLang);
-				ukName.setValue(currentNode.getTextContent());
-				documentVersion.getNormativeDocumentNames().add(ukName);
+                documentVersion.setNameUk(currentNode.getTextContent());
 			}
 		}
 		Validate.isTrue(documentVersion.validate(), "Invalid processing document term: " + documentVersion);
@@ -90,12 +78,5 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
     @NotNull
 	private Date parseDate(@NotNull String stringDate) throws ParseException {
 		return DATE_FORMAT.parse(stringDate);
-	}
-
-	private void initLang() {
-		if (ukLang == null) {
-			ukLang = languageBean.getLanguageByLangIsoCode("uk");
-			Validate.notNull(ukLang, "'uk' language not find");
-		}
 	}
 }

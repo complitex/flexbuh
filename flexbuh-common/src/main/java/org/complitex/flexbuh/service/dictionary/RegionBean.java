@@ -2,7 +2,6 @@ package org.complitex.flexbuh.service.dictionary;
 
 import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.Region;
-import org.complitex.flexbuh.entity.dictionary.RegionName;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -18,12 +17,6 @@ public class RegionBean extends AbstractBean {
 
     public void save(Region region) {
         sqlSession().insert(NS + ".insertRegion", region);
-
-        for (RegionName regionName : region.getNames()) {
-            regionName.setRegionId(region.getId());
-
-            sqlSession().insert(NS + ".insertRegionName", regionName);
-        }
     }
 
     public Region getRegion(Long id) {

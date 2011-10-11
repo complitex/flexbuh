@@ -6,19 +6,11 @@
                extends="org.complitex.flexbuh.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result column="code_number" property="codeNumber"/>
         <result column="code_string" property="codeString"/>
-
-        <collection property="names" ofType="org.complitex.flexbuh.entity.dictionary.CurrencyName" column="id"
-                    select="selectCurrencyNames"/>
-    </resultMap>
-
-    <resultMap id="currencyNameResultMap" type="org.complitex.flexbuh.entity.dictionary.CurrencyName"
-               extends="org.complitex.flexbuh.service.LanguageBean.localizedStringResultMap">
-        <result column="currency_id" property="currencyId"/>
     </resultMap>
 
     <insert id="insertCurrency" parameterType="org.complitex.flexbuh.entity.dictionary.Currency" keyProperty="id" useGeneratedKeys="true">
-        insert into `currency` (`upload_date`, `begin_date`, `end_date`, `code_number`, `code_string`)
-        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString})
+        insert into `currency` (`upload_date`, `begin_date`, `end_date`, `code_number`, `code_string`, `name_ru`, `name_uk`)
+        	values (#{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString}, #{nameRu}, #{nameUk})
     </insert>
 
     <select id="selectAllCurrencies" resultMap="currencyResultMap">
@@ -36,15 +28,4 @@
     <select id="selectCurrency" parameterType="long" resultMap="currencyResultMap">
         select * from `currency` where `id` = #{id}
     </select>
-
-    <!--Currency Name-->
-
-    <select id="selectCurrencyNames" parameterType="long" resultMap="currencyNameResultMap">
-		select * from `currency_name` where `currency_id` = #{id}
-	</select>
-
-    <insert id="insertCurrencyName" parameterType="org.complitex.flexbuh.entity.dictionary.CurrencyName"
-            keyProperty="id" useGeneratedKeys="true">
-        insert into `currency_name` (`currency_id`, `language_id`, `value`) values (#{currencyId}, #{language.id}, #{value})
-    </insert>
 </mapper>

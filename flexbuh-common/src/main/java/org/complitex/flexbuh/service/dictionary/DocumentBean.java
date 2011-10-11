@@ -2,7 +2,6 @@ package org.complitex.flexbuh.service.dictionary;
 
 import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.entity.dictionary.DocumentName;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -18,12 +17,6 @@ public class DocumentBean extends AbstractBean {
 
     public void save(Document document) {
         sqlSession().insert(NS + ".insertDocument", document);
-
-		for (DocumentName documentName : document.getNames()) {
-            documentName.setDocumentId(document.getId());
-
-			sqlSession().insert(NS + ".insertDocumentName", documentName);
-		}
     }
 
     public Document getDocument(Long id) {

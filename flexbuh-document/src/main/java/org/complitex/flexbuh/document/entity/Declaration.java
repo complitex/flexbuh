@@ -160,7 +160,7 @@ public class Declaration implements Serializable{
 
         head.setCDoc(document.getCDoc());
         head.setCDocSub(document.getCDocSub());
-        name = document.getNames().get(0).getValue();
+        name = document.getNameUk(); //todo add locale
     }
 
     public Long getId() {

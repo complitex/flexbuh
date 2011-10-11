@@ -6,9 +6,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.complitex.flexbuh.entity.dictionary.AreaName;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.entity.dictionary.TaxInspectionName;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
@@ -58,23 +56,17 @@ public class TaxInspectionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<TaxInspection> item) {
+                TaxInspection taxInspection = item.getModelObject();
 
-                item.add(new Label("code", Integer.toString(item.getModelObject().getCode())));
-                item.add(new Label("region_code", Integer.toString(item.getModelObject().getRegionCode())));
-                item.add(new Label("area_code", Integer.toString(item.getModelObject().getCodeArea())));
-                item.add(new Label("tax_inspection_type_code", Integer.toString(item.getModelObject().getCodeTaxInspectionType())));
-                item.add(new Label("begin_date", getStringDate(item.getModelObject().getBeginDate())));
-                item.add(new Label("end_date", getStringDate(item.getModelObject().getEndDate())));
-				for (TaxInspectionName taxInspectionName : item.getModelObject().getNames()) {
-					if ("uk".equals(taxInspectionName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("name_uk", taxInspectionName.getValue()));
-					}
-				}
-				for (AreaName areaName : item.getModelObject().getAreaNames()) {
-					if ("uk".equals(areaName.getLanguage().getLangIsoCode())) {
-						item.add(new Label("area_name_uk", areaName.getValue()));
-					}
-				}
+                item.add(new Label("code", Integer.toString(taxInspection.getCode())));
+                item.add(new Label("region_code", Integer.toString(taxInspection.getRegionCode())));
+                item.add(new Label("area_code", Integer.toString(taxInspection.getCodeArea())));
+                item.add(new Label("tax_inspection_type_code", Integer.toString(taxInspection.getCodeTaxInspectionType())));
+                item.add(new Label("begin_date", getStringDate(taxInspection.getBeginDate())));
+                item.add(new Label("end_date", getStringDate(taxInspection.getEndDate())));
+
+                item.add(new Label("name_uk",taxInspection.getNameUk()));
+                item.add(new Label("area_name_uk", taxInspection.getAreaNameUk()));
             }
         };
         form.add(dataView);

@@ -2,7 +2,6 @@ package org.complitex.flexbuh.service.dictionary;
 
 import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
-import org.complitex.flexbuh.entity.dictionary.NormativeDocumentName;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -18,12 +17,6 @@ public class DocumentVersionBean extends AbstractBean {
 
     public void save(DocumentVersion documentVersion) {
         sqlSession().insert(NS + ".insertDocumentVersion", documentVersion);
-
-        for (NormativeDocumentName normativeDocumentName : documentVersion.getNormativeDocumentNames()) {
-            normativeDocumentName.setDocumentVersionId(documentVersion.getId());
-
-            sqlSession().insert(NS + ".insertNormativeDocumentName", normativeDocumentName);
-        }
     }
 
     public DocumentVersion getDocumentVersion(Long id) {

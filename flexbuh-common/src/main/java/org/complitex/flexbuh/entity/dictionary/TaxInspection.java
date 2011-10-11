@@ -2,7 +2,6 @@ package org.complitex.flexbuh.entity.dictionary;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -10,12 +9,22 @@ import java.util.Locale;
  *         Date: 05.08.11 13:06
  */
 public class TaxInspection extends AbstractPeriodDictionary {
-	private Integer code;
-	private List<TaxInspectionName> names;
+	private Integer code;	
 	private Integer regionCode;
-	private Integer codeArea;
-	private List<AreaName> areaNames;
+	private Integer codeArea;	
 	private Integer codeTaxInspectionType;
+    
+    private String areaNameRu;
+    private String areaNameUk;
+    
+    public String getAreaName(Locale locale){
+        switch (locale.getLanguage()){
+            case "ru":
+                return areaNameRu != null ? areaNameRu : areaNameUk;
+            default:
+                return areaNameUk;
+        }
+    }
 
 	public Integer getCode() {
 		return code;
@@ -25,15 +34,23 @@ public class TaxInspection extends AbstractPeriodDictionary {
 		this.code = code;
 	}
 
-	public List<TaxInspectionName> getNames() {
-		return names;
-	}
+    public String getAreaNameRu() {
+        return areaNameRu;
+    }
 
-	public void setNames(List<TaxInspectionName> names) {
-		this.names = names;
-	}
+    public void setAreaNameRu(String areaNameRu) {
+        this.areaNameRu = areaNameRu;
+    }
 
-	public Integer getRegionCode() {
+    public String getAreaNameUk() {
+        return areaNameUk;
+    }
+
+    public void setAreaNameUk(String areaNameUk) {
+        this.areaNameUk = areaNameUk;
+    }
+
+    public Integer getRegionCode() {
 		return regionCode;
 	}
 
@@ -49,14 +66,6 @@ public class TaxInspection extends AbstractPeriodDictionary {
 		this.codeArea = codeArea;
 	}
 
-	public List<AreaName> getAreaNames() {
-		return areaNames;
-	}
-
-	public void setAreaNames(List<AreaName> areaNames) {
-		this.areaNames = areaNames;
-	}
-
 	public Integer getCodeTaxInspectionType() {
 		return codeTaxInspectionType;
 	}
@@ -65,35 +74,10 @@ public class TaxInspection extends AbstractPeriodDictionary {
 		this.codeTaxInspectionType = codeTaxInspectionType;
 	}
 
-	public String getName(Locale locale) {
-		if (names == null) {
-			return null;
-		}
-		for (TaxInspectionName name : names) {
-			if (name.getLanguage().getLocale().equals(locale)) {
-				return name.getValue();
-			}
-		}
-		return getDefaultName();
-	}
-
-	public String getDefaultName() {
-		if (names == null) {
-			return null;
-		}
-		for (TaxInspectionName name : names) {
-			if (name.getLanguage().isDefaultLang()) {
-				return name.getValue();
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public boolean validate() {
-		return super.validate() &&
-				code != null && names != null && names.size() > 0 && regionCode != null &&
-				codeArea != null && areaNames != null && areaNames.size() > 0 && codeTaxInspectionType != null;
+		return super.validate() && code != null && regionCode != null && codeArea != null 
+                && codeTaxInspectionType != null;
 	}
 
 	@Override

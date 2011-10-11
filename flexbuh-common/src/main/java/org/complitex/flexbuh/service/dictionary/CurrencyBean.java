@@ -2,7 +2,6 @@ package org.complitex.flexbuh.service.dictionary;
 
 import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.Currency;
-import org.complitex.flexbuh.entity.dictionary.CurrencyName;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -18,12 +17,6 @@ public class CurrencyBean extends AbstractBean {
 
     public void save(Currency currency) {
         sqlSession().insert(NS + ".insertCurrency", currency);
-
-        for (CurrencyName currencyName : currency.getNames()) {
-            currencyName.setCurrencyId(currency.getId());
-
-            sqlSession().insert(NS + ".insertCurrencyName", currencyName);
-        }
     }
 
     public Currency getCurrency(Long id) {
