@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
 import org.complitex.flexbuh.entity.Language;
 import org.complitex.flexbuh.entity.dictionary.Document;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -29,15 +31,18 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
 	@EJB
 	private DocumentBean documentBean;
 
-	private Language ukLang = null;
-
 	@Override
 	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		super.process(sessionId, listener, importFile, beginDate, endDate);
 	}
 
 	@Override
-	protected List<Document> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<Document> processDictionaryNode(NodeList contentNodeRow,
+												   Date importDate, Date beginDate, Date endDate,
+												   MultiValueMap createdDictionaries,
+												   Map<Long, Document> processedDictionaries)
+			throws ParseException {
+
 		Document document = new Document();
 		document.setUploadDate(importDate);
 		document.setBeginDate(beginDate);
@@ -78,4 +83,9 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
     public void create(Document dictionary) {
         documentBean.save(dictionary);
     }
+
+	@Override
+	public void update(Document dictionary) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }

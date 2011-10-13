@@ -19,6 +19,7 @@ import org.complitex.flexbuh.service.user.SessionBean;
 import org.complitex.flexbuh.template.FormTemplatePage;
 
 import javax.ejb.EJB;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -151,8 +152,9 @@ public class JuridicalPersonProfilePage extends FormTemplatePage {
 		form.add(new TextField<>("numSvdPDV", new PropertyModel<String>(personProfile, "numSvdPDV")).setRequired(true));
 
         // Налоговая
+		List<TaxInspection> taxInspections = taxInspectionBean.getTaxInspectionByCode(personProfile.getCodeTaxInspection());
 		final Model<TaxInspection> taxInspectionModel = personProfile.getCodeTaxInspection() != null?
-				new Model<TaxInspection>(taxInspectionBean.getTaxInspectionByCode(personProfile.getCodeTaxInspection())):
+				new Model<TaxInspection>(taxInspections.isEmpty()? null: taxInspections.get(0)):
 				new Model<TaxInspection>();
         final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<>("taxInspection", taxInspectionModel,
                 taxInspectionBean.getTaxInspectionsUniqueCodeWithName(),

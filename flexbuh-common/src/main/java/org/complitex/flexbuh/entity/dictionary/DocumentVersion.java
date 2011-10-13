@@ -37,4 +37,9 @@ public class DocumentVersion extends AbstractPeriodDictionary {
 	public boolean validate() {
 		return super.validate() && cDoc != null && cDocSub != null && cDocVer != null;
 	}
+
+	@Override
+	public int hashCode() {
+		return (cDoc + "," + cDocSub).hashCode();
+	}
 }

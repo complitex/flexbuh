@@ -22,6 +22,11 @@
             #{nameRu}, #{nameUk}, #{areaNameRu}, #{areaNameUk})
     </insert>
 
+	<update id="updateTaxInspection" parameterType="org.complitex.flexbuh.entity.dictionary.TaxInspection">
+        update `tax_inspection` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate}, `code`=#{code}, `region_code`=#{regionCode}, `code_area`=#{codeArea}, `code_tax_inspection_type`=#{codeTaxInspectionType}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}, `area_name_ru`=#{nameRu}, `area_name_uk`=#{nameUk}
+        where `id` = #{id}
+    </update>
+
     <select id="selectAllTaxInspectionsCodeWithName" resultMap="taxInspectionResultMap">
 		select distinct `code`, `name_ru`, `name_uk`
 		    from `tax_inspection`
@@ -43,5 +48,9 @@
 
 	<select id="selectTaxInspectionByCode" parameterType="int" resultMap="taxInspectionResultMap">
         select * from `tax_inspection` where `code` = #{code}
+    </select>
+
+	<select id="selectTaxInspectionByCodeAndCodeArea" parameterType="int" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` where `code` = #{code} and `code_area` = #{codeArea}
     </select>
 </mapper>

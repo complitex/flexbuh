@@ -19,8 +19,17 @@ public class CurrencyBean extends AbstractBean {
         sqlSession().insert(NS + ".insertCurrency", currency);
     }
 
+	public void update(Currency currency) {
+		sqlSession().update(NS + ".updateCurrency", currency);
+	}
+
     public Currency getCurrency(Long id) {
         return (Currency)sqlSession().selectOne(NS + ".selectCurrency", id);
+    }
+
+	@SuppressWarnings("unchecked")
+    public List<Currency> getCurrencyByCodeNumber(Integer codeNumber) {
+        return sqlSession().selectList(NS + ".selectCurrenciesByCodeNumber", codeNumber);
     }
 
     @SuppressWarnings("unchecked")

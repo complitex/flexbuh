@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.complitex.flexbuh.entity.dictionary.DocumentTerm;
@@ -16,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -33,7 +35,12 @@ public class ImportDocumentTermXMLService extends ImportDictionaryXMLService<Doc
 	private DocumentTermBean documentTermBean;
 
 	@Override
-	protected List<DocumentTerm> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException {
+	protected List<DocumentTerm> processDictionaryNode(NodeList contentNodeRow,
+													   Date importDate, Date beginDate, Date endDate,
+													   MultiValueMap createdDictionaries,
+													   Map<Long, DocumentTerm> processedDictionaries)
+			throws ParseException {
+
 		DocumentTerm documentTerm = new DocumentTerm();
 		documentTerm.setUploadDate(importDate);
 		documentTerm.setBeginDate(beginDate);
@@ -70,4 +77,8 @@ public class ImportDocumentTermXMLService extends ImportDictionaryXMLService<Doc
     public void create(DocumentTerm dictionary) {
         documentTermBean.save(dictionary);
     }
+
+	@Override
+	public void update(DocumentTerm dictionary) {
+	}
 }

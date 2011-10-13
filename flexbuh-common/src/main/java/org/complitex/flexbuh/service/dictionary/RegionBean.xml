@@ -12,12 +12,21 @@
         	values (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{nameRu}, #{nameUk})
     </insert>
 
+	<update id="updateRegion" parameterType="org.complitex.flexbuh.entity.dictionary.Region">
+        update `region` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate}, `code`=#{code}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
+        where `id` = #{id}
+    </update>
+
 	<select id="selectAllRegions" resultMap="regionResultMap">
         select * from `region`
     </select>
 
     <select id="selectAllRegionsCount" resultType="int">
         select count(*) from `region`
+    </select>
+
+	<select id="selectRegionByCode" parameterType="int" resultMap="regionResultMap">
+        select * from `region` where `code` = #{code}
     </select>
 
 	<select id="selectRegions" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="regionResultMap">
