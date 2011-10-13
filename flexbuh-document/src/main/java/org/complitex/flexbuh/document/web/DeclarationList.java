@@ -4,9 +4,12 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -14,6 +17,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
@@ -24,6 +28,8 @@ import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.web.component.paging.PagingNavigator;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;
@@ -34,6 +40,8 @@ import java.util.*;
  *         Date: 08.09.11 18:51
  */
 public class DeclarationList extends TemplatePage{
+    private final static Logger log = LoggerFactory.getLogger(DeclarationList.class);
+
     private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
     private final static int MIN_YEAR = 1990;
@@ -108,7 +116,8 @@ public class DeclarationList extends TemplatePage{
         for (int i = MIN_YEAR; i <= MAX_YEAR; ++i){
             years.add(i);
         }
-        filterForm.add(new DropDownChoice<>("period_year", new PropertyModel<Integer>(declarationFilter, "periodYear"), years));
+        filterForm.add(new DropDownChoice<>("period_year", new PropertyModel<Integer>(declarationFilter, "periodYear"),
+                years).setNullValid(true));
 
         //Дата
         filterForm.add(new DatePicker<>("date", new PropertyModel<Date>(declarationFilter, "date")));
@@ -127,6 +136,8 @@ public class DeclarationList extends TemplatePage{
             public Iterator<? extends Declaration> iterator(int first, int count) {
                 declarationFilter.setFirst(first);
                 declarationFilter.setCount(count);
+                declarationFilter.setSortProperty(getSort().getProperty());
+                declarationFilter.setAscending(getSort().isAscending());
 
                 return declarationBean.getDeclarations(declarationFilter).iterator();
             }
@@ -141,6 +152,7 @@ public class DeclarationList extends TemplatePage{
                 return new Model<>(object);
             }
         };
+        dataProvider.setSort("date", SortOrder.DESCENDING);
 
         //Таблица
         DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
@@ -160,6 +172,7 @@ public class DeclarationList extends TemplatePage{
                 item.add(new BookmarkablePageLinkPanel<>("action_edit", getString("action_edit"), DeclarationFormPage.class,
                         pageParameters));
 
+                item.add(new DeclarationXmlLink("action_xml", declaration));
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
             }
         };
@@ -167,13 +180,38 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(dataView);
 
         //Названия колонок и сортировка
-        filterForm.add(new OrderByBorder("header.name", "login", dataProvider));
-        filterForm.add(new OrderByBorder("header.period_type", "periodType", dataProvider));
-        filterForm.add(new OrderByBorder("header.period_month", "periodMonth", dataProvider));
-        filterForm.add(new OrderByBorder("header.period_year", "periodYear", dataProvider));
+        filterForm.add(new OrderByBorder("header.name", "name", dataProvider));
+        filterForm.add(new OrderByBorder("header.period_type", "period_type", dataProvider));
+        filterForm.add(new OrderByBorder("header.period_month", "period_month", dataProvider));
+        filterForm.add(new OrderByBorder("header.period_year", "period_year", dataProvider));
         filterForm.add(new OrderByBorder("header.date", "date", dataProvider));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, DeclarationList.class.getName(), filterForm));
+
+        //Загрузка файлов
+        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
+        
+        Form fileUploadForm = new Form("upload_form"){
+            @Override
+            protected void onSubmit() {
+                List<FileUpload> fileUploads = fileUploadModel.getObject();
+
+                try {
+                    for (FileUpload fileUpload : fileUploads){
+                        declarationBean.save(getSessionId(true), fileUpload.getInputStream());
+                    }
+
+                    info("Документы успешно загружены");
+                } catch (Exception e) {
+                    log.error("Ошибка загрузки файла", e);
+                    error("Ошибка загрузки файла");
+                }
+            }
+        };
+        
+        add(fileUploadForm);
+        
+        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 }

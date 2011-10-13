@@ -89,7 +89,7 @@ public class TransformationTestPage extends WebPage {
     public static Declaration getDeclaration(){
         Declaration declaration = new Declaration();
 
-        declaration.getHead().setTin("tin_0");
+        declaration.getHead().setTin(11);
         declaration.getHead().setCDoc("c_doc_1");
         declaration.getHead().setCDocCnt(1);
         declaration.getHead().setCDocStan(2);
@@ -98,7 +98,7 @@ public class TransformationTestPage extends WebPage {
         declaration.getHead().setCDocVer(4);
         declaration.getHead().setCRaj(4);
         declaration.getHead().setCReg(5);
-        declaration.getHead().setCStiOrig("c_stil_orig_9");
+        declaration.getHead().setCStiOrig(33);
         declaration.getHead().setDFill("d_fill_10");
         declaration.getHead().setPeriodMonth(6);
         declaration.getHead().setPeriodType(7);

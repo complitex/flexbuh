@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.entity.dictionary.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
@@ -38,7 +39,7 @@ public class Declaration implements Serializable{
 
     @XmlElementWrapper(name = "DECLARBODY")
     @XmlAnyElement
-    private List<JAXBElement<DeclarationValue>> xmlValues = new ArrayList<JAXBElement<DeclarationValue>>();
+    private List xmlValues = new ArrayList();
 
     @XmlElementWrapper(name = "LINKED_DOCS")
     @XmlElement(name = "DOC")
@@ -79,19 +80,48 @@ public class Declaration implements Serializable{
     }
 
     public String getTemplateName(){
-        return head.getCDoc() + head.getCDocSub() + (head.getCDocVer() < 10 ? "0" : "") + head.getCDocVer();
+        return head.getCDoc() + head.getCDocSub() + String.format("%02d", head.getCDocVer());
+    }
+    
+    @SuppressWarnings("MalformedFormatString")
+    public String getFileName(){
+        return String.format("%02d%02d%010d%s%s%02d%s%02d%07d%d%02d%d%04d", //todo check format
+                head.getCReg(), head.getCRaj(), head.getTin(), head.getCDoc(), head.getCDocSub(), head.getCDocVer(),
+                head.getCDocStan(), head.getCDocType(), head.getCDocCnt(), head.getPeriodType(), head.getPeriodMonth(),
+                head.getPeriodYear(), head.getCStiOrig());
+    }
+    
+    public void setFileName(String fileName){
+        //nothing
     }
 
+    @SuppressWarnings("unchecked")
     public void prepareXmlValues(){
         xmlValues.clear();
 
         for (DeclarationValue v : declarationValues){
-            xmlValues.add(new JAXBElement<>(new QName(v.getName()), DeclarationValue.class, v.getValue() != null ? v : null));
+            DeclarationValue value = (v.getValue() != null && !v.getValue().isEmpty()) ? v : null;
+            
+            xmlValues.add(new JAXBElement(new QName(v.getName()), DeclarationValue.class, DeclarationValue.class, value));
         }
     }
 
-    public List<JAXBElement<DeclarationValue>> getXmlValues() {
+    public List getXmlValues() {
         return xmlValues;
+    }
+
+    public void fillValuesFromXml(){
+        declarationValues.clear();
+
+        for (Object xmlValue :xmlValues){
+            Element element = (Element) xmlValue;
+            
+            String rowNum = element.getAttribute("ROWNUM"); 
+            Integer rowNumInt = (rowNum != null && !rowNum.isEmpty()) ? Integer.valueOf(rowNum) : null;
+            boolean isNil = "true".equals(element.getAttribute("xsi:nil"));
+
+            addDeclarationValue(new DeclarationValue(rowNumInt, element.getTagName(), !isNil ? element.getTextContent() : null));
+        }
     }
 
     public DeclarationValue getDeclarationValue(String name){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
@@ -14,7 +14,7 @@
     <div wicket:id="messages"></div>
 
     <form action="#" wicket:id="filter_form">
-         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+        <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
             <tr>
                 <th>
@@ -40,7 +40,7 @@
                 <th><input type="text" wicket:id="name"/></th>
                 <th><select wicket:id="period_type"></select></th>
                 <th><select wicket:id="period_month"></select></th>
-                <th><select wicket:id="period_year"></select></th>
+                <th><select wicket:id="period_year" style="width: 52px"></select></th>
                 <th><input wicket:id="date" size="10"/></th>
 
                 <th class="center">
@@ -56,7 +56,8 @@
                 <td><span wicket:id="period_year"></span></td>
                 <td><span wicket:id="date"></span></td>
                 <td>
-                    <span wicket:id="action_edit"></span>                    
+                    <span wicket:id="action_edit"></span>
+                    <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
                     <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
                 </td>
             </tr>
@@ -66,6 +67,16 @@
             <span wicket:id="paging"></span>
         </div>
     </form>
+
+    <div style="margin-top: 20px">
+        <form action="#" wicket:id="upload_form">
+            <fieldset>
+                <legend><wicket:message key="upload_documents"/></legend>
+                <input type="file" wicket:id="upload_field" multiple="true"/>
+                <input type="submit" wicket:message="value:upload" class="btnBig"/>
+            </fieldset>
+        </form>
+    </div>
 </wicket:extend>
 </body>
 </html>

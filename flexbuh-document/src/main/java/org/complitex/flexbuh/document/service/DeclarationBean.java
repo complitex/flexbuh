@@ -4,10 +4,14 @@ import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
+import org.complitex.flexbuh.document.exception.DeclarationSaveException;
+import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.complitex.flexbuh.service.AbstractBean;
 import org.complitex.flexbuh.util.DateUtil;
 
 import javax.ejb.Stateless;
+import javax.xml.bind.JAXBException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -91,5 +95,14 @@ public class DeclarationBean extends AbstractBean{
 
     public void deleteDeclarationValue(Long id){
         sqlSession().delete(NS + ".deleteDeclarationValue", id);
+    }
+    
+    public void save(Long sessionId, InputStream inputStream) throws DeclarationSaveException {
+        try {
+            //todo add linked
+            save(sessionId, DeclarationUtil.getDeclaration(inputStream));
+        } catch (JAXBException e) {
+            throw new DeclarationSaveException();
+        }
     }
 }

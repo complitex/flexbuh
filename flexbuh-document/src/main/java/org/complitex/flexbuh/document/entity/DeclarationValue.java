@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.07.11 18:09
  */
-@XmlType
+@XmlRootElement
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class DeclarationValue implements Serializable, Comparable{
     @XmlTransient

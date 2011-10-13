@@ -1,7 +1,10 @@
 package org.complitex.flexbuh.document.util;
 
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.entity.template.AbstractTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -19,6 +22,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -27,12 +31,15 @@ import java.io.StringWriter;
  *         Date: 23.08.11 16:56
  */
 public class DeclarationUtil {
+    private static final Logger log = LoggerFactory.getLogger(DeclarationUtil.class);
+
     public static String getString(Declaration declaration) throws JAXBException {
         declaration.prepareXmlValues();
 
-        JAXBContext context = JAXBContext.newInstance(Declaration.class);
+        JAXBContext context = JAXBContext.newInstance(Declaration.class, DeclarationValue.class);
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        m.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION, declaration.getTemplateName() + ".xsd");
 
         StringWriter writer = new StringWriter();
 
@@ -68,5 +75,16 @@ public class DeclarationUtil {
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
         return documentBuilder.parse(new InputSource(new StringReader(getString(declaration, template))));
+    }
+
+    public static Declaration getDeclaration(InputStream inputStream) throws JAXBException {
+        Declaration declaration = (Declaration) JAXBContext
+                .newInstance(Declaration.class, DeclarationValue.class)
+                .createUnmarshaller()
+                .unmarshal(inputStream);
+
+        declaration.fillValuesFromXml();
+
+        return declaration;
     }
 }

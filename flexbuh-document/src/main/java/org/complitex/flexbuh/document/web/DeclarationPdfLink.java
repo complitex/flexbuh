@@ -90,7 +90,7 @@ public class DeclarationPdfLink extends Link {
                         public Time lastModifiedTime() {
                             return Time.now();
                         }
-                    }, declaration.getTemplateName() + ".pdf"));
+                    }, declaration.getFileName() + ".pdf"));
         } catch (Exception e) {
             log.error("Ошибка генерации pdf документа", e);
 
