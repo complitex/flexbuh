@@ -3,7 +3,7 @@ package org.complitex.flexbuh.admin.importexport.web;
 import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.extensions.markup.html.form.DateTextField;
+import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -15,12 +15,14 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
+import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
 import org.complitex.flexbuh.admin.importexport.service.ImportListener;
 import org.complitex.flexbuh.entity.dictionary.DictionaryType;
 import org.complitex.flexbuh.service.dictionary.DictionaryTypeBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,8 @@ import java.util.List;
  */
 public class ImportDictionary extends TemplatePage {
 	private final static Logger log = LoggerFactory.getLogger(ImportDictionary.class);
+
+	private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
 
 	@EJB
     private DictionaryTypeBean dictionaryTypeService;
@@ -75,16 +79,24 @@ public class ImportDictionary extends TemplatePage {
 		form.add(dictionaryTypes);
 
 		//Begin Date
-		final IModel<Date> beginDateModel = new Model<Date>();
-		DateTextField beginDate = new DateTextField("beginDate", beginDateModel);
-        //dateTextField.add(new DatePicker("beginDate"));
-        form.add(beginDate);
+		final IModel<Date> beginDateModel = new Model<>();
+		final DatePicker<Date> beginDatePicker = new DatePicker<Date>("beginDate", beginDateModel, Date.class) {
+			@Override
+			public <Date> IConverter<Date> getConverter(Class<Date> type) {
+				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
+			}
+		};
+		form.add(beginDatePicker);
 
         //End Date
 		final IModel<Date> endDateModel = new Model<Date>();
-		DateTextField endDate = new DateTextField("endDate", endDateModel);
-		//DatePicker<Date> endDate = new DatePicker<Date>("endDate", endDateModel);
-        form.add(endDate);
+		final DatePicker<Date> endDatePicker = new DatePicker<Date>("endDate", endDateModel, Date.class) {
+			@Override
+			public <Date> IConverter<Date> getConverter(Class<Date> type) {
+				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
+			}
+		};
+		form.add(endDatePicker);
 
         //Кнопка импортировать
         Button process = new Button("process") {
@@ -185,19 +197,19 @@ public class ImportDictionary extends TemplatePage {
 		}
 		
 		public String currentImportFile() {
-			synchronized (fileName) {
+			synchronized (this) {
 				return fileName;
 			}
 		}
 
 		public long getCountCompleted() {
-			synchronized (countCompleted) {
+			synchronized (this) {
 				return countCompleted;
 			}
 		}
 
 		public long getCountCanceled() {
-			synchronized (countCanceled) {
+			synchronized (this) {
 				return countCanceled;
 			}
 		}
@@ -218,7 +230,7 @@ public class ImportDictionary extends TemplatePage {
 
 		@Override
 		public ImportListener getChildImportListener(Object o) {
-			synchronized (fileName) {
+			synchronized (this) {
 				fileName = ((File)o).getName();
 			}
 			return new ImportListener() {
@@ -234,10 +246,10 @@ public class ImportDictionary extends TemplatePage {
 
 				@Override
 				public void completed() {
-					synchronized (fileName) {
+					synchronized (this) {
 						fileName= "";
 					}
-					synchronized (countCompleted) {
+					synchronized (this) {
 						countCompleted ++;
 					}
 				}
@@ -248,10 +260,10 @@ public class ImportDictionary extends TemplatePage {
 
 				@Override
 				public void cancel() {
-					synchronized (fileName) {
+					synchronized (this) {
 						fileName = "";
 					}
-					synchronized (countCanceled) {
+					synchronized (this) {
 						countCanceled ++;
 					}
 				}

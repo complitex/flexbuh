@@ -13,12 +13,21 @@
         	values (#{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString}, #{nameRu}, #{nameUk})
     </insert>
 
+	<update id="updateCurrency" parameterType="org.complitex.flexbuh.entity.dictionary.Currency">
+        update `currency` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate}, `code_number`=#{codeNumber}, `code_string`=#{codeString}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
+        where `id` = #{id}
+    </update>
+
     <select id="selectAllCurrencies" resultMap="currencyResultMap">
         select * from `currency`
     </select>
 
     <select id="selectAllCurrenciesCount" resultType="int">
         select count(*) from `currency`
+    </select>
+
+    <select id="selectCurrenciesByCodeNumber" parameterType="int" resultMap="currencyResultMap">
+        select * from `currency` where `code_number`=#{codeNumber}
     </select>
 
     <select id="selectCurrencies" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="currencyResultMap">

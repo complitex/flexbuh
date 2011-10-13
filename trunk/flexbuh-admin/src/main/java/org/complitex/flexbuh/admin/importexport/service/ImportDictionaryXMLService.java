@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -42,23 +45,28 @@ public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> e
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
 		listener.begin();
 
 		Date importDate = new Date();
-		List<T> docDictionaries = Lists.newArrayList();
+		MultiValueMap createdDictionaries = new MultiValueMap();
+		Map<Long, T> processedDictionaries = Maps.newHashMap();
 		try {
 			org.w3c.dom.Document document = getDocument(inputStream);
-			processDocument("ROW", beginDate, endDate, importDate, docDictionaries, document);
-			processDocument("row", beginDate, endDate, importDate, docDictionaries, document);
+			processDocument("ROW", beginDate, endDate, importDate, createdDictionaries, processedDictionaries, document);
+			processDocument("row", beginDate, endDate, importDate, createdDictionaries, processedDictionaries, document);
 
             //save
             userTransaction.begin();
             try{
-                for (T dictionary : docDictionaries) {
-                    create(dictionary);
+                for (T dictionary : (Collection<T>)createdDictionaries.values()) {
+                    save(dictionary);
                 }
+				for (T dictionary : processedDictionaries.values()) {
+					save(dictionary);
+				}
             } catch (Throwable th) {
                 log.error("Rollback user transaction");
                 userTransaction.rollback();
@@ -73,15 +81,27 @@ public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> e
 		}
 	}
 
-	private void processDocument(String tagName, Date beginDate, Date endDate, Date importDate, List<T> docDictionaries, Document document) throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException, HeuristicMixedException {
+	private void processDocument(String tagName, Date beginDate, Date endDate, Date importDate, MultiValueMap createdDictionaries, Map<Long, T> processedDictionaries, Document document) throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException, HeuristicMixedException {
 		NodeList nodeRows = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeRows.getLength(); i++) {
-			List<T> dictionaries = processDictionaryNode(nodeRows.item(i).getChildNodes(), importDate, beginDate, endDate);
-			docDictionaries.addAll(dictionaries);
+			List<T> dictionaries = processDictionaryNode(nodeRows.item(i).getChildNodes(), importDate, beginDate, endDate, createdDictionaries, processedDictionaries);
+			for (T dictionary : dictionaries) {
+				createdDictionaries.put(dictionary.hashCode(), dictionary);
+			}
 		}
 	}
 
-	protected abstract List<T> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate) throws ParseException;
+	protected abstract List<T> processDictionaryNode(NodeList contentNodeRow, Date importDate, Date beginDate, Date endDate, MultiValueMap createdDictionaries, Map<Long, T> processedDictionaries) throws ParseException;
+
+	private void save(T dictionary) {
+		if (dictionary.getId() == null) {
+        	create(dictionary);
+		} else {
+			update(dictionary);
+		}
+	}
 
     public abstract void create(T dictionary);
+
+    public abstract void update(T dictionary);
 }

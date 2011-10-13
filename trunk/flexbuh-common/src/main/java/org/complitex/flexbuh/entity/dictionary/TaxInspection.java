@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.entity.dictionary;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.Locale;
@@ -83,5 +84,10 @@ public class TaxInspection extends AbstractPeriodDictionary {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(code).append(codeArea).hashCode();
 	}
 }

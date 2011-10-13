@@ -19,9 +19,18 @@ public class RegionBean extends AbstractBean {
         sqlSession().insert(NS + ".insertRegion", region);
     }
 
+	public void update(Region region) {
+		sqlSession().update(NS + ".updateRegion", region);
+	}
+
     public Region getRegion(Long id) {
         return (Region)sqlSession().selectOne(NS + ".selectRegion", id);
     }
+
+	@SuppressWarnings("unchecked")
+	public List<Region> getRegionByCode(Integer code) {
+		return sqlSession().selectList(NS + ".selectRegionByCode", code);
+	}
 
     @SuppressWarnings("unchecked")
     public List<Region> getRegions() {

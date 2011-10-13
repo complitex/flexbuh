@@ -1,11 +1,13 @@
 package org.complitex.flexbuh.service.dictionary;
 
+import com.google.common.collect.Maps;
 import org.complitex.flexbuh.entity.AbstractFilter;
 import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -19,14 +21,25 @@ public class TaxInspectionBean extends AbstractBean {
         sqlSession().insert(NS + ".insertTaxInspection", taxInspection);
     }
 
+	public void update(TaxInspection taxInspection) {
+        sqlSession().update(NS + ".updateTaxInspection", taxInspection);
+    }
+
     public TaxInspection getTaxInspection(Long id) {
 		return (TaxInspection)sqlSession().selectOne(NS + ".selectTaxInspection", id);
 	}
 
 	@SuppressWarnings("unchecked")
-	public TaxInspection getTaxInspectionByCode(Integer code) {
-		List<TaxInspection> resultCollection = sqlSession().selectList(NS + ".selectTaxInspectionByCode", code);
-		return resultCollection.isEmpty()? null: resultCollection.get(0);
+	public List<TaxInspection> getTaxInspectionByCode(Integer code) {
+		return sqlSession().selectList(NS + ".selectTaxInspectionByCode", code);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TaxInspection> getTaxInspectionByCodeAndCodeArea(Integer code, Integer codeArea) {
+		Map<String, Integer> params = Maps.newHashMap();
+		params.put("code", code);
+		params.put("codeArea", codeArea);
+		return sqlSession().selectList(NS + ".selectTaxInspectionByCode", params);
 	}
 
 	@SuppressWarnings("unchecked")

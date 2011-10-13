@@ -19,4 +19,9 @@ public class Region extends AbstractPeriodDictionary {
 	public boolean validate() {
 		return super.validate() && code != null;
 	}
+
+	@Override
+	public int hashCode() {
+		return code;
+	}
 }

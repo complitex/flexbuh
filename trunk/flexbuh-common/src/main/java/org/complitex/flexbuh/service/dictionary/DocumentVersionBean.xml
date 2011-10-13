@@ -17,6 +17,11 @@
           (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cDocVer}, #{nameRu}, #{nameUk})
     </insert>
 
+	<update id="updateDocumentVersion" parameterType="org.complitex.flexbuh.entity.dictionary.DocumentVersion">
+        update `document_version` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate}, `c_doc`=#{cDoc}, `c_doc_sub`=#{cDocSub}, `c_doc_ver`=#{cDocVer}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
+        where `id` = #{id}
+    </update>
+
 	<select id="selectAllDocumentVersions" resultMap="documentVersionResultMap">
         select * from `document_version`
     </select>
