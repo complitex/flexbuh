@@ -21,16 +21,16 @@ public class DeclarationTest {
     private static void testJavaToXml() throws JAXBException {
         Declaration declaration = new Declaration();
 
-        declaration.getHead().setTin("tin_0");
-        declaration.getHead().setCDoc("c_doc_1");
+        declaration.getHead().setTin(11);
+        declaration.getHead().setCDoc("J01");
         declaration.getHead().setCDocCnt(1);
         declaration.getHead().setCDocStan(2);
-        declaration.getHead().setCDocSub("c_doc_sub_4");
+        declaration.getHead().setCDocSub("00");
         declaration.getHead().setCDocType(3);
         declaration.getHead().setCDocVer(10);
         declaration.getHead().setCRaj(4);
         declaration.getHead().setCReg(5);
-        declaration.getHead().setCStiOrig("c_stil_orig_9");
+        declaration.getHead().setCStiOrig(33);
         declaration.getHead().setDFill("d_fill_10");
         declaration.getHead().setPeriodMonth(6);
         declaration.getHead().setPeriodType(7);
@@ -38,7 +38,7 @@ public class DeclarationTest {
         declaration.getHead().setSoftware("software_14");
 
         declaration.getDeclarationValues().add(new DeclarationValue(null, "name1", null));
-        declaration.getDeclarationValues().add(new DeclarationValue(1, "name2", "value2"));
+        declaration.getDeclarationValues().add(new DeclarationValue(1, "name2", null));
         declaration.getDeclarationValues().add(new DeclarationValue(2, "name3", "value3"));
 
         //linked
@@ -55,8 +55,11 @@ public class DeclarationTest {
         JAXBContext context = JAXBContext.newInstance(Declaration.class);
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        m.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION, declaration.getTemplateName() + ".xsd");
 
         m.marshal(declaration, System.out);
+
+        System.out.println(declaration.getFileName());
     }
 
 }

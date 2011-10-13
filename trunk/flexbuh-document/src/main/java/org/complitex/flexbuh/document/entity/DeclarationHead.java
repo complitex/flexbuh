@@ -14,7 +14,7 @@ import java.io.Serializable;
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class DeclarationHead implements Serializable {
     @XmlElement(name = "TIN")
-    private String tin; // код плательщика
+    private Integer tin = 0; // код плательщика
 
     @XmlElement(name = "C_DOC")
     private String cDoc; // код документа
@@ -23,19 +23,19 @@ public class DeclarationHead implements Serializable {
     private String cDocSub; // подтип документа
 
     @XmlElement(name = "C_DOC_VER")
-    private Integer cDocVer; // номер версии документа
+    private Integer cDocVer = 0; // номер версии документа
 
     @XmlElement(name = "C_DOC_TYPE")
-    private Integer cDocType; // № исправительной документа (0 - основной (первого поданного))
+    private Integer cDocType = 0; // № исправительной документа (0 - основной (первого поданного))
 
     @XmlElement(name = "C_DOC_CNT")
-    private Integer cDocCnt; // № однотипных документов в периоде
+    private Integer cDocCnt = 0; // № однотипных документов в периоде
 
     @XmlElement(name = "C_REG")
-    private Integer cReg; // код области
+    private Integer cReg = 0; // код области
 
     @XmlElement(name = "C_RAJ")
-    private Integer cRaj; // код административного района
+    private Integer cRaj = 0; // код административного района
 
     @XmlElement(name = "PERIOD_MONTH")
     private Integer periodMonth = 1; // отчетный месяц (последний в отчетном периоде)
@@ -47,10 +47,10 @@ public class DeclarationHead implements Serializable {
     private Integer periodYear = 2011; // отчетный год
 
     @XmlElement(name = "C_STI_ORIG")
-    private String cStiOrig; // Код ГНИ, в которую подается оригинал документа
+    private Integer cStiOrig = 0; // Код ГНИ, в которую подается оригинал документа
 
     @XmlElement(name = "C_DOC_STAN")
-    private Integer cDocStan; // законодательство
+    private Integer cDocStan = 0; // законодательство
 
     @XmlElement(name = "D_FILL")
     private String dFill; // дата заполненные документы плательщиком
@@ -66,7 +66,7 @@ public class DeclarationHead implements Serializable {
      * Целое число (от 5 до 10 знаков) или символьное значение (формата серия + номер паспорта)
      * @return код плательщика
      */
-    public String getTin() {
+    public Integer getTin() {
         return tin;
     }
 
@@ -75,7 +75,7 @@ public class DeclarationHead implements Serializable {
      * Целое число (от 5 до 10 знаков) или символьное значение (формата серия + номер паспорта)
      * @param tin код плательщика
      */
-    public void setTin(String tin) {
+    public void setTin(Integer tin) {
         this.tin = tin;
     }
 
@@ -280,7 +280,7 @@ public class DeclarationHead implements Serializable {
      * значение элемента C_REG * 100 + значение элемента C_RAJ.
      * @return Код ГНИ, в которую подается оригинал документа
      */
-    public String getCStiOrig() {
+    public Integer getCStiOrig() {
         return cStiOrig;
     }
 
@@ -289,7 +289,7 @@ public class DeclarationHead implements Serializable {
      * значение элемента C_REG * 100 + значение элемента C_RAJ.
      * @param cStiOrig Код ГНИ, в которую подается оригинал документа
      */
-    public void setCStiOrig(String cStiOrig) {
+    public void setCStiOrig(Integer cStiOrig) {
         this.cStiOrig = cStiOrig;
     }
 

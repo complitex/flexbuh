@@ -48,9 +48,8 @@
     </resultMap>
 
     <select id="selectDeclaration" resultMap="declarationResultMap" parameterType="long">
-        select de.*, dn.`value` as `name` from `declaration` de
+        select de.*, do.`name_uk` as `name` from `declaration` de
              left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-             left join `document_name` dn on (dn.`document_id` = do.`id` and dn.`language_id` = 1)
         where de.`id` = #{id}
     </select>
 
@@ -78,7 +77,6 @@
     <sql id="selectDeclarationsFromWhere">
         from `declaration` de
              left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-             left join `document_name` dn on (dn.`document_id` = do.`id` and dn.`language_id` = 1)
          <where>
              <if test="name != null">dn.`value` like  concat('%', #{name}, '%')</if>
              <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
@@ -90,7 +88,14 @@
     </sql>
 
     <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
-        select de.*, dn.`value` as `name` <include refid = "selectDeclarationsFromWhere"/> limit #{first}, #{count}
+        select de.*, do.`name_uk` as `name` <include refid = "selectDeclarationsFromWhere"/>
+        <choose>
+            <when test="sortProperty == 'name'">order by do.`name_uk`</when>
+            <when test="sortProperty != null and sortProperty != 'name'">order by de.${sortProperty}</when>
+            <otherwise>order by de.`id`</otherwise>
+        </choose>
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
     </select>
 
     <select id="selectDeclarationsCount" resultType="int" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">

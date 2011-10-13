@@ -82,6 +82,26 @@
             <artifactId>wicketstuff-javaee-inject</artifactId>
         </dependency>
 
+        <!--Fop-->
+        <dependency>
+            <groupId>fop</groupId>
+            <artifactId>fop</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xalan</groupId>
+                    <artifactId>xalan</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!--Debug-->
         <dependency>
             <groupId>org.apache.wicket</groupId>
