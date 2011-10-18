@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.service;
+package org.complitex.flexbuh.service;
 
 /**
  * @author Pavel Sknar

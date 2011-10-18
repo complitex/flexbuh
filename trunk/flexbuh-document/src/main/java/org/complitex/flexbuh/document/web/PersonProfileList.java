@@ -1,12 +1,10 @@
-package org.complitex.flexbuh.admin.user.web;
+package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -16,15 +14,18 @@ import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
-import org.complitex.flexbuh.admin.importexport.service.ImportListener;
-import org.complitex.flexbuh.admin.importexport.service.ImportUserProfileXMLService;
-import org.complitex.flexbuh.entity.user.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.service.ImportUserProfileXMLService;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.entity.user.User;
-import org.complitex.flexbuh.service.user.PersonProfileBean;
+import org.complitex.flexbuh.service.ImportListener;
 import org.complitex.flexbuh.service.user.UserBean;
 import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.template.toolbar.SaveButton;
+import org.complitex.flexbuh.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.web.component.datatable.DataProvider;
+import org.complitex.flexbuh.web.component.paging.PagingNavigator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +34,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
  *         Date: 08.09.11 11:55
  */
-public class UserProfileView extends TemplatePage {
+public class PersonProfileList extends TemplatePage {
 
-    private final static Logger log = LoggerFactory.getLogger(UserProfileView.class);
+    private final static Logger log = LoggerFactory.getLogger(PersonProfileList.class);
 
     @EJB
     private UserBean userBean;
@@ -54,12 +57,12 @@ public class UserProfileView extends TemplatePage {
     private FileUploadField fileUpload;
 
 
-    public UserProfileView() {
+    public PersonProfileList() {
         super();
         init();
     }
 
-    public UserProfileView(PageParameters params) {
+    public PersonProfileList(PageParameters params) {
         init();
     }
 
@@ -102,22 +105,22 @@ public class UserProfileView extends TemplatePage {
 
                 item.add(new Label("address", profile.getAddress()));
 
-                item.add(new Label("directorFIO", profile.getDirectorFIO()));
+                item.add(new Label("directorFIO", profile.getDFio()));
 
                 item.add(new Label("phone", profile.getPhone()));
 
                 item.add(new Label("email", profile.getEmail()));
 
-				PageParameters pageParameters = new PageParameters();
+                PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", profile.getId());
-				item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
-						JuridicalPersonProfilePage.class, pageParameters));
-			}
+                item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
+                        PersonProfileEdit.class, pageParameters));
+            }
         };
         filterForm.add(dataView);
 
         //Постраничная навигация
-        filterForm.add(new PagingNavigator("paging", dataView));
+        filterForm.add(new PagingNavigator("paging", dataView, "PersonProfileList"));
 
         // Импортировать профайл из файла пользователя
         Form<?> form = new Form<Void>("import_form") {
@@ -181,17 +184,20 @@ public class UserProfileView extends TemplatePage {
         form.add(fileUpload = new FileUploadField("fileUpload"));
 
         add(form);
+    }
 
-        //Кнопка экспортировать
-        Button exportButton = new Button("export") {
 
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+
+        return Arrays.asList(new SaveButton(id, false) {
             @Override
-            public void onSubmit() {
+            protected void onClick() {
                 getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
                         new AbstractResourceStreamWriter() {
                             @Override
                             public void write(Response output) {
-                                User user = userBean.getUserBySessionId(sessionId);
+                                User user = userBean.getUserBySessionId(getSessionId(true));
 
                                 if (user != null) {
                                     try {
@@ -209,12 +215,10 @@ public class UserProfileView extends TemplatePage {
 
                             @Override
                             public String getContentType() {
-                                return "text/xml";
+                                return "application/xml";
                             }
                         }, "SETTINGS.XML"));
             }
-        };
-
-        filterForm.add(exportButton);
+        });
     }
 }

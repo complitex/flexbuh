@@ -21,7 +21,7 @@
                 <th><wicket:message key="director"/></th>
                 <th><wicket:message key="phone"/></th>
                 <th><wicket:message key="email"/></th>
-				<th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -41,17 +41,23 @@
         <div>
             <span wicket:id="paging"></span>
         </div>
-		<input type="submit" class="btnBig" wicket:id="export" wicket:message="value:export"/>
-
     </form>
 
-	<form wicket:id="import_form">
-		<p>
-			<label><wicket:message key="select_file"/></label>
-			<input wicket:id="fileUpload" size="20" type="file"/>
-			<input type="submit" class="btnBig" wicket:message="value:import"/>
-		</p>
-	</form>
+    <fieldset>
+        <legend><wicket:message key="select_file"/></legend>
+        <form wicket:id="import_form" action="#">
+            <table>
+                <tr>
+                    <td style="width: 100%">
+                        <input wicket:id="fileUpload" size="20" type="file" style="width: 100%"/>
+                    </td>
+                    <td>
+                        <input type="submit" class="btnBig" wicket:message="value:import"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </fieldset>
 </wicket:extend>
 </body>
 </html>

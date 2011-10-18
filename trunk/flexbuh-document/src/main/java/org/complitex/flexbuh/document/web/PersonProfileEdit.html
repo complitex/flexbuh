@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h1>
+        <span wicket:id="header"></span>
+    </h1>
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="form">
+        <table class="tbForm">
+            <tr>
+                <th><wicket:message key="person_type"/> </th>
+                <td><select wicket:id="person_type"></select></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="c_sti"/> </th>
+                <td><select wicket:id="cSti"></select></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="c_sti_tin"/> </th>
+                <td><input wicket:id="c_sti_tin"/></td>
+            </tr>
+            <tr>
+                <th><span wicket:id="tin_label"></span></th>
+                <td><input type="text" maxlength="45" wicket:id="tin"/></td>
+            </tr>
+            <tr>
+                <th><span wicket:id="name_label"></span></th>
+                <td><input type="text" maxlength="255" wicket:id="name"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="ipn"/> </th>
+                <td><input type="text" maxlength="45" wicket:id="ipn"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="num_pvd_svd"/> </th>
+                <td><input type="text" maxlength="45" wicket:id="num_pvd_svd"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="kved"/> </th>
+                <td><input type="text" maxlength="45" wicket:id="kved"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="koatuu"/> </th>
+                <td><input type="text" maxlength="45" wicket:id="koatuu"/></td>
+            </tr>
+            <tbody wicket:id="contract_container">
+            <tr>
+                <th><wicket:message key="contract"/> </th>
+                <td>
+                    <input type="text" maxlength="45" wicket:id="contract_date"/>
+                    <input type="text" maxlength="45" wicket:id="contract_number"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <fieldset>
+            <legend>
+                <wicket:message key="legend_address"/>
+            </legend>
+
+            <table class="tbForm">
+                <tr>
+                    <th><wicket:message key="zip_code"/> </th>
+                    <td><input type="text" maxlength="45" wicket:id="zip_code"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="address"/> </th>
+                    <td><input type="text" maxlength="1000" wicket:id="address"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="phone"/> </th>
+                    <td><input type="text" maxlength="255" wicket:id="phone"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="fax"/> </th>
+                    <td><input type="text" maxlength="45" wicket:id="fax"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="email"/> </th>
+                    <td><input type="text" maxlength="255" wicket:id="email"/></td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <br/>
+
+        <fieldset>
+            <legend>
+                <wicket:message key="legend_managers"/>
+            </legend>
+
+            <table class="tbForm">
+                <tr>
+                    <th><wicket:message key="d_inn"/> </th>
+                    <td><input type="text" maxlength="45" wicket:id="d_inn"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="d_fio"/> </th>
+                    <td><input type="text" maxlength="255" wicket:id="d_fio"/></td>
+                </tr>                <tr>
+                    <th><wicket:message key="b_inn"/> </th>
+                    <td><input type="text" maxlength="45" wicket:id="b_inn"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="b_fio"/> </th>
+                    <td><input type="text" maxlength="255" wicket:id="b_fio"/></td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <br/>
+
+        <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+        <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+    </form>
+</wicket:extend>
+</body>
+</html>

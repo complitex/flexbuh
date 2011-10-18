@@ -68,12 +68,20 @@
         </div>
     </form>
 
-    <div style="margin-top: 20px">
+    <div style="margin-top: 15px">
         <form action="#" wicket:id="upload_form">
             <fieldset>
                 <legend><wicket:message key="upload_documents"/></legend>
-                <input type="file" wicket:id="upload_field" multiple="true"/>
-                <input type="submit" wicket:message="value:upload" class="btnBig"/>
+                <table>
+                    <tr>
+                        <td style="width: 100%">
+                            <input type="file" wicket:id="upload_field" multiple="true" style="width: 100%"/>
+                        </td>
+                        <td>
+                            <input type="submit" wicket:message="value:upload" class="btnBig"/>
+                        </td>
+                    </tr>
+                </table>
             </fieldset>
         </form>
     </div>

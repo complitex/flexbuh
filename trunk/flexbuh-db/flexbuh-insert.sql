@@ -18,5 +18,3 @@ INSERT INTO dictionary_type (`id`, `code`, `file_name`, `name_uk`, `name_ru`)
   VALUES (5, 'region', 'SPR_REGION.XML', 'Довідник регіонів', 'Справочник регионов');
 INSERT INTO dictionary_type (`id`, `code`, `file_name`, `name_uk`, `name_ru`)
   VALUES (6, 'tax_inspection', 'SPR_STI.XML', 'Довідник податкових інспекцій', 'Справочник налоговых инспекций');
-
-INSERT INTO person_type (`id`, `code`) VALUES (1, '1'),(2, '2'),(3, '3'),(4, '4');

@@ -1,7 +1,7 @@
-package org.complitex.flexbuh.service.user;
+package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.entity.AbstractFilter;
-import org.complitex.flexbuh.entity.user.PersonProfile;
 import org.complitex.flexbuh.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -29,10 +29,10 @@ public class PersonProfileBean extends AbstractBean {
     }
 
     public void save(PersonProfile personProfile){
-        sqlSession().insert(NS + ".insertPersonProfile", personProfile);
-    }
-
-	public void update(PersonProfile personProfile){
-        sqlSession().insert(NS + ".updatePersonProfile", personProfile);
+        if (personProfile.getId() == null) {
+            sqlSession().insert(NS + ".insertPersonProfile", personProfile);
+        }else {
+            sqlSession().insert(NS + ".updatePersonProfile", personProfile);
+        }
     }
 }

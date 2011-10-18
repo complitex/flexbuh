@@ -9,7 +9,7 @@
 
        <!-- <association property="userProfile" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
 					 resultMap="personProfileResultMap"/>-->
-		<collection property="companyProfiles" column="session_id" javaType="org.complitex.flexbuh.entity.user.PersonProfile"
+		<collection property="companyProfiles" column="session_id" javaType="org.complitex.flexbuh.document.entity.PersonProfile"
 					resultMap="personProfileResultMap"/>
     </resultMap>
 
