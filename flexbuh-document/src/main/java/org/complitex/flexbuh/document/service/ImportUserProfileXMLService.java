@@ -1,10 +1,11 @@
-package org.complitex.flexbuh.admin.importexport.service;
+package org.complitex.flexbuh.document.service;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.complitex.flexbuh.entity.user.PersonProfile;
-import org.complitex.flexbuh.service.user.PersonProfileBean;
-import org.complitex.flexbuh.service.user.PersonTypeBean;
+import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonType;
+import org.complitex.flexbuh.service.ImportListener;
+import org.complitex.flexbuh.service.ImportXMLService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -35,9 +36,6 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 
     @Resource
     protected UserTransaction userTransaction;
-
-    @EJB
-    private PersonTypeBean personTypeBean;
 
     @EJB
     private PersonProfileBean personProfileBean;
@@ -108,45 +106,72 @@ public class ImportUserProfileXMLService extends ImportXMLService {
         NodeList contentNodeRow = contentNode.getChildNodes();
         for (int j = 0; j < contentNodeRow.getLength(); j++) {
             Node currentNode = contentNodeRow.item(j);
-            if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME")) {
-                personProfile.setName(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "TIN")) {
-                personProfile.setCodeTIN(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_STI")) {
-                personProfile.setCodeTaxInspection(Integer.parseInt(currentNode.getTextContent()));
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "KVED")) {
-                personProfile.setCodeKVED(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "PERSON_TYPE")) {
 
-                personProfile.setPersonType(personTypeBean.findByCode(currentNode.getTextContent()));
+            String value = currentNode.getTextContent();
 
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "CONTRACT_DATE")) {
-                // TODO Release
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "CONTRACT_NUMBER")) {
-                // TODO Release
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "ZIPCODE")) {
-                personProfile.setZipCode(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "ADRESS")) {
-                personProfile.setAddress(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "PHONE")) {
-                personProfile.setPhone(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "FAX")) {
-                personProfile.setFax(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "EMAIL")) {
-                personProfile.setEmail(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "DFIO")) {
-                personProfile.setDirectorFIO(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "BFIO")) {
-                personProfile.setAccountantFIO(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "DINN")) {
-                personProfile.setDirectorINN(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "BINN")) {
-                personProfile.setAccountantINN(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "IPN")) {
-                personProfile.setIpn(currentNode.getTextContent());
-            } else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NUMPDVSVD")) {
-                personProfile.setNumSvdPDV(currentNode.getTextContent());
+            switch (currentNode.getNodeName().toUpperCase()){
+                case "NAME":
+                    personProfile.setName(value);
+                    break;
+                case "TIN":
+                    personProfile.setTin(value);
+                    break;
+                case "C_STI":
+                    personProfile.setCSti(Integer.parseInt(value));
+                    break;
+                case "C_STI_TIN":
+                    personProfile.setCStiTin(value);
+                    break;
+                case "KVED":
+                    personProfile.setKved(value);
+                    break;
+                case "KOATUU":
+                    personProfile.setKoatuu(value);
+                    break;
+                case "PERSON_TYPE":
+                    personProfile.setPersonType(PersonType.get(Integer.parseInt(value)));
+                    break;
+                case "CONTRACT_DATE":
+                    //todo
+                    break;
+                case "CONTRACT_NUMBER":
+                    //todo
+                    break;
+                case "ZIPCODE":
+                    personProfile.setZipCode(value);
+                    break;
+                case "ADRESS":
+                    personProfile.setAddress(value);
+                    break;
+                case "PHONE":
+                    personProfile.setPhone(value);
+                    break;
+                case "FAX":
+                    personProfile.setFax(value);
+                    break;
+                case "EMAIL":
+                    personProfile.setEmail(value);
+                    break;
+                case "DFIO":
+                    personProfile.setDFio(value);
+                    break;
+                case "BFIO":
+                    personProfile.setBFio(value);
+                    break;
+                case "DINN":
+                    personProfile.setDInn(value);
+                    break;
+                case "BINN":
+                    personProfile.setBInn(value);
+                    break;
+                case "IPN":
+                    personProfile.setIpn(value);
+                    break;
+                case "NUMPDVSVD":
+                    personProfile.setNumPvdSvd(value);
+                    break;
             }
+
         }
 
         return personProfile;

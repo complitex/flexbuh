@@ -15,9 +15,6 @@ public class UserBean extends AbstractBean{
 	public static final String NS = UserBean.class.getName();
 
 	@EJB
-	private PersonProfileBean personProfileBean;
-
-	@EJB
 	private SessionBean sessionBean;
 
 	public User getUser(long id) {

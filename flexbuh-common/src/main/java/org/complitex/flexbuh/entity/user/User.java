@@ -3,9 +3,7 @@ package org.complitex.flexbuh.entity.user;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.entity.SessionObject;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -15,10 +13,6 @@ import java.util.List;
 public class User extends SessionObject {
 	private String login;
 	private String password;
-
-	private PersonProfile userProfile;
-
-	private List<PersonProfile> companyProfiles;
 
 	public String getLogin() {
 		return login;
@@ -34,22 +28,6 @@ public class User extends SessionObject {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public PersonProfile getUserProfile() {
-		return userProfile;
-	}
-
-	public void setUserProfile(PersonProfile userProfile) {
-		this.userProfile = userProfile;
-	}
-
-	@XmlElement(name = "ROW")
-	public List<PersonProfile> getCompanyProfiles() {
-		return companyProfiles;
-	}
-	public void setCompanyProfiles(List<PersonProfile> companyProfiles) {
-		this.companyProfiles = companyProfiles;
 	}
 
 	@Override

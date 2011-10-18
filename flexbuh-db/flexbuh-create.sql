@@ -1,21 +1,5 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 
--- --------------------------
--- PersonType
--- --------------------------
-
-DROP TABLE IF EXISTS `person_type`;
-
-CREATE TABLE `person_type` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `code` VARCHAR(40) NOT NULL,
-  `name_uk` VARCHAR(255),
-  `name_ru` VARCHAR(255),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `key_person_type__code` (`code`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
 -- ------------------------------
 -- PersonProfile
 -- ------------------------------
@@ -24,11 +8,15 @@ DROP TABLE IF EXISTS `person_profile`;
 CREATE TABLE  `person_profile` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор профайла',
   `session_id` BIGINT(20) NOT NULL,
+  `person_type` INTEGER NOT NULL,
+  `c_sti` INTEGER,
+  `c_sti_tin` VARCHAR(45),
+  `tin` VARCHAR(45),
   `name` VARCHAR(255) NOT NULL,
-  `code_TIN` VARCHAR(45),
-  `code_tax_inspection` INTEGER,
-  `code_KVED` VARCHAR(45),
-  `person_type_id` BIGINT(20) NOT NULL,
+  `num_pvd_svd` VARCHAR(45),
+  `ipn` VARCHAR(45),
+  `kved` VARCHAR(45),
+  `koatuu` VARCHAR(45),
   `contract_date` DATE,
   `contract_number` VARCHAR(45),
   `zip_code` VARCHAR(45),
@@ -36,17 +24,13 @@ CREATE TABLE  `person_profile` (
   `phone` VARCHAR(255),
   `fax` VARCHAR(45),
   `email` VARCHAR(255),
-  `director_FIO` VARCHAR(255),
-  `accountant_FIO` VARCHAR(255),
-  `director_INN` VARCHAR(45),
-  `accountant_INN` VARCHAR(45),
-  `ipn` VARCHAR(45),
-  `num_svd_PDV` VARCHAR(45),
+  `d_inn` VARCHAR(45),
+  `d_fio` VARCHAR(255),
+  `b_inn` VARCHAR(45),
+  `b_fio` VARCHAR(255),
   PRIMARY KEY (`id`),
   KEY `key_session_id` (`session_id`),
-  KEY `key_person_profile__person_type_id` (`person_type_id`),
-  CONSTRAINT `fk_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
-  CONSTRAINT `fk_person_profile__person_type` FOREIGN KEY (`person_type_id`) REFERENCES `person_type` (`id`)
+  CONSTRAINT `fk_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайл';
 
 -- ------------------------------

@@ -27,6 +27,54 @@ public class DocumentMenu extends ResourceTemplateMenu{
                 new ITemplateLink() {
                     @Override
                     public String getLabel(Locale locale) {
+                        return getString("person_profile_edit", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return PersonProfileEdit.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "person_profile_edit";
+                    }
+                }
+        );
+
+        templateLinks.add(
+                        new ITemplateLink() {
+                            @Override
+                            public String getLabel(Locale locale) {
+                                return getString("person_profile_list", locale);
+                            }
+
+                            @Override
+                            public Class<? extends Page> getPage() {
+                                return PersonProfileList.class;
+                            }
+
+                            @Override
+                            public PageParameters getParameters() {
+                                return null;
+                            }
+
+                            @Override
+                            public String getTagId() {
+                                return "person_profile_list";
+                            }
+                        }
+                );
+
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
                         return getString("declaration_create", locale);
                     }
 
@@ -46,6 +94,7 @@ public class DocumentMenu extends ResourceTemplateMenu{
                     }
                 }
         );
+
 
         templateLinks.add(
                 new ITemplateLink() {
