@@ -10,7 +10,7 @@
         <result column="c_sti_tin" property="cStiTin"/>
         <result column="tin" property="tin"/>
         <result column="name" property="name"/>
-        <result column="num_pvd_svd" property="numPvdSvd"/>
+        <result column="num_pdv_svd" property="numPdvSvd"/>
         <result column="ipn" property="ipn"/>
         <result column="kved" property="kved"/>
         <result column="koatuu" property="koatuu"/>
@@ -25,25 +25,26 @@
         <result column="d_fio" property="dFio"/>
         <result column="b_inn" property="bInn"/>
         <result column="b_fio" property="bFio"/>
+        <result column="tax_inspection_id" property="taxInspectionId"/>
     </resultMap>
 
     <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
         insert into `person_profile`
-          (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `num_pvd_svd`, `ipn`, `kved`, `koatuu`,
+          (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`,
             `contract_date`, `contract_number`, `zip_code`, `address`, `phone`, `fax`, `email`, `d_inn` , `d_fio`,
-            `b_inn`, `b_fio`)
+            `b_inn`, `b_fio`, `tax_inspection_id`)
         values
-          (#{sessionId}, #{personType}, #{cSti}, #{cStiTin}, #{tin}, #{name}, #{numPvdSvd}, #{ipn},
+          (#{sessionId}, #{personType}, #{cSti}, #{cStiTin}, #{tin}, #{name}, #{numPdvSvd}, #{ipn},
             #{kved}, #{koatuu}, #{contractDate}, #{contractNumber}, #{zipCode}, #{address}, #{phone}, #{fax}, #{email},
-            #{dInn}, #{dFio}, #{bInn}, #{bFio})
+            #{dInn}, #{dFio}, #{bInn}, #{bFio}, #{taxInspectionId})
     </insert>
 
 	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile">
         update `person_profile` set `person_type` = #{personType}, `c_sti` = #{cSti}, `c_sti_tin` = #{cStiTin},
-          `tin` = #{tin}, `name` = #{name}, `num_pvd_svd` = #{numPvdSvd}, `ipn` = #{ipn}, `kved` = #{kved},
+          `tin` = #{tin}, `name` = #{name}, `num_pdv_svd` = #{numPdvSvd}, `ipn` = #{ipn}, `kved` = #{kved},
           `koatuu` = #{koatuu}, `contract_date` = #{contractDate}, `contract_number` = #{contractNumber},
           `zip_code` = #{zipCode}, `address` = #{address}, `phone` = #{phone}, `fax` = #{fax}, `email` = #{email},
-          `d_inn` = #{dInn}, `d_fio` = #{dFio}, `b_inn` = #{bInn}, `b_fio` = #{bFio}
+          `d_inn` = #{dInn}, `d_fio` = #{dFio}, `b_inn` = #{bInn}, `b_fio` = #{bFio}, `tax_inspection_id` = #{taxInspectionId}
         where `id` = #{id}
     </update>
 
@@ -57,5 +58,9 @@
 
     <select id="selectPersonProfilesCount" parameterType="long" resultType="int">
         select count(*) from `person_profile` where `session_id` = #{sessionId}
+    </select>
+
+    <select id="selectAllPersonProfiles" parameterType="long" resultMap="personProfileResultMap">
+        select * from `person_profile` where `session_id` = #{sessionId}
     </select>
 </mapper>

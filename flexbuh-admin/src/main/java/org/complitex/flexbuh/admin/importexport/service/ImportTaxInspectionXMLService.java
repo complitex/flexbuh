@@ -58,7 +58,7 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService<Ta
 		}
 		Validate.notNull(regionCode, "Can not find region code");
 		for (TaxInspection taxInspection : taxInspections) {
-			taxInspection.setRegionCode(regionCode);
+			taxInspection.setCReg(regionCode);
 			Validate.isTrue(taxInspection.validate(), "Invalid processing document: " + taxInspection);
 			processBeginAndEndDates(taxInspection, createdDictionaries, processedDictionaries);
 		}
@@ -93,15 +93,15 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService<Ta
 		for (int j = 0; j < contentNodeRow.getLength(); j++) {
 			Node currentNode = contentNodeRow.item(j);
 			if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_STI")) {
-				taxInspection.setCode(Integer.decode(currentNode.getTextContent()));
+				taxInspection.setCSti(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "C_RAJ")) {
-				taxInspection.setCodeArea(Integer.decode(currentNode.getTextContent()));
+				taxInspection.setCRaj(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "T_STI")) {
-				taxInspection.setCodeTaxInspectionType(Integer.decode(currentNode.getTextContent()));
+				taxInspection.setTSti(Integer.decode(currentNode.getTextContent()));
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_STI")) {
                 taxInspection.setNameUk(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "NAME_RAJ")) {
-                taxInspection.setAreaNameUk(currentNode.getTextContent());
+                taxInspection.setNameRajUk(currentNode.getTextContent());
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_BEGIN")) {
 				taxInspection.setBeginDate(beginDate);
 			} else if (StringUtils.equalsIgnoreCase(currentNode.getNodeName(), "D_END")) {
@@ -113,9 +113,9 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService<Ta
 	
 	@SuppressWarnings("unchecked")
 	private void processBeginAndEndDates(TaxInspection taxInspection, MultiValueMap createdDictionaries, Map<Long, TaxInspection> processedDictionaries) {
-		List<TaxInspection> oldTaxInspections = taxInspectionBean.getTaxInspectionByCodeAndCodeArea(taxInspection.getCode(), taxInspection.getCodeArea());
-		if (createdDictionaries.containsKey(taxInspection.getCode())) {
-			oldTaxInspections.addAll(createdDictionaries.getCollection(taxInspection.getCode()));
+		List<TaxInspection> oldTaxInspections = taxInspectionBean.getTaxInspectionByDistrict(taxInspection.getCSti(), taxInspection.getCRaj());
+		if (createdDictionaries.containsKey(taxInspection.getCSti())) {
+			oldTaxInspections.addAll(createdDictionaries.getCollection(taxInspection.getCSti()));
 		}
 		log.debug("Old tax inspections: {}", oldTaxInspections);
 		for (TaxInspection oldTaxInspection : oldTaxInspections) {

@@ -168,7 +168,7 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                     personProfile.setIpn(value);
                     break;
                 case "NUMPDVSVD":
-                    personProfile.setNumPvdSvd(value);
+                    personProfile.setNumPdvSvd(value);
                     break;
             }
 

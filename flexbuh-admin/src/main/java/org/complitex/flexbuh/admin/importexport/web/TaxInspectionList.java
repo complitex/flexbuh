@@ -58,15 +58,15 @@ public class TaxInspectionList extends TemplatePage {
             protected void populateItem(Item<TaxInspection> item) {
                 TaxInspection taxInspection = item.getModelObject();
 
-                item.add(new Label("code", Integer.toString(taxInspection.getCode())));
-                item.add(new Label("region_code", Integer.toString(taxInspection.getRegionCode())));
-                item.add(new Label("area_code", Integer.toString(taxInspection.getCodeArea())));
-                item.add(new Label("tax_inspection_type_code", Integer.toString(taxInspection.getCodeTaxInspectionType())));
+                item.add(new Label("code", Integer.toString(taxInspection.getCSti())));
+                item.add(new Label("region_code", Integer.toString(taxInspection.getCReg())));
+                item.add(new Label("area_code", Integer.toString(taxInspection.getCRaj())));
+                item.add(new Label("tax_inspection_type_code", Integer.toString(taxInspection.getTSti())));
                 item.add(new Label("begin_date", getStringDate(taxInspection.getBeginDate())));
                 item.add(new Label("end_date", getStringDate(taxInspection.getEndDate())));
 
                 item.add(new Label("name_uk",taxInspection.getNameUk()));
-                item.add(new Label("area_name_uk", taxInspection.getAreaNameUk()));
+                item.add(new Label("area_name_uk", taxInspection.getNameRajUk()));
             }
         };
         form.add(dataView);

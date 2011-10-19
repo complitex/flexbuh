@@ -13,6 +13,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
+import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.service.dictionary.DocumentBean;
@@ -31,6 +33,9 @@ public class DeclarationCreate extends FormTemplatePage{
     @EJB
     private DocumentBean documentBean;
 
+    @EJB
+    private PersonProfileBean personProfileBean;
+
     private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
     private final static int MIN_YEAR = 1990;
@@ -48,7 +53,30 @@ public class DeclarationCreate extends FormTemplatePage{
         //Тип лица
         DropDownChoice<String> person = new DropDownChoice<String>("person", new Model<>("Юридическое лицо"),
                 Arrays.asList("Физическое лицо", "Юридическое лицо"));
+        person.setEnabled(false);
         form.add(person);
+
+        //Профиль
+        DropDownChoice personProfile = new DropDownChoice<>("person_profile",
+                new PropertyModel<PersonProfile>(declaration, "personProfile"),
+                new LoadableDetachableModel<List<PersonProfile>>() {
+                    @Override
+                    protected List<PersonProfile> load() {
+                        return personProfileBean.getAllPersonProfiles(getSessionId(false));
+                    }
+                },
+                new IChoiceRenderer<PersonProfile>() {
+                    @Override
+                    public Object getDisplayValue(PersonProfile object) {
+                        return object.getName();
+                    }
+
+                    @Override
+                    public String getIdValue(PersonProfile object, int index) {
+                        return object.getId().toString();
+                    }
+                });
+        form.add(personProfile);
 
         //Отчетный документ
         form.add(new DropDownChoice<>("document",

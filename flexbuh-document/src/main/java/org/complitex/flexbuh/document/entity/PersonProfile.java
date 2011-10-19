@@ -30,7 +30,7 @@ public class PersonProfile extends SessionObject {
     private String name;
 
     @XmlElement(name = "NUMPDVSVD")
-    private String numPvdSvd; // номер свидетельства ПДВ
+    private String numPdvSvd; // номер свидетельства ПДВ
 
     @XmlElement(name = "IPN")
     private String ipn; // индивидуальный налоговый номер
@@ -77,6 +77,9 @@ public class PersonProfile extends SessionObject {
     @XmlAttribute(name = "SELECTED")
     private boolean selected;
 
+    @XmlTransient
+    private Long taxInspectionId;
+
     public PersonType getPersonType() {
         return personType;
     }
@@ -117,12 +120,12 @@ public class PersonProfile extends SessionObject {
         this.name = name;
     }
 
-    public String getNumPvdSvd() {
-        return numPvdSvd;
+    public String getNumPdvSvd() {
+        return numPdvSvd;
     }
 
-    public void setNumPvdSvd(String numPvdSvd) {
-        this.numPvdSvd = numPvdSvd;
+    public void setNumPdvSvd(String numPdvSvd) {
+        this.numPdvSvd = numPdvSvd;
     }
 
     public String getIpn() {
@@ -243,6 +246,14 @@ public class PersonProfile extends SessionObject {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public Long getTaxInspectionId() {
+        return taxInspectionId;
+    }
+
+    public void setTaxInspectionId(Long taxInspectionId) {
+        this.taxInspectionId = taxInspectionId;
     }
 
     @Override

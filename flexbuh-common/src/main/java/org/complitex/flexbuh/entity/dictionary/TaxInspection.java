@@ -10,75 +10,75 @@ import java.util.Locale;
  *         Date: 05.08.11 13:06
  */
 public class TaxInspection extends AbstractPeriodDictionary {
-	private Integer code;	
-	private Integer regionCode;
-	private Integer codeArea;	
-	private Integer codeTaxInspectionType;
+	private Integer cSti;
+	private Integer cReg;
+	private Integer cRaj;
+	private Integer tSti;
     
-    private String areaNameRu;
-    private String areaNameUk;
+    private String nameRajRu;
+    private String nameRajUk;
     
     public String getAreaName(Locale locale){
         switch (locale.getLanguage()){
             case "ru":
-                return areaNameRu != null ? areaNameRu : areaNameUk;
+                return nameRajRu != null ? nameRajRu : nameRajUk;
             default:
-                return areaNameUk;
+                return nameRajUk;
         }
     }
 
-	public Integer getCode() {
-		return code;
-	}
-
-	public void setCode(Integer code) {
-		this.code = code;
-	}
-
-    public String getAreaNameRu() {
-        return areaNameRu;
+    public Integer getCSti() {
+        return cSti;
     }
 
-    public void setAreaNameRu(String areaNameRu) {
-        this.areaNameRu = areaNameRu;
+    public void setCSti(Integer cSti) {
+        this.cSti = cSti;
     }
 
-    public String getAreaNameUk() {
-        return areaNameUk;
+    public Integer getCReg() {
+        return cReg;
     }
 
-    public void setAreaNameUk(String areaNameUk) {
-        this.areaNameUk = areaNameUk;
+    public void setCReg(Integer cReg) {
+        this.cReg = cReg;
     }
 
-    public Integer getRegionCode() {
-		return regionCode;
-	}
+    public Integer getCRaj() {
+        return cRaj;
+    }
 
-	public void setRegionCode(Integer regionCode) {
-		this.regionCode = regionCode;
-	}
+    public void setCRaj(Integer cRaj) {
+        this.cRaj = cRaj;
+    }
 
-	public Integer getCodeArea() {
-		return codeArea;
-	}
+    public Integer getTSti() {
+        return tSti;
+    }
 
-	public void setCodeArea(Integer codeArea) {
-		this.codeArea = codeArea;
-	}
+    public void setTSti(Integer tSti) {
+        this.tSti = tSti;
+    }
 
-	public Integer getCodeTaxInspectionType() {
-		return codeTaxInspectionType;
-	}
+    public String getNameRajRu() {
+        return nameRajRu;
+    }
 
-	public void setCodeTaxInspectionType(Integer codeTaxInspectionType) {
-		this.codeTaxInspectionType = codeTaxInspectionType;
-	}
+    public void setNameRajRu(String nameRajRu) {
+        this.nameRajRu = nameRajRu;
+    }
 
-	@Override
+    public String getNameRajUk() {
+        return nameRajUk;
+    }
+
+    public void setNameRajUk(String nameRajUk) {
+        this.nameRajUk = nameRajUk;
+    }
+
+    @Override
 	public boolean validate() {
-		return super.validate() && code != null && regionCode != null && codeArea != null 
-                && codeTaxInspectionType != null;
+		return super.validate() && cSti != null && cReg != null && cRaj != null
+                && tSti != null;
 	}
 
 	@Override
@@ -88,6 +88,6 @@ public class TaxInspection extends AbstractPeriodDictionary {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(code).append(codeArea).hashCode();
+		return new HashCodeBuilder().append(cSti).append(cRaj).hashCode();
 	}
 }
