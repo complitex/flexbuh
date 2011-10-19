@@ -60,6 +60,9 @@ public class Declaration implements Serializable{
     @XmlTransient
     private Document document;
 
+    @XmlTransient
+    private PersonProfile personProfile;
+
     public Declaration() {
     }
 
@@ -155,6 +158,14 @@ public class Declaration implements Serializable{
     public void addDeclarationValue(DeclarationValue value){
         declarationValues.add(value);
     }
+    
+    public void fillValue(String name, String value){
+        DeclarationValue declarationValue = getDeclarationValue(name);
+
+        if (declarationValue != null){
+            declarationValue.setValue(value);
+        }
+    } 
 
     public void removeDeclarationValue(String name){
         removeDeclarationValue(null, name);
@@ -263,5 +274,13 @@ public class Declaration implements Serializable{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public PersonProfile getPersonProfile() {
+        return personProfile;
+    }
+
+    public void setPersonProfile(PersonProfile personProfile) {
+        this.personProfile = personProfile;
     }
 }

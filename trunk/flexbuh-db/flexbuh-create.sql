@@ -13,7 +13,7 @@ CREATE TABLE  `person_profile` (
   `c_sti_tin` VARCHAR(45),
   `tin` VARCHAR(45),
   `name` VARCHAR(255) NOT NULL,
-  `num_pvd_svd` VARCHAR(45),
+  `num_pdv_svd` VARCHAR(45),
   `ipn` VARCHAR(45),
   `kved` VARCHAR(45),
   `koatuu` VARCHAR(45),
@@ -28,9 +28,12 @@ CREATE TABLE  `person_profile` (
   `d_fio` VARCHAR(255),
   `b_inn` VARCHAR(45),
   `b_fio` VARCHAR(255),
+  `tax_inspection_id` BIGINT(20),
   PRIMARY KEY (`id`),
   KEY `key_session_id` (`session_id`),
-  CONSTRAINT `fk_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+  KEY `key_tax_inspection_id` (`tax_inspection_id`),
+  CONSTRAINT `fk_person_profile__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
+  CONSTRAINT `fk_person_profile__tax_inspection` FOREIGN KEY (`tax_inspection_id`) REFERENCES `tax_inspection` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Профайл';
 
 -- ------------------------------
@@ -302,16 +305,16 @@ CREATE TABLE `tax_inspection` (
   `upload_date` TIMESTAMP NOT NULL,
   `begin_date` DATETIME,
   `end_date` DATETIME,
-  `code` INTEGER NOT NULL,
-  `region_code` BIGINT(20) NOT NULL,
-  `code_area` INTEGER NOT NULL,
-  `code_tax_inspection_type` INTEGER NOT NULL,
+  `c_sti` INTEGER NOT NULL,
+  `c_reg` BIGINT(20) NOT NULL,
+  `c_raj` INTEGER NOT NULL,
+  `t_sti` INTEGER NOT NULL,
   `name_uk` VARCHAR(255) NOT NULL,
   `name_ru` VARCHAR(255),
-  `area_name_uk` VARCHAR(255),
-  `area_name_ru` VARCHAR(255),
+  `name_raj_uk` VARCHAR(255),
+  `name_raj_ru` VARCHAR(255),
   PRIMARY KEY (`id`),
-  KEY `key_tax_inspection__code` (`code`)
+  KEY `key_tax_inspection__c_sti` (`c_sti`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

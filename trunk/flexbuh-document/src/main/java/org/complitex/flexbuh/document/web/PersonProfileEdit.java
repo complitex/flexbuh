@@ -105,26 +105,42 @@ public class PersonProfileEdit extends FormTemplatePage {
         form.add(personType);
 
         // Налоговая
-        List<TaxInspection> taxInspections = taxInspectionBean.getTaxInspectionByCode(personProfile.getCSti());
+        TaxInspection taxInspectionObject = taxInspectionBean.getTaxInspection(personProfile.getTaxInspectionId());
 
-        final Model<TaxInspection> taxInspectionModel = personProfile.getCSti() != null?
-                new Model<>(taxInspections.isEmpty()? null: taxInspections.get(0)):
-                new Model<TaxInspection>();
-        final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<>("cSti", taxInspectionModel,
-                taxInspectionBean.getTaxInspectionsUniqueCodeWithName(),
+        final DropDownChoice<String> districtName = new DropDownChoice<>("districtName",
+                new Model<>(taxInspectionObject != null ? taxInspectionObject.getNameRajUk() : null),
+                taxInspectionBean.getTaxInspectionDistrictNames());
+        form.add(districtName);
+        
+        final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<>("taxInspection",
+                new Model<>(taxInspectionObject),
+                new LoadableDetachableModel<List<TaxInspection>>() {
+                    @Override
+                    protected List<TaxInspection> load() {
+                        return taxInspectionBean.getTaxInspectionsByDistrictName(districtName.getModelObject());
+                    }
+                },
                 new IChoiceRenderer<TaxInspection>() {
 
                     @Override
                     public Object getDisplayValue(TaxInspection object) {
-                        return object.getName(getLocale());
+                        return object.getCSti() + " " + object.getName(getLocale());
                     }
 
                     @Override
                     public String getIdValue(TaxInspection object, int index) {
-                        return Integer.toString(object.getCode());
+                        return Integer.toString(object.getCSti());
                     }
                 });
+        taxInspection.setOutputMarkupId(true);
         form.add(taxInspection);
+        
+        districtName.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(taxInspection);
+            }
+        });
 
         // Код ЄДРПОУ ДПІ
         form.add(new TextField<>("c_sti_tin", new PropertyModel<String>(personProfile, "cStiTin")));
@@ -155,7 +171,7 @@ public class PersonProfileEdit extends FormTemplatePage {
         form.add(new TextField<>("ipn", new PropertyModel<String>(personProfile, "ipn")));
 
         // Код ДРФО бухгалтера
-        form.add(new TextField<>("num_pvd_svd", new PropertyModel<String>(personProfile, "numPvdSvd")));
+        form.add(new TextField<>("num_pdv_svd", new PropertyModel<String>(personProfile, "numPdvSvd")));
 
         // Код основного вида экономической деятельности (за КВЕД)
         form.add(new TextField<>("kved", new PropertyModel<String>(personProfile, "kved")));
@@ -223,7 +239,9 @@ public class PersonProfileEdit extends FormTemplatePage {
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                personProfile.setCSti(taxInspectionModel.getObject().getCode());
+                TaxInspection ti = taxInspection.getModelObject();
+                personProfile.setCSti(ti.getCSti());
+                personProfile.setTaxInspectionId(ti.getId());
 
                 personProfile.setSessionId(getSessionId(true));
                 personProfileBean.save(personProfile);
