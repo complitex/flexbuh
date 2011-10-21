@@ -25,6 +25,9 @@ public class DeclarationValue implements Serializable, Comparable{
     @XmlValue
     private String value;
 
+    @XmlTransient
+    private String type;
+
     public DeclarationValue() {
     }
 
@@ -81,6 +84,14 @@ public class DeclarationValue implements Serializable, Comparable{
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

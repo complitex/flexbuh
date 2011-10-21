@@ -132,6 +132,7 @@ public class PersonProfileEdit extends FormTemplatePage {
                         return Integer.toString(object.getCSti());
                     }
                 });
+        taxInspection.setNullValid(true);
         taxInspection.setOutputMarkupId(true);
         form.add(taxInspection);
         
@@ -240,8 +241,11 @@ public class PersonProfileEdit extends FormTemplatePage {
             @Override
             public void onSubmit() {
                 TaxInspection ti = taxInspection.getModelObject();
-                personProfile.setCSti(ti.getCSti());
-                personProfile.setTaxInspectionId(ti.getId());
+
+                if (ti != null) {
+                    personProfile.setCSti(ti.getCSti());
+                    personProfile.setTaxInspectionId(ti.getId());
+                }
 
                 personProfile.setSessionId(getSessionId(true));
                 personProfileBean.save(personProfile);

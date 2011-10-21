@@ -12,8 +12,11 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
         super(name, declaration);
     }
 
-     public DeclarationStringModel(Integer rowRum, String name, Declaration declaration) {
+    public DeclarationStringModel(Integer rowRum, String name, String type, Declaration declaration) {
         super(rowRum, name, declaration);
+
+        setObject("");
+        declarationValue.setType(type);
     }
 
     @Override

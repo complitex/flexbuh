@@ -25,12 +25,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 23.08.11 16:56
  */
 public class DeclarationUtil {
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+
     private static final Logger log = LoggerFactory.getLogger(DeclarationUtil.class);
 
     public static String getString(Declaration declaration) throws JAXBException {
@@ -47,7 +51,7 @@ public class DeclarationUtil {
 
         return writer.toString();
     }
-    
+
     public static String getString(Declaration declaration, AbstractTemplate template)
             throws TransformerException, JAXBException {
         //XSL transformation
@@ -86,5 +90,13 @@ public class DeclarationUtil {
         declaration.fillValuesFromXml();
 
         return declaration;
+    }
+
+    public static String getString(Date date){
+        if (date != null){
+            return DATE_FORMAT.format(date);
+        }
+
+        return null;
     }
 }

@@ -1,6 +1,8 @@
 package org.complitex.flexbuh.document.entity;
 
+import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.complitex.flexbuh.entity.dictionary.Document;
+import org.complitex.flexbuh.util.DateUtil;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;
@@ -64,9 +66,11 @@ public class Declaration implements Serializable{
     private PersonProfile personProfile;
 
     public Declaration() {
+        head.setDFill(DeclarationUtil.getString(DateUtil.getCurrentDate()));
     }
 
     public Declaration(String templateName) {
+        this();
         setTemplateName(templateName);
     }
 
@@ -141,6 +145,16 @@ public class Declaration implements Serializable{
         return null;
     }
 
+    public DeclarationValue getDeclarationValueByType(String type){
+        for (DeclarationValue declarationValue : declarationValues){
+            if (declarationValue.getType() != null && declarationValue.getType().equals(type)){
+                return declarationValue;
+            }
+        }
+
+        return null;
+       }
+
     public List<DeclarationValue> getDeclarationValues(String name){
         List<DeclarationValue> list = new ArrayList<>();
 
@@ -165,7 +179,15 @@ public class Declaration implements Serializable{
         if (declarationValue != null){
             declarationValue.setValue(value);
         }
-    } 
+    }
+
+    public void fillValueByType(String type, String value){
+            DeclarationValue declarationValue = getDeclarationValueByType(type);
+
+            if (declarationValue != null){
+                declarationValue.setValue(value);
+            }
+        }
 
     public void removeDeclarationValue(String name){
         removeDeclarationValue(null, name);

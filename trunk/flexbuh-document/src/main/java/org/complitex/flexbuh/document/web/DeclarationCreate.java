@@ -76,6 +76,7 @@ public class DeclarationCreate extends FormTemplatePage{
                         return object.getId().toString();
                     }
                 });
+        personProfile.setNullValid(true);
         form.add(personProfile);
 
         //Отчетный документ
@@ -84,7 +85,6 @@ public class DeclarationCreate extends FormTemplatePage{
                 documentBean.getJuridicalDocuments(), new IChoiceRenderer<Document>() {
             @Override
             public Object getDisplayValue(Document object) {
-                //todo add locale
                 return object.getCDoc() +" " + object.getCDocSub() + " " + object.getName(getLocale());
             }
 
@@ -157,7 +157,8 @@ public class DeclarationCreate extends FormTemplatePage{
                 declaration.setLinkedDeclarations(linkedDeclarations);
 
                 //todo add version
-                declaration.getHead().setCDocVer(declaration.getDocument().getDocumentVersions().get(0).getCDocVer());
+                List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions(); 
+                declaration.getHead().setCDocVer(documentVersions.get(documentVersions.size() - 1).getCDocVer());
 
                 setResponsePage(new DeclarationFormPage(declaration));
             }
@@ -175,7 +176,7 @@ public class DeclarationCreate extends FormTemplatePage{
         List<DocumentVersion> dv = document.getDocumentVersions();
 
         if (dv != null && !dv.isEmpty()){
-            declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
+            declaration.getHead().setCDocVer(dv.get(dv.size() - 1).getCDocVer());
         }
 
         declaration.setParent(parent);
