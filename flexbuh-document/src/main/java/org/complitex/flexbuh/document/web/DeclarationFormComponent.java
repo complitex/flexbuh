@@ -25,6 +25,7 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
+import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.AddRowPanel;
@@ -65,6 +66,9 @@ public class DeclarationFormComponent extends Panel{
 
     @EJB
     private TemplateService templateService;
+
+    @EJB
+    private DeclarationService declarationService;
 
     private Map<String, RadioSet<String>> radioSetMap = new HashMap<String, RadioSet<String>>();
 
@@ -116,6 +120,9 @@ public class DeclarationFormComponent extends Panel{
         }
 
         init();
+
+        //Auto fill header
+        declarationService.autoFillHeader(declaration);
     }
 
     private void init(){
@@ -251,7 +258,8 @@ public class DeclarationFormComponent extends Panel{
                 //TextField
                 inputElement.setAttribute("type", "text");
 
-                final CssStyleTextField<String> textField = new CssStyleTextField<>(id, new DeclarationStringModel(rowNum, id, declaration));
+                DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schemaType, declaration);
+                final CssStyleTextField<String> textField = new CssStyleTextField<>(id, model);
                 textField.setOutputMarkupId(true);
                 parent.add(textField);
 

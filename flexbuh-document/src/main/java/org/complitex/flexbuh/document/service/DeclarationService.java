@@ -3,7 +3,10 @@ package org.complitex.flexbuh.document.service;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationHead;
 import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.util.DeclarationUtil;
+import org.complitex.flexbuh.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
+import org.complitex.flexbuh.util.StringUtil;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -22,68 +25,58 @@ public class DeclarationService {
     public void autoFillHeader(Declaration declaration){
         PersonProfile personProfile = declaration.getPersonProfile();
 
-        // if (docType.substr(1, 5) != "12010" && docType.substr(1, 5) != "12012" && docType.substr(0, 6) != "R12015")
-        switch (personProfile.getPersonType()) {
-            case JURIDICAL_PERSON:
-                declaration.fillValue("DGHTINJ", personProfile.getTin());
-                break;
-            case PHYSICAL_PERSON:
-                declaration.fillValue("DGHTINF", personProfile.getTin());
-                break;
-            case JOINT_AGREEMENT:
-                declaration.fillValue("DGHTINSD", personProfile.getTin());
-                break;
-            case REPRESENTATIVE:
-                declaration.fillValue("DGHTINNR", personProfile.getTin());
-                break;
-            case PROPERTY_AGREEMENT:
-                declaration.fillValue("DGHTINUM", personProfile.getTin());
-                break;
+        //skip if profile is not linked
+        if (personProfile == null){
+            return;
         }
 
-        declaration.fillValue("DGHNAME", personProfile.getName());
+        DeclarationHead head = declaration.getHead();
+        
+        TaxInspection taxInspection = taxInspectionBean.getTaxInspection(personProfile.getTaxInspectionId());
 
-        if (personProfile.getCSti() != null){
-            int cRaj = personProfile.getCSti() % 100;
-            int cReg = personProfile.getCSti() / 100; //todo Math.floor
+        declaration.fillValueByType("DGHTINJ", personProfile.getTin());
+        declaration.fillValueByType("DGHTINF", personProfile.getTin());
+        declaration.fillValueByType("DGHTINSD", personProfile.getTin());
+        declaration.fillValueByType("DGHTINNR", personProfile.getTin());
+        declaration.fillValueByType("DGHTINUM", personProfile.getTin());
 
-//            TaxInspection taxInspection = taxInspectionBean.getTaxInspectionByDistrict()
+        declaration.fillValueByType("DGHNAME", personProfile.getName());
 
+        if (taxInspection != null) {
+            declaration.fillValueByType("DGHSTI", taxInspection.getCSti() + " " + taxInspection.getNameRajUk());
         }
 
-        //todo DGHSTI
-        //todo DGYear
-        //todo DGKv
-        //todo DGMonth
+        declaration.fillValueByType("DGYear", StringUtil.getString(head.getPeriodYear()));
+        declaration.fillValueByType("DGKv", StringUtil.getString(head.getPeriodMonth() / 3));
+        declaration.fillValueByType("DGMonth", StringUtil.getString(head.getPeriodMonth()));
 
-        declaration.fillValue("DGHLOC", personProfile.getAddress());
-        declaration.fillValue("DGHZIP", personProfile.getZipCode());
-        declaration.fillValue("DGHTEL", personProfile.getPhone());
-        declaration.fillValue("DGHFAX", personProfile.getFax());
-        declaration.fillValue("DGkved", personProfile.getKved());
+        declaration.fillValueByType("DGHLOC", personProfile.getAddress());
+        declaration.fillValueByType("DGHZIP", personProfile.getZipCode());
+        declaration.fillValueByType("DGHTEL", personProfile.getPhone());
+        declaration.fillValueByType("DGHFAX", personProfile.getFax());
+        declaration.fillValueByType("DGkved", personProfile.getKved());
 
-        declaration.fillValue("DGHBUH", personProfile.getBFio());
-        declaration.fillValue("DGHBOS", personProfile.getDFio());
+        declaration.fillValueByType("DGHBUH", personProfile.getBFio());
+        declaration.fillValueByType("DGHBOS", personProfile.getDFio());
 
         if (PHYSICAL_PERSON.equals(personProfile.getPersonType())) {
-            declaration.fillValue("DGHFO", personProfile.getName());
+            declaration.fillValueByType("DGHFO", personProfile.getName());
         }
 
-        declaration.fillValue("DGHEMAIL", personProfile.getEmail());
+        declaration.fillValueByType("DGHEMAIL", personProfile.getEmail());
 
-        //todo DGDate
-        //todo DGHNPDV
+        declaration.fillValueByType("DGDate", head.getDFill());
 
-        declaration.fillValue("DGHNSPDV", personProfile.getNumPdvSvd());
+        declaration.fillValueByType("DGHNSPDV", personProfile.getNumPdvSvd());
 
         if (JOINT_AGREEMENT.equals(personProfile.getPersonType())){
-//            declaration.fillValue("DGHDDGVSD", personProfile.getContractDate()); //todo date format
-            declaration.fillValue("DGHNDGVSD", personProfile.getContractNumber());
+            declaration.fillValueByType("DGHDDGVSD", DeclarationUtil.getString(personProfile.getContractDate()));
+            declaration.fillValueByType("DGHNDGVSD", personProfile.getContractNumber());
         }
 
         if (PROPERTY_AGREEMENT.equals(personProfile.getPersonType())){
-//            declaration.fillValue("DGHDDGVUM", personProfile.getContractDate().toString());  //todo date format
-            declaration.fillValue("DGHNDGVUM", personProfile.getContractNumber());
+            declaration.fillValueByType("DGHDDGVUM", DeclarationUtil.getString(personProfile.getContractDate()));
+            declaration.fillValueByType("DGHNDGVUM", personProfile.getContractNumber());
         }
 
         autoFillNakladnaHeader("SEL", declaration);
@@ -96,11 +89,13 @@ public class DeclarationService {
         //todo C_DOC_CNT
 
         declaration.fillValue("TIN", personProfile.getTin());
-        //todo c_sti
+
+        if (taxInspection != null) {
+            declaration.fillValue("C_REG", StringUtil.getString(taxInspection.getCReg()));
+            declaration.fillValue("C_RAJ", StringUtil.getString(taxInspection.getCRaj()));
+        }
 
         //AutoFillMainParameters
-        DeclarationHead head = declaration.getHead();
-
         declaration.fillValue("HZ", "1");
         declaration.fillValue("HCOPY", "1");
         declaration.fillValue("HNPDV", personProfile.getIpn());
@@ -115,7 +110,6 @@ public class DeclarationService {
             declaration.fillValue("H3KV", "1");
         }
 
-        //todo pType
         //todo HY
 
         if (personProfile.getPersonType().getCode() == 1){
@@ -134,15 +128,6 @@ public class DeclarationService {
         declaration.fillValue("HKBOS", personProfile.getDInn());
         declaration.fillValue("HKOATUU", personProfile.getKoatuu());
         declaration.fillValue("HTINSTI", personProfile.getCStiTin());
-
-
-
-
-
-
-
-
-
     }
     
     private void autoFillNakladnaHeader(String type, Declaration declaration){
@@ -153,6 +138,6 @@ public class DeclarationService {
         declaration.fillValue("HTEL" + type, personProfile.getPhone());
         declaration.fillValue("HNSPDV" + type, personProfile.getNumPdvSvd());
         declaration.fillValue("HLOC" + type, personProfile.getAddress());
-    } 
+    }
 
 }

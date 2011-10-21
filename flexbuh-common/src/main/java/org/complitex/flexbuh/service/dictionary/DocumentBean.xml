@@ -48,7 +48,7 @@
     </select>
 
     <select id="selectJuridicalDocuments" resultMap="linkedDocumentResultMap">
-        select * from `document` where `c_doc` like 'J%'
+        select * from `document` where `c_doc` like 'J%' order by `c_doc`, `c_doc_sub`
     </select>
 
     <select id="selectPhysicalDocuments" resultMap="linkedDocumentResultMap">
