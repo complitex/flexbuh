@@ -5,4 +5,7 @@ package org.complitex.flexbuh.document.exception;
  *         Date: 12.10.11 17:53
  */
 public class DeclarationSaveException extends Exception{
+    public DeclarationSaveException(Throwable cause) {
+        super(cause);
+    }
 }

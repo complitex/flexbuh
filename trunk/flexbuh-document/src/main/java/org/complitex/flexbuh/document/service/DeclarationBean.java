@@ -10,7 +10,6 @@ import org.complitex.flexbuh.service.AbstractBean;
 import org.complitex.flexbuh.util.DateUtil;
 
 import javax.ejb.Stateless;
-import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -101,8 +100,8 @@ public class DeclarationBean extends AbstractBean{
         try {
             //todo add linked
             save(sessionId, DeclarationUtil.getDeclaration(inputStream));
-        } catch (JAXBException e) {
-            throw new DeclarationSaveException();
+        } catch (Exception e) {
+            throw new DeclarationSaveException(e);
         }
     }
 }
