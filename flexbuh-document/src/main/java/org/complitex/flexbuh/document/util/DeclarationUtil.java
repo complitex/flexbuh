@@ -21,10 +21,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,6 +31,8 @@ import java.util.Date;
  */
 public class DeclarationUtil {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+
+    private final static int[] BEST_BUF = {0x0E8, 0x0D5, 1, 3, 0x0C3, 0x0C1, 0x83, 0x3D, 0x0B7, 0x0F0, 0x41, 5, 7, 0x72, 0x10, 0x0E8};
 
     private static final Logger log = LoggerFactory.getLogger(DeclarationUtil.class);
 
@@ -81,7 +80,7 @@ public class DeclarationUtil {
         return documentBuilder.parse(new InputSource(new StringReader(getString(declaration, template))));
     }
 
-    public static Declaration getDeclaration(InputStream inputStream) throws JAXBException {
+    public static Declaration getDeclarationByXml(InputStream inputStream) throws JAXBException {
         Declaration declaration = (Declaration) JAXBContext
                 .newInstance(Declaration.class, DeclarationValue.class)
                 .createUnmarshaller()
@@ -90,6 +89,77 @@ public class DeclarationUtil {
         declaration.fillValuesFromXml();
 
         return declaration;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static Declaration getDeclarationByBest(InputStream inputStream) throws Exception {
+        //fix to lzma
+        ByteArrayOutputStream lzmaStream = new ByteArrayOutputStream();
+
+        inputStream.skip(15);
+        int b;
+        int index = -1;
+
+        while ((b = inputStream.read()) != -1){
+            lzmaStream.write(++index < 160 ? b ^ BEST_BUF[index%16] : b);
+        }
+
+        //lzma decode
+        ByteArrayInputStream inStream = new ByteArrayInputStream(lzmaStream.toByteArray());
+
+        inStream.skip(1);
+
+        ByteArrayOutputStream decodeOutStream = new ByteArrayOutputStream();
+       
+        int propertiesSize = 5;
+        byte[] properties = new byte[propertiesSize];
+        
+        if (inStream.read(properties, 0, propertiesSize) != propertiesSize){
+            throw new Exception("input .lzma file is too short");            
+        }
+            
+        SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+        
+        if (!decoder.SetDecoderProperties(properties)){
+            throw new Exception("Incorrect stream properties");
+        }
+        
+        long outSize = 0;
+        for (int i = 0; i < 8; i++){
+            int v = inStream.read();
+            if (v < 0){
+                throw new Exception("Can't read stream size");
+            }
+            
+            outSize |= ((long)v) << (8 * i);
+        }
+        
+        if (!decoder.Code(inStream, decodeOutStream, outSize)){
+            throw new Exception("Error in data stream");
+        }
+        
+        return getDeclarationByXml(new ByteArrayInputStream(decodeOutStream.toByteArray()));
+    }
+    
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static Declaration getDeclaration(InputStream inputStream) throws Exception {
+        byte[] header = new byte[15];
+        
+        inputStream.read(header);
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write(header);
+        
+        int b;
+        while ((b = inputStream.read()) != -1){
+            outputStream.write(b);
+        }
+
+        if (new String(header).contains("PACKED_XML")){
+            return getDeclarationByBest(new ByteArrayInputStream(outputStream.toByteArray()));
+        }else{
+            return getDeclarationByXml(new ByteArrayInputStream(outputStream.toByteArray()));
+        }
     }
 
     public static String getString(Date date){

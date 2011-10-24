@@ -122,7 +122,9 @@ public class DeclarationFormComponent extends Panel{
         init();
 
         //Auto fill header
-        declarationService.autoFillHeader(declaration);
+        if (declaration.getId() == null) {
+            declarationService.autoFillHeader(declaration);
+        }
     }
 
     private void init(){

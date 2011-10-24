@@ -15,8 +15,10 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
     public DeclarationStringModel(Integer rowRum, String name, String type, Declaration declaration) {
         super(rowRum, name, declaration);
 
-        setObject("");
-        declarationValue.setType(type);
+        if (declaration.getDeclarationValue(rowNum, name) == null) {
+            setObject("");
+            declarationValue.setType(type);
+        }
     }
 
     @Override
