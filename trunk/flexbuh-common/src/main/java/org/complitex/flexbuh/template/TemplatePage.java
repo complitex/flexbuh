@@ -142,7 +142,7 @@ public abstract class TemplatePage extends WebPage {
                         protected void onComponentTag(ComponentTag tag) {
                             super.onComponentTag(tag);
                             if (!Strings.isEmpty(templateLink.getTagId())) {
-                                tag.put("id", templateLink.getTagId());
+                                setMarkupId(templateLink.getTagId());
                             }
                         }
                     };
@@ -156,7 +156,7 @@ public abstract class TemplatePage extends WebPage {
         protected void onComponentTag(ComponentTag tag) {
             super.onComponentTag(tag);
             if (!Strings.isEmpty(tagId)) {
-                tag.put("id", tagId);
+                setMarkupId(tagId);
             }
         }
     }

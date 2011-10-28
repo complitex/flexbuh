@@ -1,5 +1,8 @@
 package org.complitex.flexbuh.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 30.08.11 17:19
@@ -11,5 +14,10 @@ public class StringUtil {
 
     public static String getString(Integer num){
         return num != null ? num.toString() : "";
+    }
+
+    public static String replace(String s, CharSequence target, CharSequence replacement) {
+        return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
+                s).replaceFirst(Matcher.quoteReplacement(replacement.toString()));
     }
 }

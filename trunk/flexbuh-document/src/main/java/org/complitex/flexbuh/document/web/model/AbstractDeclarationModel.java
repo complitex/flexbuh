@@ -2,7 +2,6 @@ package org.complitex.flexbuh.document.web.model;
 
 import org.apache.wicket.model.IModel;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.DeclarationValue;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -12,7 +11,6 @@ public abstract class AbstractDeclarationModel<T> implements IModel<T>{
     protected Integer rowNum;
     protected String name;
     protected Declaration declaration;
-    protected DeclarationValue declarationValue;
 
     protected AbstractDeclarationModel(String name, Declaration declaration) {
         this.name = name;
@@ -35,10 +33,6 @@ public abstract class AbstractDeclarationModel<T> implements IModel<T>{
 
     public Declaration getDeclaration() {
         return declaration;
-    }
-
-    public DeclarationValue getDeclarationValue() {
-        return declarationValue;
     }
 
     @Override
