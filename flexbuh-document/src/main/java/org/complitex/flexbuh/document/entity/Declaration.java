@@ -137,7 +137,7 @@ public class Declaration implements Serializable{
 
     public DeclarationValue getDeclarationValue(Integer rowNum, String name){
         for (DeclarationValue declarationValue : declarationValues){
-            if (declarationValue.getName().equals(name) && (rowNum == null || declarationValue.getRowNum().equals(rowNum))){
+            if (name.equals(declarationValue.getName()) && (rowNum == null || rowNum.equals(declarationValue.getRowNum()))){
                 return declarationValue;
             }
         }

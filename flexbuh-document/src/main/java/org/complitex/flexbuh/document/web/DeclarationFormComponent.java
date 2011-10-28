@@ -29,13 +29,13 @@ import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.AddRowPanel;
+import org.complitex.flexbuh.document.web.component.DeclarationTextField;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 import org.complitex.flexbuh.util.ScriptUtil;
 import org.complitex.flexbuh.util.StringUtil;
 import org.complitex.flexbuh.util.XmlUtil;
-import org.complitex.flexbuh.web.component.CssStyleTextField;
 import org.complitex.flexbuh.web.component.RadioSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,10 +59,12 @@ import java.util.regex.Pattern;
  */
 public class DeclarationFormComponent extends Panel{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
-    
+
     private final static String WICKET_NAMESPACE_URI = "http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd";
 
     private Pattern LINKED_ID_PATTERN = Pattern.compile("(\\w*)\\.(\\w*)");
+
+    private final static String ABC = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯ";
 
     @EJB
     private TemplateService templateService;
@@ -84,15 +86,16 @@ public class DeclarationFormComponent extends Panel{
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
     private Map<String, Rule> rulesMap;
-    private Map<String, TextField<String>> textFieldMap = new HashMap<>();
-    private Map<String, List<TextField<String>>> multiRowTextFieldMap = new HashMap<>();
+    private Map<String, DeclarationTextField> simpleTextFieldMap = new HashMap<>();
+    private Map<String, List<DeclarationTextField>> multiRowTextFieldMap = new HashMap<>();
+    private Map<String, DeclarationTextField> maskTextFieldMap = new HashMap<>();
 
-    private transient Map<Integer, NodeList> allStretchRowMap = new HashMap<>();
+    private transient Map<Integer, NodeList> allStretchTableMap = new HashMap<>();
 
     private WebMarkupContainer container;
 
     private Integer rowNextMarkupId = 0;
-    
+
     private transient StringResourceStream stringResourceStream;
 
     public DeclarationFormComponent(String id, Declaration declaration){
@@ -149,24 +152,28 @@ public class DeclarationFormComponent extends Panel{
         for (int i=0; i < inputList.getLength(); ++i){
             Element input = (Element) inputList.item(i);
 
-            if (XmlUtil.getParent("StretchTable", input) == null){
+            if (XmlUtil.getParentById("StretchTable", input) == null){
                 addInput(input);
             }
         }
 
         //MultiRows
-        Set<Element> tbodyElements = new HashSet<>();
+        List<Element> tbodyElements = new ArrayList<>();
 
         NodeList stretchList = XmlUtil.getElementsById("StretchTable", div, templateXPath);
-        for (int i=0; i < stretchList.getLength(); ++i){
-            tbodyElements.add((Element) XmlUtil.getParent("tbody", stretchList.item(i)));
-        }
 
         int index = 0;
-        for (Element tbody : tbodyElements){
-            addRows(index++, tbody);
+
+        for (int i=0; i < stretchList.getLength(); ++i){
+            Element tbody = (Element) XmlUtil.getParent("tbody", stretchList.item(i));
+
+            if (!tbodyElements.contains(tbody)) {
+                tbodyElements.add(tbody);
+
+                addRows(index++, tbody);
+            }
         }
-        
+
         //Markup
         stringResourceStream = new StringResourceStream(XmlUtil.getString(panel), "text/html");
         stringResourceStream.setCharset(Charset.forName("UTF-8"));
@@ -183,10 +190,10 @@ public class DeclarationFormComponent extends Panel{
     }
 
     private void addInput(Element inputElement){
-        addInput(null, inputElement, container, true, true);
+        addInput(null, inputElement, container, true);
     }
 
-    private void addInput(Integer rowNum, Element inputElement, MarkupContainer parent, boolean updateMarkup, boolean skipMultiRow){
+    private void addInput(Integer rowNum, Element inputElement, MarkupContainer parent, boolean updateMarkup){
         try {
             //lookup schema rules
             Element schemaElement = XmlUtil.getElementByName(inputElement.getAttribute("id"), schema, schemaXPath);
@@ -194,16 +201,6 @@ public class DeclarationFormComponent extends Panel{
 
             //id
             final String id = inputElement.getAttribute("id");
-
-            //multirow input
-            String maxOccurs = schemaElement.getAttribute("maxOccurs");
-
-            final boolean multiRow = maxOccurs != null && !maxOccurs.isEmpty() && Integer.parseInt(maxOccurs) > 1;
-
-            //skip
-            if (multiRow && skipMultiRow){
-                return;
-            }
 
             //set wicket id markup
             if (updateMarkup) {
@@ -260,18 +257,29 @@ public class DeclarationFormComponent extends Panel{
                 //TextField
                 inputElement.setAttribute("type", "text");
 
-                DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schemaType, declaration);
-                final CssStyleTextField<String> textField = new CssStyleTextField<>(id, model);
+                //mask
+                Element maskElement = (Element) XmlUtil.getParent("td", inputElement);
+                String mask = maskElement != null ? maskElement.getAttribute("mask") : null;
+
+                DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schemaType, mask, declaration);
+                final DeclarationTextField textField = new DeclarationTextField(id, model);
+                textField.setMarkupId(id + "_" + rowNum);
                 textField.setOutputMarkupId(true);
                 parent.add(textField);
+
+                //multirow input
+                String maxOccurs = schemaElement.getAttribute("maxOccurs");
+                boolean multiRow = maxOccurs != null && !maxOccurs.isEmpty() && Integer.parseInt(maxOccurs) > 1;
 
                 //Add to map for rule auto fill
                 if (multiRow) {
                     addMultiRowTextField(id, textField);
-                }else {
-                    textFieldMap.put(id, textField);
+                }else if (model.isMask()){
+                    maskTextFieldMap.put(model.getMaskName(), textField);
+                }else{
+                    simpleTextFieldMap.put(id, textField);
                 }
-                
+
                 //Ajax update
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
                     @Override
@@ -302,14 +310,25 @@ public class DeclarationFormComponent extends Panel{
                         target.add(textField);
                     }
                 });
-                              
+
                 //Restriction
-                Rule rule = rulesMap.get(id);
+                Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
                 textField.add(createRestrictionBehavior(schemaType, rule != null ? rule.getDescription() : ""));
             }
         } catch (Exception e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
         }
+    }
+
+    private void addMultiRowTextField(String id, DeclarationTextField textField){
+        List<DeclarationTextField> textFields = multiRowTextFieldMap.get(id);
+
+        if (textFields == null){
+            textFields = new ArrayList<>();
+            multiRowTextFieldMap.put(id, textFields);
+        }
+
+        textFields.add(textField);
     }
 
     private RestrictionBehavior createRestrictionBehavior(String schemaType, String title) throws XPathExpressionException {
@@ -371,13 +390,19 @@ public class DeclarationFormComponent extends Panel{
                             }
                         }
                     }else{
-                        input = index >= 0 ? multiRowTextFieldMap.get(id).get(index).getValue() : textFieldMap.get(id).getValue();
+                        if (index >= 0 && multiRowTextFieldMap.get(id) != null){
+                            input = multiRowTextFieldMap.get(id).get(index).getValue();
+                        } else if (maskTextFieldMap.get(id) != null){
+                            input = maskTextFieldMap.get(id).getValue();
+                        } else if (simpleTextFieldMap.get(id) != null){
+                            input = simpleTextFieldMap.get(id).getValue();
+                        }
                     }
 
                     //todo add validation checking
                     String v = (StringUtil.isDecimal(input)) ? input : "0";
 
-                    value = value.replace("^" + id, v);
+                    value = StringUtil.replace(value, "^" + id, v);
                 }
 
                 value = value.replace("ABS", "Math.abs");
@@ -386,11 +411,19 @@ public class DeclarationFormComponent extends Panel{
                 value = scriptEngine.eval(value).toString();
             }
 
-            TextField<String> autoFill = index >= 0
-                    ? multiRowTextFieldMap.get(rule.getCDocRowCId()).get(index)
-                    : textFieldMap.get(rule.getCDocRowCId());
+            TextField<String> autoFill = null;
 
-            if (!value.equals(autoFill.getValue())) {
+            if (index >= 0){
+                autoFill = multiRowTextFieldMap.get(rule.getCDocRowCId()).get(index);
+            }else{
+                autoFill = simpleTextFieldMap.get(rule.getCDocRowCId());
+
+                if (autoFill == null) {
+                    autoFill = maskTextFieldMap.get(rule.getCDocRowCId());
+                }
+            }
+
+            if (autoFill != null && !value.equals(autoFill.getValue())) {
                 autoFill.setModelObject(value);
                 target.add(autoFill);
                 target.appendJavaScript("$('#" + autoFill.getMarkupId() + "').css('background-color', '#add8e6')");
@@ -404,6 +437,7 @@ public class DeclarationFormComponent extends Panel{
         //ajax container
         String tbodyId = "process_" + index;
         tbody.setAttribute("wicket:id", tbodyId);
+        tbody.setAttribute("id", tbodyId);
 
         WebMarkupContainer tbodyContainer = new WebMarkupContainer(tbodyId);
         tbodyContainer.setOutputMarkupId(true);
@@ -425,25 +459,26 @@ public class DeclarationFormComponent extends Panel{
             }
         }
 
+        int addRow = !tbody.getAttribute("addRow").isEmpty() ? Integer.parseInt(tbody.getAttribute("addRow")) : 1;
+        NodeList stretchTables = XmlUtil.getElementsById("StretchTable", tbody, templateXPath);
+
+        allStretchTableMap.put(index, stretchTables);
+
         //repeater
         String repeaterId = "repeater_" + index;
 
-        int addRow = !tbody.getAttribute("addRow").isEmpty() ? Integer.parseInt(tbody.getAttribute("addRow")) : 1;
-        NodeList allStretchRow = XmlUtil.getElementsById("StretchTable", tbody, templateXPath);
         Element wrapContainer = template.createElement("wicket:container");
         wrapContainer.setAttribute("wicket:id", repeaterId);
 
-        //todo not serialization exception
-        allStretchRowMap.put(index, allStretchRow);
-
-        int rows = allStretchRow.getLength();
+        //multiRow
+        int rows = stretchTables.getLength();
         for (int i =  rows - addRow; i < rows; ++i){
-            wrapContainer.appendChild(allStretchRow.item(i));
+            wrapContainer.appendChild(stretchTables.item(i));
         }
         tbody.appendChild(wrapContainer);
 
         //add delete link
-        Element firstRow = (Element) allStretchRow.item(rows - addRow);
+        Element firstRow = (Element) stretchTables.item(rows - addRow);
         NodeList tdList = firstRow.getElementsByTagName("td");
         if (tdList.getLength() == 0){
             tdList = firstRow.getElementsByTagName("TD");
@@ -534,23 +569,29 @@ public class DeclarationFormComponent extends Panel{
                 List<DeclarationValue> values = declaration.getDeclarationValues(id);
 
                 if (values != null && !values.isEmpty()){
-                    count = values.size();
+                    if (count < values.size()) {
+                        count = values.size();
+                    }
                 }
             }
         }
+
+        //todo row count for mask field
 
         return count;
     }
 
     private void addRow(final int index, final int addRow, final WebMarkupContainer tbodyContainer,
                         final int addRowIndex, final List<WebMarkupContainer> stretchRows) {
-        NodeList allStretchRow = allStretchRowMap.get(index);
+        ++rowNextMarkupId;
+
+        NodeList allStretchRow = allStretchTableMap.get(index);
 
         int rows = allStretchRow.getLength();
 
         final List<String> rowNumIds = new ArrayList<>();
 
-        final WebMarkupContainer stretchRow = new WebMarkupContainer("" + rowNextMarkupId++);
+        final WebMarkupContainer stretchRow = new WebMarkupContainer(rowNextMarkupId + "");
         stretchRows.add(addRowIndex, stretchRow);
 
         for (int j = rows - addRow; j < rows; ++j) {
@@ -559,7 +600,7 @@ public class DeclarationFormComponent extends Panel{
             NodeList inputList = stretchTableElement.getElementsByTagName("input");
 
             for (int i = 0; i < inputList.getLength(); ++i){
-                addInput(rowNextMarkupId, (Element) inputList.item(i), stretchRow, addRowIndex == 0, false);
+                addInput(rowNextMarkupId, (Element) inputList.item(i), stretchRow, addRowIndex == 0);
             }
 
             //Row number
@@ -571,12 +612,16 @@ public class DeclarationFormComponent extends Panel{
                 rowNumIds.add(rowNumId);
 
                 if (spRownumElement != null){
+                    final boolean letter = spRownumElement.getAttribute("numType").equals("letter");
+
                     spRownumElement.setAttribute("wicket:id", rowNumId);
 
                     stretchRow.add(new Label(rowNumId, new LoadableDetachableModel<String>() {
                         @Override
                         protected String load() {
-                            return String.valueOf(stretchRows.indexOf(stretchRow) + 1);
+                            int index = stretchRows.indexOf(stretchRow);
+                            
+                            return letter ? ABC.substring(index, index + 1) : String.valueOf(index + 1);
                         }
                     }).setOutputMarkupId(true));
                 }
@@ -584,7 +629,7 @@ public class DeclarationFormComponent extends Panel{
         }
 
         //reorder model
-        reorderMultiRowModel(stretchRows);
+        reorder(stretchRows);
 
         //add row panel
         stretchRow.add(new AddRowPanel("add_row_panel") {
@@ -598,8 +643,8 @@ public class DeclarationFormComponent extends Panel{
             @Override
             protected void onDelete(AjaxRequestTarget target) {
                 stretchRows.remove(stretchRow);
-                removeMultiRowTextField(stretchRow);
-                reorderMultiRowModel(stretchRows);
+                DeclarationFormComponent.this.remove(stretchRow);
+                reorder(stretchRows);
 
                 autoFill(target);
             }
@@ -622,36 +667,41 @@ public class DeclarationFormComponent extends Panel{
         });
     }
 
-    private void reorderMultiRowModel(List<WebMarkupContainer> stretchRows){
-        for (int i = 0, size = stretchRows.size(); i < size; i++) {
-            for (Component c : stretchRows.get(i)) {
-                if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel) {
-                    ((DeclarationStringModel) ((TextField) c).getModel()).updateRowNum(i + 1);
+    private void reorder(List<WebMarkupContainer> rows){
+        for (int i = 0, size = rows.size(); i < size; i++) {
+            for (Component c : rows.get(i)) {
+                if (c instanceof DeclarationTextField) {
+                    DeclarationTextField textField = ((DeclarationTextField) c);
+                    DeclarationStringModel model = textField.getDeclarationModel();
+
+                    if (model.isMask()) {
+                        maskTextFieldMap.remove(model.getMaskName());
+                    }
+
+                    model.updateRowNum(i + 1);
+
+                    if (model.isMask()) {
+                        maskTextFieldMap.put(model.getMaskName(), textField);
+                    }
                 }
             }
         }
     }
 
-    private void addMultiRowTextField(String id, TextField<String> textField){
-        List<TextField<String>> textFields = multiRowTextFieldMap.get(id);
-
-        if (textFields == null){
-            textFields = new ArrayList<>();
-            multiRowTextFieldMap.put(id, textFields);
-        }
-
-        textFields.add(textField);
-    }
-
-    private void removeMultiRowTextField(WebMarkupContainer row){
-        for (Component c : row) {
-            for (List list : multiRowTextFieldMap.values()) {
-                if (c instanceof TextField && ((TextField) c).getModel() instanceof DeclarationStringModel) {
-                    ((DeclarationStringModel) ((TextField) c).getModel()).removeValue();
-                    list.remove(c);
+    private void remove(WebMarkupContainer row){
+        row.visitChildren(DeclarationTextField.class, new IVisitor<DeclarationTextField, Void>() {
+            @Override
+            public void component(DeclarationTextField object, IVisit<Void> visit) {
+                for (List list : multiRowTextFieldMap.values()) {
+                    list.remove(object);
                 }
+
+                maskTextFieldMap.remove(object.getDeclarationModel().getMaskName());
+
+                visit.dontGoDeeper();
             }
-        }
+        });
     }
+
 }
 
