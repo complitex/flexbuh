@@ -102,4 +102,35 @@ public class DeclarationValue implements Serializable, Comparable{
 
         return 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeclarationValue that = (DeclarationValue) o;
+
+        if (declarationId != null ? !declarationId.equals(that.declarationId) : that.declarationId != null)
+            return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (rowNum != null ? !rowNum.equals(that.rowNum) : that.rowNum != null) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+
+        result = 31 * result + (declarationId != null ? declarationId.hashCode() : 0);
+        result = 31 * result + (rowNum != null ? rowNum.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+
+        return result;
+    }
 }

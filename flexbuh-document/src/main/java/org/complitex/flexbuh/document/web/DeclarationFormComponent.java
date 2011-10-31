@@ -94,8 +94,6 @@ public class DeclarationFormComponent extends Panel{
 
     private WebMarkupContainer container;
 
-    private Integer rowNextMarkupId = 0;
-
     private transient StringResourceStream stringResourceStream;
 
     public DeclarationFormComponent(String id, Declaration declaration){
@@ -262,8 +260,8 @@ public class DeclarationFormComponent extends Panel{
                 String mask = maskElement != null ? maskElement.getAttribute("mask") : null;
 
                 DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schemaType, mask, declaration);
-                final DeclarationTextField textField = new DeclarationTextField(id, model);
-                textField.setMarkupId(id + "_" + rowNum);
+                final DeclarationTextField textField = new DeclarationTextField(id, model, schemaType);
+                textField.setMarkupId(rowNum != null ? id + "_" + rowNum : id);
                 textField.setOutputMarkupId(true);
                 parent.add(textField);
 
@@ -314,6 +312,9 @@ public class DeclarationFormComponent extends Panel{
                 //Restriction
                 Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
                 textField.add(createRestrictionBehavior(schemaType, rule != null ? rule.getDescription() : ""));
+
+                //validate
+                textField.validate();
             }
         } catch (Exception e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
@@ -411,7 +412,7 @@ public class DeclarationFormComponent extends Panel{
                 value = scriptEngine.eval(value).toString();
             }
 
-            TextField<String> autoFill = null;
+            TextField<String> autoFill;
 
             if (index >= 0){
                 autoFill = multiRowTextFieldMap.get(rule.getCDocRowCId()).get(index);
@@ -563,44 +564,64 @@ public class DeclarationFormComponent extends Panel{
         int count = 1;
 
         for (int i = 0; i < inputList.getLength(); ++i){
-            String id = ((Element)inputList.item(i)).getAttribute("id");
+            Element inputElement = (Element)inputList.item(i); 
 
-            if (id != null){
-                List<DeclarationValue> values = declaration.getDeclarationValues(id);
+            //mask
+            Element maskElement = (Element) XmlUtil.getParent("td", inputElement);
+            String mask = maskElement != null ? maskElement.getAttribute("mask") : null;
 
-                if (values != null && !values.isEmpty()){
-                    if (count < values.size()) {
-                        count = values.size();
-                    }
-                }
+            //id
+            String id = inputElement.getAttribute("id");
+            
+            int c = 0;
+
+            if (mask != null && !mask.isEmpty()){
+                c = declaration.getDeclarationValuesCountByMask(mask);
+            } else if (id != null && !id.isEmpty()){
+                c = declaration.getDeclarationValuesCount(id);
+            }
+
+            if (c > count){
+                count = c;
             }
         }
 
-        //todo row count for mask field
-
         return count;
+    }
+    
+    private Map<Integer, Integer> nextRowIdMap = new HashMap<>();
+    
+    private int nextRowId(int index){
+        Integer nextId = nextRowIdMap.get(index);
+        
+        if (nextId == null){
+            nextId = 1;            
+        }
+        
+        nextRowIdMap.put(index, nextId + 1);
+        
+        return nextId;
     }
 
     private void addRow(final int index, final int addRow, final WebMarkupContainer tbodyContainer,
                         final int addRowIndex, final List<WebMarkupContainer> stretchRows) {
-        ++rowNextMarkupId;
+        NodeList allStretchRow = allStretchTableMap.get(index);  
+        
+        int rowNextId = nextRowId(index);
 
-        NodeList allStretchRow = allStretchTableMap.get(index);
-
-        int rows = allStretchRow.getLength();
-
-        final List<String> rowNumIds = new ArrayList<>();
-
-        final WebMarkupContainer stretchRow = new WebMarkupContainer(rowNextMarkupId + "");
+        final WebMarkupContainer stretchRow = new WebMarkupContainer(rowNextId + "");
         stretchRows.add(addRowIndex, stretchRow);
 
+        final List<String> rowNumIds = new ArrayList<>();
+        
+        int rows = allStretchRow.getLength();        
         for (int j = rows - addRow; j < rows; ++j) {
             Element stretchTableElement = ((Element)allStretchRow.item(j));
 
             NodeList inputList = stretchTableElement.getElementsByTagName("input");
 
             for (int i = 0; i < inputList.getLength(); ++i){
-                addInput(rowNextMarkupId, (Element) inputList.item(i), stretchRow, addRowIndex == 0);
+                addInput(rowNextId, (Element) inputList.item(i), stretchRow, addRowIndex == 0);
             }
 
             //Row number
@@ -697,6 +718,8 @@ public class DeclarationFormComponent extends Panel{
                 }
 
                 maskTextFieldMap.remove(object.getDeclarationModel().getMaskName());
+
+                object.getDeclarationModel().removeValue();
 
                 visit.dontGoDeeper();
             }
