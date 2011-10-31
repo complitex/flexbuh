@@ -89,7 +89,7 @@ public class Declaration implements Serializable{
     public String getTemplateName(){
         return head.getCDoc() + head.getCDocSub() + String.format("%02d", head.getCDocVer());
     }
-    
+
     @SuppressWarnings("MalformedFormatString")
     public String getFileName(){
         return String.format("%02d%02d%010d%s%s%02d%s%02d%07d%d%02d%d%04d", //todo check format
@@ -97,7 +97,7 @@ public class Declaration implements Serializable{
                 head.getCDocStan(), head.getCDocType(), head.getCDocCnt(), head.getPeriodType(), head.getPeriodMonth(),
                 head.getPeriodYear(), head.getCStiOrig());
     }
-    
+
     public void setFileName(String fileName){
         //nothing
     }
@@ -108,7 +108,7 @@ public class Declaration implements Serializable{
 
         for (DeclarationValue v : declarationValues){
             DeclarationValue value = (v.getValue() != null && !v.getValue().isEmpty()) ? v : null;
-            
+
             xmlValues.add(new JAXBElement(new QName(v.getName()), DeclarationValue.class, DeclarationValue.class, value));
         }
     }
@@ -122,8 +122,8 @@ public class Declaration implements Serializable{
 
         for (Object xmlValue :xmlValues){
             Element element = (Element) xmlValue;
-            
-            String rowNum = element.getAttribute("ROWNUM"); 
+
+            String rowNum = element.getAttribute("ROWNUM");
             Integer rowNumInt = (rowNum != null && !rowNum.isEmpty()) ? Integer.valueOf(rowNum) : null;
             boolean isNil = "true".equals(element.getAttribute("xsi:nil"));
 
@@ -153,7 +153,7 @@ public class Declaration implements Serializable{
         }
 
         return null;
-       }
+    }
 
     public List<DeclarationValue> getDeclarationValues(String name){
         List<DeclarationValue> list = new ArrayList<>();
@@ -168,11 +168,37 @@ public class Declaration implements Serializable{
 
         return list;
     }
+    
+    public int getDeclarationValuesCount(String name){
+        int count = 0;
+
+        for (DeclarationValue declarationValue : declarationValues){
+            if (declarationValue.getName().equals(name)){
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public int getDeclarationValuesCountByMask(String mask){
+        mask = mask.replace("XXXX", "");
+
+        int count = 0;
+
+        for (DeclarationValue declarationValue : declarationValues){
+            if (declarationValue.getName().indexOf(mask) == 0){
+                count++;
+            }
+        }
+
+        return count;
+    }
 
     public void addDeclarationValue(DeclarationValue value){
         declarationValues.add(value);
     }
-    
+
     public void fillValue(String name, String value){
         DeclarationValue declarationValue = getDeclarationValue(name);
 
@@ -182,12 +208,16 @@ public class Declaration implements Serializable{
     }
 
     public void fillValueByType(String type, String value){
-            DeclarationValue declarationValue = getDeclarationValueByType(type);
+        DeclarationValue declarationValue = getDeclarationValueByType(type);
 
-            if (declarationValue != null){
-                declarationValue.setValue(value);
-            }
+        if (declarationValue != null){
+            declarationValue.setValue(value);
         }
+    }
+
+    public void removeDeclarationValue(DeclarationValue declarationValue){
+        declarationValues.remove(declarationValue);
+    }
 
     public void removeDeclarationValue(String name){
         removeDeclarationValue(null, name);

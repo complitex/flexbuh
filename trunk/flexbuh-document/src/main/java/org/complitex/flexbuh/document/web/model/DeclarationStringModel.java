@@ -9,50 +9,17 @@ import org.complitex.flexbuh.document.entity.DeclarationValue;
  */
 public class DeclarationStringModel extends AbstractDeclarationModel<String>{
     private String mask;
-    private String type;
-    
-    public DeclarationStringModel(String name, Declaration declaration) {
-        super(name, declaration);
-    }
+    private DeclarationValue declarationValue;
 
     public DeclarationStringModel(Integer rowRum, String name, String type, String mask, Declaration declaration) {
         super(rowRum, name, declaration);
         
         this.mask = mask;
-        this.type = type;
-    }
 
-    @Override
-    public String getObject() {
-        return getDeclarationValue().getValue();
-    }
-
-    @Override
-    public void setObject(String object) {         
-        getDeclarationValue().setValue(object);
-    }
-
-    public void updateRowNum(Integer rowNum){
-        this.rowNum = rowNum;
-
-        DeclarationValue declarationValue = getDeclarationValue();
-        
-        if (isMask()){
-            declarationValue.setName(getMaskName());
-        }else{
-            declarationValue.setRowNum(rowNum);
-        }
-    }
-
-    public void removeValue(){
-        declaration.removeDeclarationValue(rowNum, name);
-    }
-    
-    private DeclarationValue getDeclarationValue(){
-        DeclarationValue declarationValue = isMask()
+        declarationValue = isMask()
                 ? declaration.getDeclarationValue(getMaskName())
                 : declaration.getDeclarationValue(rowNum, name);
-        
+
         if (declarationValue == null){
             declarationValue = isMask()
                     ? new DeclarationValue(null, getMaskName(), null)
@@ -62,10 +29,32 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
 
             declaration.addDeclarationValue(declarationValue);
         }
-        
-        return declarationValue;                
     }
+
+    @Override
+    public String getObject() {
+        return declarationValue.getValue();
+    }
+
+    @Override
+    public void setObject(String object) {         
+        declarationValue.setValue(object);
+    }
+
+    public void updateRowNum(Integer rowNum){
+        this.rowNum = rowNum;
         
+        if (isMask()){
+            declarationValue.setName(getMaskName());
+        }else{
+            declarationValue.setRowNum(rowNum);
+        }
+    }
+
+    public void removeValue(){
+        declaration.removeDeclarationValue(declarationValue);
+    }
+
     public String getMaskName(){
         if (isMask()){
             return mask.replace("XXXX", rowNum + "");                        

@@ -179,10 +179,15 @@ public class RestrictionBehavior extends Behavior{
             FormComponent formComponent = (FormComponent) component;
             IValueMap attributes = tag.getAttributes();
 
-            String value = formComponent.getValue();
+            Object value = formComponent.getConvertedInput();
+            //todo fix convert on load
 
-            if (value != null && !value.isEmpty()) {
-                validate(value);
+            if (value == null){
+                value = formComponent.getValue();
+            }
+
+            if (value != null && !value.toString().isEmpty()) {
+                validate(value.toString());
 
                 if (errorMessage != null){
                     attributes.put("style", "background-color: " + COLOR_ERROR);
