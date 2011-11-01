@@ -49,6 +49,7 @@ import javax.script.ScriptException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -239,6 +240,7 @@ public class DeclarationFormComponent extends Panel{
                     inputElement.setAttribute("type", "radio");
 
                     Radio<String> radio = new Radio<>(id, new Model<>(id), radioSet);
+                    radio.setMarkupId(id + "_" + nextRandomId());
                     radioSet.addRadio(radio);
 
                     parent.add(radio);
@@ -261,7 +263,7 @@ public class DeclarationFormComponent extends Panel{
 
                 DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schemaType, mask, declaration);
                 final DeclarationTextField textField = new DeclarationTextField(id, model, schemaType);
-                textField.setMarkupId(rowNum != null ? id + "_" + rowNum : id);
+                textField.setMarkupId(id + "_" + nextRandomId());
                 textField.setOutputMarkupId(true);
                 parent.add(textField);
 
@@ -435,7 +437,7 @@ public class DeclarationFormComponent extends Panel{
         //ajax container
         String tbodyId = "process_" + index;
         tbody.setAttribute("wicket:id", tbodyId);
-        tbody.setAttribute("id", tbodyId);
+        tbody.setAttribute("id", tbodyId + "_" + nextRandomId());
 
         WebMarkupContainer tbodyContainer = new WebMarkupContainer(tbodyId);
         tbodyContainer.setOutputMarkupId(true);
@@ -721,6 +723,12 @@ public class DeclarationFormComponent extends Panel{
                 visit.dontGoDeeper();
             }
         });
+    }
+    
+    private SecureRandom random = new SecureRandom();
+    
+    private String nextRandomId(){
+        return random.nextInt() + "";
     }
 
 }

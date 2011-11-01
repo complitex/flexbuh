@@ -31,10 +31,13 @@ public class DeclarationTextField extends CssStyleTextField<String> {
         if (schemaType != null){
             switch (schemaType){
                 case "DGDate":
+                case "DateColumn":
                     return (IConverter<C>) new DeclarationDateConverter();
                 case "DGdecimal1":
+                case "Decimal1Column":
                     return (IConverter<C>) new DecimalConverter(1);
                 case "DGdecimal2":
+                case "Decimal2Column":
                     return (IConverter<C>) new DecimalConverter(2);
             }
         }

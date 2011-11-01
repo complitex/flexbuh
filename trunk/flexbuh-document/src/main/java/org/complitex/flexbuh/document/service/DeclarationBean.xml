@@ -5,6 +5,7 @@
     <resultMap id="declarationResultMap" type="org.complitex.flexbuh.document.entity.Declaration">
         <id column="id" property="id"/>
         <result column="session_id" property="sessionId"/>
+        <result column="parent_id" property="parentId"/>
         <result column="name" property="name"/>
         <result column="tin" property="head.tin"/>
         <result column="c_doc" property="head.cDoc"/>
@@ -49,12 +50,14 @@
 
     <select id="selectDeclaration" resultMap="declarationResultMap" parameterType="long">
         select de.*, do.`name_uk` as `name` from `declaration` de
-             left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+          left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
         where de.`id` = #{id}
     </select>
 
     <select id="selectLinkedDeclaration" resultMap="linkedDeclarationResultMap" parameterType="long">
-        select * from `declaration` where `parent_id` = #{parentId}
+        select de.*, do.`name_uk` as `name` from `declaration` de
+          left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+        where `parent_id` = #{parentId}
     </select>
 
     <select id="selectDeclarationValues" resultMap="declarationValueResultMap" parameterType="long">
@@ -78,7 +81,7 @@
         from `declaration` de
              left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
          <where>
-             <if test="name != null">dn.`value` like  concat('%', #{name}, '%')</if>
+             <if test="name != null">do.`name_uk` like  concat('%', #{name}, '%')</if>
              <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
              <if test="periodType != null">and `period_type` = #{periodType}</if>
              <if test="periodYear != null">and `period_year` = #{periodYear}</if>

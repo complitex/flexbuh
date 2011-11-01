@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -174,6 +175,20 @@ public class DeclarationList extends TemplatePage{
 
                 item.add(new DeclarationXmlLink("action_xml", declaration));
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
+
+                item.add(new Link("action_delete") {
+                    @Override
+                    public void onClick() {
+                        declarationBean.deleteDeclaration(declaration.getId());
+
+                        info(getString("deleted"));
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return declaration.getParentId() == null;
+                    }
+                });
             }
         };
 

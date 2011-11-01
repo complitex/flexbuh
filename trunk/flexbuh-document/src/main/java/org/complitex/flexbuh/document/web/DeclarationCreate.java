@@ -181,6 +181,10 @@ public class DeclarationCreate extends FormTemplatePage{
 
         declaration.setParent(parent);
 
+        declaration.getHead().setPeriodType(parent.getHead().getPeriodType());
+        declaration.getHead().setPeriodMonth(parent.getHead().getPeriodMonth());
+        declaration.getHead().setPeriodYear(parent.getHead().getPeriodYear());
+
         return new LinkedDeclaration(declaration);
     }
 }
