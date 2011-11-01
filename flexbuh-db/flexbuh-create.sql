@@ -350,7 +350,7 @@ CREATE TABLE `declaration` (
   PRIMARY KEY (`id`),
   KEY `key_declaration__parent_id` (`parent_id`),
   KEY `key_declaration__session_id` (`session_id`),
-  CONSTRAINT `fk_declaration__declaration` FOREIGN KEY (`parent_id`) REFERENCES `declaration` (`id`),
+  CONSTRAINT `fk_declaration__declaration` FOREIGN KEY (`parent_id`) REFERENCES `declaration` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_declaration__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
