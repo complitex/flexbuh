@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.util.convert.IConverter;
+import org.complitex.flexbuh.document.web.converter.DecimalConverter;
 import org.complitex.flexbuh.document.web.converter.DeclarationDateConverter;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 import org.complitex.flexbuh.web.component.CssStyleTextField;
@@ -24,13 +25,22 @@ public class DeclarationTextField extends CssStyleTextField<String> {
         return (DeclarationStringModel) getModel();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <C> IConverter<C> getConverter(Class<C> classType) {
-        if ("DGDate".equals(schemaType)){
-            //noinspection unchecked
-            return (IConverter<C>) new DeclarationDateConverter();
+        if (schemaType != null){
+            switch (schemaType){
+                case "DGDate":
+                    return (IConverter<C>) new DeclarationDateConverter();
+                case "DGdecimal1":
+                    return (IConverter<C>) new DecimalConverter(1);
+                case "DGdecimal2":
+                    return (IConverter<C>) new DecimalConverter(2);
+            }
         }
-        
+
         return super.getConverter(classType);
     }
+
+
 }

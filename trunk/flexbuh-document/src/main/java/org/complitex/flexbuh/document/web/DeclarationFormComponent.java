@@ -312,9 +312,6 @@ public class DeclarationFormComponent extends Panel{
                 //Restriction
                 Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
                 textField.add(createRestrictionBehavior(schemaType, rule != null ? rule.getDescription() : ""));
-
-                //validate
-                textField.validate();
             }
         } catch (Exception e) {
             log.error("Ошибка добавления компонента формы ввода декларации", e);
