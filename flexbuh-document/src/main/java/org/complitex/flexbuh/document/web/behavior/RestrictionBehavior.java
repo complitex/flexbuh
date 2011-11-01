@@ -158,8 +158,17 @@ public class RestrictionBehavior extends Behavior{
     }
 
     private void error(String key, Object argument){
-        errorMessage = (argument != null ? MessageFormat.format(getString(key), argument) : getString(key)) +
-                (documentation != null ? " \n" + documentation : "");
+        errorMessage = (argument != null ? MessageFormat.format(getString(key), argument) : getString(key));
+
+        //documentation
+        errorMessage += (documentation != null ? " \n" + documentation : "");
+
+        //error description by name
+        String error = getString("error." + name);
+        
+        if (error != null){
+            errorMessage += ": " + error;
+        }
     }
 
     private String getString(String key){
@@ -170,7 +179,11 @@ public class RestrictionBehavior extends Behavior{
             resourceBundleMap.put(locale.getLanguage(), resourceBundle);
         }
 
-        return resourceBundle.getString(key);
+        try {
+            return resourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return null;
+        }
     }
 
     @Override
@@ -178,16 +191,22 @@ public class RestrictionBehavior extends Behavior{
         if (component instanceof FormComponent){
             FormComponent formComponent = (FormComponent) component;
             IValueMap attributes = tag.getAttributes();
+            
+            Object input = formComponent.getConvertedInput();
 
-            Object value = formComponent.getConvertedInput();
-            //todo fix convert on load
-
+            String value =  input != null ? input.toString() : null;
+            
             if (value == null){
                 value = formComponent.getValue();
+
+                //convert
+                if (value != null){
+                    value = formComponent.getConverter(String.class).convertToObject(value, getLocale());                    
+                }
             }
 
-            if (value != null && !value.toString().isEmpty()) {
-                validate(value.toString());
+            if (value != null && !value.isEmpty()) {
+                validate(value);
 
                 if (errorMessage != null){
                     attributes.put("style", "background-color: " + COLOR_ERROR);
