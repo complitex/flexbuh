@@ -11,12 +11,12 @@ import org.complitex.flexbuh.web.component.CssStyleTextField;
  *         Date: 27.10.11 18:06
  */
 public class DeclarationTextField extends CssStyleTextField<String> {    
-    private String schemaType;
+    private String schema;
     
-    public DeclarationTextField(String id, DeclarationStringModel model, String schemaType) {
+    public DeclarationTextField(String id, DeclarationStringModel model, String schema) {
         super(id, model);
         
-        this.schemaType = schemaType;
+        this.schema = schema;
         
         setType(String.class);
     }
@@ -28,8 +28,8 @@ public class DeclarationTextField extends CssStyleTextField<String> {
     @SuppressWarnings("unchecked")
     @Override
     public <C> IConverter<C> getConverter(Class<C> classType) {
-        if (schemaType != null){
-            switch (schemaType){
+        if (schema != null){
+            switch (schema){
                 case "DGDate":
                 case "DateColumn":
                     return (IConverter<C>) new DeclarationDateConverter();
@@ -45,5 +45,11 @@ public class DeclarationTextField extends CssStyleTextField<String> {
         return super.getConverter(classType);
     }
 
-
+    public String getSchema() {
+        return schema;
+    }
+    
+    public String getMask(){
+        return getDeclarationModel().getMask();
+    }
 }

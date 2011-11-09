@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
@@ -11,12 +12,20 @@ import org.apache.wicket.markup.html.panel.Panel;
 public abstract class AddRowPanel extends Panel {
     private boolean deleteVisible = true;
 
-    public AddRowPanel(String id) {
+    private WebMarkupContainer row;
+    private StretchTable stretchTable;
+
+    public AddRowPanel(String id, final WebMarkupContainer row, final StretchTable stretchTable) {
         super(id);
+
+        this.row = row;
+        this.stretchTable = stretchTable;
 
         add(new AjaxLink("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
+                deleteVisible = true;
+
                 onAdd(target);
                 afterAction(target);
             }
@@ -25,6 +34,8 @@ public abstract class AddRowPanel extends Panel {
         add(new AjaxLink("delete") {
             @Override
             public void onClick(AjaxRequestTarget target) {
+                stretchTable.deleteRow(row);
+
                 onDelete(target);
                 afterAction(target);
             }
@@ -34,6 +45,14 @@ public abstract class AddRowPanel extends Panel {
                 return deleteVisible;
             }
         });
+    }
+
+    public StretchTable getStretchTable() {
+        return stretchTable;
+    }
+
+    public WebMarkupContainer getRow() {
+        return row;
     }
 
     public boolean isDeleteVisible() {
