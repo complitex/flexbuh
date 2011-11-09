@@ -365,7 +365,7 @@ CREATE TABLE `declaration_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `declaration_id` BIGINT(20) NOT NULL,
   `row_num` INTEGER,
-  `name` VARCHAR(20),
+  `name` VARCHAR(20) NOT NULL,
   `value` VARCHAR(255),
   PRIMARY KEY (`id`),
   KEY `key_declaration_value__declaration_id` (`declaration_id`),

@@ -63,6 +63,10 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
         return null;
     }
 
+    public String getMask() {
+        return mask;
+    }
+
     public boolean isMask(){
         return mask != null && !mask.isEmpty();
     }

@@ -2,34 +2,31 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.Markup;
-import org.apache.wicket.markup.MarkupParser;
-import org.apache.wicket.markup.MarkupResourceStream;
+import org.apache.wicket.markup.MarkupElement;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.AbstractRepeater;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.resource.StringResourceStream;
-import org.apache.wicket.util.time.Time;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
-import org.complitex.flexbuh.document.service.DeclarationService;
+import org.complitex.flexbuh.document.service.DeclarationFillService;
+import org.complitex.flexbuh.document.service.DeclarationMarkupService;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.AddRowPanel;
 import org.complitex.flexbuh.document.web.component.DeclarationTextField;
+import org.complitex.flexbuh.document.web.component.RowNumLabel;
+import org.complitex.flexbuh.document.web.component.StretchTable;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
@@ -41,16 +38,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import javax.ejb.EJB;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
-import java.nio.charset.Charset;
-import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,29 +58,23 @@ import java.util.regex.Pattern;
 public class DeclarationFormComponent extends Panel{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
 
-    private final static String WICKET_NAMESPACE_URI = "http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd";
-
     private Pattern LINKED_ID_PATTERN = Pattern.compile("(\\w*)\\.(\\w*)");
-
-    private final static String ABC = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯ";
 
     @EJB
     private TemplateService templateService;
 
     @EJB
-    private DeclarationService declarationService;
+    private DeclarationFillService declarationService;
 
-    private Map<String, RadioSet<String>> radioSetMap = new HashMap<String, RadioSet<String>>();
+    @EJB
+    private DeclarationMarkupService declarationMarkupService;
 
     private transient Declaration declaration;
 
-    //todo check serialization
-    private transient Document schema;
-    private transient Document template;
+    //todo check serialization    
     private transient Document commonTypes;
 
     private transient XPath schemaXPath = XmlUtil.newSchemaXPath();
-    private transient XPath templateXPath = XmlUtil.newXPath();
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
     private Map<String, Rule> rulesMap;
@@ -91,24 +82,16 @@ public class DeclarationFormComponent extends Panel{
     private Map<String, List<DeclarationTextField>> multiRowTextFieldMap = new HashMap<>();
     private Map<String, DeclarationTextField> maskTextFieldMap = new HashMap<>();
 
-    private transient Map<Integer, NodeList> allStretchTableMap = new HashMap<>();
+    private final String templateName;
 
-    private WebMarkupContainer container;
-
-    private transient StringResourceStream stringResourceStream;
+    private int nextId = 0;
 
     public DeclarationFormComponent(String id, Declaration declaration){
         super(id);
 
+        templateName = declaration.getTemplateName();
+
         try {
-            String templateName = declaration.getTemplateName();
-
-            //Template
-            template = templateService.getDocumentXSL(templateName, new Declaration());
-
-            //Schema
-            schema = templateService.getSchema(templateName);
-
             //Common Types
             commonTypes = templateService.getSchema("common_types");
 
@@ -117,218 +100,257 @@ public class DeclarationFormComponent extends Panel{
 
             //Declaration
             this.declaration = declaration;
+
+            init();
+
+            //Auto fill header
+            if (declaration.getId() == null) {
+                declarationService.autoFillHeader(declaration);
+            }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-
-        init();
-
-        //Auto fill header
-        if (declaration.getId() == null) {
-            declarationService.autoFillHeader(declaration);
         }
     }
 
     private void init(){
-        //Body
-        NodeList bodyNodeList = template.getElementsByTagName("body");
-        if (bodyNodeList.getLength() < 1){
-            bodyNodeList = template.getElementsByTagName("BODY");
-        }
-
-        Element panel = template.createElement("wicket:panel");
-        panel.setAttribute("xmlns:wicket", WICKET_NAMESPACE_URI);
-
-        Element div = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
-        div.setAttribute("wicket:id", "container");
-        panel.appendChild(div);
-
-        container = new WebMarkupContainer("container");
+        WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
         add(container);
 
-        //Input
-        NodeList inputList = div.getElementsByTagName("input");
-        for (int i=0; i < inputList.getLength(); ++i){
-            Element input = (Element) inputList.item(i);
+        RadioSet<String> radioSet = null;
+        WebMarkupContainer tbody = null;
+        WebMarkupContainer parent = container;
+        StretchTable stretchTable = null;
 
-            if (XmlUtil.getParentById("StretchTable", input) == null){
-                addInput(input);
+        for (MarkupElement markupElement : getAssociatedMarkup()){
+            if (markupElement instanceof ComponentTag){
+                ComponentTag tag = (ComponentTag) markupElement;
+
+                String type = tag.getAttribute("type");
+                String schema = tag.getAttribute("schema");
+                String wicketId = tag.getAttribute("wicket:id");
+                String mask = tag.getAttribute("mask");
+
+                if (type != null){
+                    if ("radio".equals(type) && radioSet != null){
+                        Radio<String> radio = new Radio<>(wicketId, new Model<>(wicketId), radioSet);
+                        radio.setOutputMarkupId(true);
+                        radioSet.addRadio(radio);
+
+                        parent.add(radio);
+                    }
+
+                    if ("checkbox".equals(type)){
+                        CheckBox checkBox = new CheckBox(wicketId, new DeclarationBooleanModel(wicketId, declaration));
+                        checkBox.setOutputMarkupId(true);
+
+                        parent.add(checkBox);
+                    }
+
+                    if ("text".equals(type)){
+                        addTextInput(parent, schema, wicketId, mask);
+                    }
+                }
+
+                if (wicketId != null){
+                    if (wicketId.contains("radio_set")){
+                        radioSet = new RadioSet<>(wicketId, new DeclarationChoiceModel(wicketId, declaration));
+                        parent.add(radioSet);
+                    }
+
+                    if (wicketId.contains("process")){
+                        tbody = new WebMarkupContainer(wicketId);
+                        tbody.setOutputMarkupId(true);
+
+                        container.add(tbody);
+
+                        parent = tbody;
+                    }
+
+                    if (wicketId.contains("repeater")){
+                        stretchTable = new StretchTable(wicketId);
+                        parent.add(stretchTable);
+
+                        parent = stretchTable.getFirstStretchRow();
+
+                        addAddRowPanel(parent, stretchTable);
+                    }
+
+                    if (wicketId.contains("spRownum") && stretchTable != null){
+                        String numType = tag.getAttribute("numType");
+                        boolean letter = numType != null && numType.equals("letter");
+
+                        parent.add(new RowNumLabel(wicketId, letter, parent, stretchTable));
+                    }
+                }
+
+                if (tag.isClose()){
+                    String openWicketId = tag.getOpenTag().getAttribute("wicket:id");
+
+                    if (openWicketId != null) {
+                        if (openWicketId.contains("process")){
+                            parent = container;
+                        }
+
+                        if (openWicketId.contains("repeater") && tbody != null){
+                            parent = tbody;
+
+                            if (declaration.getId() != null) {
+                                for (int i = 0, count = getRowCount(stretchTable.getFirstStretchRow()); i < count; ++i){
+                                    addRow(stretchTable, null);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
 
-        //MultiRows
-        List<Element> tbodyElements = new ArrayList<>();
+    private void addTextInput(WebMarkupContainer container, String schema, String id, String mask) {
+        DeclarationStringModel model = new DeclarationStringModel(++nextId, id, schema, mask, declaration);
 
-        NodeList stretchList = XmlUtil.getElementsById("StretchTable", div, templateXPath);
+        final DeclarationTextField textField = new DeclarationTextField(id, model, schema);
+        textField.setOutputMarkupId(true);
+        container.add(textField);
 
-        int index = 0;
+        //add maps
+        if (id.contains("XXXX")){
+            List<DeclarationTextField> textFields = multiRowTextFieldMap.get(id);
 
-        for (int i=0; i < stretchList.getLength(); ++i){
-            Element tbody = (Element) XmlUtil.getParent("tbody", stretchList.item(i));
-
-            if (!tbodyElements.contains(tbody)) {
-                tbodyElements.add(tbody);
-
-                addRows(index++, tbody);
+            if (textFields == null){
+                textFields = new ArrayList<>();
+                multiRowTextFieldMap.put(id, textFields);
             }
+
+            textFields.add(textField);
+        }else if (!mask.isEmpty()){
+            maskTextFieldMap.put(model.getMaskName(), textField);
+        }else{
+            simpleTextFieldMap.put(id, textField);
         }
 
-        //Markup
-        stringResourceStream = new StringResourceStream(XmlUtil.getString(panel), "text/html");
-        stringResourceStream.setCharset(Charset.forName("UTF-8"));
-        stringResourceStream.setLastModified(Time.now());
+        //Ajax update
+        textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                //wtf
+            }
+
+            @Override
+            protected void onUpdate(final AjaxRequestTarget target) {
+                String value = textField.getValue();
+
+                if (value != null && !value.isEmpty()) {
+                    //Auto fill
+                    autoFill(target);
+
+                    //Auto fill linked
+                    getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
+
+                        @Override
+                        public void component(DeclarationFormComponent component, IVisit visit) {
+                            component.autoFill(target);
+
+                            visit.dontGoDeeper();
+                        }
+                    });
+                }
+
+                target.add(textField);
+            }
+        });
+
+        //Restriction
+        try {
+            Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
+            textField.add(createRestrictionBehavior(schema, rule != null ? rule.getDescription() : ""));
+        } catch (XPathExpressionException e) {
+            log.error("Ошибка создания проверки данных",e);
+        }
+    }
+
+    private void addRow(final StretchTable stretchTable, WebMarkupContainer afterRow){
+        final WebMarkupContainer newRow = stretchTable.insertAfter(afterRow);
+
+        stretchTable.getFirstStretchRow().visitChildren(new IVisitor<Component, Object>() {
+            @Override
+            public void component(Component object, IVisit<Object> visit) {
+                if (object instanceof RowNumLabel){
+                    RowNumLabel rowNumLabel = (RowNumLabel) object;
+
+                    newRow.add(new RowNumLabel(rowNumLabel.getId(), rowNumLabel.isLetter(), newRow, stretchTable));
+
+                    visit.dontGoDeeper();
+                }else if (object instanceof AddRowPanel){
+                    addAddRowPanel(newRow, stretchTable);
+
+                    visit.dontGoDeeper();
+                }else if (object instanceof DeclarationTextField){
+                    DeclarationTextField textField = (DeclarationTextField) object;
+
+                    addTextInput(newRow, textField.getSchema(), textField.getId(), textField.getMask());
+
+                    visit.dontGoDeeper();
+                }
+            }
+        });
+
+        reorder(stretchTable.getStretchRows());
+    }
+
+    private void addAddRowPanel(final WebMarkupContainer parent, StretchTable stretchTable){
+        parent.add(new AddRowPanel("add_row_panel", parent, stretchTable) {
+            @Override
+            protected void onAdd(AjaxRequestTarget target) {
+                addRow(getStretchTable(), parent);
+            }
+
+            @Override
+            protected void onDelete(AjaxRequestTarget target) {
+                getRow().visitChildren(DeclarationTextField.class, new IVisitor<DeclarationTextField, Void>() {
+                    @Override
+                    public void component(DeclarationTextField object, IVisit<Void> visit) {
+                        for (List list : multiRowTextFieldMap.values()) {
+                            list.remove(object);
+                        }
+
+                        maskTextFieldMap.remove(object.getDeclarationModel().getMaskName());
+
+                        object.getDeclarationModel().removeValue();
+
+                        visit.dontGoDeeper();
+                    }
+                });
+
+                reorder(getStretchTable().getStretchRows());
+
+                autoFill(target);
+            }
+
+            @Override
+            protected void afterAction(final AjaxRequestTarget target) {
+                target.add(getStretchTable().getParent());
+
+                //update row num
+                for (WebMarkupContainer row : getStretchTable().getStretchRows()){
+                    row.visitChildren(RowNumLabel.class, new IVisitor<Label, Object>() {
+                        @Override
+                        public void component(Label object, IVisit<Object> visit) {
+                            target.add(object);
+
+                            visit.dontGoDeeper();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @Override
     public Markup getAssociatedMarkup() {
-        try {
-            return new MarkupParser( new MarkupResourceStream(stringResourceStream)).parse();
-        } catch (Exception e) {
-            throw new WicketRuntimeException(e);
-        }
-    }
-
-    private void addInput(Element inputElement){
-        addInput(null, inputElement, container, true);
-    }
-
-    private void addInput(Integer rowNum, Element inputElement, MarkupContainer parent, boolean updateMarkup){
-        try {
-            //lookup schema rules
-            Element schemaElement = XmlUtil.getElementByName(inputElement.getAttribute("id"), schema, schemaXPath);
-            String schemaType = schemaElement.getAttribute("type");
-
-            //id
-            final String id = inputElement.getAttribute("id");
-
-            //set wicket id markup
-            if (updateMarkup) {
-                inputElement.setAttribute("wicket:id", id);
-            }
-
-            //create form component
-            if ("DGchk".equals(schemaType)){
-                Element schemaChoice = (Element) schemaElement.getParentNode();
-
-                if ("xs:choice".equals(schemaChoice.getTagName())){
-                    //find parent for component
-                    RadioSet<String> radioSet = radioSetMap.get(id);
-
-                    //create choice
-                    if (radioSet == null){
-                        String rId = "radio_"+id;
-
-                        //create radio set markup
-                        if (updateMarkup) {
-                            Element radioSetElement = template.createElement("span");
-                            radioSetElement.setAttribute("wicket:id", rId);
-                            inputElement.getParentNode().appendChild(radioSetElement);
-                        }
-
-                        //add radio set component
-                        radioSet = new RadioSet<>(rId, new DeclarationChoiceModel(id, declaration));
-                        parent.add(radioSet);
-
-                        //child nodes to radio set
-                        NodeList children = schemaChoice.getElementsByTagName("xs:element");
-                        for (int i=0; i < children.getLength() ; ++i){
-                            Element el = (Element) children.item(i);
-                            radioSetMap.put(el.getAttribute("name"), radioSet);
-                        }
-                    }
-
-                    inputElement.setAttribute("type", "radio");
-
-                    Radio<String> radio = new Radio<>(id, new Model<>(id), radioSet);
-                    radio.setMarkupId(id + "_" + nextRandomId());
-                    radioSet.addRadio(radio);
-
-                    parent.add(radio);
-                }else{
-                    if (updateMarkup) {
-                        inputElement.setAttribute("type", "checkbox");
-                    }
-
-                    CheckBox checkBox = new CheckBox(id, new DeclarationBooleanModel(id, declaration));
-
-                    parent.add(checkBox);
-                }
-            }else{
-                //TextField
-                inputElement.setAttribute("type", "text");
-
-                //mask
-                Element maskElement = (Element) XmlUtil.getParent("td", inputElement);
-                String mask = maskElement != null ? maskElement.getAttribute("mask") : null;
-
-                DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schemaType, mask, declaration);
-                final DeclarationTextField textField = new DeclarationTextField(id, model, schemaType);
-                textField.setMarkupId(id + "_" + nextRandomId());
-                textField.setOutputMarkupId(true);
-                parent.add(textField);
-
-                //multirow input
-                String maxOccurs = schemaElement.getAttribute("maxOccurs");
-                boolean multiRow = maxOccurs != null && !maxOccurs.isEmpty() && Integer.parseInt(maxOccurs) > 1;
-
-                //Add to map for rule auto fill
-                if (multiRow) {
-                    addMultiRowTextField(id, textField);
-                }else if (model.isMask()){
-                    maskTextFieldMap.put(model.getMaskName(), textField);
-                }else{
-                    simpleTextFieldMap.put(id, textField);
-                }
-
-                //Ajax update
-                textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-                    @Override
-                    protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        //wtf
-                    }
-
-                    @Override
-                    protected void onUpdate(final AjaxRequestTarget target) {
-                        String value = textField.getValue();
-
-                        if (value != null && !value.isEmpty()) {
-                            //Auto fill
-                            autoFill(target);
-
-                            //Auto fill linked
-                            getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
-
-                                @Override
-                                public void component(DeclarationFormComponent component, IVisit visit) {
-                                    component.autoFill(target);
-
-                                    visit.dontGoDeeper();
-                                }
-                            });
-                        }
-
-                        target.add(textField);
-                    }
-                });
-
-                //Restriction
-                Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
-                textField.add(createRestrictionBehavior(schemaType, rule != null ? rule.getDescription() : ""));
-            }
-        } catch (Exception e) {
-            log.error("Ошибка добавления компонента формы ввода декларации", e);
-        }
-    }
-
-    private void addMultiRowTextField(String id, DeclarationTextField textField){
-        List<DeclarationTextField> textFields = multiRowTextFieldMap.get(id);
-
-        if (textFields == null){
-            textFields = new ArrayList<>();
-            multiRowTextFieldMap.put(id, textFields);
-        }
-
-        textFields.add(textField);
+        return declarationMarkupService.getMarkup(templateName);
     }
 
     private RestrictionBehavior createRestrictionBehavior(String schemaType, String title) throws XPathExpressionException {
@@ -433,258 +455,31 @@ public class DeclarationFormComponent extends Panel{
         }
     }
 
-    private void addRows(final int index, Element tbody){
-        //ajax container
-        String tbodyId = "process_" + index;
-        tbody.setAttribute("wicket:id", tbodyId);
-        tbody.setAttribute("id", tbodyId + "_" + nextRandomId());
+    private int getRowCount(WebMarkupContainer firstStretchRow){
+        int count = 0;
 
-        WebMarkupContainer tbodyContainer = new WebMarkupContainer(tbodyId);
-        tbodyContainer.setOutputMarkupId(true);
-        container.add(tbodyContainer);
+        for (Component component : firstStretchRow){
+            if (component instanceof DeclarationTextField){
+                DeclarationTextField textField = (DeclarationTextField) component;
 
-        //change parent for internal not dynamic
-        NodeList componentList = XmlUtil.getElementsByAttribute("id", tbody, templateXPath);
+                String mask = textField.getMask();
+                String id = textField.getId();
 
-        for (int i = 0, size = componentList.getLength(); i < size; ++i){
-            Element element = (Element) componentList.item(i);
-            String wicketId = element.getAttribute("wicket:id");
+                int c = 0;
 
-            if (wicketId != null && !wicketId.isEmpty()) {
-                Component component = container.get(wicketId);
-
-                if (component != null && !component.equals(tbodyContainer)){
-                    tbodyContainer.add(component);
-                }
-            }
-        }
-
-        int addRow = !tbody.getAttribute("addRow").isEmpty() ? Integer.parseInt(tbody.getAttribute("addRow")) : 1;
-        NodeList stretchTables = XmlUtil.getElementsById("StretchTable", tbody, templateXPath);
-
-        allStretchTableMap.put(index, stretchTables);
-
-        //repeater
-        String repeaterId = "repeater_" + index;
-
-        Element wrapContainer = template.createElement("wicket:container");
-        wrapContainer.setAttribute("wicket:id", repeaterId);
-
-        //multiRow
-        int rows = stretchTables.getLength();
-        for (int i =  rows - addRow; i < rows; ++i){
-            wrapContainer.appendChild(stretchTables.item(i));
-        }
-        tbody.appendChild(wrapContainer);
-
-        //add delete link
-        Element firstRow = (Element) stretchTables.item(rows - addRow);
-        NodeList tdList = firstRow.getElementsByTagName("td");
-        if (tdList.getLength() == 0){
-            tdList = firstRow.getElementsByTagName("TD");
-        }
-        Element firstColumn = (Element) tdList.item(0);
-
-        Element wrapTableElement = template.createElement("table");
-        Element trElement = template.createElement("tr");
-        Element tdLeftElement = template.createElement("td");
-        tdLeftElement.setAttribute("wicket:id", "add_row_panel");
-        Element tdRightElement = template.createElement("td");
-
-        trElement.appendChild(tdLeftElement);
-        trElement.appendChild(tdRightElement);
-        wrapTableElement.appendChild(trElement);
-
-        NodeList childNodes = firstColumn.getChildNodes();
-        while (childNodes.getLength() > 0){
-            tdRightElement.appendChild(childNodes.item(0));
-        }
-
-        firstColumn.appendChild(wrapTableElement);
-
-        //style
-        wrapTableElement.setAttribute("style", "width: 100%;");
-        wrapTableElement.setAttribute("border", "0");
-        wrapTableElement.setAttribute("cellpadding", "0");
-        wrapTableElement.setAttribute("cellspacing", "0");
-        tdLeftElement.setAttribute("style", "width: 40px;");
-
-        //Stretch rows
-        final List<WebMarkupContainer> stretchRows = new ArrayList<>();
-
-        //Add rows
-        for (int i = 0, size = getRowCount(tbody.getElementsByTagName("input")); i <  size; ++i) {
-            addRow(index, addRow, tbodyContainer, i, stretchRows);
-        }
-
-        //Repeater
-        tbodyContainer.add(new AbstractRepeater(repeaterId) {
-            @Override
-            protected Iterator<? extends Component> renderIterator() {
-                return stretchRows.iterator();
-            }
-
-            @Override
-            protected void onPopulate() {
-                //remove
-                for (Component component : this) {
-                    WebMarkupContainer c = (WebMarkupContainer) component;
-
-                    if (!stretchRows.contains(c)) {
-                        remove(c);
-                    }
+                if (mask != null && !mask.isEmpty()){
+                    c = declaration.getDeclarationValuesCountByMask(mask);
+                } else if (id != null && !id.isEmpty()){
+                    c = declaration.getDeclarationValuesCount(id);
                 }
 
-                //add
-                for (Component row : stretchRows) {
-                    boolean found = false;
-
-                    for (Component component : this) {
-                        if (row.equals(component)) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        add(row);
-                    }
+                if (c > count){
+                    count = c;
                 }
-
-                //delete visible
-                if (stretchRows.size() == 1) {
-                    ((AddRowPanel) (stretchRows.get(0)).get("add_row_panel")).setDeleteVisible(false);
-                }
-            }
-        });
-    }
-
-    private int getRowCount(NodeList inputList){
-        int count = 1;
-
-        for (int i = 0; i < inputList.getLength(); ++i){
-            Element inputElement = (Element)inputList.item(i); 
-
-            //mask
-            Element maskElement = (Element) XmlUtil.getParent("td", inputElement);
-            String mask = maskElement != null ? maskElement.getAttribute("mask") : null;
-
-            //id
-            String id = inputElement.getAttribute("id");
-            
-            int c = 0;
-
-            if (mask != null && !mask.isEmpty()){
-                c = declaration.getDeclarationValuesCountByMask(mask);
-            } else if (id != null && !id.isEmpty()){
-                c = declaration.getDeclarationValuesCount(id);
-            }
-
-            if (c > count){
-                count = c;
             }
         }
 
         return count;
-    }
-    
-    private Map<Integer, Integer> nextRowIdMap = new HashMap<>();
-    
-    private int nextRowId(int index){
-        Integer nextId = nextRowIdMap.get(index);
-        
-        if (nextId == null){
-            nextId = 1;            
-        }
-        
-        nextRowIdMap.put(index, nextId + 1);
-        
-        return nextId;
-    }
-
-    private void addRow(final int index, final int addRow, final WebMarkupContainer tbodyContainer,
-                        final int addRowIndex, final List<WebMarkupContainer> stretchRows) {
-        NodeList allStretchRow = allStretchTableMap.get(index);  
-        
-        int rowNextId = nextRowId(index);
-
-        final WebMarkupContainer stretchRow = new WebMarkupContainer(rowNextId + "");
-        stretchRows.add(addRowIndex, stretchRow);
-
-        final List<String> rowNumIds = new ArrayList<>();
-        
-        int rows = allStretchRow.getLength();        
-        for (int j = rows - addRow; j < rows; ++j) {
-            Element stretchTableElement = ((Element)allStretchRow.item(j));
-
-            NodeList inputList = stretchTableElement.getElementsByTagName("input");
-
-            for (int i = 0; i < inputList.getLength(); ++i){
-                addInput(rowNextId, (Element) inputList.item(i), stretchRow, addRowIndex == 0);
-            }
-
-            //Row number
-            NodeList spRownumList = XmlUtil.getElementsById("spRownum", stretchTableElement, templateXPath);
-
-            for (int i = 0, size = spRownumList.getLength(); i < size; ++i) {
-                Element spRownumElement = (Element) spRownumList.item(i);
-                String rowNumId = "spRownum_" + index + "_" + j + "_" + i;
-                rowNumIds.add(rowNumId);
-
-                if (spRownumElement != null){
-                    final boolean letter = spRownumElement.getAttribute("numType").equals("letter");
-
-                    spRownumElement.setAttribute("wicket:id", rowNumId);
-
-                    stretchRow.add(new Label(rowNumId, new LoadableDetachableModel<String>() {
-                        @Override
-                        protected String load() {
-                            int index = stretchRows.indexOf(stretchRow);
-                            
-                            return letter ? ABC.substring(index, index + 1) : String.valueOf(index + 1);
-                        }
-                    }).setOutputMarkupId(true));
-                }
-            }
-        }
-
-        //reorder model
-        reorder(stretchRows);
-
-        //add row panel
-        stretchRow.add(new AddRowPanel("add_row_panel") {
-            @Override
-            protected void onAdd(AjaxRequestTarget target) {
-                setDeleteVisible(true);
-
-                addRow(index, addRow, tbodyContainer, stretchRows.indexOf(stretchRow) + 1, stretchRows);
-            }
-
-            @Override
-            protected void onDelete(AjaxRequestTarget target) {
-                stretchRows.remove(stretchRow);
-                DeclarationFormComponent.this.remove(stretchRow);
-                reorder(stretchRows);
-
-                autoFill(target);
-            }
-
-            @Override
-            protected void afterAction(AjaxRequestTarget target) {
-                target.add(tbodyContainer);
-
-                //update row num
-                for (WebMarkupContainer row : stretchRows){
-                    for (String rowNumId : rowNumIds) {
-                        Component c = row.get(rowNumId);
-
-                        if (c != null){
-                            target.add(c);
-                        }
-                    }
-                }
-            }
-        });
     }
 
     private void reorder(List<WebMarkupContainer> rows){
@@ -707,29 +502,5 @@ public class DeclarationFormComponent extends Panel{
             }
         }
     }
-
-    private void remove(WebMarkupContainer row){
-        row.visitChildren(DeclarationTextField.class, new IVisitor<DeclarationTextField, Void>() {
-            @Override
-            public void component(DeclarationTextField object, IVisit<Void> visit) {
-                for (List list : multiRowTextFieldMap.values()) {
-                    list.remove(object);
-                }
-
-                maskTextFieldMap.remove(object.getDeclarationModel().getMaskName());
-
-                object.getDeclarationModel().removeValue();
-
-                visit.dontGoDeeper();
-            }
-        });
-    }
-    
-    private SecureRandom random = new SecureRandom();
-    
-    private String nextRandomId(){
-        return random.nextInt() + "";
-    }
-
 }
 

@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.Rule;
+import org.complitex.flexbuh.document.exception.LoadDocumentException;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.complitex.flexbuh.service.TemplateBean;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
@@ -37,9 +37,12 @@ public class TemplateService {
     @EJB
     private TemplateBean templateBean;
 
-    public Document getDocumentXSL(String templateName, Declaration declaration)
-            throws TransformerException, JAXBException, ParserConfigurationException, IOException, SAXException {
-        return DeclarationUtil.getDocument(declaration, templateBean.getTemplateXSL(templateName));
+    public Document getTemplate(String templateName, Declaration declaration) throws LoadDocumentException{
+        try {
+            return DeclarationUtil.getDocument(declaration, templateBean.getTemplateXSL(templateName));
+        } catch (Exception e) {
+            throw new LoadDocumentException(e);
+        }
     }
 
     public Document getDocument(String data) throws ParserConfigurationException, IOException, SAXException {
@@ -51,8 +54,12 @@ public class TemplateService {
         return documentBuilder.parse(new InputSource(new StringReader(data)));
     }
 
-    public Document getSchema(String templateName) throws ParserConfigurationException, IOException, SAXException {
-        return getDocument(templateBean.getTemplateXSD(templateName).getData());
+    public Document getSchema(String templateName) throws LoadDocumentException {
+        try {
+            return getDocument(templateBean.getTemplateXSD(templateName).getData());
+        } catch (Exception e) {
+            throw new LoadDocumentException(e);
+        }
     }
 
     public Document getControl(String templateName) throws IOException, SAXException, ParserConfigurationException {

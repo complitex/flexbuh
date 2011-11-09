@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
+import org.complitex.flexbuh.document.exception.LoadDocumentException;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.validation.RestrictionValidator;
 import org.w3c.dom.Document;
@@ -29,7 +30,7 @@ public class ValidationTestPage extends WebPage{
     @EJB
     private TemplateService templateService;
 
-    public ValidationTestPage() throws IOException, SAXException, ParserConfigurationException {
+    public ValidationTestPage() throws IOException, SAXException, ParserConfigurationException, LoadDocumentException {
 //        add(CSSPackageResource.getHeaderContribution(TooltipBehavior.CSS));
 
         add(new FeedbackPanel("message"));

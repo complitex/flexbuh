@@ -18,7 +18,7 @@ import static org.complitex.flexbuh.document.entity.PersonType.*;
  *         Date: 18.10.11 18:06
  */
 @Stateless
-public class DeclarationService {
+public class DeclarationFillService {
     @EJB
     private TaxInspectionBean taxInspectionBean;
 
