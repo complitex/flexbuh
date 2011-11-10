@@ -3,6 +3,7 @@ package org.complitex.flexbuh.admin.importexport.web;
 import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -19,6 +20,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
 import org.complitex.flexbuh.entity.dictionary.DictionaryType;
+import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.service.ImportListener;
 import org.complitex.flexbuh.service.dictionary.DictionaryTypeBean;
 import org.complitex.flexbuh.template.TemplatePage;
@@ -36,6 +38,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 18.08.11 17:26
  */
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ImportDictionary extends TemplatePage {
 	private final static Logger log = LoggerFactory.getLogger(ImportDictionary.class);
 

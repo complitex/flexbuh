@@ -1,7 +1,9 @@
 package org.complitex.flexbuh.admin;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.template.ITemplateLink;
 import org.complitex.flexbuh.template.ResourceTemplateMenu;
 import org.complitex.flexbuh.template.pages.ConfigEdit;
@@ -14,6 +16,7 @@ import java.util.Locale;
  * @author Pavel Sknar
  *         Date: 03.09.11 10:15
  */
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class AdminMenu extends ResourceTemplateMenu {
 
 	@Override
