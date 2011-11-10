@@ -2,6 +2,7 @@ package org.complitex.flexbuh.admin.web;
 
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -42,6 +43,10 @@ public class FeedbackList extends TemplatePage{
             }
         };
 
+        WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        add(container);
+
         DataView dataView = new DataView<Feedback>("feedbacks", dataProvider) {
             @Override
             protected void populateItem(Item<Feedback> item) {
@@ -53,9 +58,9 @@ public class FeedbackList extends TemplatePage{
                 item.add(new Label("message", feedback.getMessage()));
             }
         };
+                
+        container.add(dataView);
         
-        add(dataView);
-        
-        add(new PagingNavigator("paging", dataView, "FeedbackList"));
+        add(new PagingNavigator("paging", dataView, "FeedbackList", container));
     }
 }
