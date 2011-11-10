@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<wicket:panel>
+    <a href="#" wicket:id="feedback">Оставить отзыв</a>
+    
+    <div wicket:id="feedbackDialog">
+        <div wicket:id="messages"></div>
+
+        <form action="#" wicket:id="form">
+            <label for="name">Имя:</label> <input id="name" wicket:id="name" type="text"/><br/>
+            <label for="email">E-mail:</label> <input id="email" wicket:id="email" type="text"/><br/>
+            <label for="message">Отзыв:</label> <textarea id="message" wicket:id="message" rows="10" cols="80"></textarea><br/>
+            <br/>
+            <input wicket:id="submit" class="btnBig" type="submit" value="Отправить"/>
+        </form>        
+    </div>
+</wicket:panel>
+</html>

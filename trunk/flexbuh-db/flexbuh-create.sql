@@ -373,5 +373,22 @@ CREATE TABLE `declaration_value` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------
+-- Feedback
+-- --------------------------
+
+DROP TABLE IF EXISTS `feedback`;
+
+CREATE TABLE `feedback` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20),
+  `name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255),
+  `message` TEXT NOT NULL,
+  `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
