@@ -84,7 +84,7 @@ public class DeclarationFormComponent extends Panel{
 
     private final String templateName;
 
-    private int nextId = 0;
+    private int nextId = 1;
 
     public DeclarationFormComponent(String id, Declaration declaration){
         super(id);
@@ -149,7 +149,9 @@ public class DeclarationFormComponent extends Panel{
                     }
 
                     if ("text".equals(type)){
-                        addTextInput(parent, schema, wicketId, mask);
+                        boolean stretchRow = wicketId.contains("XXXX") || (mask != null && !mask.isEmpty());
+
+                        addTextInput(stretchRow ? 1 : null, parent, schema, wicketId, mask);
                     }
                 }
 
@@ -197,8 +199,8 @@ public class DeclarationFormComponent extends Panel{
                             parent = tbody;
 
                             if (declaration.getId() != null) {
-                                for (int i = 0, count = getRowCount(stretchTable.getFirstStretchRow()); i < count; ++i){
-                                    addRow(stretchTable, null);
+                                for (int i = 0, count = getRowCount(stretchTable.getFirstStretchRow()) - 1; i < count; ++i){
+                                    addRow(i + 2, stretchTable, null);
                                 }
                             }
                         }
@@ -208,8 +210,8 @@ public class DeclarationFormComponent extends Panel{
         }
     }
 
-    private void addTextInput(WebMarkupContainer container, String schema, String id, String mask) {
-        DeclarationStringModel model = new DeclarationStringModel(++nextId, id, schema, mask, declaration);
+    private void addTextInput(Integer rowNum, WebMarkupContainer container, String schema, String id, String mask) {
+        DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schema, mask, declaration);
 
         final DeclarationTextField textField = new DeclarationTextField(id, model, schema);
         textField.setOutputMarkupId(true);
@@ -271,9 +273,9 @@ public class DeclarationFormComponent extends Panel{
         }
     }
 
-    private void addRow(final StretchTable stretchTable, WebMarkupContainer afterRow){
+    private void addRow(final int rowNum, final StretchTable stretchTable, WebMarkupContainer afterRow){
         final WebMarkupContainer newRow = stretchTable.insertAfter(afterRow);
-
+        
         stretchTable.getFirstStretchRow().visitChildren(new IVisitor<Component, Object>() {
             @Override
             public void component(Component object, IVisit<Object> visit) {
@@ -290,21 +292,21 @@ public class DeclarationFormComponent extends Panel{
                 }else if (object instanceof DeclarationTextField){
                     DeclarationTextField textField = (DeclarationTextField) object;
 
-                    addTextInput(newRow, textField.getSchema(), textField.getId(), textField.getMask());
+                    addTextInput(rowNum, newRow, textField.getSchema(), textField.getId(), textField.getMask());
 
                     visit.dontGoDeeper();
                 }
             }
         });
-
-        reorder(stretchTable.getStretchRows());
     }
 
-    private void addAddRowPanel(final WebMarkupContainer parent, StretchTable stretchTable){
+    private void addAddRowPanel(WebMarkupContainer parent, StretchTable stretchTable){
         parent.add(new AddRowPanel("add_row_panel", parent, stretchTable) {
             @Override
             protected void onAdd(AjaxRequestTarget target) {
-                addRow(getStretchTable(), parent);
+                addRow(++nextId, getStretchTable(), getRow());
+
+                reorder(getStretchTable().getStretchRows());
             }
 
             @Override
