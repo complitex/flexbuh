@@ -6,4 +6,5 @@ package org.complitex.flexbuh.security;
  */
 public class SecurityRole {
     public final static String AUTHORIZED = "AUTHORIZED";
+    public final static String ADMIN_MODULE_EDIT = "ADMIN_MODULE_EDIT";
 }

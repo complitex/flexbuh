@@ -2,6 +2,7 @@ package org.complitex.flexbuh.admin.importexport.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -17,6 +18,7 @@ import org.complitex.flexbuh.admin.importexport.service.ImportTemplateControlSer
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateFOService;
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSDService;
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSLService;
+import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.service.ImportListener;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 30.08.11 10:09
  */
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ImportFile extends TemplatePage {
 
 	private final static Logger log = LoggerFactory.getLogger(ImportFile.class);

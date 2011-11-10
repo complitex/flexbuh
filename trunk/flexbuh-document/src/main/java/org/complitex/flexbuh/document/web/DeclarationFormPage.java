@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -60,6 +61,11 @@ public class DeclarationFormPage extends TemplatePage{
     }
 
     private void init(){
+        //security check
+        if (declaration.getSessionId() != null && !declaration.getSessionId().equals(getSessionId(false))){
+            throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
+        }
+
         add(new FeedbackPanel("feedback"));
 
         add(new Label("title", declaration.getName()));
