@@ -26,6 +26,7 @@ import org.complitex.flexbuh.service.user.SessionBean;
 import org.complitex.flexbuh.template.toolbar.HelpButton;
 import org.complitex.flexbuh.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.util.ResourceUtil;
+import org.complitex.flexbuh.web.component.FeedbackCreate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,9 @@ public abstract class TemplatePage extends WebPage {
                 item.add(new TemplateMenu("menu_placeholder", "menu", this, item.getModelObject()));
             }
         });
-
+        
+        //Feedback
+        add(new FeedbackCreate("feedback"));
 
 //        todo empty panel
         add(new Label("current_user_fullname", "SID = " + getSessionId(false)));
