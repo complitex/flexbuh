@@ -15,9 +15,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.Settings;
 import org.complitex.flexbuh.document.service.ImportUserProfileXMLService;
 import org.complitex.flexbuh.document.service.PersonProfileBean;
-import org.complitex.flexbuh.entity.user.User;
 import org.complitex.flexbuh.service.ImportListener;
 import org.complitex.flexbuh.service.user.UserBean;
 import org.complitex.flexbuh.template.TemplatePage;
@@ -197,16 +197,17 @@ public class PersonProfileList extends TemplatePage {
                         new AbstractResourceStreamWriter() {
                             @Override
                             public void write(Response output) {
-                                User user = userBean.getUserBySessionId(getSessionId(true));
-
-                                if (user != null) {
+                                List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId(false));
+                                
+                                if (!personProfiles.isEmpty()) {
                                     try {
                                         OutputStream os = ((HttpServletResponse)output.getContainerResponse()).getOutputStream();
 
-                                        JAXBContext context = JAXBContext.newInstance(User.class);
+                                        JAXBContext context = JAXBContext.newInstance(Settings.class);
                                         Marshaller marshaller = context.createMarshaller();
                                         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                                        marshaller.marshal(user, os);
+
+                                        marshaller.marshal(new Settings(personProfiles), os);
                                     } catch (Exception e) {
                                         log.error("Cannot export person profile to xml", e);
                                     }
