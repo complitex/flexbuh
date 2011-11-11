@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.complitex.flexbuh.entity.Feedback;
 import org.complitex.flexbuh.service.FeedbackBean;
+import org.complitex.flexbuh.template.TemplatePage;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
@@ -54,6 +55,7 @@ public class FeedbackCreate extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> f) {
                 Feedback feedback = form.getModelObject();
+                feedback.setSessionId(((TemplatePage)getPage()).getSessionId(true));
 
                 feedbackBean.save(feedback);
 
