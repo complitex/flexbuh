@@ -138,6 +138,12 @@ public class DeclarationFormComponent extends Panel{
                         radio.setOutputMarkupId(true);
                         radioSet.addRadio(radio);
 
+                        DeclarationValue declarationValue = declaration.getDeclarationValue(wicketId);
+
+                        if (declarationValue != null && "1".equals(declarationValue.getValue())){
+                            radioSet.setModelObject(wicketId);
+                        }
+
                         parent.add(radio);
                     }
 
@@ -157,7 +163,7 @@ public class DeclarationFormComponent extends Panel{
 
                 if (wicketId != null){
                     if (wicketId.contains("radio_set")){
-                        radioSet = new RadioSet<>(wicketId, new DeclarationChoiceModel(wicketId, declaration));
+                        radioSet = new RadioSet<>(wicketId, new DeclarationChoiceModel(null, declaration));
                         parent.add(radioSet);
                     }
 

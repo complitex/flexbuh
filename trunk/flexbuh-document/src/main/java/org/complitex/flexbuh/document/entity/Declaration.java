@@ -224,11 +224,9 @@ public class Declaration implements Serializable{
     }
 
     public void removeDeclarationValue(Integer rowNum, String name){
-        for (int i = 0, valuesSize = declarationValues.size(); i < valuesSize; i++) {
-            DeclarationValue value = declarationValues.get(i);
-
-            if (name.equals(value.getName()) && (rowNum == null || rowNum.equals(value.getRowNum()))) {
-                declarationValues.remove(i);
+        for (DeclarationValue dv : declarationValues) {
+            if (name.equals(dv.getName()) && (rowNum == null || rowNum.equals(dv.getRowNum()))) {
+                declarationValues.remove(dv);
                 return;
             }
         }
