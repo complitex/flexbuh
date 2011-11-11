@@ -66,7 +66,7 @@ public class DeclarationFormPage extends TemplatePage{
             throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
         }
 
-        add(new FeedbackPanel("feedback"));
+        add(new FeedbackPanel("messages"));
 
         add(new Label("title", declaration.getName()));
 
