@@ -52,9 +52,10 @@ public class FeedbackList extends TemplatePage{
             protected void populateItem(Item<Feedback> item) {
                 Feedback feedback = item.getModelObject();
                 
-                item.add(DateLabel.forDateStyle("date", new Model<>(feedback.getDate()), "FF"));
+                item.add(DateLabel.forDateStyle("date", new Model<>(feedback.getDate()), "FS"));
                 item.add(new Label("name", feedback.getName()));
                 item.add(new Label("email", feedback.getEmail()));
+                item.add(new Label("sid", feedback.getSessionId() + ""));
                 item.add(new Label("message", feedback.getMessage()));
             }
         };
