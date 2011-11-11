@@ -260,11 +260,7 @@ public class PersonProfileEdit extends FormTemplatePage {
 
             @Override
             public void onClick() {
-                if (personProfile.getId() != null) {
-                    personProfile = personProfileBean.getPersonProfile(personProfile.getId());
-                } else {
-                    personProfile = new PersonProfile();
-                }
+                setResponsePage(PersonProfileList.class);
             }
         });
     }

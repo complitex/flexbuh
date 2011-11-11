@@ -3,13 +3,10 @@ package org.complitex.flexbuh.entity.user;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.entity.SessionObject;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @author Pavel Sknar
  *         Date: 31.08.11 14:26
  */
-@XmlRootElement(name = "ROWSET")
 public class User extends SessionObject {
 	private String login;
 	private String password;

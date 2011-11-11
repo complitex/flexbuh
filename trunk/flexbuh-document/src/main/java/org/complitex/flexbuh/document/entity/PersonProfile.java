@@ -71,7 +71,7 @@ public class PersonProfile extends SessionObject {
     @XmlElement(name = "BINN")
     private String bInn; // Код ДРФО  бухгалтера
 
-    @XmlElement(name = "bFio")
+    @XmlElement(name = "BFIO")
     private String bFio; // ФИО бухгалтера
 
     @XmlAttribute(name = "SELECTED")
