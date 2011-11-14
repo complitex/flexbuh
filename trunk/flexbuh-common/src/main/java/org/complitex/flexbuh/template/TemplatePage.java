@@ -23,6 +23,7 @@ import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.security.CookieWebSession;
 import org.complitex.flexbuh.security.SecurityRole;
 import org.complitex.flexbuh.service.user.SessionBean;
+import org.complitex.flexbuh.template.pages.login.Login;
 import org.complitex.flexbuh.template.toolbar.HelpButton;
 import org.complitex.flexbuh.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.util.ResourceUtil;
@@ -98,11 +99,11 @@ public abstract class TemplatePage extends WebPage {
         add(new FeedbackCreate("feedback"));
 
 //        todo empty panel
-        add(new Label("current_user_fullname", "SID = " + getSessionId(false)));
+        add(new Label("current_user_fullname", "id: " + getSessionId(false)));
         add(new EmptyPanel("current_user_department"));
         add(new EmptyPanel("profile"));
 
-
+        add(new BookmarkablePageLink<>("login", Login.class).setVisible(!isUserAuthorized()));
         add(new Form("exit") {
 
             @Override

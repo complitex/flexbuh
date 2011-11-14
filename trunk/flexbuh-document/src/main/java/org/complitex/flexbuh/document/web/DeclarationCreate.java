@@ -14,6 +14,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonType;
 import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.entity.dictionary.Document;
 import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
@@ -51,13 +52,25 @@ public class DeclarationCreate extends FormTemplatePage{
         add(form);
 
         //Тип лица
-        DropDownChoice<String> person = new DropDownChoice<String>("person", new Model<>("Юридическое лицо"),
-                Arrays.asList("Физическое лицо", "Юридическое лицо"));
-        person.setEnabled(false);
+        final DropDownChoice<PersonType> person = new DropDownChoice<>("person",
+                new Model<>(PersonType.JURIDICAL_PERSON),
+                Arrays.asList(PersonType.JURIDICAL_PERSON, PersonType.PHYSICAL_PERSON),
+                new IChoiceRenderer<PersonType>() {
+                    @Override
+                    public Object getDisplayValue(PersonType object) {
+                        return getString(object.name());
+                    }
+
+                    @Override
+                    public String getIdValue(PersonType object, int index) {
+                        return object.getCode() + "";
+                    }
+                });
+        person.setOutputMarkupId(true);
         form.add(person);
 
         //Профиль
-        DropDownChoice personProfile = new DropDownChoice<>("person_profile",
+        final DropDownChoice<PersonProfile> personProfile = new DropDownChoice<>("person_profile",
                 new PropertyModel<PersonProfile>(declaration, "personProfile"),
                 new LoadableDetachableModel<List<PersonProfile>>() {
                     @Override
@@ -77,22 +90,69 @@ public class DeclarationCreate extends FormTemplatePage{
                     }
                 });
         personProfile.setNullValid(true);
+        person.setOutputMarkupId(true);
         form.add(personProfile);
 
         //Отчетный документ
-        form.add(new DropDownChoice<>("document",
+        final DropDownChoice document = new DropDownChoice<>("document",
                 new PropertyModel<Document>(declaration, "document"),
-                documentBean.getJuridicalDocuments(), new IChoiceRenderer<Document>() {
-            @Override
-            public Object getDisplayValue(Document object) {
-                return object.getCDoc() +" " + object.getCDocSub() + " " + object.getName(getLocale());
-            }
+                new LoadableDetachableModel<List<Document>>() {
+                    @Override
+                    protected List<Document> load() {
+                        switch (person.getModelObject()) {
+                            case JURIDICAL_PERSON:
+                                return documentBean.getJuridicalDocuments();
+                            case PHYSICAL_PERSON:
+                                return documentBean.getPhysicalDocuments();
+                        }
 
+                        return null;
+                    }
+                },
+                new IChoiceRenderer<Document>() {
+                    @Override
+                    public Object getDisplayValue(Document object) {
+                        return object.getCDoc() + " " + object.getCDocSub() + " " + object.getName(getLocale());
+                    }
+
+                    @Override
+                    public String getIdValue(Document object, int index) {
+                        return object.getId().toString();
+                    }
+                }
+        );
+        document.setOutputMarkupId(true);
+        document.setRequired(true);
+        form.add(document);
+
+        person.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
-            public String getIdValue(Document object, int index) {
-                return object.getId().toString();
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(document);
+
+                PersonProfile p = personProfile.getModelObject();
+                if (p != null && !p.getPersonType().equals(person.getModelObject())){
+                    personProfile.setModelObject(null);
+                    target.add(personProfile);
+                }
             }
-        }).setRequired(true));
+        });
+
+        personProfile.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                PersonProfile p = personProfile.getModelObject();
+
+                if (p != null && !p.getPersonType().equals(person.getModelObject())){
+                    person.setModelObject(p.getPersonType());
+                    target.add(document);
+                }
+
+                person.setEnabled(p == null);
+
+                target.add(person);
+            }
+        });
 
         //Месяц (для 1,2,3,4 кварталов это 3,6,9,12 месяц соответственно, для года - 12)
         final DropDownChoice periodMonthChoice = new DropDownChoice<>("period_month",
@@ -157,7 +217,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 declaration.setLinkedDeclarations(linkedDeclarations);
 
                 //todo add version
-                List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions(); 
+                List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions();
                 declaration.getHead().setCDocVer(documentVersions.get(documentVersions.size() - 1).getCDocVer());
 
                 setResponsePage(new DeclarationFormPage(declaration));

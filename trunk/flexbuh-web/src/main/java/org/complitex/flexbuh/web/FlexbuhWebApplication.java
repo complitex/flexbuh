@@ -4,10 +4,6 @@ import org.apache.wicket.Page;
 import org.complitex.flexbuh.template.TemplateWebApplication;
 import org.complitex.flexbuh.template.pages.login.Login;
 
-//import org.complitex.flexbuh.document.test.MarkupTestPage;
-//import org.complitex.flexbuh.document.test.TransformationTestPage;
-//import org.complitex.flexbuh.document.test.ValidationTestPage;
-
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 26.07.11 15:24
