@@ -190,7 +190,7 @@ public class PersonProfileList extends TemplatePage {
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
 
-        return Arrays.asList(new SaveButton(id, false) {
+        return Arrays.asList(new SaveButton(id, "export", false) {
             @Override
             protected void onClick() {
                 getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
