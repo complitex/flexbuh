@@ -52,6 +52,6 @@
     </select>
 
     <select id="selectPhysicalDocuments" resultMap="linkedDocumentResultMap">
-        select * from `document` where `c_doc` like 'F%'
+        select * from `document` where `c_doc` like 'F%' order by `c_doc`, `c_doc_sub`
     </select>
 </mapper>
