@@ -14,4 +14,8 @@ public abstract class SaveButton extends ToolbarButton {
     public SaveButton(String id, boolean useAjax) {
         super(id, new PackageResourceReference(IMAGE_SRC), TITLE_KEY, useAjax);
     }
+    
+    public SaveButton(String id, String titleKey, boolean useAjax) {
+        super(id, new PackageResourceReference(IMAGE_SRC), titleKey, useAjax);
+    }
 }
