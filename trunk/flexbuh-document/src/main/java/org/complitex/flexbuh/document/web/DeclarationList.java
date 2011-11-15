@@ -19,10 +19,17 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.lang.Bytes;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
+import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
+import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.template.TemplatePage;
 import org.complitex.flexbuh.util.StringUtil;
 import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
@@ -33,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormatSymbols;
 import java.util.*;
 
@@ -50,6 +58,9 @@ public class DeclarationList extends TemplatePage{
 
     @EJB
     private DeclarationBean declarationBean;
+
+    @EJB
+    private DeclarationService declarationService;
 
     public DeclarationList() {
         add(new Label("title", getString("title")));
@@ -131,10 +142,15 @@ public class DeclarationList extends TemplatePage{
             }
         });
 
+        //Выбор
+        final Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
+
         //Модель
         SortableDataProvider<Declaration> dataProvider = new SortableDataProvider<Declaration>() {
             @Override
             public Iterator<? extends Declaration> iterator(int first, int count) {
+                selectMap.clear();
+
                 declarationFilter.setFirst(first);
                 declarationFilter.setCount(count);
                 declarationFilter.setSortProperty(getSort().getProperty());
@@ -161,6 +177,11 @@ public class DeclarationList extends TemplatePage{
             protected void populateItem(Item<Declaration> item) {
                 final Declaration declaration = item.getModelObject();
 
+                IModel<Boolean> selectModel = new Model<>(false);
+
+                selectMap.put(declaration.getId(), selectModel);
+
+                item.add(new CheckBox("select", selectModel));
                 item.add(new Label("name", declaration.getTemplateName() + " " + declaration.getName()));
                 item.add(new Label("period_type", getString("period_type_" + declaration.getHead().getPeriodType())));
                 item.add(new Label("period_month", dateFormatSymbols.getMonths()[declaration.getHead().getPeriodMonth()-1]));
@@ -191,7 +212,6 @@ public class DeclarationList extends TemplatePage{
                 });
             }
         };
-
         filterForm.add(dataView);
 
         //Названия колонок и сортировка
@@ -201,12 +221,113 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(new OrderByBorder("header.period_year", "period_year", dataProvider));
         filterForm.add(new OrderByBorder("header.date", "date", dataProvider));
 
+        //Сохранение архива
+        filterForm.add(new Button("download_xml_zip"){
+            @Override
+            public void onSubmit() {
+                List<Long> selectedIds = new ArrayList<>();
+
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        selectedIds.add(id);
+                    }
+                }
+                
+                if (selectedIds.isEmpty()){
+                    info(getString("info_select_declarations"));
+                    return;                    
+                }
+
+                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                try {
+                    declarationService.writeXmlZip(selectedIds, outputStream);
+                } catch (DeclarationZipException e) {
+                    error(getString("error_download_xml_zip"));
+                }
+
+                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                        new AbstractResourceStreamWriter() {
+
+                            @Override
+                            public void write(Response output) {
+                                output.write(outputStream.toByteArray());
+                            }
+
+                            @Override
+                            public Bytes length() {
+                                return Bytes.bytes(outputStream.size());
+                            }
+
+                            @Override
+                            public String getContentType() {
+                                return "application/zip";
+                            }
+
+                            @Override
+                            public Time lastModifiedTime() {
+                                return Time.now();
+                            }
+                        }, "declaration_xml" + ".zip"));
+            }
+        });
+
+        filterForm.add(new Button("download_pdf_zip"){
+            @Override
+            public void onSubmit() {
+                List<Long> selectedIds = new ArrayList<>();
+
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        selectedIds.add(id);
+                    }
+                }
+
+                if (selectedIds.isEmpty()){
+                    info(getString("info_select_declarations"));
+                    return;
+                }
+
+                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                try {
+                    declarationService.writePdfZip(selectedIds, outputStream);
+                } catch (DeclarationZipException e) {
+                    error(getString("error_download_pdf_zip"));
+                }
+
+                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                        new AbstractResourceStreamWriter() {
+
+                            @Override
+                            public void write(Response output) {
+                                output.write(outputStream.toByteArray());
+                            }
+
+                            @Override
+                            public Bytes length() {
+                                return Bytes.bytes(outputStream.size());
+                            }
+
+                            @Override
+                            public String getContentType() {
+                                return "application/zip";
+                            }
+
+                            @Override
+                            public Time lastModifiedTime() {
+                                return Time.now();
+                            }
+                        }, "declaration_pdf" + ".zip"));
+            }
+        });
+
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, DeclarationList.class.getName(), filterForm));
 
         //Загрузка файлов
         final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
-        
+
         Form fileUploadForm = new Form("upload_form"){
             @Override
             protected void onSubmit() {
@@ -224,9 +345,9 @@ public class DeclarationList extends TemplatePage{
                 }
             }
         };
-        
+
         add(fileUploadForm);
-        
+
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 }

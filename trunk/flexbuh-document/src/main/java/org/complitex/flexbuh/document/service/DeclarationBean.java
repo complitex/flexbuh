@@ -104,4 +104,9 @@ public class DeclarationBean extends AbstractBean{
             throw new DeclarationSaveException(e);
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Declaration> getDeclarations(List<Long> ids){
+        return sqlSession().selectList(NS + ".selectDeclarationsByIds", ids);
+    }
 }

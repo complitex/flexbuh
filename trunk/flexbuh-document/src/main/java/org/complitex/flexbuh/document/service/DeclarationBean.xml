@@ -125,4 +125,10 @@
     <update id="updateDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
         update `declaration_value` set `row_num` = #{rowNum}, `name` = #{name}, `value` = #{value} where `id` = #{id}
     </update>
+
+    <select id="selectDeclarationsByIds" parameterType="list" resultMap="declarationResultMap">
+        select * from `declaration` where `id` in (
+          <foreach collection="list" separator="," item="item">#{item}</foreach>
+        )
+    </select>
 </mapper>
