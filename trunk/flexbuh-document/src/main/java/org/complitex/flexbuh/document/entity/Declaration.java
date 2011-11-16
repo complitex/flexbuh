@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.util.DateUtil;
+import org.complitex.flexbuh.common.entity.dictionary.Document;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;

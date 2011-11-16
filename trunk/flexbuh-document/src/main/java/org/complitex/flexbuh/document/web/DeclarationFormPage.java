@@ -13,8 +13,8 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
-import org.complitex.flexbuh.service.dictionary.DocumentBean;
-import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
+import org.complitex.flexbuh.common.template.TemplatePage;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 

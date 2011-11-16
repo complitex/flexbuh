@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.web;
 
 import org.apache.wicket.Page;
-import org.complitex.flexbuh.template.TemplateWebApplication;
-import org.complitex.flexbuh.template.pages.login.Login;
+import org.complitex.flexbuh.common.template.TemplateWebApplication;
+import org.complitex.flexbuh.common.template.pages.login.Login;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

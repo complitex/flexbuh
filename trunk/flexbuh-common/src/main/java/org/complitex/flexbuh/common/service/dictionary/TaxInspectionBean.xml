@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean">
+    <resultMap id="taxInspectionResultMap" type="org.complitex.flexbuh.common.entity.dictionary.TaxInspection"
+               extends="org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
+        <result property="cSti" column="c_sti"/>
+        <result property="cReg" column="c_reg"/>
+        <result property="cRaj" column="c_raj"/>
+        <result property="tSti" column="t_sti"/>
+
+        <result property="nameRajRu" column="name_raj_ru"/>
+        <result property="nameRajUk" column="name_raj_uk"/>
+    </resultMap>
+
+    <insert id="insertTaxInspection" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspection" keyProperty="id" useGeneratedKeys="true">
+        insert into `tax_inspection`
+          (`upload_date`, `begin_date`, `end_date`, `c_sti`, `c_reg`,`c_raj`, `t_sti`,
+            `name_ru`, `name_uk`, `name_raj_ru`, `name_raj_uk`)
+        values
+          (#{uploadDate}, #{beginDate}, #{endDate}, #{cSti}, #{cReg}, #{cRaj}, #{tSti},
+            #{nameRu}, #{nameUk}, #{nameRajRu}, #{nameRajUk})
+    </insert>
+
+    <update id="updateTaxInspection" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspection">
+        update `tax_inspection` set `upload_date` = #{uploadDate}, `begin_date` = #{beginDate}, `end_date` = #{endDate},
+          `c_sti` = #{cSti}, `c_reg` = #{cReg}, `c_raj` = #{cRaj}, `t_sti` = #{tSti},
+          `name_ru` = #{nameRu}, `name_uk` = #{nameUk}, `name_raj_ru` = #{nameRajRu}, `name_raj_uk` = #{nameRajUk}
+        where `id` = #{id}
+    </update>
+
+    <select id="selectAllTaxInspectionsCodeWithName" resultMap="taxInspectionResultMap">
+		select distinct `c_sti`, `name_ru`, `name_uk`
+		    from `tax_inspection`
+        	where (`begin_date` &lt; now() or `begin_date` is null) and (`end_date` &gt; now() or `end_date` is null)
+        	order by `name_uk`, `name_ru`
+    </select>
+
+    <select id="selectAllTaxInspectionsCount" resultType="int">
+        select count(*) from `tax_inspection`
+    </select>
+
+    <select id="selectTaxInspections" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` order by `c_sti` limit #{first}, #{count}
+    </select>
+
+    <select id="selectTaxInspection" parameterType="long" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` where `id` = #{id}
+    </select>
+
+    <select id="selectTaxInspectionByCode" parameterType="int" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` where `c_sti` = #{cSti}
+    </select>
+
+    <select id="selectTaxInspectionsByDistrict" parameterType="int" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` where `c_sti` = #{cSti} and `c_raj` = #{cRaj}
+    </select>
+
+    <select id="selectTaxInspectionDistrictNames" resultType="string">
+        select `name_raj_uk` from `tax_inspection` group by `name_raj_uk` order by `name_raj_uk`
+    </select>
+
+    <select id="selectTaxInspectionsByDistrictName" parameterType="string" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` where `name_raj_uk` = #{nameRaj}
+    </select>
+</mapper>

@@ -2,9 +2,9 @@ package org.complitex.flexbuh.admin.importexport.service;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.map.MultiValueMap;
-import org.complitex.flexbuh.entity.dictionary.AbstractDictionary;
-import org.complitex.flexbuh.service.ImportListener;
-import org.complitex.flexbuh.service.ImportXMLService;
+import org.complitex.flexbuh.common.entity.dictionary.AbstractDictionary;
+import org.complitex.flexbuh.common.service.ImportListener;
+import org.complitex.flexbuh.common.service.ImportXMLService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

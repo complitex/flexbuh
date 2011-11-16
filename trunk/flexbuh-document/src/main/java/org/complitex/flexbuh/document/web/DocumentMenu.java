@@ -2,8 +2,8 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.flexbuh.template.ITemplateLink;
-import org.complitex.flexbuh.template.ResourceTemplateMenu;
+import org.complitex.flexbuh.common.template.ITemplateLink;
+import org.complitex.flexbuh.common.template.ResourceTemplateMenu;
 
 import java.util.ArrayList;
 import java.util.List;

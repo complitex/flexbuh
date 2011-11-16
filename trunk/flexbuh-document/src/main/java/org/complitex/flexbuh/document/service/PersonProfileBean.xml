@@ -52,7 +52,7 @@
         select * from `person_profile` where `id` = #{id}
     </select>
 
-    <select id="selectPersonProfiles" parameterType="org.complitex.flexbuh.entity.AbstractFilter" resultMap="personProfileResultMap">
+    <select id="selectPersonProfiles" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="personProfileResultMap">
         select * from `person_profile` where `session_id` = #{sessionId} limit #{first}, #{count}
     </select>
 

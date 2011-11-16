@@ -4,7 +4,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.document.web.converter.DecimalConverter;
 import org.complitex.flexbuh.document.web.converter.DeclarationDateConverter;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
-import org.complitex.flexbuh.web.component.CssStyleTextField;
+import org.complitex.flexbuh.common.web.component.CssStyleTextField;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

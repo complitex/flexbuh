@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.entity.dictionary.AbstractDictionary">
+    <resultMap id="dictionaryResultMap" type="org.complitex.flexbuh.common.entity.dictionary.AbstractDictionary"
+               extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
+        <result property="uploadDate" column="upload_date"/>
+    </resultMap>
+</mapper>

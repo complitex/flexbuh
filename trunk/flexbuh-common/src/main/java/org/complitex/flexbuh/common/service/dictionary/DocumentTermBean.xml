@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.dictionary.DocumentTermBean">
+    <resultMap id="documentTermResultMap" type="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm"
+			   extends="org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
+        <result column="c_doc" property="cDoc"/>
+        <result column="c_doc_sub" property="cDocSub"/>
+        <result column="c_doc_ver" property="cDocVer"/>
+        <result column="date_term" property="dateTerm"/>
+        <result column="period_month" property="periodMonth"/>
+        <result column="period_type" property="periodType"/>
+        <result column="period_year" property="periodYear"/>
+    </resultMap>
+
+    <insert id="insertDocumentTerm" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm" keyProperty="id" useGeneratedKeys="true">
+        insert into `document_term` (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `date_term`,
+          `period_month`, `period_type`, `period_year`)
+        values
+          (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cDocVer}, #{dateTerm}, #{periodMonth}, #{periodType},
+            #{periodYear})
+    </insert>
+
+	<select id="selectAllDocumentTerms" resultMap="documentTermResultMap">
+        select * from `document_term`
+    </select>
+
+     <select id="selectAllDocumentTermsCount" resultType="int">
+        select count(*) from `document_term`
+    </select>
+
+	<select id="selectDocumentTerms" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="documentTermResultMap">
+        select * from `document_term` order by `c_doc`, `c_doc_sub`, `c_doc_ver` limit #{first}, #{count}
+    </select>
+
+	<select id="selectDocumentTerm" parameterType="long" resultMap="documentTermResultMap">
+        select * from `document_term` where `id` = #{id}
+    </select>
+</mapper>

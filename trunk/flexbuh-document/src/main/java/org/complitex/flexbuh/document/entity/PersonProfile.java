@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.entity.SessionObject;
+import org.complitex.flexbuh.common.entity.SessionObject;
 
 import javax.xml.bind.annotation.*;
 import java.util.Date;

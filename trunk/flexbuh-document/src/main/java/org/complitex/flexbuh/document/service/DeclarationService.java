@@ -5,8 +5,8 @@ import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.entity.template.TemplateFO;
-import org.complitex.flexbuh.service.TemplateBean;
+import org.complitex.flexbuh.common.entity.template.TemplateFO;
+import org.complitex.flexbuh.common.service.TemplateBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
