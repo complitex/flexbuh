@@ -18,14 +18,16 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
-import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.common.security.CookieWebSession;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.user.SessionBean;
+import org.complitex.flexbuh.common.template.pages.login.Login;
 import org.complitex.flexbuh.common.template.toolbar.HelpButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.util.ResourceUtil;
+import org.complitex.flexbuh.common.web.component.FeedbackCreate;
+import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
+import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,14 +94,16 @@ public abstract class TemplatePage extends WebPage {
                 item.add(new TemplateMenu("menu_placeholder", "menu", this, item.getModelObject()));
             }
         });
-
+        
+        //Feedback
+        add(new FeedbackCreate("feedback"));
 
 //        todo empty panel
-        add(new Label("current_user_fullname", "SID = " + getSessionId(false)));
+        add(new Label("current_user_fullname", "id: " + getSessionId(false)));
         add(new EmptyPanel("current_user_department"));
         add(new EmptyPanel("profile"));
 
-
+        add(new BookmarkablePageLink<>("login", Login.class).setVisible(!isUserAuthorized()));
         add(new Form("exit") {
 
             @Override
