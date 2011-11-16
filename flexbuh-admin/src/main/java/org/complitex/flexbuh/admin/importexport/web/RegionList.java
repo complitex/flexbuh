@@ -7,11 +7,11 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.complitex.flexbuh.entity.dictionary.Region;
-import org.complitex.flexbuh.security.SecurityRole;
-import org.complitex.flexbuh.service.dictionary.RegionBean;
-import org.complitex.flexbuh.template.TemplatePage;
-import org.complitex.flexbuh.web.component.datatable.DataProvider;
+import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
+import org.complitex.flexbuh.common.entity.dictionary.Region;
+import org.complitex.flexbuh.common.security.SecurityRole;
+import org.complitex.flexbuh.common.service.dictionary.RegionBean;
+import org.complitex.flexbuh.common.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -15,10 +15,10 @@ import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.document.entity.PersonType;
 import org.complitex.flexbuh.document.service.PersonProfileBean;
-import org.complitex.flexbuh.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
-import org.complitex.flexbuh.service.user.SessionBean;
-import org.complitex.flexbuh.template.FormTemplatePage;
+import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
+import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
+import org.complitex.flexbuh.common.service.user.SessionBean;
+import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 
 import javax.ejb.EJB;

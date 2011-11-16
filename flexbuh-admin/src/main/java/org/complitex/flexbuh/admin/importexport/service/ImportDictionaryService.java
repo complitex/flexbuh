@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.complitex.flexbuh.service.ImportFileService;
+import org.complitex.flexbuh.common.service.ImportFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

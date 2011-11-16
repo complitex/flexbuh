@@ -2,7 +2,7 @@ package org.complitex.flexbuh.document.util;
 
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
-import org.complitex.flexbuh.entity.template.AbstractTemplate;
+import org.complitex.flexbuh.common.entity.template.AbstractTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

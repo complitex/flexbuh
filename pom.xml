@@ -13,6 +13,7 @@
         <module>flexbuh-web</module>
         <module>flexbuh-document</module>
         <module>flexbuh-admin</module>
+        <module>flexbuh-logging</module>
         <module>flexbuh-common</module>
         <module>flexbuh-images</module>
         <module>flexbuh-resources</module>
@@ -70,6 +71,12 @@
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-logging</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -186,6 +193,20 @@
                 <artifactId>fop</artifactId>
                 <version>0.20.5</version>
             </dependency>
+
+			<!-- Uses Castor for XML -->
+			<dependency>
+				<groupId>org.codehaus.castor</groupId>
+				<artifactId>castor</artifactId>
+				<version>1.2</version>
+			</dependency>
+
+			<!-- Castor need this -->
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.9.1</version>
+			</dependency>
 
             <!--Test-->
             <dependency>

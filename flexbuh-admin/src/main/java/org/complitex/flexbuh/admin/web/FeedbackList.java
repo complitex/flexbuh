@@ -8,10 +8,10 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.complitex.flexbuh.entity.Feedback;
-import org.complitex.flexbuh.service.FeedbackBean;
-import org.complitex.flexbuh.template.TemplatePage;
-import org.complitex.flexbuh.web.component.paging.PagingNavigator;
+import org.complitex.flexbuh.common.entity.Feedback;
+import org.complitex.flexbuh.common.service.FeedbackBean;
+import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 
 import javax.ejb.EJB;
 import java.util.Iterator;

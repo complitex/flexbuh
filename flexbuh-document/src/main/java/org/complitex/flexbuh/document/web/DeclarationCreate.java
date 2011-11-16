@@ -16,11 +16,11 @@ import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.document.entity.PersonType;
 import org.complitex.flexbuh.document.service.PersonProfileBean;
-import org.complitex.flexbuh.entity.dictionary.Document;
-import org.complitex.flexbuh.entity.dictionary.DocumentVersion;
-import org.complitex.flexbuh.service.dictionary.DocumentBean;
-import org.complitex.flexbuh.template.FormTemplatePage;
-import org.complitex.flexbuh.web.component.declaration.PeriodTypeChoice;
+import org.complitex.flexbuh.common.entity.dictionary.Document;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
+import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
+import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary">
+    <resultMap id="periodDictionaryResultMap" type="org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary"
+               extends="org.complitex.flexbuh.common.entity.dictionary.AbstractDictionary.dictionaryResultMap">
+        <result column="begin_date" property="beginDate"/>
+        <result column="end_date" property="endDate"/>
+    </resultMap>
+</mapper>

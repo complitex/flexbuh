@@ -14,18 +14,19 @@ import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
+import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
+import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
+import org.complitex.flexbuh.common.logging.EventCategory;
+import org.complitex.flexbuh.common.service.ImportListener;
+import org.complitex.flexbuh.common.service.user.UserBean;
+import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.SaveButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.document.entity.Settings;
 import org.complitex.flexbuh.document.service.ImportUserProfileXMLService;
 import org.complitex.flexbuh.document.service.PersonProfileBean;
-import org.complitex.flexbuh.service.ImportListener;
-import org.complitex.flexbuh.service.user.UserBean;
-import org.complitex.flexbuh.template.TemplatePage;
-import org.complitex.flexbuh.template.toolbar.SaveButton;
-import org.complitex.flexbuh.template.toolbar.ToolbarButton;
-import org.complitex.flexbuh.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.web.component.datatable.DataProvider;
-import org.complitex.flexbuh.web.component.paging.PagingNavigator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,7 +210,8 @@ public class PersonProfileList extends TemplatePage {
 
                                         marshaller.marshal(new Settings(personProfiles), os);
                                     } catch (Exception e) {
-                                        log.error("Cannot export person profile to xml", e);
+                                        log.error("Cannot export person profile to xml: {}",
+												new Object[]{e, EventCategory.EXPORT});
                                     }
                                 }
                             }

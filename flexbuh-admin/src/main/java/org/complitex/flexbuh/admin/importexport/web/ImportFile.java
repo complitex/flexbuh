@@ -18,9 +18,9 @@ import org.complitex.flexbuh.admin.importexport.service.ImportTemplateControlSer
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateFOService;
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSDService;
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSLService;
-import org.complitex.flexbuh.security.SecurityRole;
-import org.complitex.flexbuh.service.ImportListener;
-import org.complitex.flexbuh.template.TemplatePage;
+import org.complitex.flexbuh.common.security.SecurityRole;
+import org.complitex.flexbuh.common.service.ImportListener;
+import org.complitex.flexbuh.common.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

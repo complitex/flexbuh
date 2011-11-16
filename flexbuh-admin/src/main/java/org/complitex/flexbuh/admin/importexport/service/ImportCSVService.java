@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.complitex.flexbuh.service.ImportFileService;
+import org.complitex.flexbuh.common.service.ImportFileService;
 
 import javax.ejb.*;
 import java.io.*;

@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.document.entity;
 
-import org.complitex.flexbuh.entity.AbstractFilter;
+import org.complitex.flexbuh.common.entity.AbstractFilter;
 
 import java.util.Date;
 

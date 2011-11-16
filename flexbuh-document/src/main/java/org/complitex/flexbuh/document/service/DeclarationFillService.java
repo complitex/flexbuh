@@ -4,9 +4,9 @@ import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationHead;
 import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.service.dictionary.TaxInspectionBean;
-import org.complitex.flexbuh.util.StringUtil;
+import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
+import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
+import org.complitex.flexbuh.common.util.StringUtil;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

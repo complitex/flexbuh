@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.admin.importexport.entity;
 
-import org.complitex.flexbuh.entity.IConfig;
+import org.complitex.flexbuh.common.entity.IConfig;
 
 /**
  * @author Pavel Sknar

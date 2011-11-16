@@ -6,8 +6,8 @@ import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.exception.DeclarationSaveException;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.service.AbstractBean;
-import org.complitex.flexbuh.util.DateUtil;
+import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.util.DateUtil;
 
 import javax.ejb.Stateless;
 import java.io.InputStream;

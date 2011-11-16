@@ -1,10 +1,10 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.complitex.flexbuh.entity.template.*;
-import org.complitex.flexbuh.service.ImportFileService;
-import org.complitex.flexbuh.service.ImportListener;
-import org.complitex.flexbuh.service.TemplateBean;
+import org.complitex.flexbuh.common.entity.template.*;
+import org.complitex.flexbuh.common.service.ImportFileService;
+import org.complitex.flexbuh.common.service.ImportListener;
+import org.complitex.flexbuh.common.service.TemplateBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

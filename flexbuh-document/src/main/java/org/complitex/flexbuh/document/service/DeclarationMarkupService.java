@@ -8,7 +8,7 @@ import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.exception.LoadDocumentException;
-import org.complitex.flexbuh.util.XmlUtil;
+import org.complitex.flexbuh.common.util.XmlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
