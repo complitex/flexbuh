@@ -16,13 +16,14 @@
                     </div>
 
                     <div id="LoginForm">
-                        <table border="0" cellspacing="0" cellpadding="0" >
+                        <table border="0" cellspacing="0" cellpadding="0" >                            
                             <tr>
                                 <td>
                                     <table>
                                         <tr><td><span wicket:id="current_user_fullname"></span></td></tr>
                                         <tr><td><b wicket:id="current_user_department"></b></td></tr>
                                         <tr><td><span wicket:id="profile"></span></td></tr>
+                                        <tr><td><a href="#" wicket:id="login">вход</a></td></tr>
                                     </table>
                                 </td>
                                 <td>
@@ -76,6 +77,8 @@
                                 </div>
                             </wicket:fragment>
                         </div>
+
+                        <div wicket:id="feedback" style="padding-top: 20px; text-align: center"></div>
                     </div>
                     <div id="Content" class="ContentCollapsed">
                         <wicket:child/>
