@@ -5,14 +5,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.complitex.flexbuh.common.logging.EventProperty;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.OutputStreamWriter;
 import java.util.Map;
 
 /**
@@ -34,13 +30,6 @@ public class FlexbuhDBAppender extends DBAppender {
 				if (argument instanceof EventProperty) {
 					EventProperty eventProperty = (EventProperty)argument;
 					result.put(eventProperty.getName(), eventProperty.getValue());
-					try {
-						Marshaller.marshal(eventProperty, new OutputStreamWriter(System.out));
-					} catch (MarshalException e) {
-						e.printStackTrace();
-					} catch (ValidationException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		}
@@ -52,14 +41,11 @@ public class FlexbuhDBAppender extends DBAppender {
 
 	private void addModuleName(StackTraceElement callerData, Map<String, String> result) {
 
-		System.out.println("caller data: " + callerData);
-
 		if (callerData == null) {
 			return;
 		}
 
 		String className = callerData.getClassName();
-		System.out.println("caller class: " + callerData.getClassName());
 		if (StringUtils.startsWith(className, ROOT_PACKAGE)) {
 			String rest = StringUtils.remove(className, ROOT_PACKAGE);
 			String[] packages = StringUtils.split(rest, '.');
