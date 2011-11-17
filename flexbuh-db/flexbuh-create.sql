@@ -390,5 +390,45 @@ CREATE TABLE `feedback` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------
+-- Counterpart
+-- --------------------------
+
+DROP TABLE IF EXISTS `counterpart`;
+
+CREATE TABLE `counterpart` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
+  `hk` VARCHAR(64),
+  `hname` VARCHAR(255) NOT NULL,
+  `hloc` VARCHAR(255),
+  `htel` VARCHAR(32),
+  `hnspdv` VARCHAR(64),
+  PRIMARY KEY (`id`),
+  KEY `key_counterpart__session_id` (`session_id`),
+  CONSTRAINT `fk_counterpart__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Counterpart
+-- --------------------------
+
+DROP TABLE IF EXISTS `employee`;
+
+CREATE TABLE `employee` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
+  `htin` INTEGER,
+  `hname` VARCHAR(255) NOT NULL,
+  `hbirthday` DATE,
+  `hdate_in` DATE,
+  `hdate_out` DATE,
+  PRIMARY KEY (`id`),
+  KEY `key_employee__session_id` (`session_id`),
+  CONSTRAINT `fk_employee__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 

@@ -138,14 +138,14 @@
             <!--WiQuery-->
 
             <dependency>
-                    <groupId>org.odlabs.wiquery</groupId>
-                    <artifactId>wiquery-core</artifactId>
-                    <version>1.5.0</version>
+                <groupId>org.odlabs.wiquery</groupId>
+                <artifactId>wiquery-core</artifactId>
+                <version>1.5.0</version>
             </dependency>
             <dependency>
-                    <groupId>org.odlabs.wiquery</groupId>
-                    <artifactId>wiquery-jquery-ui</artifactId>
-                    <version>1.5.0</version>
+                <groupId>org.odlabs.wiquery</groupId>
+                <artifactId>wiquery-jquery-ui</artifactId>
+                <version>1.5.0</version>
             </dependency>
 
             <!-- Java EE API -->
@@ -207,6 +207,40 @@
                 <version>5.14</version>
                 <scope>test</scope>
             </dependency>
+
+            <!--Log-->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.14</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>0.9.27</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>0.9.27</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
