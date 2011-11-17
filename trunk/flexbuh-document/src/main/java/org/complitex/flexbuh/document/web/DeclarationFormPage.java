@@ -10,11 +10,11 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
+import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
-import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
-import org.complitex.flexbuh.common.template.TemplatePage;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 
@@ -105,14 +105,16 @@ public class DeclarationFormPage extends TemplatePage{
                 declarationBean.save(getSessionId(true), declaration);
 
                 getSession().info(getString("info_saved"));
+
+                setResponsePage(DeclarationList.class);
             }
         });
 
         form.add(new Button("cancel"){
             @Override
             public void onSubmit() {
-
+                setResponsePage(DeclarationList.class);
             }
-        });
+        }.setDefaultFormProcessing(false));
     }
 }
