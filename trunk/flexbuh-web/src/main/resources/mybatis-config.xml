@@ -39,6 +39,7 @@
         <mapper resource="org/complitex/flexbuh/document/service/PersonProfileBean.xml"/>
         <mapper resource="org/complitex/flexbuh/document/service/DeclarationBean.xml"/>
         <mapper resource="org/complitex/flexbuh/document/service/CounterpartBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/document/service/EmployeeBean.xml"/>
 
 		<mapper resource="org/complitex/flexbuh/logging/service/LogListBean.xml"/>
     </mappers>

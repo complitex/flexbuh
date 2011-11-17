@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.document.service.EmployeeBean">
+    <resultMap id="employeeResultMap" type="org.complitex.flexbuh.document.entity.Employee">
+        <id column="id" property="id"/>
+        <result column="session_id" property="sessionId"/>
+        <result column="htin" property="htin"/>
+        <result column="hname" property="hname"/>
+        <result column="hbirthday" property="hbirthday"/>
+        <result column="hdate_in" property="hdateIn"/>
+        <result column="hdate_out" property="hdateOut"/>
+    </resultMap>
+
+    <select id="selectEmployee" parameterType="long" resultMap="employeeResultMap">
+        select * from `employee` where `id` = #{id}
+    </select>
+
+    <sql id="selectEmployeesWhere">
+        <where>
+            <if test="htin != null">`htin` = #{htin}</if>
+            <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
+            <if test="hbirthday != null">and `hbirthday` = DATE(#{hbirthday})</if>
+            <if test="hdateIn != null">and `hdate_in` = DATE(#{hdateIn})</if>
+            <if test="hdateOut != null">and `hdate_out` = DATE(#{hdateOut})</if>
+            and `session_id` = #{sessionId}
+        </where>
+    </sql>
+
+    <select id="selectEmployees" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
+            resultMap="employeeResultMap">
+        select * from `employee` <include refid="selectEmployeesWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectEmployeesCount" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
+            resultType="int">
+        select count(*) from `employee` <include refid="selectEmployeesWhere"/>
+    </select>
+
+    <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
+        insert into `employee` (`session_id`, `htin`, `hname`, `hbirthday`, `hdate_in`, `hdate_out`)
+          values (#{sessionId}, #{htin}, #{hname}, #{hbirthday}, #{hdateIn}, #{hdateOut})
+    </insert>
+
+    <update id="updateEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
+        update `employee` set `htin` = #{htin}, `hname` = #{hname}, `hbirthday` = #{hbirthday}, `hdate_in` = #{hdateIn},
+          `hdate_out` = #{hdateOut}
+    </update>
+
+    <delete id="deleteEmployee" parameterType="long">
+        delete from `employee` where `id` = #{id}
+    </delete>
+</mapper>

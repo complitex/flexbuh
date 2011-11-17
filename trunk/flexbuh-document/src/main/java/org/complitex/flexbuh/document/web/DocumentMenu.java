@@ -95,6 +95,30 @@ public class DocumentMenu extends ResourceTemplateMenu{
                 }
         );
 
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("employee_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return EmployeeList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "employee_list";
+                    }
+                }
+        );
+
         return templateLinks;
     }
 

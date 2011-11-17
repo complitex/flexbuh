@@ -1,25 +1,33 @@
 package org.complitex.flexbuh.document.entity;
 
-import org.complitex.flexbuh.common.entity.SessionObject;
+import org.complitex.flexbuh.common.entity.AbstractFilter;
 
 import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 17.11.11 15:58
+ *         Date: 17.11.11 16:39
  */
-public class Employee extends SessionObject{
+public class EmployeeFilter extends AbstractFilter{
     private Integer htin;
     private String hname;
     private Date hbirthday;
     private Date hdateIn;
     private Date hdateOut;
 
-    public Employee() {
+    public EmployeeFilter() {
     }
 
-    public Employee(Long sessionId) {
+    public EmployeeFilter(Long sessionId) {
         super(sessionId);
+    }
+
+    public void clear(){
+        htin = null;
+        hname = null;
+        hbirthday = null;
+        hdateIn = null;
+        hdateOut = null;
     }
 
     public Integer getHtin() {
