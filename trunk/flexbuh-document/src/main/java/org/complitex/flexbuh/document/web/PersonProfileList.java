@@ -14,15 +14,16 @@ import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
-import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
-import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.SaveButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
+import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
+import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.document.entity.Settings;
 import org.complitex.flexbuh.document.service.ImportUserProfileXMLService;
@@ -35,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -187,11 +188,11 @@ public class PersonProfileList extends TemplatePage {
         add(form);
     }
 
-
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        List<ToolbarButton> list = new ArrayList<>();
 
-        return Arrays.asList(new SaveButton(id, "export", false) {
+        list.add(new SaveButton(id, "export", false) {
             @Override
             protected void onClick() {
                 getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
@@ -199,10 +200,10 @@ public class PersonProfileList extends TemplatePage {
                             @Override
                             public void write(Response output) {
                                 List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId(false));
-                                
+
                                 if (!personProfiles.isEmpty()) {
                                     try {
-                                        OutputStream os = ((HttpServletResponse)output.getContainerResponse()).getOutputStream();
+                                        OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
                                         JAXBContext context = JAXBContext.newInstance(Settings.class);
                                         Marshaller marshaller = context.createMarshaller();
@@ -211,7 +212,7 @@ public class PersonProfileList extends TemplatePage {
                                         marshaller.marshal(new Settings(personProfiles), os);
                                     } catch (Exception e) {
                                         log.error("Cannot export person profile to xml: {}",
-												new Object[]{e, EventCategory.EXPORT});
+                                                new Object[]{e, EventCategory.EXPORT});
                                     }
                                 }
                             }
@@ -223,5 +224,14 @@ public class PersonProfileList extends TemplatePage {
                         }, "SETTINGS.XML"));
             }
         });
+        
+        list.add(new AddDocumentButton(id){
+            @Override
+            protected void onClick() {
+                setResponsePage(PersonProfileEdit.class);
+            }
+        });
+        
+        return list;
     }
 }

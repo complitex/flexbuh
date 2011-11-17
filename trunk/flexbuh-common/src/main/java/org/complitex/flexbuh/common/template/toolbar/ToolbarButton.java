@@ -87,7 +87,7 @@ public abstract class ToolbarButton extends Panel {
                 tag.put("title", title.getObject());
 
                 if (tagId != null) {
-                    tag.put("id", tagId);
+                    tag.setId(tagId);
                 }
             }
         };

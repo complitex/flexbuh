@@ -9,6 +9,13 @@ import javax.xml.bind.annotation.XmlTransient;
 public abstract class SessionObject extends DomainObject{
     private Long sessionId;
 
+    protected SessionObject() {
+    }
+
+    protected SessionObject(Long sessionId) {
+        this.sessionId = sessionId;
+    }
+
     @XmlTransient
     public Long getSessionId() {
         return sessionId;

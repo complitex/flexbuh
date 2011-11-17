@@ -27,79 +27,6 @@ public class DocumentMenu extends ResourceTemplateMenu{
                 new ITemplateLink() {
                     @Override
                     public String getLabel(Locale locale) {
-                        return getString("person_profile_edit", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return PersonProfileEdit.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return "person_profile_edit";
-                    }
-                }
-        );
-
-        templateLinks.add(
-                        new ITemplateLink() {
-                            @Override
-                            public String getLabel(Locale locale) {
-                                return getString("person_profile_list", locale);
-                            }
-
-                            @Override
-                            public Class<? extends Page> getPage() {
-                                return PersonProfileList.class;
-                            }
-
-                            @Override
-                            public PageParameters getParameters() {
-                                return null;
-                            }
-
-                            @Override
-                            public String getTagId() {
-                                return "person_profile_list";
-                            }
-                        }
-                );
-
-        templateLinks.add(
-                new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("declaration_create", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return DeclarationCreate.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-        );
-
-
-        templateLinks.add(
-                new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
                         return getString("declaration_list", locale);
                     }
 
@@ -115,7 +42,55 @@ public class DocumentMenu extends ResourceTemplateMenu{
 
                     @Override
                     public String getTagId() {
+                        return "declaration_list";
+                    }
+                }
+        );
+
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("person_profile_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return PersonProfileList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
                         return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "person_profile_list";
+                    }
+                }
+        );
+
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("counterpart_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return CounterpartList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "counterpart_list";
                     }
                 }
         );

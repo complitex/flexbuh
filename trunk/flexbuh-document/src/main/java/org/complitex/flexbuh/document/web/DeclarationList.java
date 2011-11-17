@@ -25,16 +25,18 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.util.StringUtil;
+import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
+import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
+import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
-import org.complitex.flexbuh.common.template.TemplatePage;
-import org.complitex.flexbuh.common.util.StringUtil;
-import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
-import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -232,10 +234,10 @@ public class DeclarationList extends TemplatePage{
                         selectedIds.add(id);
                     }
                 }
-                
+
                 if (selectedIds.isEmpty()){
                     info(getString("info_select_declarations"));
-                    return;                    
+                    return;
                 }
 
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -349,5 +351,19 @@ public class DeclarationList extends TemplatePage{
         add(fileUploadForm);
 
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
+    }
+
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        List<ToolbarButton> list = new ArrayList<>();
+
+        list.add(new AddDocumentButton(id){
+            @Override
+            protected void onClick() {
+                setResponsePage(DeclarationCreate.class);
+            }
+        });
+
+        return list;
     }
 }

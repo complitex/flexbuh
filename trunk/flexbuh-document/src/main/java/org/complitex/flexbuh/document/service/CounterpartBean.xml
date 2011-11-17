@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.document.service.CounterpartBean">
+    <resultMap id="counterpartResultMap" type="org.complitex.flexbuh.document.entity.Counterpart">
+        <id column="id" property="id"/>
+        <result column="session_id" property="sessionId"/>
+        <result column="hk" property="hk"/>
+        <result column="hname" property="hname"/>
+        <result column="hloc" property="hloc"/>
+        <result column="htel" property="htel"/>
+        <result column="hnspdv" property="hnspdv"/>
+    </resultMap>
+
+    <select id="selectCounterpart" parameterType="long" resultMap="counterpartResultMap">
+        select * from `counterpart` where `id` = #{id}
+    </select>
+
+    <sql id="selectCounterpartsWhere">
+        <where>
+            <if test="hk != null">`hk` like concat('%', #{hk}, '%')</if>
+            <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
+            <if test="hloc != null">and `hloc` like concat('%', #{hloc}, '%')</if>
+            <if test="htel != null">and `htel` like concat('%', #{htel}, '%')</if>
+            <if test="hnspdv != null">and `hnspdv` like concat('%', #{hnspdv}, '%')</if>
+            and `session_id` = #{sessionId}
+        </where>
+    </sql>
+
+    <select id="selectCounterparts" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
+            resultMap="counterpartResultMap">
+        select * from `counterpart` <include refid="selectCounterpartsWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
+            resultType="int">
+        select count(*) from `counterpart` <include refid="selectCounterpartsWhere"/>
+    </select>
+
+    <insert id="insertCounterpart">
+        insert into `counterpart` (`session_id`, `hk`, `hname`, `hloc`, `htel`, `hnspdv`)
+          values (#{sessionId}, #{hk}, #{hname}, #{hloc}, #{htel}, #{hnspdv})
+    </insert>
+
+    <update id="updateCounterpart">
+        update `counterpart` set `hk` = #{hk}, `hname` = #{hname}, `hloc` = #{hloc}, `htel` = #{htel}, `hnspdv` = #{hnspdv}
+          where `id` = #{id}
+    </update>
+
+    <delete id="deleteCounterpart" parameterType="long">
+        delete from `counterpart` where `id` = #{id}
+    </delete>
+</mapper>

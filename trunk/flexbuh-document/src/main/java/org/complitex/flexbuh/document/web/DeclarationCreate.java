@@ -11,16 +11,16 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.LinkedDeclaration;
-import org.complitex.flexbuh.document.entity.PersonProfile;
-import org.complitex.flexbuh.document.entity.PersonType;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
+import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
+import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonType;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;
@@ -224,7 +224,12 @@ public class DeclarationCreate extends FormTemplatePage{
             }
         });
 
-        form.add(new Button("cancel"));
+        form.add(new Button("cancel"){
+            @Override
+            public void onSubmit() {
+                setResponsePage(DeclarationList.class);
+            }
+        }.setDefaultFormProcessing(false));
     }
 
     private LinkedDeclaration createLinkedDeclaration(Document document, Declaration parent){
