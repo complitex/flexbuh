@@ -117,7 +117,7 @@ public class CounterpartList extends TemplatePage{
         filterForm.add(dataView);
 
         //Постраничная навигация
-        filterForm.add(new PagingNavigator("paging", dataView, "PersonProfileList"));
+        filterForm.add(new PagingNavigator("paging", dataView, "CounterpartList"));
     }
 
     @Override
