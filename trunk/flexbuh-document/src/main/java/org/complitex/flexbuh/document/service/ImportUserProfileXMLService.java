@@ -2,10 +2,14 @@ package org.complitex.flexbuh.document.service;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.complitex.flexbuh.document.entity.PersonProfile;
-import org.complitex.flexbuh.document.entity.PersonType;
+import org.complitex.flexbuh.common.logging.EventCategory;
+import org.complitex.flexbuh.common.logging.EventModel;
+import org.complitex.flexbuh.common.logging.EventObjectFactory;
+import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.ImportXMLService;
+import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -40,6 +44,9 @@ public class ImportUserProfileXMLService extends ImportXMLService {
     @EJB
     private PersonProfileBean personProfileBean;
 
+	@EJB
+	private EventObjectFactory eventObjectFactory;
+
     @Override
     public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
         try {
@@ -67,6 +74,10 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                     personProfile.setSessionId(sessionId);
 
                     personProfileBean.save(personProfile);
+
+					log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
+							new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
+							eventObjectFactory.getEventNewObject(personProfile)});
                 }
             } catch (Throwable th) {
                 log.error("Rollback user transaction");

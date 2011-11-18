@@ -21,16 +21,19 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.SharedResourceReference;
-import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
-import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventProperty;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
+import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.logging.entity.Log;
 import org.complitex.flexbuh.logging.service.LogFilter;
 import org.complitex.flexbuh.logging.service.LogListBean;
+import org.complitex.flexbuh.logging.web.component.LogChangePanel;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.*;
@@ -41,6 +44,8 @@ import java.util.*;
  */
 @AuthorizeInstantiation(SecurityRole.LOG_VIEW)
 public class LogList extends TemplatePage {
+
+	private final static Logger logger = LoggerFactory.getLogger(LogList.class);
 
     private final static String IMAGE_ARROW_TOP = "images/arrow2top.gif";
     private final static String IMAGE_ARROW_BOTTOM = "images/arrow2bot.gif";
@@ -201,7 +206,7 @@ public class LogList extends TemplatePage {
 
                 item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTime())), "dd.MM.yy HH:mm:ss"));
 				//item.add(LogManager.get().getLinkComponent("objectId", log));
-				item.add(new Label("objectId", ""));
+				item.add(new Label("objectId", getPropertyValue(properties, "objectId")));
 				item.add(new Label("caller_class", getStringOrKey(log.getController())));
 				item.add(new Label("formatted_message", log.getDescription()));
 				item.add(new Label("login", getPropertyValue(properties, "login")));
@@ -210,9 +215,13 @@ public class LogList extends TemplatePage {
 				item.add(new Label("category", getStringOrKey(getPropertyValue(properties, "category"))));
 				item.add(new Label("level_string", getStringOrKey(log.getLevel())));
 
-                //LogChangePanel logChangePanel = new LogChangePanel("log_changes", log.getLogChanges());
-                //logChangePanel.setVisible(!log.getLogChanges().isEmpty() && expandModel.contains(log.getId()));
-                //item.add(logChangePanel);
+				try {
+					LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
+					logChangePanel.setVisible((properties.containsKey("oldObject") || properties.containsKey("newObject")) && expandModel.contains(log.getId()));
+					item.add(logChangePanel);
+				} catch (Exception e) {
+					logger.error("Can not instance LogChangePanel", e);
+				}
 
                 Image expandImage = new Image("expand_image", new SharedResourceReference(
                         expandModel.contains(log.getId()) ? IMAGE_ARROW_TOP : IMAGE_ARROW_BOTTOM));
@@ -235,8 +244,7 @@ public class LogList extends TemplatePage {
 					}
 				};
                 expandLink.setDefaultFormProcessing(false);
-                //expandLink.setVisible(!log.getLogChanges().isEmpty());
-                expandLink.setVisible(false);
+                expandLink.setVisible(properties.containsKey("oldObject") || properties.containsKey("newObject"));
                 expandLink.add(expandImage);
                 item.add(expandLink);
             }

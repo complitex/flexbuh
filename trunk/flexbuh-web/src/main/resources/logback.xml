@@ -13,16 +13,27 @@
 		</connectionSource>
 	</appender>
 
-	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>/tmp/flexbuh/testFile.log</file>
-		<append>true</append>
+	<appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/tmp/flexbuh/log.txt</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>log-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+			<!-- or whenever the file size reaches 100MB -->
+			<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
 		<encoder>
 			<pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
-	<root level="INFO">
-		<appender-ref ref="FILE"/>
-		<appender-ref ref="DB"/>
+	<logger name="org.complitex.flexbuh">
+    	<appender-ref ref="DB" />
+  	</logger>
+
+	<root level="DEBUG">
+		<appender-ref ref="ROLLING"/>
 	</root>
 </configuration>
