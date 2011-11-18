@@ -1,0 +1,125 @@
+package org.complitex.flexbuh.logging.web.component;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.complitex.flexbuh.common.logging.EventProperty;
+import org.complitex.flexbuh.logging.entity.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author Pavel Sknar
+ *         Date: 17.11.11 15:21
+ */
+public class LogChangePanel extends Panel {
+
+	private final static Logger logger = LoggerFactory.getLogger(LogChangePanel.class);
+
+    public LogChangePanel(String id, Log log) throws IOException, SAXException, ParserConfigurationException {
+        super(id);
+		Map<String, EventProperty> properties = listToMap(log.getProperties());
+
+		List<DiffObject> diffs = Lists.newArrayList();
+
+		String oldObject = getPropertyValue(properties, "oldObject");
+		String newObject = getPropertyValue(properties, "newObject");
+
+		MapDifference<String, String> diff = Maps.difference(getFields(oldObject), getFields(newObject));
+		for (Map.Entry<String, MapDifference.ValueDifference<String>> differenceEntry : diff.entriesDiffering().entrySet()) {
+			diffs.add(new DiffObject(differenceEntry.getKey(), differenceEntry.getValue().leftValue(), differenceEntry.getValue().rightValue()));
+		}
+		for (Map.Entry<String, String> differenceEntry : diff.entriesOnlyOnLeft().entrySet()) {
+			diffs.add(new DiffObject(differenceEntry.getKey(), differenceEntry.getValue(), ""));
+		}
+		for (Map.Entry<String, String> differenceEntry : diff.entriesOnlyOnRight().entrySet()) {
+			diffs.add(new DiffObject(differenceEntry.getKey(), "", differenceEntry.getValue()));
+		}
+
+		//ListView<String> listView = new ListView<String>("log_diffs", DiffUtils.generateUnifiedDiff("", "", Collections.<String>emptyList(), patch, 0)) {
+		ListView<DiffObject> listView2 = new ListView<DiffObject>("diffs", diffs) {
+
+            @Override
+            protected void populateItem(ListItem<DiffObject> item) {
+                DiffObject diff = item.getModelObject();
+
+                item.add(new Label("field_name", diff.fieldName));
+                item.add(new Label("old_value", diff.oldValue));
+                item.add(new Label("new_value", diff.newValue));
+            }
+        };
+
+		add(listView2);
+    }
+
+	private Map<String, String> getFields(String xmlObject) throws ParserConfigurationException, IOException, SAXException {
+		if (StringUtils.isEmpty(xmlObject)) {
+			return Collections.emptyMap();
+		}
+		Map<String, String> fields = Maps.newHashMap();
+
+		DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
+		InputStream is = new ByteArrayInputStream(xmlObject.getBytes());
+
+		org.w3c.dom.Document doc = documentBuilder.parse(is);
+		NodeList childNodes = doc.getDocumentElement().getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			org.w3c.dom.Node node = childNodes.item(i);
+			if (!StringUtils.equals(node.getNodeName(), "#text")) {
+				//logger.debug("{}={} ({}, {})", new Object[]{node.getNodeName(), node.getTextContent(), node.getNodeType(), node.getPrefix()});
+				fields.put(node.getNodeName(), node.getTextContent());
+			}
+		}
+
+		return fields;
+	}
+
+	private static String getPropertyValue(Map<String, EventProperty> properties, String propertyName) {
+		return properties.containsKey(propertyName)? properties.get(propertyName).getValue(): "";
+	}
+
+	private static Map<String, EventProperty> listToMap(List<EventProperty> properties) {
+		Map<String, EventProperty> resultMap = Maps.newHashMap();
+		for (EventProperty property : properties) {
+			resultMap.put(property.getName(), property);
+		}
+		return resultMap;
+	}
+
+	private class DiffObject implements Serializable {
+		private String fieldName;
+		private String oldValue;
+		private String newValue;
+
+		private DiffObject(String fieldName, String oldValue, String newValue) {
+			this.fieldName = fieldName;
+			this.oldValue = oldValue;
+			this.newValue = newValue;
+		}
+
+		@Override
+		public String toString() {
+			return ToStringBuilder.reflectionToString(this);
+		}
+	}
+}
