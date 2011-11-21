@@ -32,6 +32,7 @@
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/DocumentVersionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/RegionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/TaxInspectionBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/service/dictionary/FieldCodeBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/service/user/SessionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/user/UserBean.xml"/>

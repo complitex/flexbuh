@@ -1,10 +1,9 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.ITemplateLink;
+import org.complitex.flexbuh.common.template.ResourceTemplateLink;
 import org.complitex.flexbuh.common.template.ResourceTemplateMenu;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.Locale;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class DictionaryMenu extends ResourceTemplateMenu {
 
-	@Override
+    @Override
     public String getTitle(Locale locale) {
         return getString("title", locale);
     }
@@ -27,173 +26,14 @@ public class DictionaryMenu extends ResourceTemplateMenu {
     public List<ITemplateLink> getTemplateLinks(Locale locale) {
         List<ITemplateLink> templateLinks = new ArrayList<ITemplateLink>();
 
-        templateLinks.add(
-                new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("import_dictionary", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return ImportDictionary.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-        );
-
-		templateLinks.add(
-				new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("currency_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return CurrencyList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-		);
-
-		templateLinks.add(
-				new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("document_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return DocumentList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-		);
-
-		templateLinks.add(
-				new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("document_term_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return DocumentTermList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-		);
-
-		templateLinks.add(
-				new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("document_version_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return DocumentVersionList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-		);
-
-		templateLinks.add(
-				new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("region_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return RegionList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-		);
-
-		templateLinks.add(
-				new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
-                        return getString("tax_inspection_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return TaxInspectionList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return null;
-                    }
-                }
-		);
+        templateLinks.add(new ResourceTemplateLink("import_dictionary", this, ImportDictionary.class));
+        templateLinks.add(new ResourceTemplateLink("currency_list", this, CurrencyList.class));
+        templateLinks.add(new ResourceTemplateLink("document_list", this, DocumentList.class));
+        templateLinks.add(new ResourceTemplateLink("document_term_list", this, DocumentTermList.class));
+        templateLinks.add(new ResourceTemplateLink("document_version_list", this, DocumentVersionList.class));
+        templateLinks.add(new ResourceTemplateLink("region_list", this, RegionList.class));
+        templateLinks.add(new ResourceTemplateLink("tax_inspection_list", this, TaxInspectionList.class));
+        templateLinks.add(new ResourceTemplateLink("field_code_list", this, FieldCodeList.class));
 
         return templateLinks;
     }
