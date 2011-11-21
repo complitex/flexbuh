@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.dictionary.FieldCodeBean">
+    <resultMap id="fieldCodeResultMap" type="org.complitex.flexbuh.common.entity.dictionary.FieldCode">
+        <id column="id" property="id"/>
+        <collection property="codes" column="code" ofType="string"/>
+        <collection property="fields" ofType="org.complitex.flexbuh.common.entity.dictionary.Field">
+            <id column="fieldId" property="id"/>
+            <result column="name" property="name"/>
+            <result column="spr_name" property="sprName"/>
+            <result column="prefix" property="prefix"/>
+            <result column="alias" property="alias"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectFieldCode" parameterType="long" resultMap="fieldCodeResultMap">
+        select
+          fc.`id`, f.`id` as fieldId, f.`name`, f.`spr_name`, f.`prefix`, f.`alias`, c.`code`
+        from
+          `field_code` fc left join `field` f on (f.`field_code_id` = fc.`id`)
+            left join `code` c on (c.`field_code_id` = fc.`id`)
+        where fc.`id` = #{id}
+    </select>
+
+    <select id="selectFieldCodes" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCodeFilter"
+            resultMap="fieldCodeResultMap">
+        select
+          fc.`id`, f.`id` as fieldId, f.`name`, f.`spr_name`, f.`prefix`, f.`alias`, c.`code`
+        from
+          `field_code` fc left join `field` f on (f.`field_code_id` = fc.`id`)
+            left join `code` c on (c.`field_code_id` = fc.`id`)
+    </select>
+
+    <select id="selectFieldCodesCount" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCodeFilter"
+            resultType="int">
+        select count(*) from `field_code`
+    </select>
+
+    <insert id="insertFieldCode" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCode"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `field_code` values ()
+    </insert>
+
+    <insert id="insertField" parameterType="org.complitex.flexbuh.common.entity.dictionary.Field">
+        insert into `field` (`field_code_id`, `name`, `spr_name`, `prefix`, `alias`)
+          values (#{fieldCodeId}, #{name}, #{sprName}, #{prefix}, #{alias})
+    </insert>
+
+    <insert id="insertCode" parameterType="map">
+        insert into `code` (`field_code_id`, `code`) values (#{fieldCodeId}, #{code})
+    </insert>
+</mapper>

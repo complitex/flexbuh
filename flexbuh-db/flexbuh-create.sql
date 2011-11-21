@@ -430,5 +430,68 @@ CREATE TABLE `employee` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------
+-- Field
+-- --------------------------
+
+DROP TABLE IF EXISTS `field`;
+
+CREATE TABLE `field` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(32) NOT NULL,
+  `spr_name` VARCHAR(32) NOT NULL,
+  `prefix` VARCHAR(32),
+  `alias` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Field
+-- --------------------------
+
+DROP TABLE IF EXISTS `field`;
+
+CREATE TABLE `field` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `field_code_id` BIGINT(20) NOT NULL,
+  `name` VARCHAR(32) NOT NULL,
+  `spr_name` VARCHAR(32) NOT NULL,
+  `prefix` VARCHAR(32),
+  `alias` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_field__field_code_id` (`field_code_id`),
+  CONSTRAINT `fk_field__field_code` FOREIGN KEY (`field_code_id`) REFERENCES `field_code` (`id`) ON DELETE CASCADE
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Code
+-- --------------------------
+
+DROP TABLE IF EXISTS `code`;
+
+CREATE TABLE `code` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `field_code_id` BIGINT(20) NOT NULL,
+  `code` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_code__field_code_id` (`field_code_id`),
+  CONSTRAINT `fk_code__field_code` FOREIGN KEY (`field_code_id`) REFERENCES `field_code` (`id`) ON DELETE CASCADE
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- FieldCode
+-- --------------------------
+
+DROP TABLE IF EXISTS `field_code`;
+
+CREATE TABLE `field_code` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
