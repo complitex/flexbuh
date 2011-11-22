@@ -42,7 +42,7 @@ import java.util.List;
 public class ImportDictionary extends TemplatePage {
 	private final static Logger log = LoggerFactory.getLogger(ImportDictionary.class);
 
-	private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
+	private final static String FORM_DATE_FORMAT = "MM/dd/yyyy";
 
 	@EJB
     private DictionaryTypeBean dictionaryTypeService;
@@ -56,7 +56,7 @@ public class ImportDictionary extends TemplatePage {
 		final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
 
-		final IModel<List<DictionaryType>> dictionaryModel = new ListModel<DictionaryType>();
+		final IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
 
         container.add(new FeedbackPanel("messages"));
 
@@ -65,7 +65,7 @@ public class ImportDictionary extends TemplatePage {
 
 		//Dictionary types
         final CheckBoxMultipleChoice<DictionaryType> dictionaryTypes =
-				new CheckBoxMultipleChoice<DictionaryType>("dictionaryTypes", dictionaryModel, dictionaryTypeService.getDictionaryTypes(),
+				new CheckBoxMultipleChoice<>("dictionaryTypes", dictionaryModel, dictionaryTypeService.getDictionaryTypes(),
 						new IChoiceRenderer<DictionaryType>() {
 
 							@Override
@@ -92,7 +92,7 @@ public class ImportDictionary extends TemplatePage {
 		form.add(beginDatePicker);
 
         //End Date
-		final IModel<Date> endDateModel = new Model<Date>();
+		final IModel<Date> endDateModel = new Model<>();
 		final DatePicker<Date> endDatePicker = new DatePicker<Date>("endDate", endDateModel, Date.class) {
 			@Override
 			public <Date> IConverter<Date> getConverter(Class<Date> type) {

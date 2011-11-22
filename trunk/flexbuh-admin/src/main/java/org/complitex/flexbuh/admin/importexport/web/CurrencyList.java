@@ -4,7 +4,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
@@ -73,7 +73,7 @@ public class CurrencyList extends TemplatePage {
         form.add(dataView);
 
         //Постраничная навигация
-        form.add(new PagingNavigator("paging", dataView));
+        form.add(new PagingNavigator("paging", dataView, getClass().getName(), form));
 	}
 
 	private String getStringDate(Date date) {
