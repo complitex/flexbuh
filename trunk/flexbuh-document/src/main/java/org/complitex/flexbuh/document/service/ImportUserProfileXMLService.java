@@ -20,9 +20,6 @@ import org.w3c.dom.NodeList;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.transaction.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Date;
@@ -47,17 +44,6 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 	@EJB
 	private EventObjectFactory eventObjectFactory;
 
-    @Override
-    public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-        try {
-            process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
-        } catch (FileNotFoundException e) {
-            listener.begin();
-            log.warn("Can not find file: " + importFile, e);
-            listener.cancel();
-        }
-    }
-
     public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
         listener.begin();
 
@@ -76,8 +62,8 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                     personProfileBean.save(personProfile);
 
 					log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
-							new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
-							eventObjectFactory.getEventNewObject(personProfile)});
+                            new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
+                            eventObjectFactory.getEventNewObject(personProfile)});
                 }
             } catch (Throwable th) {
                 log.error("Rollback user transaction");

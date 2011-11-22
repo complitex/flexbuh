@@ -7,7 +7,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.ejb.*;
-import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -33,11 +31,6 @@ public class ImportTaxInspectionXMLService extends ImportDictionaryXMLService<Ta
 
 	@EJB
 	private TaxInspectionBean taxInspectionBean;
-
-	@Override
-	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		super.process(sessionId, listener, importFile, beginDate, endDate);
-	}
 
 	@Override
 	protected List<TaxInspection> processDictionaryNode(NodeList contentNodeRow,

@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
-import org.apache.commons.lang.StringUtils;
 import org.complitex.flexbuh.common.service.ImportFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,23 +38,31 @@ public class ImportDictionaryService extends ImportService {
 	@EJB
 	private ImportTaxInspectionXMLService importTaxInspectionXMLService;
 
+    @EJB
+    private ImportFieldCodeService importFieldCodeService;
+
 	@Null
 	@Override
 	protected ImportFileService getImportFileService(@NotNull String fileName) {
-		if (StringUtils.equalsIgnoreCase("SPR_CURRENCY.XML", fileName)) {
-			return importCurrencyXMLService;
-		} else if (StringUtils.equalsIgnoreCase("SPR_DOC.XML", fileName)) {
-			return importDocumentXMLService;
-		} else if (StringUtils.equalsIgnoreCase("SPR_TERM.XML", fileName)) {
-			return importDocumentTermXMLService;
-		} else if (StringUtils.equalsIgnoreCase("SPR_VER.XML", fileName)) {
-			return importDocumentVersionXMLService;
-		} else if (StringUtils.equalsIgnoreCase("SPR_REGION.XML", fileName)) {
-			return importRegionXMLService;
-		}else if (StringUtils.equalsIgnoreCase("SPR_STI.XML", fileName)) {
-			return importTaxInspectionXMLService;
-		}
-		return null;
+        switch (fileName.toUpperCase()){
+            case "SPR_CURRENCY.XML":
+                return importCurrencyXMLService;
+            case "SPR_DOC.XML":
+                return importDocumentXMLService;
+            case "SPR_TERM.XML":
+                return importDocumentTermXMLService;
+            case "SPR_VER.XML":
+                return importDocumentVersionXMLService;
+            case "SPR_REGION.XML":
+                return importRegionXMLService;
+            case "SPR_STI.XML":
+                return importTaxInspectionXMLService;
+            case "SPRFORFIELDS.XML":
+                return importFieldCodeService;
+
+            default:
+                throw new RuntimeException("Import File Service is not found");
+        }
 	}
 
 	@Override

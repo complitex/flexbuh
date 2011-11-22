@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.validation.constraints.NotNull;
 import java.io.*;
@@ -35,28 +34,9 @@ public class ImportTemplateFileService implements ImportFileService {
     protected UserTransaction userTransaction;
 
 	@Override
-	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		listener.begin();
-		try{
-			userTransaction.begin();
-			save(importFile.getName(), getData(importFile));
-			userTransaction.commit();
-			listener.completed();
-		} catch (Throwable th) {
-			listener.cancel();
-			try {
-				userTransaction.rollback();
-			} catch (SystemException e) {
-			}
-			log.error("Cancel create template: " + importFile.getName(), th);
-		}
-	}
-
-	@Override
 	public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
 		 throw new NotImplementedException("use process(ImportListener listener, File importFile, Date beginDate, Date endDate)");
 	}
-
 
     protected String getData(File file) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(file));

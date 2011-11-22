@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
-import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.ejb.*;
-import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -30,11 +28,6 @@ public class ImportDocumentXMLService extends ImportDictionaryXMLService<Documen
 
 	@EJB
 	private DocumentBean documentBean;
-
-	@Override
-	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		super.process(sessionId, listener, importFile, beginDate, endDate);
-	}
 
 	@Override
 	protected List<Document> processDictionaryNode(NodeList contentNodeRow,

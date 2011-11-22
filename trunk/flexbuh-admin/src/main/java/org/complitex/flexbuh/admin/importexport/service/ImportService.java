@@ -14,6 +14,8 @@ import javax.ejb.EJB;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.Date;
 import java.util.List;
@@ -85,11 +87,19 @@ public abstract class ImportService {
 
 	public void processFile(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
 		ImportFileService fileService = getImportFileService(importFile.getName());
-		if (fileService == null) {
+
+        if (fileService == null) {
 			throw new RuntimeException("Can not find service for processing file " + importFile.getName());
 		}
-		fileService.process(sessionId, listener, importFile, beginDate, endDate);
-	}
+
+        try {
+            fileService.process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
+        } catch (FileNotFoundException e) {
+            listener.begin();
+            log.warn("Can not find file: " + importFile, e);
+            listener.cancel();
+        }
+    }
 
 	public void processFile(Long sessionId, ImportListener listener, String importFileName, Date beginDate, Date endDate) {
 		File importFile = new File(getImportDir(), importFileName);
