@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.admin.importexport.service;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.complitex.flexbuh.common.entity.template.*;
 import org.complitex.flexbuh.common.service.ImportFileService;
 import org.complitex.flexbuh.common.service.ImportListener;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.validation.constraints.NotNull;
 import java.io.*;
@@ -35,25 +35,46 @@ public class ImportTemplateFileService implements ImportFileService {
 
 	@Override
 	public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
-		 throw new NotImplementedException("use process(ImportListener listener, File importFile, Date beginDate, Date endDate)");
-	}
+        listener.begin();
+        try{
+            userTransaction.begin();
+            save(fileName, getData(inputStream));
+            userTransaction.commit();
+            listener.completed();
+        } catch (Throwable th) {
+            listener.cancel();
+            try {
+                userTransaction.rollback();
+            } catch (SystemException e) {
+            }
+            log.error("Cancel create template: " + fileName, th);
+        }
+    }
 
-    protected String getData(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
+    protected String getData(InputStream inputStream) throws IOException {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(bufferedInputStream));
+
+        bufferedInputStream.mark(1000000);
 
         if (br.readLine().toUpperCase().contains("UTF-8")) {
             br.close();
 
-            return getData(file, "UTF-8");
+            bufferedInputStream.reset();
+
+            return getData(bufferedInputStream, "UTF-8");
         }
 
-        return getData(file, DEFAULT_FILE_ENCODING);
+        bufferedInputStream.reset();
+
+        return getData(bufferedInputStream, DEFAULT_FILE_ENCODING);
     }
 
-	protected String getData(File file, String encoding) throws IOException {
+	protected String getData(InputStream inputStream, String encoding) throws IOException {
         StringBuilder data = new StringBuilder();
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, encoding));
 
         String line;
 
