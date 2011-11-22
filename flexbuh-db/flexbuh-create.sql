@@ -456,9 +456,9 @@ CREATE TABLE `field` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `field_code_id` BIGINT(20) NOT NULL,
   `name` VARCHAR(32) NOT NULL,
-  `spr_name` VARCHAR(32) NOT NULL,
+  `spr_name` VARCHAR(64) NOT NULL,
   `prefix` VARCHAR(32),
-  `alias` VARCHAR(32) NOT NULL,
+  `alias` VARCHAR(32),
   PRIMARY KEY (`id`),
   KEY `key_field__field_code_id` (`field_code_id`),
   CONSTRAINT `fk_field__field_code` FOREIGN KEY (`field_code_id`) REFERENCES `field_code` (`id`) ON DELETE CASCADE

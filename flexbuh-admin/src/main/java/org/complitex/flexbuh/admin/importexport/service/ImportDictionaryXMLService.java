@@ -13,9 +13,6 @@ import org.w3c.dom.NodeList;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.transaction.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Collection;
@@ -35,17 +32,6 @@ public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> e
 
 	@Resource
     protected UserTransaction userTransaction;
-
-	@Override
-	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		try {
-			process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
-		} catch (FileNotFoundException e) {
-			listener.begin();
-			log.warn("Can not find file: " + importFile, e);
-			listener.cancel();
-		}
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

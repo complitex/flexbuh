@@ -33,7 +33,7 @@
     	<appender-ref ref="DB" />
   	</logger>
 
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="ROLLING"/>
 	</root>
 </configuration>

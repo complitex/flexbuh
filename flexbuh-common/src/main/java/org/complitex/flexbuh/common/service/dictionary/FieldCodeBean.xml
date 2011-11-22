@@ -4,7 +4,9 @@
 <mapper namespace="org.complitex.flexbuh.common.service.dictionary.FieldCodeBean">
     <resultMap id="fieldCodeResultMap" type="org.complitex.flexbuh.common.entity.dictionary.FieldCode">
         <id column="id" property="id"/>
-        <collection property="codes" column="code" ofType="string"/>
+        <collection property="codes" ofType="string">
+            <result column="code"/>
+        </collection>
         <collection property="fields" ofType="org.complitex.flexbuh.common.entity.dictionary.Field">
             <id column="fieldId" property="id"/>
             <result column="name" property="name"/>
@@ -28,7 +30,8 @@
         select
           fc.`id`, f.`id` as fieldId, f.`name`, f.`spr_name`, f.`prefix`, f.`alias`, c.`code`
         from
-          `field_code` fc left join `field` f on (f.`field_code_id` = fc.`id`)
+          (select `id` from `field_code` limit #{first}, #{count}) fc
+            left join `field` f on (f.`field_code_id` = fc.`id`)
             left join `code` c on (c.`field_code_id` = fc.`id`)
     </select>
 

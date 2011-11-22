@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.common.service;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -10,8 +9,6 @@ import java.util.Date;
  */
 public interface ImportFileService {
 
-	void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate);
-
-	void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate);
+    void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate);
 
 }

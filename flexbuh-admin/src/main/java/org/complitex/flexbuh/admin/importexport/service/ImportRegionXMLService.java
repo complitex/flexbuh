@@ -7,7 +7,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary;
 import org.complitex.flexbuh.common.entity.dictionary.Region;
-import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.dictionary.RegionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import org.w3c.dom.NodeList;
 
 import javax.ejb.*;
 import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,11 +35,6 @@ public class ImportRegionXMLService extends ImportDictionaryXMLService<Region> {
 
 	@EJB
 	private RegionBean regionBean;
-
-	@Override
-	public void process(Long sessionId, ImportListener listener, File importFile, Date beginDate, Date endDate) {
-		super.process(sessionId, listener, importFile, beginDate, endDate);
-	}
 
 	@Override
 	protected List<Region> processDictionaryNode(NodeList contentNodeRow,
