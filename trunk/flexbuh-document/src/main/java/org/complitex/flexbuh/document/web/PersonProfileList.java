@@ -122,7 +122,7 @@ public class PersonProfileList extends TemplatePage {
         filterForm.add(dataView);
 
         //Постраничная навигация
-        filterForm.add(new PagingNavigator("paging", dataView, "PersonProfileList"));
+        filterForm.add(new PagingNavigator("paging", dataView, "PersonProfileList", filterForm));
 
         // Импортировать профайл из файла пользователя
         Form<?> form = new Form<Void>("import_form") {
