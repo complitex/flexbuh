@@ -5,26 +5,28 @@
 
 <body>
 <wicket:extend>
-	<h1><wicket:message key="title"/></h1>
-	<form action="#" wicket:id="filter_form">
-		<table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
-			<thead>
-				<tr>
-					<th><wicket:message key="column_file_name"/></th>
-					<th><wicket:message key="column_upload_date"/></th>
-				</tr>
-			</thead>
-			<tbody >
-				<tr wicket:id="templates">
-					<td><span wicket:id="file_name"></span></td>
-					<td><span wicket:id="upload_date"></span></td>
-				</tr>
-			</tbody>
-		</table>
-		<div>
-			<span wicket:id="paging"></span>
-		</div>
-	</form>
+	<div>
+		<h1><wicket:message key="title"/></h1>
+		<form action="#" wicket:id="filter_form">
+			<table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+				<thead>
+					<tr>
+						<th><wicket:message key="column_file_name"/></th>
+						<th><wicket:message key="column_upload_date"/></th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr wicket:id="templates">
+						<td><span wicket:id="file_name"></span></td>
+						<td><span wicket:id="upload_date"></span></td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<span wicket:id="paging"></span>
+			</div>
+		</form>
+	</div>
 </wicket:extend>
 </body>
 </html>

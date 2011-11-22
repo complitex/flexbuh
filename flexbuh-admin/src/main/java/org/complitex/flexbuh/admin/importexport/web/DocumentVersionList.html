@@ -5,35 +5,37 @@
 
 <body>
 <wicket:extend>
-     <h1><wicket:message key="title"/></h1>
+	<div>
+		<h1><wicket:message key="title"/></h1>
 
-	<form action="#" wicket:id="filter_form">
-		<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
-			<thead>
-				<tr>
-					<th>Document type</th>
-					<th>Document sub type</th>
-					<th>Document version</th>
-					<th>Begin date</th>
-					<th>End date</th>
-					<th>Normative document name</th>
-				</tr>
-			</thead>
-			<tbody >
-				<tr wicket:id="dictionaries">
-					<td><span wicket:id="type"></span></td>
-					<td><span wicket:id="sub_type"></span></td>
-					<td><span wicket:id="version"></span></td>
-					<td><span wicket:id="begin_date"></span></td>
-					<td><span wicket:id="end_date"></span></td>
-					<td><span wicket:id="name_uk"></span></td>
-				</tr>
-			</tbody>
-		</table>
-		<div>
-            <span wicket:id="paging"></span>
-        </div>
-	</form>
+		<form action="#" wicket:id="filter_form">
+			<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+				<thead>
+					<tr>
+						<th><wicket:message key="document_type"/></th>
+						<th><wicket:message key="document_sub_type"/></th>
+						<th><wicket:message key="document_version"/></th>
+						<th><wicket:message key="begin_date"/></th>
+						<th><wicket:message key="end_date"/></th>
+						<th><wicket:message key="normative_document_name_uk"/></th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr wicket:id="dictionaries">
+						<td><span wicket:id="type"></span></td>
+						<td><span wicket:id="sub_type"></span></td>
+						<td><span wicket:id="version"></span></td>
+						<td><span wicket:id="begin_date"></span></td>
+						<td><span wicket:id="end_date"></span></td>
+						<td><span wicket:id="name_uk"></span></td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<span wicket:id="paging"></span>
+			</div>
+		</form>
+	</div>
 </wicket:extend>
 </body>
 </html>
