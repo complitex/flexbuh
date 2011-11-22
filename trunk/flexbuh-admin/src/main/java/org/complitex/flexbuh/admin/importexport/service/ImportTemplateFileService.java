@@ -56,11 +56,9 @@ public class ImportTemplateFileService implements ImportFileService {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(bufferedInputStream));
 
-        bufferedInputStream.mark(1000000);
+        bufferedInputStream.mark(16384);
 
         if (br.readLine().toUpperCase().contains("UTF-8")) {
-            br.close();
-
             bufferedInputStream.reset();
 
             return getData(bufferedInputStream, "UTF-8");
