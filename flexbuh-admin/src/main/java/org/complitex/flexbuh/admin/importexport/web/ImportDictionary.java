@@ -168,6 +168,7 @@ public class ImportDictionary extends TemplatePage {
 		private Integer countCompleted = 0;
 		private Integer countCanceled = 0;
 		private Integer countTotal = 0;
+        private Integer countProcess = 0;
 		
 		private Status status = null;
 

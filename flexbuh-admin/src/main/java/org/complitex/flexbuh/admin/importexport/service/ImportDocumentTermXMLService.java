@@ -11,7 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,7 +27,6 @@ import java.util.Map;
  *         Date: 27.08.11 10:28
  */
 @Stateless
-@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportDocumentTermXMLService extends ImportDictionaryXMLService<DocumentTerm> {
 	private final static Logger log = LoggerFactory.getLogger(ImportDocumentTermXMLService.class);

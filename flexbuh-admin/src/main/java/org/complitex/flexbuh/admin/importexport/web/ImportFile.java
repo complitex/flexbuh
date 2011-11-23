@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Pavel Sknar
@@ -163,26 +164,29 @@ public class ImportFile extends TemplatePage {
     }
 
 	private class DictionaryImportListener implements ImportListener, Serializable {
-
 		private String fileName = "";
-		private Integer countCompleted = 0;
-		private Integer countCanceled = 0;
-		private Integer countTotal = 0;
+		private AtomicInteger countCompleted = new AtomicInteger(0);
+		private AtomicInteger countCanceled = new AtomicInteger(0);
+		private AtomicInteger countTotal = new AtomicInteger(0);
+        private AtomicInteger countProcess = new AtomicInteger(0);
 
 		private Status status = null;
 
 		@Override
 		public void begin() {
 			status = Status.PROCESSING;
+            countProcess.incrementAndGet();
 		}
 
 		@Override
 		public void completed() {
-			if (countCanceled > 0) {
+			if (countCanceled.get() > 0) {
 				status = Status.PROCESSED_WITH_ERROR;
 			} else {
 				status = Status.PROCESSED;
 			}
+
+            countProcess.decrementAndGet();
 		}
 
 		@Override
@@ -193,32 +197,27 @@ public class ImportFile extends TemplatePage {
 		@Override
 		public void cancel() {
 			status = Status.CANCELED;
+            countProcess.decrementAndGet();
 		}
 
 		public String currentImportFile() {
-			synchronized (fileName) {
 				return fileName;
-			}
 		}
 
 		public long getCountCompleted() {
-			synchronized (countCompleted) {
-				return countCompleted;
-			}
-		}
+            return countCompleted.get();
+        }
 
-		public long getCountCanceled() {
-			synchronized (countCanceled) {
-				return countCanceled;
-			}
-		}
+        public long getCountCanceled() {
+            return countCanceled.get();
+        }
 
 		public void addProcessingCountFiles(int count) {
-			countTotal = countTotal + count;
+			countTotal.addAndGet(count);
 		}
 
 		public long getCountTotal() {
-			return countTotal;
+			return countTotal.get();
 		}
 
 		public Status getStatus() {
@@ -226,17 +225,17 @@ public class ImportFile extends TemplatePage {
 		}
 
 		public boolean isEnded() {
-			return Status.PROCESSED.equals(status)
-					|| Status.PROCESSED_WITH_ERROR.equals(status)
-					|| Status.CANCELED.equals(status);
-		}
+            return countProcess.get() == 0
+                    && (Status.PROCESSED.equals(status)
+                    || Status.PROCESSED_WITH_ERROR.equals(status)
+                    || Status.CANCELED.equals(status));
+        }
 
 		@Override
 		public ImportListener getChildImportListener(Object o) {
-			synchronized (fileName) {
-				fileName = ((File)o).getName();
-			}
-			return new ImportListener() {
+            fileName = ((File)o).getName();
+
+            return new ImportListener() {
 				@Override
 				public ImportListener getChildImportListener(Object o) {
 					throw new RuntimeException("Do not using");
@@ -244,18 +243,13 @@ public class ImportFile extends TemplatePage {
 
 				@Override
 				public void begin() {
-
 				}
 
 				@Override
 				public void completed() {
-					synchronized (fileName) {
-						fileName= "";
-					}
-					synchronized (countCompleted) {
-						countCompleted ++;
-					}
-				}
+                    fileName= "";
+                    countCompleted.incrementAndGet();
+                }
 
 				@Override
 				public void completedWithError() {
@@ -263,13 +257,9 @@ public class ImportFile extends TemplatePage {
 
 				@Override
 				public void cancel() {
-					synchronized (fileName) {
-						fileName = "";
-					}
-					synchronized (countCanceled) {
-						countCanceled ++;
-					}
-				}
+                    fileName = "";
+                    countCanceled.incrementAndGet();
+                }
 			};
 		}
 	}

@@ -11,7 +11,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import javax.annotation.Resource;
-import javax.ejb.*;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.transaction.*;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -25,7 +27,6 @@ import java.util.Map;
  *         Date: 26.08.11 14:44
  */
 @Stateless
-@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> extends ImportXMLService {
 	private final static Logger log = LoggerFactory.getLogger(ImportDictionaryXMLService.class);
