@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +24,6 @@ import java.util.Map;
  *         Date: 22.08.11 12:12
  */
 @Stateless
-@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportDocumentXMLService extends ImportDictionaryXMLService<Document> {
 	private final static Logger log = LoggerFactory.getLogger(ImportDocumentXMLService.class);

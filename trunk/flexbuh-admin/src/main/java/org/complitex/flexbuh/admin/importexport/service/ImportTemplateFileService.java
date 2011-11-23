@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.validation.constraints.NotNull;
@@ -20,10 +23,11 @@ import java.util.Date;
  *         Date: 27.07.11 16:30
  */
 @Stateless
-@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportTemplateFileService implements ImportFileService {
 	private final static Logger log = LoggerFactory.getLogger(ImportTemplateFileService.class);
+    
+    private static final int BUFFER = 2048;
 
     public static final String DEFAULT_FILE_ENCODING = "CP1251";
 
@@ -54,11 +58,13 @@ public class ImportTemplateFileService implements ImportFileService {
     protected String getData(InputStream inputStream) throws IOException {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(bufferedInputStream));
+        bufferedInputStream.mark(BUFFER);
+        
+        byte[] line = new byte[BUFFER];
+        
+        int n = bufferedInputStream.read(line);
 
-        bufferedInputStream.mark(16384);
-
-        if (br.readLine().toUpperCase().contains("UTF-8")) {
+        if (n != -1 && new String(line).toUpperCase().contains("UTF-8")) {
             bufferedInputStream.reset();
 
             return getData(bufferedInputStream, "UTF-8");
