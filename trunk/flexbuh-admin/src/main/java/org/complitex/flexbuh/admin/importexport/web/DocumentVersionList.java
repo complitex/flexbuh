@@ -1,17 +1,25 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentVersionFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
+import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +41,47 @@ public class DocumentVersionList extends TemplatePage {
 	DocumentVersionBean documentVersionBean;
 
 	public DocumentVersionList() {
+
+		add(new FeedbackPanel("messages"));
+
+		//Фильтр модель
+		DocumentVersionFilter filterObject = new DocumentVersionFilter();
+
+        final IModel<DocumentVersionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
 		
-		final Form form = new Form("filter_form");
-        form.setOutputMarkupId(true);
-        add(form);
+		final Form<DocumentVersionFilter> filterForm = new Form<>("filter_form", filterModel);
+        filterForm.setOutputMarkupId(true);
+        add(filterForm);
+
+		Link filter_reset = new Link("filter_reset") {
+
+            @Override
+            public void onClick() {
+                filterForm.clearInput();
+                filterModel.setObject(new DocumentVersionFilter());
+            }
+        };
+        filterForm.add(filter_reset);
+
+		//Document type
+        filterForm.add(new TextField<String>("cDoc"));
+
+		//Sub document type
+        filterForm.add(new TextField<String>("cDocSub"));
+
+		//Document version
+        filterForm.add(new TextField<String>("cDocVer"));
+
+		//Begin date
+        DatePicker<Date> beginDate = new DatePicker<>("beginDate");
+        filterForm.add(beginDate);
+
+		//End date
+        DatePicker<Date> endDate = new DatePicker<>("endDate");
+        filterForm.add(endDate);
+
+		//Ukrainian name
+        filterForm.add(new TextField<String>("nameUk"));
 
 		//Модель
         final DataProvider<DocumentVersion> dataProvider = new DataProvider<DocumentVersion>() {
@@ -44,15 +89,22 @@ public class DocumentVersionList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends DocumentVersion> getData(int first, int count) {
-                return documentVersionBean.getDocumentVersions(first, count);
+                DocumentVersionFilter filter = filterModel.getObject();
+                filter.setFirst(first);
+                filter.setCount(count);
+                filter.setSortProperty(getSort().getProperty());
+                filter.setAscending(getSort().isAscending());
+                return documentVersionBean.getDocumentVersions(filter);
             }
 
             @Override
             protected int getSize() {
-                return documentVersionBean.getDocumentVersionsCount();
+                return documentVersionBean.getDocumentVersionsCount(filterModel.getObject());
             }
         };
-        dataProvider.setSort("type", SortOrder.ASCENDING);
+        dataProvider.setSort("c_doc", SortOrder.ASCENDING);
+        dataProvider.setSort("c_doc_sub", SortOrder.ASCENDING);
+        dataProvider.setSort("c_doc_ver", SortOrder.ASCENDING);
 
 		//Таблица
         DataView<DocumentVersion> dataView = new DataView<DocumentVersion>("dictionaries", dataProvider, 10) {
@@ -69,10 +121,18 @@ public class DocumentVersionList extends TemplatePage {
                 item.add(new Label("name_uk", documentVersion.getNameUk()));
             }
         };
-        form.add(dataView);
+        filterForm.add(dataView);
+
+		//Сортировка
+        filterForm.add(new OrderByBorder("header.c_doc", "c_doc", dataProvider));
+        filterForm.add(new OrderByBorder("header.c_doc_sub", "c_doc_sub", dataProvider));
+        filterForm.add(new OrderByBorder("header.c_doc_ver", "c_doc_ver", dataProvider));
+        filterForm.add(new OrderByBorder("header.begin_date", "begin_date", dataProvider));
+		filterForm.add(new OrderByBorder("header.end_date", "end_date", dataProvider));
+		filterForm.add(new OrderByBorder("header.name_uk", "name_uk", dataProvider));
 
         //Постраничная навигация
-        form.add(new PagingNavigator("paging", dataView, getClass().getName(), form));
+        filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
 	}
 
 	private String getStringDate(Date date) {

@@ -27,16 +27,28 @@
             #{parentCDocSub}, #{selected}, #{nameRu}, #{nameUk})
     </insert>
 
-    <select id="selectAllDocuments" resultMap="documentResultMap">
-        select * from document
+	<sql id="selectDocumentsWhere">
+        <where>
+            <if test="cDoc != null">`c_doc` = #{cDoc}</if>
+            <if test="cDocSub != null">and `c_doc_sub` = #{cDocSub}</if>
+            <if test="parentCDoc != null">`parent_c_doc` = #{parentCDoc}</if>
+            <if test="parentCDocSub != null">and `parent_c_doc_sub` = #{parentCDocSub}</if>
+            <if test="cntSet != null">and `cnt_set` = #{cntSet}</if>
+            <if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
+            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+        </where>
+    </sql>
+
+	<select id="selectDocuments" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentFilter" resultMap="documentResultMap">
+        select * from `document` <include refid="selectDocumentsWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
     </select>
 
-    <select id="selectAllDocumentsCount" resultType="int">
-        select count(*) from `document`
-    </select>
-
-    <select id="selectDocuments" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="documentResultMap">
-        select * from `document` order by `c_doc`, `c_doc_sub` limit #{first}, #{count}
+    <select id="selectDocumentsCount" resultType="int">
+        select count(*) from `document` <include refid="selectDocumentsWhere"/>
     </select>
 
     <select id="selectDocument" parameterType="long" resultMap="documentResultMap">

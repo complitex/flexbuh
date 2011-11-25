@@ -1,17 +1,25 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
+import org.complitex.flexbuh.common.entity.dictionary.TaxInspectionFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
+import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +41,53 @@ public class TaxInspectionList extends TemplatePage {
 	TaxInspectionBean taxInspectionBean;
 
 	public TaxInspectionList() {
+
+		add(new FeedbackPanel("messages"));
+
+		//Фильтр модель
+		TaxInspectionFilter filterObject = new TaxInspectionFilter();
+
+		final IModel<TaxInspectionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
 		
-		final Form form = new Form("filter_form");
-        form.setOutputMarkupId(true);
-        add(form);
+		final Form<TaxInspectionFilter> filterForm = new Form<>("filter_form", filterModel);
+        filterForm.setOutputMarkupId(true);
+        add(filterForm);
+
+		Link filter_reset = new Link("filter_reset") {
+
+            @Override
+            public void onClick() {
+                filterForm.clearInput();
+                filterModel.setObject(new TaxInspectionFilter());
+            }
+        };
+        filterForm.add(filter_reset);
+
+		//Tax inspection code
+        filterForm.add(new TextField<String>("cSti"));
+
+		//Region code
+        filterForm.add(new TextField<String>("cReg"));
+
+		//Area code
+        filterForm.add(new TextField<String>("cRaj"));
+
+		//Tax inspection type
+        filterForm.add(new TextField<String>("tSti"));
+
+		//Begin date
+        DatePicker<Date> beginDate = new DatePicker<>("beginDate");
+        filterForm.add(beginDate);
+
+		//End date
+        DatePicker<Date> endDate = new DatePicker<>("endDate");
+        filterForm.add(endDate);
+
+		//Ukrainian name
+        filterForm.add(new TextField<String>("nameUk"));
+
+		//Ukrainian region name
+        filterForm.add(new TextField<String>("nameRajUk"));
 
 		//Модель
         final DataProvider<TaxInspection> dataProvider = new DataProvider<TaxInspection>() {
@@ -44,15 +95,20 @@ public class TaxInspectionList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TaxInspection> getData(int first, int count) {
-                return taxInspectionBean.getTaxInspections(first, count);
+				TaxInspectionFilter filter = filterModel.getObject();
+                filter.setFirst(first);
+                filter.setCount(count);
+                filter.setSortProperty(getSort().getProperty());
+                filter.setAscending(getSort().isAscending());
+                return taxInspectionBean.getTaxInspections(filter);
             }
 
             @Override
             protected int getSize() {
-                return taxInspectionBean.getTaxInspectionsCount();
+                return taxInspectionBean.getTaxInspectionsCount(filterModel.getObject());
             }
         };
-        dataProvider.setSort("type", SortOrder.ASCENDING);
+        dataProvider.setSort("c_sti", SortOrder.ASCENDING);
 
 		//Таблица
         DataView<TaxInspection> dataView = new DataView<TaxInspection>("dictionaries", dataProvider, 10) {
@@ -72,10 +128,20 @@ public class TaxInspectionList extends TemplatePage {
                 item.add(new Label("area_name_uk", taxInspection.getNameRajUk()));
             }
         };
-        form.add(dataView);
+        filterForm.add(dataView);
+
+		//Сортировка
+        filterForm.add(new OrderByBorder("header.c_sti", "c_sti", dataProvider));
+        filterForm.add(new OrderByBorder("header.c_reg", "c_reg", dataProvider));
+		filterForm.add(new OrderByBorder("header.c_raj", "c_raj", dataProvider));
+		filterForm.add(new OrderByBorder("header.t_sti", "t_sti", dataProvider));
+		filterForm.add(new OrderByBorder("header.begin_date", "begin_date", dataProvider));
+		filterForm.add(new OrderByBorder("header.end_date", "end_date", dataProvider));
+		filterForm.add(new OrderByBorder("header.name_uk", "name_uk", dataProvider));
+		filterForm.add(new OrderByBorder("header.name_raj_uk", "name_raj_uk", dataProvider));
 
         //Постраничная навигация
-        form.add(new PagingNavigator("paging", dataView, getClass().getName(), form));
+        filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
 	}
 
 	private String getStringDate(Date date) {

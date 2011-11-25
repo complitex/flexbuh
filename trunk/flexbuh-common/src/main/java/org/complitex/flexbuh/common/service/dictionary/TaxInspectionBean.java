@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
 import com.google.common.collect.Maps;
-import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
+import org.complitex.flexbuh.common.entity.dictionary.TaxInspectionFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -52,14 +52,14 @@ public class TaxInspectionBean extends AbstractBean {
 		return (List<TaxInspection>)sqlSession().selectList(NS + ".selectAllTaxInspectionsCodeWithName");
 	}
 
-    public Integer getTaxInspectionsCount(){
-        return (Integer) sqlSession().selectOne(NS + ".selectAllTaxInspectionsCount");
-    }
-
 	@SuppressWarnings("unchecked")
-	public List<TaxInspection> getTaxInspections(int first, int count) {
-		return sqlSession().selectList(NS + ".selectTaxInspections", new AbstractFilter(first, count));
+	public List<TaxInspection> getTaxInspections(TaxInspectionFilter filter) {
+		return sqlSession().selectList(NS + ".selectTaxInspections", filter);
 	}
+
+    public Integer getTaxInspectionsCount(TaxInspectionFilter filter){
+        return (Integer) sqlSession().selectOne(NS + ".selectTaxInspectionsCount", filter);
+    }
 
     @SuppressWarnings("unchecked")
     public List<String> getTaxInspectionDistrictNames(){

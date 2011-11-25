@@ -7,6 +7,15 @@
         <result property="code" column="code"/>
     </resultMap>
 
+	<sql id="selectRegionsWhere">
+        <where>
+            <if test="code != null">`code` = #{code}</if>
+            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
+            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+			<if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+        </where>
+    </sql>
+
     <insert id="insertRegion" parameterType="org.complitex.flexbuh.common.entity.dictionary.Region" keyProperty="id" useGeneratedKeys="true">
         insert into `region` (`upload_date`, `begin_date`, `end_date`, `code`, `name_ru`, `name_uk`)
         	values (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{nameRu}, #{nameUk})
@@ -17,20 +26,19 @@
         where `id` = #{id}
     </update>
 
-	<select id="selectAllRegions" resultMap="regionResultMap">
-        select * from `region`
+	<select id="selectRegions" resultMap="regionResultMap" parameterType="org.complitex.flexbuh.common.entity.dictionary.RegionFilter">
+        select * from `region` <include refid="selectRegionsWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
     </select>
 
-    <select id="selectAllRegionsCount" resultType="int">
-        select count(*) from `region`
+    <select id="selectRegionsCount" resultType="int">
+        select count(*) from `region` <include refid="selectRegionsWhere"/>
     </select>
 
 	<select id="selectRegionByCode" parameterType="int" resultMap="regionResultMap">
         select * from `region` where `code` = #{code}
-    </select>
-
-	<select id="selectRegions" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="regionResultMap">
-        select * from `region` order by `code` limit #{first}, #{count}
     </select>
 
 	<select id="selectRegion" parameterType="long" resultMap="regionResultMap">

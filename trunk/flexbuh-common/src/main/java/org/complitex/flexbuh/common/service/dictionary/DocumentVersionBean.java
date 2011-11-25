@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
 import com.google.common.collect.Maps;
-import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentVersionFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -38,16 +38,11 @@ public class DocumentVersionBean extends AbstractBean {
 	}
 
     @SuppressWarnings("unchecked")
-    public List<DocumentVersion> getDocumentVersions() {
-        return (List<DocumentVersion>)sqlSession().selectList(NS + ".selectAllDocumentVersions");
+    public List<DocumentVersion> getDocumentVersions(DocumentVersionFilter filter) {
+        return (List<DocumentVersion>)sqlSession().selectList(NS + ".selectDocumentVersions", filter);
     }
 
-    public Integer getDocumentVersionsCount(){
-        return (Integer) sqlSession().selectOne(NS + ".selectAllDocumentVersionsCount");
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<DocumentVersion> getDocumentVersions(int first, int count) {
-        return sqlSession().selectList(NS + ".selectDocumentVersions", new AbstractFilter(first, count));
+    public Integer getDocumentVersionsCount(DocumentVersionFilter filter){
+        return (Integer) sqlSession().selectOne(NS + ".selectDocumentVersionsCount", filter);
     }
 }

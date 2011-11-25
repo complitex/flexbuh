@@ -7,20 +7,46 @@
 <wicket:extend>
 	<div>
 		<h1><wicket:message key="title"/></h1>
+		<div id="messages" wicket:id="messages"></div>
 
-		<form action="#" wicket:id="filter_form">
+		<form id="filter_form" action="#" wicket:id="filter_form">
 			<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
 				<thead>
 					<tr>
-						<th><wicket:message key="type"/></th>
-						<th><wicket:message key="sub_type"/></th>
-						<th><wicket:message key="parent_type"/></th>
-						<th><wicket:message key="parent_sub_type"/></th>
-						<th><wicket:message key="CNT_set"/></th>
+						<th class="center" wicket:id="header.c_doc"><wicket:message key="type"/></th>
+						<th class="center" wicket:id="header.c_doc_sub"><wicket:message key="sub_type"/></th>
+						<th class="center" wicket:id="header.parent_c_doc"><wicket:message key="parent_type"/></th>
+						<th class="center" wicket:id="header.parent_c_doc_sub"><wicket:message key="parent_sub_type"/></th>
+						<th class="center" wicket:id="header.cnt_set"><wicket:message key="CNT_set"/></th>
 						<!--th><wicket:message key="selected"/></th-->
-						<th><wicket:message key="begin_date"/></th>
-						<th><wicket:message key="end_date"/></th>
-						<th><wicket:message key="name_uk"/></th>
+						<th class="center" wicket:id="header.begin_date"><wicket:message key="begin_date"/></th>
+						<th class="center" wicket:id="header.end_date"><wicket:message key="end_date"/></th>
+						<th class="center" wicket:id="header.name_uk"><wicket:message key="name_uk"/></th>
+						<th class="center">
+							<input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+						</th>
+					</tr>
+					<tr>
+						<th class="center"><input type="text" wicket:id="cDoc"/></th>
+						<th class="center"><input type="text" wicket:id="cDocSub"/></th>
+						<th class="center"><input type="text" wicket:id="parentCDoc"/></th>
+						<th class="center"><input type="text" wicket:id="parentCDocSub"/></th>
+						<th class="center"><select wicket:id="cntSet"></select></th>
+						<th class="center">
+							<div style="width:102px">
+								<input type="text" wicket:id="beginDate" style="width: 80px"/>
+							</div>
+						</th>
+						<th class="center">
+							<div style="width:102px">
+								<input type="text" wicket:id="endDate" style="width: 80px"/>
+							</div>
+						</th>
+						<th class="center"><input type="text" wicket:id="nameUk"/></th>
+
+						<th class="center">
+							<input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
+						</th>
 					</tr>
 				</thead>
 				<tbody >

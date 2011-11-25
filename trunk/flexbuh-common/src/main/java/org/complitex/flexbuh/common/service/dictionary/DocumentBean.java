@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
-import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -24,18 +24,13 @@ public class DocumentBean extends AbstractBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Document> getDocuments() {
-		return (List<Document>)sqlSession().selectList(NS + ".selectAllDocuments");
+	public List<Document> getDocuments(DocumentFilter filter) {
+		return (List<Document>)sqlSession().selectList(NS + ".selectDocuments", filter);
 	}
 
-    public Integer getDocumentsCount(){
-        return (Integer)sqlSession().selectOne(NS + ".selectAllDocumentsCount");
+    public Integer getDocumentsCount(DocumentFilter filter){
+        return (Integer)sqlSession().selectOne(NS + ".selectDocumentsCount", filter);
     }
-
-	@SuppressWarnings("unchecked")
-	public List<Document> getDocuments(int first, int count) {
-		return sqlSession().selectList(NS + ".selectDocuments", new AbstractFilter(first, count));
-	}
 
     @SuppressWarnings("unchecked")
     public List<Document> getLinkedDocuments(String cDoc, String cDocSub){
