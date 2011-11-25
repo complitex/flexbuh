@@ -13,6 +13,20 @@
         <result column="period_year" property="periodYear"/>
     </resultMap>
 
+	<sql id="selectDocumentTermsWhere">
+        <where>
+            <if test="cDoc != null">`c_doc` = #{cDoc}</if>
+            <if test="cDocSub != null">and `c_doc_sub` = #{cDocSub}</if>
+            <if test="cDocVer != null">and `c_doc_ver` = #{cDocVer}</if>
+            <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
+			<if test="periodYear != null">and `period_year` = #{periodYear}</if>
+			<if test="periodType != null">and `period_type` = #{periodType}</if>
+            <if test="dateTerm != null">and `date_term` = DATE(#{dateTerm})</if>
+            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
+            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+        </where>
+    </sql>
+
     <insert id="insertDocumentTerm" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm" keyProperty="id" useGeneratedKeys="true">
         insert into `document_term` (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `date_term`,
           `period_month`, `period_type`, `period_year`)
@@ -21,19 +35,26 @@
             #{periodYear})
     </insert>
 
-	<select id="selectAllDocumentTerms" resultMap="documentTermResultMap">
-        select * from `document_term`
+	<select id="selectDocumentTerms" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTermFilter" resultMap="documentTermResultMap">
+        select * from `document_term` <include refid="selectDocumentTermsWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
     </select>
 
-     <select id="selectAllDocumentTermsCount" resultType="int">
-        select count(*) from `document_term`
-    </select>
-
-	<select id="selectDocumentTerms" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="documentTermResultMap">
-        select * from `document_term` order by `c_doc`, `c_doc_sub`, `c_doc_ver` limit #{first}, #{count}
+     <select id="selectDocumentTermsCount" resultType="int">
+        select count(*) from `document_term` <include refid="selectDocumentTermsWhere"/>
     </select>
 
 	<select id="selectDocumentTerm" parameterType="long" resultMap="documentTermResultMap">
         select * from `document_term` where `id` = #{id}
+    </select>
+
+	<select id="selectPeriodTypes" resultType="int">
+        select distinct `period_type` from `document_term` order by `period_type`
+    </select>
+
+	<select id="selectPeriodMonths" resultType="int">
+        select distinct `period_month` from `document_term` order by `period_month`
     </select>
 </mapper>

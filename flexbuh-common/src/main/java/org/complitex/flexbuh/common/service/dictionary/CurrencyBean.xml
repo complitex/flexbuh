@@ -8,6 +8,17 @@
         <result column="code_string" property="codeString"/>
     </resultMap>
 
+	<sql id="selectCurrenciesWhere">
+        <where>
+            <if test="codeString != null">`code_string` = #{codeString}</if>
+            <if test="codeNumber != null">and `code_number` = #{codeNumber}</if>
+            <if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+            <if test="nameRu != null">and `name_ru` like concat('%', #{nameRu}, '%')</if>
+            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
+            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+        </where>
+    </sql>
+
     <insert id="insertCurrency" parameterType="org.complitex.flexbuh.common.entity.dictionary.Currency" keyProperty="id" useGeneratedKeys="true">
         insert into `currency` (`upload_date`, `begin_date`, `end_date`, `code_number`, `code_string`, `name_ru`, `name_uk`)
         	values (#{uploadDate}, #{beginDate}, #{endDate}, #{codeNumber}, #{codeString}, #{nameRu}, #{nameUk})
@@ -18,20 +29,19 @@
         where `id` = #{id}
     </update>
 
-    <select id="selectAllCurrencies" resultMap="currencyResultMap">
-        select * from `currency`
-    </select>
-
-    <select id="selectAllCurrenciesCount" resultType="int">
-        select count(*) from `currency`
-    </select>
-
     <select id="selectCurrenciesByCodeNumber" parameterType="int" resultMap="currencyResultMap">
         select * from `currency` where `code_number`=#{codeNumber}
     </select>
 
-    <select id="selectCurrencies" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="currencyResultMap">
-        select * from `currency` order by `code_number` limit #{first}, #{count}
+    <select id="selectCurrencies" parameterType="org.complitex.flexbuh.common.entity.dictionary.CurrencyFilter" resultMap="currencyResultMap">
+        select * from `currency` <include refid="selectCurrenciesWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+	<select id="selectCurrenciesCount" resultType="int">
+        select count(*) from `currency` <include refid="selectCurrenciesWhere"/>
     </select>
 
     <select id="selectCurrency" parameterType="long" resultMap="currencyResultMap">

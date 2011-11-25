@@ -9,6 +9,17 @@
         <result column="c_doc_ver" property="cDocVer"/>
     </resultMap>
 
+	<sql id="selectDocumentVersionsWhere">
+        <where>
+            <if test="cDoc != null">`c_doc` = #{cDoc}</if>
+            <if test="cDocSub != null">and `c_doc_sub` = #{cDocSub}</if>
+            <if test="cDocVer != null">and `c_doc_ver` = #{cDocVer}</if>
+            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
+            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+			<if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+        </where>
+    </sql>
+
     <insert id="insertDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion"
             keyProperty="id" useGeneratedKeys="true">
         insert into `document_version`
@@ -22,20 +33,19 @@
         where `id` = #{id}
     </update>
 
-	<select id="selectAllDocumentVersions" resultMap="documentVersionResultMap">
-        select * from `document_version`
+	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersionFilter" resultMap="documentVersionResultMap">
+        select * from `document_version` <include refid="selectDocumentVersionsWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
     </select>
 
-	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="documentVersionResultMap">
-        select * from `document_version` order by `c_doc`, `c_doc_sub`, `c_doc_ver` limit #{first}, #{count}
+	<select id="selectDocumentVersionsCount" resultType="int">
+        select count(*) from `document_version` <include refid="selectDocumentVersionsWhere"/>
     </select>
 
 	<select id="selectDocumentVersion" parameterType="long" resultMap="documentVersionResultMap">
         select * from `document_version` where `id` = #{id}
-    </select>
-
-    <select id="selectAllDocumentVersionsCount" resultType="int">
-        select count(*) from `document_version`
     </select>
 
     <select id="selectDocumentVersionsByDocument" parameterType="map" resultMap="documentVersionResultMap">

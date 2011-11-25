@@ -1,17 +1,25 @@
 package org.complitex.flexbuh.admin.importexport.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.complitex.flexbuh.common.entity.dictionary.Region;
+import org.complitex.flexbuh.common.entity.dictionary.RegionFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.RegionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
+import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +42,40 @@ public class RegionList extends TemplatePage {
 
 	public RegionList() {
 
-		final Form form = new Form("filter_form");
-        form.setOutputMarkupId(true);
-        add(form);
+		add(new FeedbackPanel("messages"));
+
+		//Фильтр модель
+		RegionFilter filterObject = new RegionFilter();
+
+		final IModel<RegionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
+
+		final Form<RegionFilter> filterForm = new Form<>("filter_form", filterModel);
+        filterForm.setOutputMarkupId(true);
+        add(filterForm);
+
+		Link filter_reset = new Link("filter_reset") {
+
+            @Override
+            public void onClick() {
+                filterForm.clearInput();
+                filterModel.setObject(new RegionFilter());
+            }
+        };
+        filterForm.add(filter_reset);
+
+		//Document type
+        filterForm.add(new TextField<String>("code"));
+
+		//Begin date
+        DatePicker<Date> beginDate = new DatePicker<>("beginDate");
+        filterForm.add(beginDate);
+
+		//End date
+        DatePicker<Date> endDate = new DatePicker<>("endDate");
+        filterForm.add(endDate);
+
+		//Ukrainian name
+        filterForm.add(new TextField<String>("nameUk"));
 
 		//Модель
         final DataProvider<Region> dataProvider = new DataProvider<Region>() {
@@ -44,16 +83,20 @@ public class RegionList extends TemplatePage {
 			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Region> getData(int first, int count) {
-                return regionBean.getRegions(first, count);
+				RegionFilter filter = filterModel.getObject();
+                filter.setFirst(first);
+                filter.setCount(count);
+                filter.setSortProperty(getSort().getProperty());
+                filter.setAscending(getSort().isAscending());
+                return regionBean.getRegions(filter);
             }
 
             @Override
             protected int getSize() {
-                return regionBean.getRegionsCount();
+                return regionBean.getRegionsCount(filterModel.getObject());
             }
         };
-        dataProvider.setSort("type", SortOrder.ASCENDING);
-        dataProvider.setSort("sub_type", SortOrder.ASCENDING);
+        dataProvider.setSort("code", SortOrder.ASCENDING);
 
 		//Таблица
         DataView<Region> dataView = new DataView<Region>("dictionaries", dataProvider, 10) {
@@ -68,10 +111,16 @@ public class RegionList extends TemplatePage {
                 item.add(new Label("name_uk", region.getNameUk()));
             }
         };
-        form.add(dataView);
+        filterForm.add(dataView);
+
+		//Сортировка
+        filterForm.add(new OrderByBorder("header.code", "code", dataProvider));
+        filterForm.add(new OrderByBorder("header.begin_date", "begin_date", dataProvider));
+		filterForm.add(new OrderByBorder("header.end_date", "end_date", dataProvider));
+		filterForm.add(new OrderByBorder("header.name_uk", "name_uk", dataProvider));
 
         //Постраничная навигация
-        form.add(new PagingNavigator("paging", dataView, getClass().getName(), form));
+        filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
 	}
 
 	private String getStringDate(Date date) {

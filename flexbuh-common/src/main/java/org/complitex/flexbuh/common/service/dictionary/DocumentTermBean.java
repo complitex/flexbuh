@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
-import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentTerm;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentTermFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -23,17 +23,22 @@ public class DocumentTermBean extends AbstractBean {
         return (DocumentTerm)sqlSession().selectOne(NS + ".selectDocumentTerm", id);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<DocumentTerm> getDocumentTerms() {
-        return (List<DocumentTerm>)sqlSession().selectList(NS + ".selectAllDocumentTerms");
+	@SuppressWarnings("unchecked")
+    public List<DocumentTerm> getDocumentTerms(DocumentTermFilter filter) {
+        return sqlSession().selectList(NS + ".selectDocumentTerms", filter);
     }
 
-    public Integer getAllDocumentTermsCount(){
-        return (Integer)sqlSession().selectOne(NS + ".selectAllDocumentTermsCount");
+    public Integer getDocumentTermsCount(DocumentTermFilter filter){
+        return (Integer)sqlSession().selectOne(NS + ".selectDocumentTermsCount", filter);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<DocumentTerm> getDocumentTerms(int first, int count) {
-        return sqlSession().selectList(NS + ".selectDocumentTerms", new AbstractFilter(first, count));
-    }
+	@SuppressWarnings("unchecked")
+	public List<Integer> getPeriodTypes() {
+		return sqlSession().selectList(NS + ".selectPeriodTypes");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Integer> getPeriodMonths() {
+		return sqlSession().selectList(NS + ".selectPeriodMonths");
+	}
 }

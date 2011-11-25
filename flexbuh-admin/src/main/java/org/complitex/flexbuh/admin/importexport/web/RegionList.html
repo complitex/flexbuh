@@ -7,15 +7,37 @@
 <wicket:extend>
 	<div>
 		<h1><wicket:message key="title"/></h1>
+		<div id="messages" wicket:id="messages"></div>
 
-		<form action="#" wicket:id="filter_form">
+		<form id="filter_form" action="#" wicket:id="filter_form">
 			<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
 				<thead>
 					<tr>
-						<th><wicket:message key="code"/></th>
-						<th><wicket:message key="begin_date"/></th>
-						<th><wicket:message key="end_date"/></th>
-						<th><wicket:message key="name_uk"/></th>
+						<th class="center" wicket:id="header.code"><wicket:message key="code"/></th>
+						<th class="center" wicket:id="header.begin_date"><wicket:message key="begin_date"/></th>
+						<th class="center" wicket:id="header.end_date"><wicket:message key="end_date"/></th>
+						<th class="center" wicket:id="header.name_uk"><wicket:message key="name_uk"/></th>
+						<th class="center">
+							<input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+						</th>
+					</tr>
+					<tr>
+						<th class="center"><input type="text" wicket:id="code"/></th>
+						<th class="center">
+							<div style="width:102px">
+								<input type="text" wicket:id="beginDate" style="width: 80px"/>
+							</div>
+						</th>
+						<th class="center">
+							<div style="width:102px">
+								<input type="text" wicket:id="endDate" style="width: 80px"/>
+							</div>
+						</th>
+						<th class="center"><input type="text" wicket:id="nameUk"/></th>
+
+						<th class="center">
+							<input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
+						</th>
 					</tr>
 				</thead>
 				<tbody >

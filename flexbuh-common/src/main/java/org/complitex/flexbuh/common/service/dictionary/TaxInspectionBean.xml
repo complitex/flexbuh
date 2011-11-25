@@ -13,6 +13,19 @@
         <result property="nameRajUk" column="name_raj_uk"/>
     </resultMap>
 
+	<sql id="selectTaxInspectionsWhere">
+        <where>
+            <if test="cSti != null">`c_sti` = #{cSti}</if>
+            <if test="cReg != null">and `c_reg` = #{cReg}</if>
+            <if test="cRaj != null">and `c_raj` = #{cRaj}</if>
+            <if test="tSti != null">and `t_sti` = #{tSti}</if>
+            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
+            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+			<if test="nameRajUk != null">and `name_raj_uk` like concat('%', #{nameRajUk}, '%')</if>
+			<if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+        </where>
+    </sql>
+
     <insert id="insertTaxInspection" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspection" keyProperty="id" useGeneratedKeys="true">
         insert into `tax_inspection`
           (`upload_date`, `begin_date`, `end_date`, `c_sti`, `c_reg`,`c_raj`, `t_sti`,
@@ -36,12 +49,15 @@
         	order by `name_uk`, `name_ru`
     </select>
 
-    <select id="selectAllTaxInspectionsCount" resultType="int">
-        select count(*) from `tax_inspection`
+	<select id="selectTaxInspections" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspectionFilter" resultMap="taxInspectionResultMap">
+        select * from `tax_inspection` <include refid="selectTaxInspectionsWhere"/>
+        order by ${sortProperty}
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
     </select>
 
-    <select id="selectTaxInspections" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="taxInspectionResultMap">
-        select * from `tax_inspection` order by `c_sti` limit #{first}, #{count}
+    <select id="selectTaxInspectionsCount" resultType="int">
+        select count(*) from `tax_inspection` <include refid="selectTaxInspectionsWhere"/>
     </select>
 
     <select id="selectTaxInspection" parameterType="long" resultMap="taxInspectionResultMap">
