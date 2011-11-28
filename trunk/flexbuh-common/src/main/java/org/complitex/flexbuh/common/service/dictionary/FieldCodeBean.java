@@ -30,6 +30,7 @@ public class FieldCodeBean extends AbstractBean{
     }
 
     public void save(FieldCode fieldCode){
+        //todo add unique key
         if (fieldCode.getId() == null) {
             sqlSession().insert("insertFieldCode", fieldCode);
             
@@ -48,5 +49,9 @@ public class FieldCodeBean extends AbstractBean{
         }else{
             //todo
         }
+    }
+
+    public Field getField(String code, String name, String sprName){
+        return (Field) sqlSession().selectOne("selectField", new FieldCodeFilter(code, name, sprName));
     }
 }
