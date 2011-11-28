@@ -12,8 +12,8 @@ public class StringUtil {
         return s != null && s.matches("^-?[0-9]+(\\.[0-9]+)?$");
     }
 
-    public static String getString(Integer num){
-        return num != null ? num.toString() : "";
+    public static String getString(Object object){
+        return object != null ? object.toString() : "";
     }
 
     public static String replace(String s, CharSequence target, CharSequence replacement) {

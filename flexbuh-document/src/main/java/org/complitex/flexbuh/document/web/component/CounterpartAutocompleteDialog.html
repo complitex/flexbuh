@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+
+<body>
+<wicket:extend>
+    <form wicket:id="form" action="#">
+        <div style="height: 150px; overflow-y: auto;">
+            <div wicket:id="radio_group">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbColor">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th><wicket:message key="hk"/></th>
+                        <th><wicket:message key="hname"/></th>
+                        <th><wicket:message key="hloc"/></th>
+                        <th><wicket:message key="htel"/></th>
+                        <th><wicket:message key="hnspdv"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr wicket:id="counterparts">
+                        <td><input type="radio" wicket:id="select"/></td>
+                        <td><span wicket:id="hk"></span></td>
+                        <td><span wicket:id="hname"></span></td>
+                        <td><span wicket:id="hloc"></span></td>
+                        <td><span wicket:id="htel"></span></td>
+                        <td><span wicket:id="hnspdv"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <br/>
+        <input type="submit" wicket:id="select" wicket:message="value:select" class="btnMiddle"/>
+    </form>
+</wicket:extend>
+</body>
+</html>

@@ -18,7 +18,7 @@
 
     <sql id="selectEmployeesWhere">
         <where>
-            <if test="htin != null">`htin` = #{htin}</if>
+            <if test="htin != null">`htin` like concat('%', #{htin}, '%')</if>
             <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
             <if test="hbirthday != null">and `hbirthday` = DATE(#{hbirthday})</if>
             <if test="hdateIn != null">and `hdate_in` = DATE(#{hdateIn})</if>
@@ -32,7 +32,7 @@
         select * from `employee` <include refid="selectEmployeesWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        limit #{first}, #{count}
+        <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
     <select id="selectEmployeesCount" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"

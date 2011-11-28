@@ -25,6 +25,13 @@
         where fc.`id` = #{id}
     </select>
 
+    <sql id="selectFieldCodesWhere">
+        <where>
+            <if test="code != null">c.`code` like concat('%', #{code}, '%')</if>
+            <if test="sprName != null">and f.`spr_name` like concat('%', #{sprName}, '%')</if>
+        </where>
+    </sql>
+
     <select id="selectFieldCodes" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCodeFilter"
             resultMap="fieldCodeResultMap">
         select
@@ -33,11 +40,18 @@
           (select `id` from `field_code` limit #{first}, #{count}) fc
             left join `field` f on (f.`field_code_id` = fc.`id`)
             left join `code` c on (c.`field_code_id` = fc.`id`)
+        <include refid="selectFieldCodesWhere"/>
     </select>
 
     <select id="selectFieldCodesCount" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCodeFilter"
             resultType="int">
         select count(*) from `field_code`
+    </select>
+
+    <select id="selectField" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCodeFilter"
+            resultType="org.complitex.flexbuh.common.entity.dictionary.Field">
+        select f.* from `field` f left join `code` c on (c.`field_code_id` = f.`field_code_id`)
+          where c.`code` = #{code} and f.`name` = #{name} and f.`spr_name` = #{sprName} limit 1
     </select>
 
     <insert id="insertFieldCode" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCode"

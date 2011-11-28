@@ -32,7 +32,7 @@
         select * from `counterpart` <include refid="selectCounterpartsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        limit #{first}, #{count}
+        <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
     <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
