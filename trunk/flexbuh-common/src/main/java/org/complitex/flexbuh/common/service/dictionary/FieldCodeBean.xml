@@ -50,8 +50,14 @@
 
     <select id="selectField" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCodeFilter"
             resultType="org.complitex.flexbuh.common.entity.dictionary.Field">
-        select f.* from `field` f left join `code` c on (c.`field_code_id` = f.`field_code_id`)
+        select f.*, f.`spr_name` sprName from `field` f left join `code` c on (c.`field_code_id` = f.`field_code_id`)
           where c.`code` = #{code} and f.`name` = #{name} and f.`spr_name` = #{sprName} limit 1
+    </select>
+
+    <select id="selectFields" parameterType="string"
+            resultType="org.complitex.flexbuh.common.entity.dictionary.Field">
+        select f.*, f.`spr_name` sprName from `field` f left join `code` c on (c.`field_code_id` = f.`field_code_id`)
+          where c.`code` = #{code}
     </select>
 
     <insert id="insertFieldCode" parameterType="org.complitex.flexbuh.common.entity.dictionary.FieldCode"

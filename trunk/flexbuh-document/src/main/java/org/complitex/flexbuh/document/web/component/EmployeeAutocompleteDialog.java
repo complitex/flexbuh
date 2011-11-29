@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
 import org.complitex.flexbuh.document.entity.Employee;
@@ -28,20 +29,21 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.11.11 15:25
  */
-public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Employee>{
+public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Employee> implements IDeclarationStringComponent{
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
-
-    private final static String SPR_NAME = "spr_works";
 
     @EJB
     private EmployeeBean employeeBean;
 
     private Long sessionId;
+    private DeclarationStringModel model; 
 
     public EmployeeAutocompleteDialog(String id, final DeclarationStringModel model, Long sessionId) {
-        super(id, model, new Model<>(new Employee()), model.getDeclaration().getTemplateName(), model.getName(), SPR_NAME);
+        super(id, model, new Model<>(new Employee()), model.getDeclaration().getTemplateName(), model.getName(),
+                FieldCodeBean.EMPLOYEE_SPR_NAME);
 
         this.sessionId = sessionId;
+        this.model = model;
 
         final Dialog dialog = getDialog();
         dialog.setTitle(getString("title"));
@@ -144,5 +146,15 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
         }
 
         return list;
+    }
+
+    @Override
+    public DeclarationStringModel getDeclarationModel() {
+        return model;
+    }
+
+    @Override
+    public String getValue() {
+        return getAutocompleteComponent().getValue();
     }
 }

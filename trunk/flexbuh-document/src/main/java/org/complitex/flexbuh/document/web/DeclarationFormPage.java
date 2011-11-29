@@ -69,12 +69,13 @@ public class DeclarationFormPage extends TemplatePage{
         add(new FeedbackPanel("messages"));
 
         add(new Label("title", declaration.getName()));
+        add(new Label("templateName", declaration.getTemplateName()));
 
         Form form = new Form("form");
         add(form);
 
         //Declaration
-        form.add(new DeclarationFormComponent("declaration", declaration));
+        form.add(new DeclarationFormComponent("declaration", declaration, getSessionId(true)));
 
         //Linked declaration
         Accordion accordion = new Accordion("accordion");
@@ -92,7 +93,7 @@ public class DeclarationFormPage extends TemplatePage{
 
                 item.add(new Label("label", declaration.getTemplateName() + " " + declaration.getName()));
 
-                item.add(new DeclarationFormComponent("linked_declaration", declaration));
+                item.add(new DeclarationFormComponent("linked_declaration", declaration, getSessionId(true)));
 
                 item.setRenderBodyOnly(true);
             }

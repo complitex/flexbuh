@@ -9,12 +9,16 @@ import org.complitex.flexbuh.document.entity.DeclarationValue;
  */
 public class DeclarationStringModel extends AbstractDeclarationModel<String>{
     private String mask;
-    private DeclarationValue declarationValue;
+    private DeclarationValue declarationValue; 
+    private String type;
+    private String field;
 
-    public DeclarationStringModel(Integer rowRum, String name, String type, String mask, Declaration declaration) {
+    public DeclarationStringModel(Integer rowRum, String name, String type, String mask, String field, Declaration declaration) {
         super(rowRum, name, declaration);
         
         this.mask = mask;
+        this.type = type;
+        this.field = field;
 
         declarationValue = isMask()
                 ? declaration.getDeclarationValue(getMaskName())
@@ -69,5 +73,13 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
 
     public boolean isMask(){
         return mask != null && !mask.isEmpty();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getField() {
+        return field;
     }
 }

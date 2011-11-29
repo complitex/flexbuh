@@ -6,9 +6,11 @@ import org.apache.wicket.markup.MarkupResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.entity.dictionary.Field;
+import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
+import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.exception.LoadDocumentException;
-import org.complitex.flexbuh.common.util.XmlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -16,7 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.ejb.EJB;
-import javax.ejb.Stateful;
+import javax.ejb.Singleton;
 import javax.xml.xpath.XPath;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -29,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 02.11.11 17:14
  */
-@Stateful
+@Singleton
 public class DeclarationMarkupService {
     private static final Logger log = LoggerFactory.getLogger(DeclarationMarkupService.class);
 
@@ -37,6 +39,9 @@ public class DeclarationMarkupService {
 
     @EJB
     private TemplateService templateService;
+
+    @EJB
+    private FieldCodeBean fieldCodeBean;
 
     private Map<String, Markup> markupMap = new ConcurrentHashMap<>();
 
@@ -46,9 +51,11 @@ public class DeclarationMarkupService {
         if (markup == null){
             try {
                 markup = createMarkup(templateName);
-                markupMap.put(templateName, markup);
+//                markupMap.put(templateName, markup);
             } catch (Exception e) {
                 log.error("Ошибка создания шаблона страницы", e);
+
+                throw new RuntimeException(e);
             }
         }
 
@@ -71,6 +78,9 @@ public class DeclarationMarkupService {
         //XPath
         XPath schemaXPath = XmlUtil.newSchemaXPath();
         XPath templateXPath = XmlUtil.newXPath();
+        
+        //Fields
+        List<Field> fields = fieldCodeBean.getFields(templateName);
 
         //Body
         NodeList bodyNodeList = template.getElementsByTagName("body");
@@ -88,7 +98,7 @@ public class DeclarationMarkupService {
         //Input
         NodeList inputList = div.getElementsByTagName("input");
 
-        for (int i=0; i < inputList.getLength(); ++i){
+        for (int i=0, len = inputList.getLength(); i < len; ++i){
             Element inputElement = (Element) inputList.item(i);
 
             if (XmlUtil.getParentById("StretchTable", inputElement) == null){
@@ -122,6 +132,17 @@ public class DeclarationMarkupService {
                         inputElement.setAttribute("type", "checkbox");
                     }
                 }else{
+                    //Field Code
+                    for (Field field : fields){
+                        if (id.equals(field.getName())){
+                            template.renameNode(inputElement, null, "span");
+
+                            inputElement.setAttribute("field", field.getSprName());
+
+                            break;
+                        }
+                    }
+
                     //TextField
                     inputElement.setAttribute("type", "text");
 
@@ -137,7 +158,7 @@ public class DeclarationMarkupService {
 
         int index = 0;
 
-        for (int i=0; i < stretchList.getLength(); ++i){
+        for (int i=0, sLen = stretchList.getLength(); i < sLen; ++i){
             Element tbody = (Element) XmlUtil.getParent("tbody", stretchList.item(i));
 
             if (!tbodyElements.contains(tbody)) {
@@ -164,27 +185,42 @@ public class DeclarationMarkupService {
                     NodeList stretchInputList = stretchTableElement.getElementsByTagName("input");
 
                     //Input
-                    for (int k = 0; k < stretchInputList.getLength(); ++k){
-                        Element inputElement = (Element) stretchInputList.item(k);
-                        
-                        String id = inputElement.getAttribute("id");
-                        inputElement.setAttribute("wicket:id", id);
-                        inputElement.removeAttribute("id");
+                    for (int k = 0; k < stretchInputList.getLength(); k++){
+                        System.out.println(stretchInputList.getLength());
+
+                        Element stretchInputElement = (Element) stretchInputList.item(k);
+
+                        String id = stretchInputElement.getAttribute("id");
+                        stretchInputElement.setAttribute("wicket:id", id);
+                        stretchInputElement.removeAttribute("id");
+
+                        //Field Code
+                        for (Field field : fields){
+                            if (id.equals(field.getName())){
+                                template.renameNode(stretchInputElement, null, "span");
+
+                                stretchInputElement.setAttribute("field", field.getSprName());
+
+                                k--; //stretchInputList update length after rename node
+
+                                break;
+                            }
+                        }
 
                         //type
                         Element schemaElement = XmlUtil.getElementByName(id, schema, schemaXPath);
                         String type = schemaElement.getAttribute("type");
 
-                        inputElement.setAttribute("type", "text");
+                        stretchInputElement.setAttribute("type", "text");
 
-                        inputElement.setAttribute("schema", type);
-                        inputElement.setAttribute("mask", ((Element) XmlUtil.getParent("td", inputElement)).getAttribute("mask"));
+                        stretchInputElement.setAttribute("schema", type);
+                        stretchInputElement.setAttribute("mask", ((Element) XmlUtil.getParent("td", stretchInputElement)).getAttribute("mask"));
                     }
 
                     //Row number
                     NodeList spRownumList = XmlUtil.getElementsById("spRownum", stretchTableElement, templateXPath);
 
-                    for (int k = 0, size = spRownumList.getLength(); k < size; ++k) {
+                    for (int k = 0, spLen = spRownumList.getLength(); k < spLen; ++k) {
                         Element spRownumElement = (Element) spRownumList.item(k);
 
                         if (spRownumElement != null){

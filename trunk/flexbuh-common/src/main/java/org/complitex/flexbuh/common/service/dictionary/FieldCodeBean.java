@@ -16,6 +16,9 @@ import java.util.Map;
  */
 @Stateless
 public class FieldCodeBean extends AbstractBean{
+    public final static String COUNTERPART_SPR_NAME = "spr_contragents";
+    public final static String EMPLOYEE_SPR_NAME = "spr_works";
+
     public FieldCode getFieldCode(Long id){
         return (FieldCode) sqlSession().selectOne("selectFieldCode", id);
     }
@@ -33,17 +36,17 @@ public class FieldCodeBean extends AbstractBean{
         //todo add unique key
         if (fieldCode.getId() == null) {
             sqlSession().insert("insertFieldCode", fieldCode);
-            
+
             for (Field field : fieldCode.getFields()) {
-                field.setFieldCodeId(fieldCode.getId());                
+                field.setFieldCodeId(fieldCode.getId());
                 sqlSession().insert("insertField", field);
             }
-            
+
             for (String code : fieldCode.getCodes()){
                 Map<String, Object> map = new HashMap<>();
                 map.put("fieldCodeId", fieldCode.getId());
                 map.put("code", code);
-                
+
                 sqlSession().insert("insertCode", map);
             }
         }else{
@@ -53,5 +56,10 @@ public class FieldCodeBean extends AbstractBean{
 
     public Field getField(String code, String name, String sprName){
         return (Field) sqlSession().selectOne("selectField", new FieldCodeFilter(code, name, sprName));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Field> getFields(String code){
+        return sqlSession().selectList("selectFields", code);
     }
 }

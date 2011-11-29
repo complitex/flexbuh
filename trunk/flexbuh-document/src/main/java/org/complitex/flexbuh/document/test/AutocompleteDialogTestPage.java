@@ -23,14 +23,14 @@ public class AutocompleteDialogTestPage extends TemplatePage{
         add(form);
 
         form.add(new EmployeeAutocompleteDialog("autocomplete",
-                new DeclarationStringModel(null, "T1RXXXXG02", null, null, new Declaration("J0500103")),
+                new DeclarationStringModel(null, "T1RXXXXG02", null, null, null,  new Declaration("J0500103")),
                 getSessionId(true)));
 
         form.add(new CounterpartAutocompleteDialog("a1",
-                       new DeclarationStringModel(null, "T1RXXXXG3S", null, null, new Declaration("J0200506")),
+                       new DeclarationStringModel(null, "T1RXXXXG3S", null, null, null,  new Declaration("J0200506")),
                        getSessionId(true)));
         form.add(new CounterpartAutocompleteDialog("a2",
-                               new DeclarationStringModel(null, "T2RXXXXG2S", null, null, new Declaration("J0200506")),
+                               new DeclarationStringModel(null, "T2RXXXXG2S", null, null, null,  new Declaration("J0200506")),
                                getSessionId(true)));
     }
 }
