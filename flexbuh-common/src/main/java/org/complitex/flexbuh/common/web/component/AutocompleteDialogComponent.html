@@ -5,9 +5,16 @@
     <div wicket:id="dialog">
         <wicket:child/>
     </div>
-    <span>
-        <span wicket:id="autocomplete"></span>
-        <input type="button" wicket:id="open" value="..." style="margin-left: -23px; padding: 0"/>
-    </span>
+    <table>
+        <tr>
+            <td>
+                <span wicket:id="autocomplete"></span>
+            </td>
+            <td>
+                <input type="button" wicket:id="open" value="..." style="cursor: pointer"/>
+            </td>
+        </tr>
+    </table>
 </wicket:panel>
+
 </html>

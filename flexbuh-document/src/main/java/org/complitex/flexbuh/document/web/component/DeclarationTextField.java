@@ -1,23 +1,23 @@
 package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.util.convert.IConverter;
+import org.complitex.flexbuh.common.web.component.CssStyleTextField;
 import org.complitex.flexbuh.document.web.converter.DecimalConverter;
 import org.complitex.flexbuh.document.web.converter.DeclarationDateConverter;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
-import org.complitex.flexbuh.common.web.component.CssStyleTextField;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.10.11 18:06
  */
-public class DeclarationTextField extends CssStyleTextField<String> {    
-    private String schema;
-    
-    public DeclarationTextField(String id, DeclarationStringModel model, String schema) {
+public class DeclarationTextField extends CssStyleTextField<String> implements IDeclarationStringComponent{
+    private DeclarationStringModel model;
+
+    public DeclarationTextField(String id, DeclarationStringModel model) {
         super(id, model);
-        
-        this.schema = schema;
-        
+
+        this.model = model;
+
         setType(String.class);
     }
 
@@ -28,8 +28,8 @@ public class DeclarationTextField extends CssStyleTextField<String> {
     @SuppressWarnings("unchecked")
     @Override
     public <C> IConverter<C> getConverter(Class<C> classType) {
-        if (schema != null){
-            switch (schema){
+        if (model.getType() != null){
+            switch (model.getType()){
                 case "DGDate":
                 case "DateColumn":
                     return (IConverter<C>) new DeclarationDateConverter();
@@ -45,10 +45,6 @@ public class DeclarationTextField extends CssStyleTextField<String> {
         return super.getConverter(classType);
     }
 
-    public String getSchema() {
-        return schema;
-    }
-    
     public String getMask(){
         return getDeclarationModel().getMask();
     }

@@ -38,6 +38,8 @@ public abstract class AutocompleteDialogComponent<T> extends Panel {
         this.selectModel = selectModel;
         this.model = model;
 
+        setOutputMarkupId(true);
+
         //Alias
         Field field = fieldCodeBean.getField(code, name, sprName);
         alias = field.getAlias();
@@ -60,10 +62,11 @@ public abstract class AutocompleteDialogComponent<T> extends Panel {
                 updateLinked(target);
             }
         };
-        setOutputMarkupId(true);
+        autocompleteComponent.setOutputMarkupId(true);
         add(autocompleteComponent);
 
         dialog = new Dialog("dialog");
+        dialog.setOutputMarkupId(true);
         add(dialog);
 
         add(new AjaxButton("open") {

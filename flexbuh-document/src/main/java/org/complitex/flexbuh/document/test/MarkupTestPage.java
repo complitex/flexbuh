@@ -15,6 +15,6 @@ import java.io.IOException;
  */
 public class MarkupTestPage extends WebPage{
     public MarkupTestPage() throws TransformerException, JAXBException, IOException, SAXException, ParserConfigurationException {
-        add(new DeclarationFormComponent("component",  TransformationTestPage.getDeclaration()));
+        add(new DeclarationFormComponent("component",  TransformationTestPage.getDeclaration(), null));
     }
 }

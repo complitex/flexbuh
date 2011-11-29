@@ -11,11 +11,15 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
+import org.complitex.flexbuh.common.util.ScriptUtil;
+import org.complitex.flexbuh.common.util.StringUtil;
+import org.complitex.flexbuh.common.util.XmlUtil;
+import org.complitex.flexbuh.common.web.component.RadioSet;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
@@ -23,17 +27,10 @@ import org.complitex.flexbuh.document.service.DeclarationFillService;
 import org.complitex.flexbuh.document.service.DeclarationMarkupService;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
-import org.complitex.flexbuh.document.web.component.AddRowPanel;
-import org.complitex.flexbuh.document.web.component.DeclarationTextField;
-import org.complitex.flexbuh.document.web.component.RowNumLabel;
-import org.complitex.flexbuh.document.web.component.StretchTable;
+import org.complitex.flexbuh.document.web.component.*;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
-import org.complitex.flexbuh.common.util.ScriptUtil;
-import org.complitex.flexbuh.common.util.StringUtil;
-import org.complitex.flexbuh.common.util.XmlUtil;
-import org.complitex.flexbuh.common.web.component.RadioSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -78,16 +75,20 @@ public class DeclarationFormComponent extends Panel{
     private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
 
     private Map<String, Rule> rulesMap;
-    private Map<String, DeclarationTextField> simpleTextFieldMap = new HashMap<>();
-    private Map<String, List<DeclarationTextField>> multiRowTextFieldMap = new HashMap<>();
-    private Map<String, DeclarationTextField> maskTextFieldMap = new HashMap<>();
+    private Map<String, IDeclarationStringComponent> simpleTextFieldMap = new HashMap<>();
+    private Map<String, List<IDeclarationStringComponent>> multiRowTextFieldMap = new HashMap<>();
+    private Map<String, IDeclarationStringComponent> maskTextFieldMap = new HashMap<>();
 
     private final String templateName;
 
     private int nextId = 1;
 
-    public DeclarationFormComponent(String id, Declaration declaration){
+    private Long sessionId;
+
+    public DeclarationFormComponent(String id, Declaration declaration, Long sessionId){
         super(id);
+
+        this.sessionId = sessionId;
 
         templateName = declaration.getTemplateName();
 
@@ -131,6 +132,7 @@ public class DeclarationFormComponent extends Panel{
                 String schema = tag.getAttribute("schema");
                 String wicketId = tag.getAttribute("wicket:id");
                 String mask = tag.getAttribute("mask");
+                String field = tag.getAttribute("field");
 
                 if (type != null){
                     if ("radio".equals(type) && radioSet != null){
@@ -157,7 +159,7 @@ public class DeclarationFormComponent extends Panel{
                     if ("text".equals(type)){
                         boolean stretchRow = wicketId.contains("XXXX") || (mask != null && !mask.isEmpty());
 
-                        addTextInput(stretchRow ? 1 : null, parent, schema, wicketId, mask);
+                        addTextInput(stretchRow ? 1 : null, parent, schema, wicketId, mask, field);
                     }
                 }
 
@@ -216,72 +218,92 @@ public class DeclarationFormComponent extends Panel{
         }
     }
 
-    private void addTextInput(Integer rowNum, WebMarkupContainer container, String schema, String id, String mask) {
-        DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schema, mask, declaration);
+    private void addTextInput(Integer rowNum, WebMarkupContainer container, String schema, String id, String mask, String field) {
+        DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schema, mask, field, declaration);
 
-        final DeclarationTextField textField = new DeclarationTextField(id, model, schema);
-        textField.setOutputMarkupId(true);
-        container.add(textField);
+        IDeclarationStringComponent declarationStringComponent = null;
 
-        //add maps
-        if (id.contains("XXXX")){
-            List<DeclarationTextField> textFields = multiRowTextFieldMap.get(id);
+        if (field == null || field.isEmpty()){
+            final DeclarationTextField textField = new DeclarationTextField(id, model);
+            textField.setOutputMarkupId(true);
+            container.add(textField);
 
-            if (textFields == null){
-                textFields = new ArrayList<>();
-                multiRowTextFieldMap.put(id, textFields);
-            }
+            declarationStringComponent = textField;
 
-            textFields.add(textField);
-        }else if (!mask.isEmpty()){
-            maskTextFieldMap.put(model.getMaskName(), textField);
-        }else{
-            simpleTextFieldMap.put(id, textField);
-        }
-
-        //Ajax update
-        textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-            @Override
-            protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                //wtf
-            }
-
-            @Override
-            protected void onUpdate(final AjaxRequestTarget target) {
-                String value = textField.getValue();
-
-                if (value != null && !value.isEmpty()) {
-                    //Auto fill
-                    autoFill(target);
-
-                    //Auto fill linked
-                    getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
-
-                        @Override
-                        public void component(DeclarationFormComponent component, IVisit visit) {
-                            component.autoFill(target);
-
-                            visit.dontGoDeeper();
-                        }
-                    });
+            //Ajax update
+            textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                @Override
+                protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                    //wtf
                 }
 
-                target.add(textField);
-            }
-        });
+                @Override
+                protected void onUpdate(final AjaxRequestTarget target) {
+                    String value = textField.getValue();
 
-        //Restriction
-        try {
-            Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
-            textField.add(createRestrictionBehavior(schema, rule != null ? rule.getDescription() : ""));
-        } catch (XPathExpressionException e) {
-            log.error("Ошибка создания проверки данных",e);
+                    if (value != null && !value.isEmpty()) {
+                        //Auto fill
+                        autoFill(target);
+
+                        //Auto fill linked
+                        getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
+
+                            @Override
+                            public void component(DeclarationFormComponent component, IVisit visit) {
+                                component.autoFill(target);
+
+                                visit.dontGoDeeper();
+                            }
+                        });
+                    }
+
+                    target.add(textField);
+                }
+            });
+
+            //Restriction
+            try {
+                Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
+                textField.add(createRestrictionBehavior(schema, rule != null ? rule.getDescription() : ""));
+            } catch (XPathExpressionException e) {
+                log.error("Ошибка создания проверки данных", e);
+            }
+        } else if (field.equals(FieldCodeBean.COUNTERPART_SPR_NAME)) {
+            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, sessionId);
+            component.setOutputMarkupId(true);
+            container.add(component);
+
+            declarationStringComponent = component;
+        } else if (field.equals(FieldCodeBean.EMPLOYEE_SPR_NAME)) {
+            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, sessionId);
+            component.setOutputMarkupId(true);
+            container.add(component);
+
+            declarationStringComponent = component;
+        }
+
+        //add maps
+        if (declarationStringComponent != null) {
+            if (id.contains("XXXX")) {
+                List<IDeclarationStringComponent> textFields = multiRowTextFieldMap.get(id);
+
+                if (textFields == null) {
+                    textFields = new ArrayList<>();
+                    multiRowTextFieldMap.put(id, textFields);
+                }
+
+                textFields.add(declarationStringComponent);
+            } else if (!mask.isEmpty()) {
+                maskTextFieldMap.put(model.getMaskName(), declarationStringComponent);
+            } else {
+                simpleTextFieldMap.put(id, declarationStringComponent);
+            }
         }
     }
 
     private void addRow(final int rowNum, final StretchTable stretchTable, WebMarkupContainer afterRow){
         final WebMarkupContainer newRow = stretchTable.insertAfter(afterRow);
-        
+
         stretchTable.getFirstStretchRow().visitChildren(new IVisitor<Component, Object>() {
             @Override
             public void component(Component object, IVisit<Object> visit) {
@@ -295,10 +317,10 @@ public class DeclarationFormComponent extends Panel{
                     addAddRowPanel(newRow, stretchTable);
 
                     visit.dontGoDeeper();
-                }else if (object instanceof DeclarationTextField){
-                    DeclarationTextField textField = (DeclarationTextField) object;
+                }else if (object instanceof IDeclarationStringComponent){
+                    DeclarationStringModel model = ((IDeclarationStringComponent) object).getDeclarationModel();
 
-                    addTextInput(rowNum, newRow, textField.getSchema(), textField.getId(), textField.getMask());
+                    addTextInput(rowNum, newRow, model.getType(), model.getName(), model.getMask(), model.getField());
 
                     visit.dontGoDeeper();
                 }
@@ -399,7 +421,7 @@ public class DeclarationFormComponent extends Panel{
             if (value.contains("SUM")){
                 double sum = 0;
 
-                for (TextField<String> textField : multiRowTextFieldMap.get(rule.getExpressionIds().get(index > 0 ? index : 0))){
+                for (IDeclarationStringComponent textField : multiRowTextFieldMap.get(rule.getExpressionIds().get(index > 0 ? index : 0))){
                     sum += (StringUtil.isDecimal(textField.getValue())) ? Double.parseDouble(textField.getValue()) : 0;
                 }
 
@@ -441,7 +463,7 @@ public class DeclarationFormComponent extends Panel{
                 value = scriptEngine.eval(value).toString();
             }
 
-            TextField<String> autoFill;
+            IDeclarationStringComponent autoFill;
 
             if (index >= 0){
                 autoFill = multiRowTextFieldMap.get(rule.getCDocRowCId()).get(index);
@@ -454,9 +476,9 @@ public class DeclarationFormComponent extends Panel{
             }
 
             if (autoFill != null && !value.equals(autoFill.getValue())) {
-                autoFill.setModelObject(value);
-                target.add(autoFill);
-                target.appendJavaScript("$('#" + autoFill.getMarkupId() + "').css('background-color', '#add8e6')");
+                autoFill.getDeclarationModel().setObject(value);
+                target.add((Component)autoFill);
+//                target.appendJavaScript("$('#" + autoFill.getMarkupId() + "').css('background-color', '#add8e6')");
             }
         } catch (ScriptException e) {
             log.error("Ошибка автозаполнения", e);

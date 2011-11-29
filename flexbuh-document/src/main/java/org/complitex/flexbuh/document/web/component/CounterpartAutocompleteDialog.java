@@ -26,9 +26,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.11.11 12:35
  */
-public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<Counterpart> {
-    private final static String SPR_NAME = "spr_contragents";
-
+public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<Counterpart> implements IDeclarationStringComponent{
     @EJB
     private FieldCodeBean fieldCodeBean;
 
@@ -37,10 +35,14 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
 
     private Long sessionId;
 
+    private DeclarationStringModel model;
+
     public CounterpartAutocompleteDialog(String id, DeclarationStringModel model, Long sessionId) {
-        super(id, model, new Model<>(new Counterpart()), model.getDeclaration().getTemplateName(), model.getName(), SPR_NAME);
+        super(id, model, new Model<>(new Counterpart()), model.getDeclaration().getTemplateName(), model.getName(),
+                FieldCodeBean.COUNTERPART_SPR_NAME);
 
         this.sessionId = sessionId;
+        this.model = model;
 
         final Dialog dialog = getDialog();
         dialog.setTitle(getString("title"));
@@ -53,19 +55,22 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
         form.add(new AjaxButton("select") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                updateSelectModel(target);
-                updateLinked(target);
+                if (getSelectModel().getObject() != null){
 
-                dialog.close(target);
+                    updateSelectModel(target);
+                    updateLinked(target);
+
+                    dialog.close(target);
+                }
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 //no more error
             }
-        });
+        }.setDefaultFormProcessing(true));
 
-        final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", getSelectModel());
+        final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", getSelectModel());                
         form.add(radioGroup);
 
         List<Counterpart> list = counterpartBean.getCounterparts(new CounterpartFilter(sessionId));
@@ -168,5 +173,15 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
         }
 
         return list;
+    }
+
+    @Override
+    public DeclarationStringModel getDeclarationModel() {
+        return model;
+    }
+
+    @Override
+    public String getValue() {
+        return getAutocompleteComponent().getValue();
     }
 }
