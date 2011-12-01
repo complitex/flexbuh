@@ -16,9 +16,6 @@ import java.util.Map;
  */
 @Stateless
 public class FieldCodeBean extends AbstractBean{
-    public final static String COUNTERPART_SPR_NAME = "spr_contragents";
-    public final static String EMPLOYEE_SPR_NAME = "spr_works";
-
     public FieldCode getFieldCode(Long id){
         return (FieldCode) sqlSession().selectOne("selectFieldCode", id);
     }

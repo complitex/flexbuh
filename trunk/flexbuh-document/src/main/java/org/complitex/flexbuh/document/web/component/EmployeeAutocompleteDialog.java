@@ -1,28 +1,18 @@
 package org.complitex.flexbuh.document.web.component;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.RadioGroup;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
+import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,77 +26,35 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
     private EmployeeBean employeeBean;
 
     private Long sessionId;
-    private DeclarationStringModel model; 
+    private DeclarationStringModel model;
 
-    public EmployeeAutocompleteDialog(String id, final DeclarationStringModel model, Long sessionId) {
-        super(id, model, new Model<>(new Employee()), model.getDeclaration().getTemplateName(), model.getName(),
-                FieldCodeBean.EMPLOYEE_SPR_NAME);
+    public EmployeeAutocompleteDialog(String id, final DeclarationStringModel model, Long sessionId, IAutocompleteDialog<Employee> dialog) {
+        super(id, model, model.getDeclaration().getTemplateName(), model.getName(), FieldCode.EMPLOYEE_SPR_NAME, dialog);
 
         this.sessionId = sessionId;
         this.model = model;
-
-        final Dialog dialog = getDialog();
-        dialog.setTitle(getString("title"));
-        dialog.setWidth(870);
-
-        //Form
-        Form form = new Form<Employee>("form");
-        dialog.add(form);
-
-        form.add(new AjaxButton("select") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                updateSelectModel(target);
-                updateLinked(target);
-
-                dialog.close(target);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //no more error
-            }
-        });
-
-        final RadioGroup<Employee> radioGroup = new RadioGroup<>("radio_group", getSelectModel());
-        form.add(radioGroup);
-
-        List<Employee> list = employeeBean.getEmployees(new EmployeeFilter(sessionId));
-
-        ListView listView = new ListView<Employee>("employees", list) {
-            @Override
-            protected void populateItem(ListItem<Employee> item) {
-                Employee employee = item.getModelObject();
-
-                item.add(new Radio<>("select", new Model<>(employee)));
-                item.add(new Label("htin", StringUtil.getString(employee.getHtin())));
-                item.add(new Label("hname", employee.getHname()));
-                item.add(DateLabel.forDateStyle("hbirthday", new Model<>(employee.getHbirthday()), "M-"));
-                item.add(DateLabel.forDateStyle("hdateIn", new Model<>(employee.getHdateIn()), "M-"));
-                item.add(DateLabel.forDateStyle("hdateOut", new Model<>(employee.getHdateOut()), "M-"));
-            }
-        };
-        radioGroup.add(listView);
     }
 
-    protected void updateSelectModel(Employee employee, IModel<String> model){
-        switch (getAlias()){
-            case "HTIN":
-                model.setObject(StringUtil.getString(employee.getHtin()));
-                break;
-            case "HDATE_IN":
-                model.setObject(DATE_FORMAT.format(employee.getHdateIn()));
-                break;
-            case "HDATE_OUT":
-                model.setObject(DATE_FORMAT.format(employee.getHdateOut()));
-                break;
+    protected void updateModel(Employee employee){
+        try {
+            switch (getAlias()){
+                case "HTIN":
+                    model.setObject(StringUtil.getString(employee.getHtin()));
+                    break;
+                case "HDATE_IN":
+                    model.setObject(DATE_FORMAT.format(employee.getHdateIn()));
+                    break;
+                case "HDATE_OUT":
+                    model.setObject(DATE_FORMAT.format(employee.getHdateOut()));
+                    break;
+            }
+        } catch (Exception e) {
+            //ups
         }
     }
 
     @Override
-    protected List<String> getValues(String tern) {
-        List<String> list = new ArrayList<>();
-
+    protected List<Employee> getValues(String tern) {
         try {
             EmployeeFilter filter = new EmployeeFilter(sessionId);
 
@@ -122,30 +70,12 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
                     break;
             }
 
-            List<Employee> employees = employeeBean.getEmployees(filter);
-
-            switch (getAlias()){
-                case "HTIN":
-                    for (Employee employee : employees){
-                        list.add(employee.getHtin() + "");
-                    }
-                    break;
-                case "HDATE_IN":
-                    for (Employee employee : employees){
-                        list.add(DATE_FORMAT.format(employee.getHdateIn()));
-                    }
-                    break;
-                case "HDATE_OUT":
-                    for (Employee employee : employees){
-                        list.add(DATE_FORMAT.format(employee.getHdateOut()));
-                    }
-                    break;
-            }
+            return employeeBean.getEmployees(filter);
         } catch (Exception e) {
             //error can happen
         }
 
-        return list;
+        return Collections.emptyList();
     }
 
     @Override
@@ -156,5 +86,29 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
     @Override
     public String getValue() {
         return getAutocompleteComponent().getValue();
+    }
+
+    @Override
+    protected IChoiceRenderer<Employee> getChoiceRenderer() {
+        return new IChoiceRenderer<Employee>() {
+            @Override
+            public Object getDisplayValue(Employee object) {
+                switch (getAlias()){
+                    case "HTIN":
+                        return StringUtil.getString(object.getHtin());
+                    case "HDATE_IN":
+                        return object.getHdateIn() != null ? DATE_FORMAT.format(object.getHdateIn()) : "";
+                    case "HDATE_OUT":
+                        return object.getHdateOut() != null ? DATE_FORMAT.format(object.getHdateOut()) : "";
+                }
+
+                return null;
+            }
+
+            @Override
+            public String getIdValue(Employee object, int index) {
+                return object.getId() != null ? object.getId().toString() : null;
+            }
+        };
     }
 }

@@ -22,9 +22,7 @@ import javax.ejb.Singleton;
 import javax.xml.xpath.XPath;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,7 +49,7 @@ public class DeclarationMarkupService {
         if (markup == null){
             try {
                 markup = createMarkup(templateName);
-//                markupMap.put(templateName, markup);
+                markupMap.put(templateName, markup);
             } catch (Exception e) {
                 log.error("Ошибка создания шаблона страницы", e);
 
@@ -81,6 +79,7 @@ public class DeclarationMarkupService {
         
         //Fields
         List<Field> fields = fieldCodeBean.getFields(templateName);
+        Set<String> sprNameSet = new HashSet<>();
 
         //Body
         NodeList bodyNodeList = template.getElementsByTagName("body");
@@ -91,14 +90,14 @@ public class DeclarationMarkupService {
         Element panel = template.createElement("wicket:panel");
         panel.setAttribute("xmlns:wicket", WICKET_NAMESPACE_URI);
 
-        Element div = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
-        div.setAttribute("wicket:id", "container");
-        panel.appendChild(div);
+        Element containerElement = (Element) template.renameNode(bodyNodeList.item(0), null, "div");
+        containerElement.setAttribute("wicket:id", "container");
+        panel.appendChild(containerElement);
 
         //Input
-        NodeList inputList = div.getElementsByTagName("input");
+        NodeList inputList = containerElement.getElementsByTagName("input");
 
-        for (int i=0, len = inputList.getLength(); i < len; ++i){
+        for (int i=0; i < inputList.getLength(); ++i){
             Element inputElement = (Element) inputList.item(i);
 
             if (XmlUtil.getParentById("StretchTable", inputElement) == null){
@@ -135,9 +134,22 @@ public class DeclarationMarkupService {
                     //Field Code
                     for (Field field : fields){
                         if (id.equals(field.getName())){
+                            String sprName = field.getSprName();
+                            
                             template.renameNode(inputElement, null, "span");
+                            i--; //inputList size changed after rename
 
-                            inputElement.setAttribute("field", field.getSprName());
+                            inputElement.setAttribute("field", sprName);
+
+                            //dialog
+                            if (!sprNameSet.contains(sprName)){
+                                Element sprDivElement = template.createElement("div");
+                                sprDivElement.setAttribute("wicket:id", "dialog_" + sprName);
+                                
+                                containerElement.insertBefore(sprDivElement, containerElement.getFirstChild());
+                                
+                                sprNameSet.add(sprName);                                
+                            }
 
                             break;
                         }
@@ -154,7 +166,7 @@ public class DeclarationMarkupService {
         //Dynamic table input
         List<Element> tbodyElements = new ArrayList<>();
 
-        NodeList stretchList = XmlUtil.getElementsById("StretchTable", div, templateXPath);
+        NodeList stretchList = XmlUtil.getElementsById("StretchTable", containerElement, templateXPath);
 
         int index = 0;
 
@@ -197,11 +209,23 @@ public class DeclarationMarkupService {
                         //Field Code
                         for (Field field : fields){
                             if (id.equals(field.getName())){
+                                String sprName = field.getSprName();
+                                
                                 template.renameNode(stretchInputElement, null, "span");
 
-                                stretchInputElement.setAttribute("field", field.getSprName());
+                                stretchInputElement.setAttribute("field", sprName);
 
                                 k--; //stretchInputList update length after rename node
+
+                                //dialog
+                                if (!sprNameSet.contains(sprName)){
+                                    Element sprDivElement = template.createElement("div");
+                                    sprDivElement.setAttribute("wicket:id", "dialog_" + sprName);
+
+                                    containerElement.insertBefore(sprDivElement, containerElement.getFirstChild());
+
+                                    sprNameSet.add(sprName);
+                                }
 
                                 break;
                             }
