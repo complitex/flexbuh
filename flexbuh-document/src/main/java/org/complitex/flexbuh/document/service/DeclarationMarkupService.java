@@ -7,6 +7,7 @@ import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.entity.dictionary.Field;
+import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
 import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
@@ -133,9 +134,9 @@ public class DeclarationMarkupService {
                 }else{
                     //Field Code
                     for (Field field : fields){
-                        if (id.equals(field.getName())){
-                            String sprName = field.getSprName();
-                            
+                        String sprName = field.getSprName();
+
+                        if (FieldCode.IMPLEMENTED.contains(sprName) && id.equals(field.getName())){
                             template.renameNode(inputElement, null, "span");
                             i--; //inputList size changed after rename
 
@@ -208,9 +209,9 @@ public class DeclarationMarkupService {
 
                         //Field Code
                         for (Field field : fields){
-                            if (id.equals(field.getName())){
-                                String sprName = field.getSprName();
-                                
+                            String sprName = field.getSprName();
+
+                            if (FieldCode.IMPLEMENTED.contains(sprName) && id.equals(field.getName())){
                                 template.renameNode(stretchInputElement, null, "span");
 
                                 stretchInputElement.setAttribute("field", sprName);
