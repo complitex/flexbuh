@@ -15,7 +15,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
+import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.util.ScriptUtil;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.util.XmlUtil;
@@ -85,6 +85,9 @@ public class DeclarationFormComponent extends Panel{
 
     private Long sessionId;
 
+    private CounterpartDialog counterpartDialog = null;
+    private EmployeeDialog employeeDialog = null;
+
     public DeclarationFormComponent(String id, Declaration declaration, Long sessionId){
         super(id);
 
@@ -135,7 +138,11 @@ public class DeclarationFormComponent extends Panel{
                 String field = tag.getAttribute("field");
 
                 if (type != null){
-                    if ("radio".equals(type) && radioSet != null){
+                    if ("text".equals(type)){
+                        boolean stretchRow = wicketId.contains("XXXX") || (mask != null && !mask.isEmpty());
+
+                        addTextInput(stretchRow ? 1 : null, parent, schema, wicketId, mask, field);
+                    }else if ("radio".equals(type) && radioSet != null){
                         Radio<String> radio = new Radio<>(wicketId, new Model<>(wicketId), radioSet);
                         radio.setOutputMarkupId(true);
                         radioSet.addRadio(radio);
@@ -147,51 +154,48 @@ public class DeclarationFormComponent extends Panel{
                         }
 
                         parent.add(radio);
-                    }
-
-                    if ("checkbox".equals(type)){
+                    }else if ("checkbox".equals(type)){
                         CheckBox checkBox = new CheckBox(wicketId, new DeclarationBooleanModel(wicketId, declaration));
                         checkBox.setOutputMarkupId(true);
 
                         parent.add(checkBox);
-                    }
-
-                    if ("text".equals(type)){
-                        boolean stretchRow = wicketId.contains("XXXX") || (mask != null && !mask.isEmpty());
-
-                        addTextInput(stretchRow ? 1 : null, parent, schema, wicketId, mask, field);
-                    }
+                    }                    
                 }
 
                 if (wicketId != null){
                     if (wicketId.contains("radio_set")){
                         radioSet = new RadioSet<>(wicketId, new DeclarationChoiceModel(null, declaration));
                         parent.add(radioSet);
-                    }
-
-                    if (wicketId.contains("process")){
+                    }else if (wicketId.contains("process")){
                         tbody = new WebMarkupContainer(wicketId);
                         tbody.setOutputMarkupId(true);
 
                         container.add(tbody);
 
                         parent = tbody;
-                    }
-
-                    if (wicketId.contains("repeater")){
+                    }else if (wicketId.contains("repeater")){
                         stretchTable = new StretchTable(wicketId);
                         parent.add(stretchTable);
 
                         parent = stretchTable.getFirstStretchRow();
 
                         addAddRowPanel(parent, stretchTable);
-                    }
-
-                    if (wicketId.contains("spRownum") && stretchTable != null){
+                    }else if (wicketId.contains("spRownum") && stretchTable != null){
                         String numType = tag.getAttribute("numType");
                         boolean letter = numType != null && numType.equals("letter");
 
                         parent.add(new RowNumLabel(wicketId, letter, parent, stretchTable));
+                    }else if (wicketId.contains("dialog")){
+                        switch (wicketId.replace("dialog_", "")){
+                            case FieldCode.COUNTERPART_SPR_NAME:
+                                counterpartDialog = new CounterpartDialog(wicketId, sessionId);
+                                container.add(counterpartDialog);
+                                break;
+                            case FieldCode.EMPLOYEE_SPR_NAME:
+                                employeeDialog = new EmployeeDialog(wicketId, sessionId);
+                                container.add(employeeDialog);
+                                break;
+                        }
                     }
                 }
 
@@ -268,15 +272,13 @@ public class DeclarationFormComponent extends Panel{
             } catch (XPathExpressionException e) {
                 log.error("Ошибка создания проверки данных", e);
             }
-        } else if (field.equals(FieldCodeBean.COUNTERPART_SPR_NAME)) {
-            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, sessionId);
-            component.setOutputMarkupId(true);
+        } else if (field.equals(FieldCode.COUNTERPART_SPR_NAME)) {
+            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, sessionId, counterpartDialog);
             container.add(component);
 
             declarationStringComponent = component;
-        } else if (field.equals(FieldCodeBean.EMPLOYEE_SPR_NAME)) {
-            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, sessionId);
-            component.setOutputMarkupId(true);
+        } else if (field.equals(FieldCode.EMPLOYEE_SPR_NAME)) {
+            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, sessionId, employeeDialog);
             container.add(component);
 
             declarationStringComponent = component;

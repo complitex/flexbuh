@@ -11,6 +11,9 @@ import java.util.List;
 @XmlRootElement(name = "zdoc")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class FieldCode implements Serializable{
+    public final static String COUNTERPART_SPR_NAME = "spr_contragents";
+    public final static String EMPLOYEE_SPR_NAME = "spr_works";
+
     @XmlTransient
     private Long id;
 

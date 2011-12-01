@@ -1,25 +1,17 @@
 package org.complitex.flexbuh.document.web.component;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.RadioGroup;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
+import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,62 +29,14 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
 
     private DeclarationStringModel model;
 
-    public CounterpartAutocompleteDialog(String id, DeclarationStringModel model, Long sessionId) {
-        super(id, model, new Model<>(new Counterpart()), model.getDeclaration().getTemplateName(), model.getName(),
-                FieldCodeBean.COUNTERPART_SPR_NAME);
+    public CounterpartAutocompleteDialog(String id, DeclarationStringModel model, Long sessionId, IAutocompleteDialog<Counterpart> dialog) {
+        super(id, model, model.getDeclaration().getTemplateName(), model.getName(), FieldCode.COUNTERPART_SPR_NAME, dialog);
 
         this.sessionId = sessionId;
         this.model = model;
-
-        final Dialog dialog = getDialog();
-        dialog.setTitle(getString("title"));
-        dialog.setWidth(870);
-
-        //Form
-        Form form = new Form<Counterpart>("form");
-        dialog.add(form);
-
-        form.add(new AjaxButton("select") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                if (getSelectModel().getObject() != null){
-
-                    updateSelectModel(target);
-                    updateLinked(target);
-
-                    dialog.close(target);
-                }
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //no more error
-            }
-        }.setDefaultFormProcessing(true));
-
-        final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", getSelectModel());                
-        form.add(radioGroup);
-
-        List<Counterpart> list = counterpartBean.getCounterparts(new CounterpartFilter(sessionId));
-
-        ListView listView = new ListView<Counterpart>("counterparts", list) {
-            @Override
-            protected void populateItem(ListItem<Counterpart> item) {
-                Counterpart counterpart = item.getModelObject();
-
-                item.add(new Radio<>("select", new Model<>(counterpart)));
-                item.add(new Label("hk", counterpart.getHk()));
-                item.add(new Label("hname", counterpart.getHname()));
-                item.add(new Label("hloc", counterpart.getHloc()));
-                item.add(new Label("htel", counterpart.getHtel()));
-                item.add(new Label("hnspdv", counterpart.getHnspdv()));
-
-            }
-        };
-        radioGroup.add(listView);
     }
 
-    protected void updateSelectModel(Counterpart counterpart, IModel<String> model){
+    protected void updateModel(Counterpart counterpart){
         switch (getAlias()){
             case "HK":
                 model.setObject(counterpart.getHk());
@@ -110,13 +54,10 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
                 model.setObject(counterpart.getHnspdv());
                 break;
         }
-
     }
 
     @Override
-    protected List<String> getValues(String tern) {
-        List<String> list = new ArrayList<>();
-
+    protected List<Counterpart> getValues(String tern) {
         try {
             CounterpartFilter filter = new CounterpartFilter(sessionId);
 
@@ -138,41 +79,41 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
                     break;
             }
 
-            List<Counterpart> counterparts = counterpartBean.getCounterparts(filter);
+            return counterpartBean.getCounterparts(filter);
 
-            switch (getAlias()){
-                case "HK":
-                    for (Counterpart counterpart : counterparts){
-                        list.add(counterpart.getHk());
-                    }
-                    break;
-                case "HNAME":
-                    for (Counterpart counterpart : counterparts){
-                        list.add(counterpart.getHname());
-                    }
-                    break;
-                case "HLOC":
-                    for (Counterpart counterpart : counterparts){
-                        list.add(counterpart.getHloc());
-                    }
-                    break;
-                case "HTEL":
-                    for (Counterpart counterpart : counterparts){
-                        list.add(counterpart.getHtel());
-                    }
-                    break;
-                case "HNSPDV":
-                    for (Counterpart counterpart : counterparts){
-                        list.add(counterpart.getHnspdv());
-                    }
-                    break;
-
-            }
         } catch (Exception e) {
             //error can happen
         }
 
-        return list;
+        return null;
+    }
+
+    @Override
+    protected IChoiceRenderer<Counterpart> getChoiceRenderer() {
+        return new IChoiceRenderer<Counterpart>() {
+            @Override
+            public Object getDisplayValue(Counterpart object) {
+                switch (getAlias()){
+                    case "HK":
+                        return StringUtil.getString(object.getHk());
+                    case "HNAME":
+                        return StringUtil.getString(object.getHname());
+                    case "HLOC":
+                        return StringUtil.getString(object.getHloc());
+                    case "HTEL":
+                        return StringUtil.getString(object.getHtel());
+                    case "HNSPDV":
+                        return StringUtil.getString(object.getHnspdv());
+                }
+
+                return null;
+            }
+
+            @Override
+            public String getIdValue(Counterpart object, int index) {
+                return object.getId() != null ? object.getId().toString() : null;
+            }
+        };
     }
 
     @Override

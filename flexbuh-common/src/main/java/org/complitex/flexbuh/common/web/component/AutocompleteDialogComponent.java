@@ -4,39 +4,35 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.flexbuh.common.entity.dictionary.Field;
 import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
 import org.odlabs.wiquery.ui.autocomplete.AutocompleteAjaxComponent;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 23.11.11 15:53
  */
-public abstract class AutocompleteDialogComponent<T> extends Panel {
+public abstract class AutocompleteDialogComponent<T extends Serializable> extends Panel {
     @EJB
     private FieldCodeBean fieldCodeBean;
 
-    private Dialog dialog;
-    private FormComponent autocompleteComponent;
+    private AutocompleteAjaxComponent<T> autocompleteComponent;
 
     private String alias;
-    private IModel<T> selectModel;
-    private IModel<String> model;
-
-    public AutocompleteDialogComponent(String id, IModel<String> model, IModel<T> selectModel,
-                                       String code, String name, String sprName) {
+   
+    public AutocompleteDialogComponent(String id, final IModel<String> model, String code, String name, String sprName,
+                                       final IAutocompleteDialog<T> dialog) {
         super(id);
-
-        this.selectModel = selectModel;
-        this.model = model;
 
         setOutputMarkupId(true);
 
@@ -46,33 +42,41 @@ public abstract class AutocompleteDialogComponent<T> extends Panel {
 
         alias = (alias != null && !alias.isEmpty()) ?  alias.replace(field.getPrefix(), "") : "WTF?";
 
-        autocompleteComponent = new AutocompleteAjaxComponent<String>("autocomplete", model) {
+        autocompleteComponent = new AutocompleteAjaxComponent<T>("autocomplete", new Model<T>(), getChoiceRenderer()) {
             @Override
-            public List<String> getValues(String term) {
+            public List<T> getValues(String term) {
                 return AutocompleteDialogComponent.this.getValues(term);
             }
 
             @Override
-            public String getValueOnSearchFail(String input) {
-                return input;
+            public T getValueOnSearchFail(String input) {
+                model.setObject(input);
+
+                return null;
             }
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                updateLinked(target);
+                T object = getModelObject();
+
+                if (object != null){
+                    model.setObject(autocompleteComponent.getAutocompleteField().getValue());
+
+                    updateLinked(target, getModelObject());
+                }
             }
         };
+
+        autocompleteComponent.getAutocompleteField().setModel(model);
+
+        autocompleteComponent.setAutoUpdate(true);
         autocompleteComponent.setOutputMarkupId(true);
         add(autocompleteComponent);
-
-        dialog = new Dialog("dialog");
-        dialog.setOutputMarkupId(true);
-        add(dialog);
 
         add(new AjaxButton("open") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                dialog.open(target);
+                dialog.open(target,  AutocompleteDialogComponent.this);
             }
 
             @Override
@@ -82,30 +86,25 @@ public abstract class AutocompleteDialogComponent<T> extends Panel {
         }.setDefaultFormProcessing(false));
     }
 
-    public Dialog getDialog() {
-        return dialog;
-    }
+    protected abstract List<T> getValues(String tern);
 
-    protected abstract List<String> getValues(String tern);
+    protected abstract void updateModel(T object);
 
-    protected abstract void updateSelectModel(T object, IModel<String> model);
+    protected abstract IChoiceRenderer<T> getChoiceRenderer();
 
-    protected void updateSelectModel(AjaxRequestTarget target){
-        updateSelectModel(selectModel.getObject(), model);
+    public void updateModel(AjaxRequestTarget target, T object){
+        updateModel(object);
+        autocompleteComponent.setModelObject(object);
+        autocompleteComponent.getAutocompleteField().updateModel();
         target.add(autocompleteComponent);
     }
-
-    protected void updateSelectModel(T object){
-        updateSelectModel(object, model);
-    }
    
-    protected void updateLinked(final AjaxRequestTarget target){
+    public void updateLinked(final AjaxRequestTarget target, final T object){
         getParent().visitChildren(getClass(), new IVisitor<AutocompleteDialogComponent<T>, Void>() {
             @Override
             public void component(AutocompleteDialogComponent<T> component, IVisit<Void> visit) {
                 if (!AutocompleteDialogComponent.this.equals(component)){
-                    component.updateSelectModel(selectModel.getObject());
-                    target.add(component.getAutocompleteComponent());
+                    component.updateModel(target, object);
                 }
             }
         });
@@ -119,7 +118,5 @@ public abstract class AutocompleteDialogComponent<T> extends Panel {
         return alias;
     }
 
-    public IModel<T> getSelectModel() {
-        return selectModel;
-    }
+
 }
