@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
@@ -195,6 +196,9 @@ public class DeclarationFormComponent extends Panel{
                                 employeeDialog = new EmployeeDialog(wicketId, sessionId);
                                 container.add(employeeDialog);
                                 break;
+                            
+                            default:
+                                container.add(new EmptyPanel(wicketId));
                         }
                     }
                 }

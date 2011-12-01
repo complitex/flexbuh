@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.document.util;
 
+import org.complitex.flexbuh.common.entity.template.AbstractTemplate;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
-import org.complitex.flexbuh.common.entity.template.AbstractTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -73,11 +73,15 @@ public class DeclarationUtil {
             ParserConfigurationException, IOException, SAXException {
         //Parse document
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        
+        String xml = getString(declaration, template);
 
-        return documentBuilder.parse(new InputSource(new StringReader(getString(declaration, template))));
+        //head-on fix
+        xml = xml.replace("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">", "");
+
+        return documentBuilder.parse(new InputSource(new StringReader(xml)));
     }
 
     public static Declaration getDeclarationByXml(InputStream inputStream) throws JAXBException {

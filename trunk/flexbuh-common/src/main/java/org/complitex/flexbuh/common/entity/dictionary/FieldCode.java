@@ -1,8 +1,11 @@
 package org.complitex.flexbuh.common.entity.dictionary;
 
+import com.google.common.collect.Sets;
+
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -13,6 +16,8 @@ import java.util.List;
 public class FieldCode implements Serializable{
     public final static String COUNTERPART_SPR_NAME = "spr_contragents";
     public final static String EMPLOYEE_SPR_NAME = "spr_works";
+    
+    public final static Set<String> IMPLEMENTED = Sets.newHashSet(COUNTERPART_SPR_NAME, EMPLOYEE_SPR_NAME);
 
     @XmlTransient
     private Long id;
