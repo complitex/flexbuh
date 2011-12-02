@@ -356,16 +356,18 @@ public class DeclarationFormComponent extends Panel{
 
             @Override
             protected void onDelete(AjaxRequestTarget target) {
-                getRow().visitChildren(DeclarationTextField.class, new IVisitor<DeclarationTextField, Void>() {
+                getRow().visitChildren(IDeclarationStringComponent.class, new IVisitor<Component, Void>() {
                     @Override
-                    public void component(DeclarationTextField object, IVisit<Void> visit) {
+                    public void component(Component object, IVisit<Void> visit) {
+                        IDeclarationStringComponent declarationStringComponent = (IDeclarationStringComponent) object;
+
                         for (List list : multiRowTextFieldMap.values()) {
                             list.remove(object);
                         }
 
-                        maskTextFieldMap.remove(object.getDeclarationModel().getMaskName());
+                        maskTextFieldMap.remove(declarationStringComponent.getDeclarationModel().getMaskName());
 
-                        object.getDeclarationModel().removeValue();
+                        declarationStringComponent.getDeclarationModel().removeValue();
 
                         visit.dontGoDeeper();
                     }
@@ -506,11 +508,11 @@ public class DeclarationFormComponent extends Panel{
         int count = 0;
 
         for (Component component : firstStretchRow){
-            if (component instanceof DeclarationTextField){
-                DeclarationTextField textField = (DeclarationTextField) component;
+            if (component instanceof IDeclarationStringComponent){
+                DeclarationStringModel model = ((IDeclarationStringComponent) component).getDeclarationModel();
 
-                String mask = textField.getMask();
-                String id = textField.getId();
+                String mask = model.getMask();
+                String id = model.getName();
 
                 int c = 0;
 
@@ -532,9 +534,9 @@ public class DeclarationFormComponent extends Panel{
     private void reorder(List<WebMarkupContainer> rows){
         for (int i = 0, size = rows.size(); i < size; i++) {
             for (Component c : rows.get(i)) {
-                if (c instanceof DeclarationTextField) {
-                    DeclarationTextField textField = ((DeclarationTextField) c);
-                    DeclarationStringModel model = textField.getDeclarationModel();
+                if (c instanceof IDeclarationStringComponent) {
+                    IDeclarationStringComponent component = ((IDeclarationStringComponent) c);
+                    DeclarationStringModel model = component.getDeclarationModel();
 
                     if (model.isMask()) {
                         maskTextFieldMap.remove(model.getMaskName());
@@ -543,7 +545,7 @@ public class DeclarationFormComponent extends Panel{
                     model.updateRowNum(i + 1);
 
                     if (model.isMask()) {
-                        maskTextFieldMap.put(model.getMaskName(), textField);
+                        maskTextFieldMap.put(model.getMaskName(), component);
                     }
                 }
             }
