@@ -85,7 +85,7 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
 
     @Override
     public String getValue() {
-        return getAutocompleteComponent().getValue();
+        return getAutocompleteField().getValue();
     }
 
     @Override

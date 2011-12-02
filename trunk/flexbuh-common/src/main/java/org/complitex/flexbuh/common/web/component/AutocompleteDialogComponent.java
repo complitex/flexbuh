@@ -3,7 +3,6 @@ package org.complitex.flexbuh.common.web.component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -12,6 +11,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.flexbuh.common.entity.dictionary.Field;
 import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
+import org.odlabs.wiquery.ui.autocomplete.Autocomplete;
 import org.odlabs.wiquery.ui.autocomplete.AutocompleteAjaxComponent;
 
 import javax.ejb.EJB;
@@ -60,15 +60,17 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
                 T object = getModelObject();
 
                 if (object != null){
-                    model.setObject(autocompleteComponent.getAutocompleteField().getValue());
+                    model.setObject(getAutocompleteField().getValue());
 
                     updateLinked(target, getModelObject());
                 }
+
+                target.add(getAutocompleteField());
             }
         };
 
         autocompleteComponent.getAutocompleteField().setModel(model);
-
+//
         autocompleteComponent.setAutoUpdate(true);
         autocompleteComponent.setOutputMarkupId(true);
         add(autocompleteComponent);
@@ -110,13 +112,11 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
         });
     }
 
-    public FormComponent getAutocompleteComponent() {
-        return autocompleteComponent;
+    public Autocomplete<String> getAutocompleteField() {
+        return autocompleteComponent.getAutocompleteField();
     }
 
     public String getAlias() {
         return alias;
     }
-
-
 }
