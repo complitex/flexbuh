@@ -230,11 +230,23 @@ public class DeclarationFormComponent extends Panel{
         DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schema, mask, field, declaration);
 
         IDeclarationStringComponent declarationStringComponent = null;
+        RestrictionBehavior restrictionBehavior = null;
+
+        //Restriction
+        try {
+            Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
+             restrictionBehavior = createRestrictionBehavior(schema, rule != null ? rule.getDescription() : "");
+        } catch (XPathExpressionException e) {
+            log.error("Ошибка создания проверки данных", e);
+        }
 
         if (field == null || field.isEmpty()){
             final DeclarationTextField textField = new DeclarationTextField(id, model);
             textField.setOutputMarkupId(true);
             container.add(textField);
+
+            //restriction
+            textField.add(restrictionBehavior);
 
             declarationStringComponent = textField;
 
@@ -269,27 +281,26 @@ public class DeclarationFormComponent extends Panel{
                 }
             });
 
-            //Restriction
-            try {
-                Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
-                textField.add(createRestrictionBehavior(schema, rule != null ? rule.getDescription() : ""));
-            } catch (XPathExpressionException e) {
-                log.error("Ошибка создания проверки данных", e);
-            }
         } else if (field.equals(FieldCode.COUNTERPART_SPR_NAME)) {
             CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, sessionId, counterpartDialog);
             container.add(component);
+
+            //restriction
+            component.getAutocompleteField().add(restrictionBehavior);
 
             declarationStringComponent = component;
         } else if (field.equals(FieldCode.EMPLOYEE_SPR_NAME)) {
             EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, sessionId, employeeDialog);
             container.add(component);
 
+            //restriction
+            component.getAutocompleteField().add(restrictionBehavior);
+
             declarationStringComponent = component;
         }
 
-        //add maps
         if (declarationStringComponent != null) {
+            //add maps
             if (id.contains("XXXX")) {
                 List<IDeclarationStringComponent> textFields = multiRowTextFieldMap.get(id);
 
