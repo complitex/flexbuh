@@ -2,17 +2,23 @@
 
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    
     <typeHandlers>
         <typeHandler javaType="org.complitex.flexbuh.document.entity.PersonType"
                      handler="org.complitex.flexbuh.document.entity.PersonTypeHandler"/>
     </typeHandlers>
+
+    <objectFactory type="org.complitex.flexbuh.common.service.TemporalEntityObjectFactory"/>
 
     <environments default="local">
         <environment id="local">
             <transactionManager type="MANAGED"/>
             <dataSource type="JNDI">
                 <property name="data_source" value="jdbc/flexbuhResource"/>
-            </dataSource>
+            </dataSource>            
         </environment>
     </environments>
 
@@ -20,6 +26,7 @@
         <mapper resource="org/complitex/flexbuh/common/service/ConfigBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/TemplateBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/FeedbackBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/service/TemporalEntityBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/entity/LocalizedDomainObject.xml"/>
         <mapper resource="org/complitex/flexbuh/common/entity/dictionary/AbstractDictionary.xml"/>

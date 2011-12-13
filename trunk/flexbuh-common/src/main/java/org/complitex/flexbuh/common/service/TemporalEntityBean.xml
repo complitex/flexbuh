@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.TemporalEntityBean">
+    <resultMap id="temporalEntityResultMap" type="org.complitex.flexbuh.common.entity.AbstractTemporalEntity">
+        <constructor>
+            <arg column="className"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="insertTemporalEntity" parameterType="org.complitex.flexbuh.common.entity.AbstractTemporalEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `${tableName}`
+            (
+            <trim suffixOverrides=",">
+                <foreach collection="fieldMap.keys" item="key">
+                    `${key}`,
+                </foreach>
+            </trim>
+            )
+            values
+            (
+            <trim suffixOverrides=",">
+                <foreach collection="fieldMap.keys" item="key">
+                    #{fieldMap.${key}},
+                </foreach>
+            </trim>
+            )
+    </insert>
+
+    <select id="selectTemporalEntities" resultMap="temporalEntityResultMap"
+            parameterType="org.complitex.flexbuh.common.entity.TemporalEntityFilter">
+        select '${className}' as className, d.* from `${tableName}` d
+    </select>
+</mapper>

@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.web.test;
+package org.complitex.flexbuh.common.web.test;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
