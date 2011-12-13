@@ -20,4 +20,20 @@ public class StringUtil {
         return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
                 s).replaceFirst(Matcher.quoteReplacement(replacement.toString()));
     }
+
+    public static String underline(String s){
+        String underline = "";
+
+        char[] chars = s.toCharArray();
+
+        for (int i = 0; i < chars.length; ++i){
+            if (i > 0 && Character.isUpperCase(chars[i])){
+                underline += "_";
+            }
+
+            underline += Character.toLowerCase(chars[i]);
+        }
+
+        return underline;
+    }
 }

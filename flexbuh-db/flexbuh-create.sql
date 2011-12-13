@@ -493,5 +493,140 @@ CREATE TABLE `field_code` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------
+-- Department
+-- --------------------------
+
+DROP TABLE IF EXISTS `department`;
+
+CREATE TABLE `department` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `object_id` BIGINT(20),
+  `parent_id` BIGINT,
+  `name` VARCHAR(64),
+  `current` BOOLEAN NOT NULL,
+  `date_start` DATE NOT NULL,
+  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`),
+  KEY `key_department__parent_id` (`parent_id`),
+  CONSTRAINT `fk_department__department` FOREIGN KEY (`parent_id`) REFERENCES `department` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- RateType
+-- --------------------------
+
+DROP TABLE IF EXISTS `rate_type`;
+
+CREATE TABLE `rate_type` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `object_id` BIGINT(20),
+  `name` VARCHAR(255),
+  `current` BOOLEAN NOT NULL,
+  `date_start` DATE NOT NULL,
+  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Schedule
+-- --------------------------
+
+DROP TABLE IF EXISTS `schedule`;
+
+CREATE TABLE `schedule` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `object_id` BIGINT(20),
+  `name` VARCHAR(255),
+  `current` BOOLEAN NOT NULL,
+  `date_start` DATE NOT NULL,
+  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Position
+-- --------------------------
+
+DROP TABLE IF EXISTS `position`;
+
+CREATE TABLE `position` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `object_id` BIGINT(20),
+  `name` VARCHAR(255),
+  `rate_count` INTEGER,
+  `rate_type_id` BIGINT(20),
+  `min_salary` DECIMAL(15,2),
+  `max_salary` DECIMAL(15,2),
+  `schedule_id` BIGINT(20),
+  `description` VARCHAR(255),
+  `current` BOOLEAN NOT NULL,
+  `date_start` DATE NOT NULL,
+  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`),
+  KEY `key_position__schedule_id` (`schedule_id`),
+  CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Payment
+-- --------------------------
+
+DROP TABLE IF EXISTS `payment`;
+
+CREATE TABLE `payment` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `object_id` BIGINT(20),
+  `name` VARCHAR(255),
+  `current` BOOLEAN NOT NULL,
+  `date_start` DATE NOT NULL,
+  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- PersonnelRecord
+-- --------------------------
+
+DROP TABLE IF EXISTS `personnel`;
+
+CREATE TABLE `personnel` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `object_id` BIGINT(20),
+  `last_name` VARCHAR(64) NOT NULL,
+  `first_name` VARCHAR(64) NOT NULL,
+  `middle_name` VARCHAR(64) NOT NULL,
+  `personnel_number` VARCHAR(64),
+  `birthday` DATE,
+  `gender` BOOLEAN,
+  `inn` VARCHAR(64),
+  `resident` BOOLEAN,
+  `snils` VARCHAR(64),
+  `address` VARCHAR(255),
+  `passport` VARCHAR(255),
+  `department_id` BIGINT,
+  `position_id` BIGINT,
+  `schedule_id` BIGINT,
+  `payment_id` BIGINT,
+  `current` BOOLEAN NOT NULL,
+  `date_start` DATE NOT NULL,
+  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`),
+  KEY `key_personnel__department_id` (`department_id`),
+  KEY `key_personnel__position_id` (`position_id`),
+  KEY `key_personnel__schedule_id` (`schedule_id`),
+  KEY `key_personnel__payment_id` (`payment_id`),
+  CONSTRAINT `fk_personnel__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
+  CONSTRAINT `fk_personnel__position` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
+  CONSTRAINT `fk_personnel__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
+  CONSTRAINT `fk_personnel__payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 

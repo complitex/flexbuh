@@ -12,6 +12,7 @@
     <modules>
         <module>flexbuh-web</module>
         <module>flexbuh-document</module>
+        <module>flexbuh-personnel</module>
         <module>flexbuh-admin</module>
         <module>flexbuh-logging</module>
         <module>flexbuh-common</module>
@@ -65,6 +66,12 @@
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-document</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-personnel</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

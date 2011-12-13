@@ -29,6 +29,10 @@
         </dependency>
         <dependency>
             <groupId>org.complitex.flexbuh</groupId>
+            <artifactId>flexbuh-personnel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.flexbuh</groupId>
             <artifactId>flexbuh-resources</artifactId>
         </dependency>
         <dependency>
