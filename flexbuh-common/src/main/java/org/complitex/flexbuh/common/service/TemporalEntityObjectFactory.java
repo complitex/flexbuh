@@ -12,14 +12,12 @@ import java.util.Properties;
 public class TemporalEntityObjectFactory extends DefaultObjectFactory {
     @Override
     public Object create(Class type) {
-        System.out.println(type);
-
         return super.create(type);
     }
 
     @Override
     public Object create(Class type, List<Class> constructorArgTypes, List<Object> constructorArgs) {
-        if (!constructorArgs.isEmpty()){
+        if (constructorArgs != null && !constructorArgs.isEmpty()){
             String className = constructorArgs.get(0).toString();
 
             try {
