@@ -2,15 +2,31 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.SessionObject;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 16.11.11 14:45
  */
+@XmlType(name = "row")
+@XmlAccessorType(value = XmlAccessType.FIELD)
 public class Counterpart extends SessionObject {
+    @XmlElement(name = "HK")
     private String hk;
+
+    @XmlElement(name = "HNAME")
     private String hname;
+
+    @XmlElement(name = "HLOC")
     private String hloc;
+
+    @XmlElement(name = "HTEL")
     private String htel;
+
+    @XmlElement(name = "HNSPDV")
     private String hnspdv;
 
     public Counterpart() {

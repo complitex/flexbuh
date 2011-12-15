@@ -30,6 +30,11 @@
 
     <select id="selectTemporalEntities" resultMap="temporalEntityResultMap"
             parameterType="org.complitex.flexbuh.common.entity.TemporalEntityFilter">
-        select '${className}' as className, d.* from `${tableName}` d
+        select '${className}' as className, t.* from `${tableName}` t where t.`session_id` = #{sessionId}
+    </select>
+
+    <select id="selectTemporalEntitiesCount" resultType="int"
+            parameterType="org.complitex.flexbuh.common.entity.TemporalEntityFilter">
+        select count(*) from `${tableName}` where `session_id` = #{sessionId}
     </select>
 </mapper>

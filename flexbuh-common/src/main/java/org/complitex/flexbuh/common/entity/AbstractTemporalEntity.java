@@ -7,10 +7,20 @@ import java.util.Date;
  *         Date: 08.12.11 17:42
  */
 public abstract class AbstractTemporalEntity extends AbstractEntity{
+    private Long sessionId;
     private Long objectId;
-    private boolean current;
+    private Boolean current;
     private Date dateStart;
     private Date updated;
+    private String comment;
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
+    }
 
     public Long getObjectId() {
         return objectId;
@@ -20,11 +30,11 @@ public abstract class AbstractTemporalEntity extends AbstractEntity{
         this.objectId = objectId;
     }
 
-    public boolean isCurrent() {
+    public Boolean isCurrent() {
         return current;
     }
 
-    public void setCurrent(boolean current) {
+    public void setCurrent(Boolean current) {
         this.current = current;
     }
 
@@ -42,5 +52,13 @@ public abstract class AbstractTemporalEntity extends AbstractEntity{
 
     public void setUpdated(Date updated) {
         this.updated = updated;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

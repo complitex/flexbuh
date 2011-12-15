@@ -4,11 +4,10 @@ import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 12.12.11 16:35
+ *         Date: 14.12.11 14:38
  */
-public class Department extends AbstractTemporalEntity{
+public class Schedule extends AbstractTemporalEntity{
     private String name;
-    private Long parentId;
 
     public String getName() {
         return name;
@@ -16,13 +15,5 @@ public class Department extends AbstractTemporalEntity{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
     }
 }

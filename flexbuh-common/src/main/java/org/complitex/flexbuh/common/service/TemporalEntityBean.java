@@ -20,4 +20,9 @@ public class TemporalEntityBean extends AbstractBean{
     public <T extends AbstractTemporalEntity> List<T> getTemporalEntities(TemporalEntityFilter<T> filter){
         return sqlSession().selectList("selectTemporalEntities", filter);
     }
+
+    public <T extends AbstractTemporalEntity> Integer getTemporalEntitiesCount(TemporalEntityFilter<T> filter){
+        return (Integer) sqlSession().selectOne("selectTemporalEntitiesCount", filter);
+    }
+    
 }

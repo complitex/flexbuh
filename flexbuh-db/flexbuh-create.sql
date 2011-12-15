@@ -438,22 +438,6 @@ DROP TABLE IF EXISTS `field`;
 
 CREATE TABLE `field` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(32) NOT NULL,
-  `spr_name` VARCHAR(32) NOT NULL,
-  `prefix` VARCHAR(32),
-  `alias` VARCHAR(32) NOT NULL,
-  PRIMARY KEY (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- Field
--- --------------------------
-
-DROP TABLE IF EXISTS `field`;
-
-CREATE TABLE `field` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `field_code_id` BIGINT(20) NOT NULL,
   `name` VARCHAR(32) NOT NULL,
   `spr_name` VARCHAR(64) NOT NULL,
@@ -501,12 +485,14 @@ DROP TABLE IF EXISTS `department`;
 
 CREATE TABLE `department` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
   `object_id` BIGINT(20),
   `parent_id` BIGINT,
   `name` VARCHAR(64),
   `current` BOOLEAN NOT NULL,
   `date_start` DATE NOT NULL,
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `comment` VARCHAR(1000),
   PRIMARY KEY (`id`),
   KEY `key_department__parent_id` (`parent_id`),
   CONSTRAINT `fk_department__department` FOREIGN KEY (`parent_id`) REFERENCES `department` (`id`)
@@ -521,11 +507,13 @@ DROP TABLE IF EXISTS `rate_type`;
 
 CREATE TABLE `rate_type` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
   `object_id` BIGINT(20),
   `name` VARCHAR(255),
   `current` BOOLEAN NOT NULL,
   `date_start` DATE NOT NULL,
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `comment` VARCHAR(1000),
   PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -538,11 +526,13 @@ DROP TABLE IF EXISTS `schedule`;
 
 CREATE TABLE `schedule` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
   `object_id` BIGINT(20),
   `name` VARCHAR(255),
   `current` BOOLEAN NOT NULL,
   `date_start` DATE NOT NULL,
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `comment` VARCHAR(1000),
   PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -555,6 +545,7 @@ DROP TABLE IF EXISTS `position`;
 
 CREATE TABLE `position` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
   `object_id` BIGINT(20),
   `name` VARCHAR(255),
   `rate_count` INTEGER,
@@ -566,6 +557,7 @@ CREATE TABLE `position` (
   `current` BOOLEAN NOT NULL,
   `date_start` DATE NOT NULL,
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `comment` VARCHAR(1000),
   PRIMARY KEY (`id`),
   KEY `key_position__schedule_id` (`schedule_id`),
   CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`)
@@ -580,28 +572,31 @@ DROP TABLE IF EXISTS `payment`;
 
 CREATE TABLE `payment` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
   `object_id` BIGINT(20),
   `name` VARCHAR(255),
   `current` BOOLEAN NOT NULL,
   `date_start` DATE NOT NULL,
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `comment` VARCHAR(1000),
   PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- PersonnelRecord
+-- Personnel
 -- --------------------------
 
 DROP TABLE IF EXISTS `personnel`;
 
 CREATE TABLE `personnel` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `session_id` BIGINT(20) NOT NULL,
   `object_id` BIGINT(20),
   `last_name` VARCHAR(64) NOT NULL,
   `first_name` VARCHAR(64) NOT NULL,
   `middle_name` VARCHAR(64) NOT NULL,
-  `personnel_number` VARCHAR(64),
+  `number` VARCHAR(64),
   `birthday` DATE,
   `gender` BOOLEAN,
   `inn` VARCHAR(64),
@@ -616,6 +611,7 @@ CREATE TABLE `personnel` (
   `current` BOOLEAN NOT NULL,
   `date_start` DATE NOT NULL,
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `comment` VARCHAR(1000),
   PRIMARY KEY (`id`),
   KEY `key_personnel__department_id` (`department_id`),
   KEY `key_personnel__position_id` (`position_id`),

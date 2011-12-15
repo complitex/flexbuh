@@ -1,11 +1,15 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -13,15 +17,18 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +46,8 @@ public class CounterpartList extends TemplatePage{
 
     @EJB
     private CounterpartBean counterpartBean;
+
+    private Dialog uploadDialog;
 
     public CounterpartList() {
         add(new Label("title", getString("title")));
@@ -89,7 +98,7 @@ public class CounterpartList extends TemplatePage{
         dataProvider.setSort("id", SortOrder.DESCENDING);
 
         //Таблица
-        DataView<Counterpart> dataView = new DataView<Counterpart>("list", dataProvider, 10) {
+        final DataView<Counterpart> dataView = new DataView<Counterpart>("list", dataProvider, 10) {
             @Override
             protected void populateItem(Item<Counterpart> item) {
                 final Counterpart counterpart = item.getModelObject();
@@ -104,7 +113,7 @@ public class CounterpartList extends TemplatePage{
                 pageParameters.set("id", counterpart.getId());
                 item.add(new BookmarkablePageLinkPanel<CounterpartEdit>("action_edit", getString("action_edit"),
                         CounterpartEdit.class, pageParameters));
-                
+
                 item.add(new Link("action_delete") {
                     @Override
                     public void onClick() {
@@ -118,6 +127,50 @@ public class CounterpartList extends TemplatePage{
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, "CounterpartList"));
+
+        //Загрузка файлов
+        uploadDialog = new Dialog("upload_dialog");
+        uploadDialog.setTitle(getString("upload_title"));
+        uploadDialog.setWidth(500);
+        uploadDialog.setHeight(100);
+
+        add(uploadDialog);
+
+        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
+
+        Form fileUploadForm = new Form("upload_form");
+
+        fileUploadForm.add(new AjaxButton("upload") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                List<FileUpload> fileUploads = fileUploadModel.getObject();
+
+                try {
+                    for (FileUpload fileUpload : fileUploads){
+                        counterpartBean.save(getSessionId(true), fileUpload.getInputStream());
+                    }
+
+                    uploadDialog.close(target);
+
+                    setResponsePage(CounterpartList.class);
+
+                    info("Документы успешно загружены");
+                } catch (Exception e) {
+                    log.error("Ошибка загрузки файла", e);
+                    error("Ошибка загрузки файла");
+                }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //wtf
+            }
+        });
+
+        uploadDialog.add(fileUploadForm);
+
+        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 
     @Override
@@ -128,6 +181,13 @@ public class CounterpartList extends TemplatePage{
             @Override
             protected void onClick() {
                 setResponsePage(CounterpartEdit.class);
+            }
+        });
+
+        list.add(new UploadButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                uploadDialog.open(target);
             }
         });
 
