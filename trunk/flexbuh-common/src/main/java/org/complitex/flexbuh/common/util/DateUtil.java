@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.common.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -9,7 +11,9 @@ import java.util.Locale;
  *         Date: 14.01.2010 0:30:49
  */
 public class DateUtil {
-
+    private static final SimpleDateFormat DATE_FORMAT_FULL = new SimpleDateFormat("dd.MM.yyyy");
+    private static final SimpleDateFormat DATE_FORMAT_SMALL = new SimpleDateFormat("dd.MM.yy");
+    
     public static Date getCurrentDate() {
         return Calendar.getInstance().getTime();
     }
@@ -127,5 +131,25 @@ public class DateUtil {
         c.setLenient(false);
         c.set(year, month - 1, day);
         return c.getTime();
+    }
+    
+    public static Date getDate(String s){
+        Date date = null;
+
+        try {
+            date = DATE_FORMAT_FULL.parse(s);
+        } catch (ParseException e) {
+            //ups
+        }
+
+        if (date == null) {
+            try {
+                date = DATE_FORMAT_SMALL.parse(s);
+            } catch (ParseException e) {
+                //ups
+            }
+        }
+
+        return date;
     }
 }

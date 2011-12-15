@@ -17,22 +17,36 @@ public abstract class AbstractEntity implements Serializable{
         return StringUtil.underline(getClass().getSimpleName());
     }
 
-    public Map<String, Object> getFieldMap(){
-        Map<String, Object> map = new HashMap<>();
-
+    protected List<Field> getFields(){
         List<Field> fields = new ArrayList<>();
 
         for (Class _class = getClass(); !_class.equals(Object.class); _class = _class.getSuperclass()){
             Collections.addAll(fields, _class.getDeclaredFields());
         }
 
+        return fields;
+    }
+
+    public Map<String, Object> getFieldMap(){
+        Map<String, Object> map = new HashMap<>();
+
         try {
-            for (Field field : fields){
+            for (Field field : getFields()){
                 field.setAccessible(true);
                 map.put(StringUtil.underline(field.getName()), field.get(this));
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+
+        return map;
+    }
+
+    public Map<String, Class> getFieldTypeMap(){
+        Map<String, Class> map = new HashMap<>();
+
+        for (Field field : getFields()){
+            map.put(StringUtil.underline(field.getName()), field.getType());
         }
 
         return map;

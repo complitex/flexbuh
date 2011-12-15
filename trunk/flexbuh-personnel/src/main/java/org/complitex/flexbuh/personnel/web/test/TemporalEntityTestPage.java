@@ -38,7 +38,7 @@ public class TemporalEntityTestPage extends WebPage{
     }
 
     private void load(){
-        List<Department> list = temporalEntityBean.getTemporalEntities(new TemporalEntityFilter<>(Department.class));
+        List<Department> list = temporalEntityBean.getTemporalEntities(new TemporalEntityFilter<>(-1L, Department.class));
 
         System.out.println(list);
     }

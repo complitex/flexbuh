@@ -43,4 +43,9 @@ public abstract class ResourceTemplateMenu implements ITemplateMenu {
     protected String getString(String key, Locale locale){
         return getString(getClass().getName(), locale, key);
     }
+
+    @Override
+    public String getTagId() {
+        return getClass().getSimpleName();
+    }
 }

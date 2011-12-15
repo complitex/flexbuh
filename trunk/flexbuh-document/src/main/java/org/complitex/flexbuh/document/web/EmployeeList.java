@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -7,6 +9,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -14,16 +18,19 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +48,8 @@ public class EmployeeList extends TemplatePage{
 
     @EJB
     private EmployeeBean employeeBean;
+
+    private Dialog uploadDialog;
 
     public EmployeeList() {
         add(new Label("title", getString("title")));
@@ -120,6 +129,50 @@ public class EmployeeList extends TemplatePage{
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, "EmployeeList"));
+
+        //Загрузка файлов
+        uploadDialog = new Dialog("upload_dialog");
+        uploadDialog.setTitle(getString("upload_title"));
+        uploadDialog.setWidth(500);
+        uploadDialog.setHeight(100);
+
+        add(uploadDialog);
+
+        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
+
+        Form fileUploadForm = new Form("upload_form");
+
+        fileUploadForm.add(new AjaxButton("upload") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                List<FileUpload> fileUploads = fileUploadModel.getObject();
+
+                try {
+                    for (FileUpload fileUpload : fileUploads){
+                        employeeBean.save(getSessionId(true), fileUpload.getInputStream());
+                    }
+
+                    uploadDialog.close(target);
+
+                    setResponsePage(EmployeeList.class);
+
+                    info("Документы успешно загружены");
+                } catch (Exception e) {
+                    log.error("Ошибка загрузки файла", e);
+                    error("Ошибка загрузки файла");
+                }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //wtf
+            }
+        });
+
+        uploadDialog.add(fileUploadForm);
+
+        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 
     @Override
@@ -130,6 +183,13 @@ public class EmployeeList extends TemplatePage{
             @Override
             protected void onClick() {
                 setResponsePage(EmployeeEdit.class);
+            }
+        });
+
+        list.add(new UploadButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                uploadDialog.open(target);
             }
         });
 

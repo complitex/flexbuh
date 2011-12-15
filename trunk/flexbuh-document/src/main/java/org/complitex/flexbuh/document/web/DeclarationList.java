@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -28,6 +29,7 @@ import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
@@ -38,6 +40,7 @@ import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +66,8 @@ public class DeclarationList extends TemplatePage{
 
     @EJB
     private DeclarationService declarationService;
+
+    private Dialog uploadDialog;
 
     public DeclarationList() {
         add(new Label("title", getString("title")));
@@ -328,11 +333,21 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(new PagingNavigator("paging", dataView, DeclarationList.class.getName(), filterForm));
 
         //Загрузка файлов
+        uploadDialog = new Dialog("upload_dialog");
+        uploadDialog.setTitle(getString("upload_title"));
+        uploadDialog.setWidth(500);
+        uploadDialog.setHeight(100);
+
+        add(uploadDialog);
+
         final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
 
-        Form fileUploadForm = new Form("upload_form"){
+        Form fileUploadForm = new Form("upload_form");
+
+        fileUploadForm.add(new AjaxButton("upload") {
+
             @Override
-            protected void onSubmit() {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
                 try {
@@ -340,15 +355,24 @@ public class DeclarationList extends TemplatePage{
                         declarationBean.save(getSessionId(true), fileUpload.getInputStream());
                     }
 
+                    uploadDialog.close(target);
+
+                    setResponsePage(DeclarationList.class);
+
                     info("Документы успешно загружены");
                 } catch (Exception e) {
                     log.error("Ошибка загрузки файла", e);
                     error("Ошибка загрузки файла");
                 }
             }
-        };
 
-        add(fileUploadForm);
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //wtf
+            }
+        });
+
+        uploadDialog.add(fileUploadForm);
 
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
@@ -361,6 +385,13 @@ public class DeclarationList extends TemplatePage{
             @Override
             protected void onClick() {
                 setResponsePage(DeclarationCreate.class);
+            }
+        });
+
+        list.add(new UploadButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                uploadDialog.open(target);
             }
         });
 

@@ -37,13 +37,12 @@ public abstract class ToolbarButton extends Panel {
     }
 
     public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey, String tagId) {
-        super(id);
+        this(id, imageSrc, titleKey, false);
         this.tagId = tagId;
-        AbstractLink link = addLink();
-        Image image = addImage(imageSrc, new ResourceModel(titleKey).wrapOnAssignment(this));
-        link.add(image);
-
-        add(link);
+    }
+    
+    public ToolbarButton(String id, String imageSrc, String titleKey, boolean useAjax) {
+        this(id, new PackageResourceReference(imageSrc), titleKey, useAjax);
     }
 
     protected void onClick(){
