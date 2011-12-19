@@ -2,29 +2,32 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
-import org.complitex.flexbuh.document.entity.PersonProfile;
-import org.complitex.flexbuh.document.entity.PersonType;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.service.user.SessionBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
+import org.complitex.flexbuh.common.web.component.TaxInspectionDialog;
+import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonType;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 
 import javax.ejb.EJB;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -86,6 +89,9 @@ public class PersonProfileEdit extends FormTemplatePage {
         Form form = new Form("form");
         add(form);
 
+        // Название профиля
+        form.add(new TextField<>("profile_name", new PropertyModel<String>(personProfile, "profileName")).setRequired(true));
+
         //Тип
         DropDownChoice personType = new DropDownChoice<>("person_type",
                 new PropertyModel<PersonType>(personProfile, "personType"),
@@ -105,41 +111,35 @@ public class PersonProfileEdit extends FormTemplatePage {
         form.add(personType);
 
         // Налоговая
-        TaxInspection taxInspectionObject = taxInspectionBean.getTaxInspection(personProfile.getTaxInspectionId());
+        final IModel<TaxInspection> taxInspectionModel = new Model<>(taxInspectionBean.getTaxInspection(personProfile.getTaxInspectionId()));
 
-        final DropDownChoice<String> districtName = new DropDownChoice<>("districtName",
-                new Model<>(taxInspectionObject != null ? taxInspectionObject.getNameRajUk() : null),
-                taxInspectionBean.getTaxInspectionDistrictNames());
-        form.add(districtName);
-        
-        final DropDownChoice<TaxInspection> taxInspection = new DropDownChoice<>("taxInspection",
-                new Model<>(taxInspectionObject),
-                new LoadableDetachableModel<List<TaxInspection>>() {
-                    @Override
-                    protected List<TaxInspection> load() {
-                        return taxInspectionBean.getTaxInspectionsByDistrictName(districtName.getModelObject());
-                    }
-                },
-                new IChoiceRenderer<TaxInspection>() {
+        final TaxInspectionDialog taxInspectionDialog = new TaxInspectionDialog("dialog", taxInspectionModel);
+        add(taxInspectionDialog);
 
-                    @Override
-                    public Object getDisplayValue(TaxInspection object) {
-                        return object.getCSti() + " " + object.getName(getLocale());
-                    }
-
-                    @Override
-                    public String getIdValue(TaxInspection object, int index) {
-                        return Integer.toString(object.getCSti());
-                    }
-                });
-        taxInspection.setNullValid(true);
-        taxInspection.setOutputMarkupId(true);
-        form.add(taxInspection);
-        
-        districtName.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        AjaxLink stiLink = new AjaxLink("sti_link") {
             @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(taxInspection);
+            public void onClick(AjaxRequestTarget target) {
+                taxInspectionDialog.open(target);
+            }
+        };
+        form.add(stiLink);
+
+        final Label stiLabel = new Label("sti_label",
+                taxInspectionModel.getObject() != null ?
+                        taxInspectionModel.getObject().getCSti() + " " + taxInspectionModel.getObject().getName(getLocale())
+                        : getString("sti_label"));
+        stiLabel.setOutputMarkupId(true);
+        stiLink.add(stiLabel);
+        
+        taxInspectionDialog.setAjaxUpdate(new IAjaxUpdate() {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                TaxInspection taxInspection = taxInspectionModel.getObject();
+
+                if (taxInspection != null) {
+                    stiLabel.setDefaultModelObject(taxInspection.getCSti() + " " + taxInspection.getName(getLocale()));
+                    target.add(stiLabel);
+                }
             }
         });
 
@@ -240,7 +240,7 @@ public class PersonProfileEdit extends FormTemplatePage {
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                TaxInspection ti = taxInspection.getModelObject();
+                TaxInspection ti = taxInspectionModel.getObject();
 
                 if (ti != null) {
                     personProfile.setCSti(ti.getCSti());

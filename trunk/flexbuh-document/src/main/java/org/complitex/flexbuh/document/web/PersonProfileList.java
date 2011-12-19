@@ -107,17 +107,11 @@ public class PersonProfileList extends TemplatePage {
             protected void populateItem(Item<PersonProfile> item) {
                 PersonProfile profile = item.getModelObject();
 
+                item.add(new Label("profile_name", profile.getProfileName()));
+
                 item.add(new Label("name", profile.getName()));
 
-                item.add(new Label("zipCode", profile.getZipCode()));
-
-                item.add(new Label("address", profile.getAddress()));
-
-                item.add(new Label("directorFIO", profile.getDFio()));
-
-                item.add(new Label("phone", profile.getPhone()));
-
-                item.add(new Label("email", profile.getEmail()));
+                item.add(new Label("tin", profile.getTin()));
 
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", profile.getId());

@@ -13,6 +13,7 @@ CREATE TABLE  `person_profile` (
   `c_sti_tin` VARCHAR(45),
   `tin` VARCHAR(45),
   `name` VARCHAR(255) NOT NULL,
+  `profile_name` VARCHAR(255),
   `num_pdv_svd` VARCHAR(45),
   `ipn` VARCHAR(45),
   `kved` VARCHAR(45),

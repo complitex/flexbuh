@@ -10,6 +10,7 @@
         <result column="c_sti_tin" property="cStiTin"/>
         <result column="tin" property="tin"/>
         <result column="name" property="name"/>
+        <result column="profile_name" property="profileName"/>
         <result column="num_pdv_svd" property="numPdvSvd"/>
         <result column="ipn" property="ipn"/>
         <result column="kved" property="kved"/>
@@ -30,18 +31,18 @@
 
     <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
         insert into `person_profile`
-          (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`,
+          (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `profile_name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`,
             `contract_date`, `contract_number`, `zip_code`, `address`, `phone`, `fax`, `email`, `d_inn` , `d_fio`,
             `b_inn`, `b_fio`, `tax_inspection_id`)
         values
-          (#{sessionId}, #{personType}, #{cSti}, #{cStiTin}, #{tin}, #{name}, #{numPdvSvd}, #{ipn},
+          (#{sessionId}, #{personType}, #{cSti}, #{cStiTin}, #{tin}, #{name}, #{profileName}, #{numPdvSvd}, #{ipn},
             #{kved}, #{koatuu}, #{contractDate}, #{contractNumber}, #{zipCode}, #{address}, #{phone}, #{fax}, #{email},
             #{dInn}, #{dFio}, #{bInn}, #{bFio}, #{taxInspectionId})
     </insert>
 
 	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile">
         update `person_profile` set `person_type` = #{personType}, `c_sti` = #{cSti}, `c_sti_tin` = #{cStiTin},
-          `tin` = #{tin}, `name` = #{name}, `num_pdv_svd` = #{numPdvSvd}, `ipn` = #{ipn}, `kved` = #{kved},
+          `tin` = #{tin}, `name` = #{name}, `profile_name` = #{profileName}, `num_pdv_svd` = #{numPdvSvd}, `ipn` = #{ipn}, `kved` = #{kved},
           `koatuu` = #{koatuu}, `contract_date` = #{contractDate}, `contract_number` = #{contractNumber},
           `zip_code` = #{zipCode}, `address` = #{address}, `phone` = #{phone}, `fax` = #{fax}, `email` = #{email},
           `d_inn` = #{dInn}, `d_fio` = #{dFio}, `b_inn` = #{bInn}, `b_fio` = #{bFio}, `tax_inspection_id` = #{taxInspectionId}

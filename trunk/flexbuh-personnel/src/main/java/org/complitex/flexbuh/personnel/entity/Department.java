@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.entity;
 
+import org.complitex.flexbuh.common.annotation.Display;
 import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
 
 /**
@@ -7,7 +8,10 @@ import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
  *         Date: 12.12.11 16:35
  */
 public class Department extends AbstractTemporalEntity{
+    @Display(order = 1)
     private String name;
+
+    @Display(order = 2)
     private Long parentId;
 
     public String getName() {
