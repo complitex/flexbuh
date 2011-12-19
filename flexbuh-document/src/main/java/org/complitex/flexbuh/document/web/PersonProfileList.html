@@ -30,23 +30,17 @@
         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
             <tr>
+                <th><wicket:message key="profile_name"/></th>
                 <th><wicket:message key="name"/></th>
-                <th><wicket:message key="zip"/></th>
-                <th><wicket:message key="address"/></th>
-                <th><wicket:message key="director"/></th>
-                <th><wicket:message key="phone"/></th>
-                <th><wicket:message key="email"/></th>
+                <th><wicket:message key="tin"/></th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
             <tr wicket:id="companyProfiles">
+                <td><span wicket:id="profile_name"></span></td>
                 <td><span wicket:id="name"></span></td>
-                <td><span wicket:id="zipCode"></span></td>
-                <td><span wicket:id="address"></span></td>
-                <td><span wicket:id="directorFIO"></span></td>
-                <td><span wicket:id="phone"></span></td>
-                <td><span wicket:id="email"></span></td>
+                <td><span wicket:id="tin"></span></td>
                 <td>
                     <span wicket:id="action_edit"></span>
                 </td>

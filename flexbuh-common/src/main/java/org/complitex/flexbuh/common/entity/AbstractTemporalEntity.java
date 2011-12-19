@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.common.entity;
 
+import org.complitex.flexbuh.common.annotation.Display;
+
 import java.util.Date;
 
 /**
@@ -7,11 +9,20 @@ import java.util.Date;
  *         Date: 08.12.11 17:42
  */
 public abstract class AbstractTemporalEntity extends AbstractEntity{
+    @Display(visible = false)
     private Long sessionId;
+
+    @Display(order = 0)
     private Long objectId;
+
+    @Display(visible = false)
     private Boolean current;
+
     private Date dateStart;
+
     private Date updated;
+
+    @Display(visible = false)
     private String comment;
 
     public Long getSessionId() {

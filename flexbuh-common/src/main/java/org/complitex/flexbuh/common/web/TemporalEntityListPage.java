@@ -9,17 +9,18 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
 import org.complitex.flexbuh.common.entity.TemporalEntityFilter;
 import org.complitex.flexbuh.common.service.TemporalEntityBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.util.StringUtil;
+import org.complitex.flexbuh.common.web.component.InputPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,8 +62,7 @@ public class TemporalEntityListPage extends TemplatePage{
         });
         
         //todo add sort settings
-        final Map<String, Class> fieldTypeMap = entity.getFieldTypeMap();
-        final List<String> fields = new ArrayList<>(fieldTypeMap.keySet());
+        final List<String> fields = entity.getFieldKeyList(true);
         
         //Название колонок
         ListView headerLabels = new ListView<String>("header_labels", fields) {
@@ -79,9 +79,9 @@ public class TemporalEntityListPage extends TemplatePage{
         ListView headerInput = new ListView<String>("header_inputs", fields) {
             @Override
             protected void populateItem(ListItem<String> item) {
-                String key = item.getModelObject();
+//                String key = item.getModelObject();
                 
-                item.add(new Label("input", "[" + fieldTypeMap.get(key).getSimpleName() + "]"));
+                item.add(new InputPanel<>("input", new Model<>("")));
             }
         };
         filterForm.add(headerInput);

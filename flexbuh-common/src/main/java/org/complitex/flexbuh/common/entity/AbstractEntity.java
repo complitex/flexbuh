@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.common.entity;
 
+import org.complitex.flexbuh.common.annotation.Display;
 import org.complitex.flexbuh.common.util.StringUtil;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.*;
  *         Date: 08.12.11 17:41
  */
 public abstract class AbstractEntity implements Serializable{
+    @Display(visible = false)
     private Long id;
 
     public String getTableName(){
@@ -50,6 +52,29 @@ public abstract class AbstractEntity implements Serializable{
         }
 
         return map;
+    }
+    
+    public List<String> getFieldKeyList(boolean onlyVisible){
+        List<OrderString> orderStrings = new ArrayList<>();
+
+        for (Field field : getFields()){
+            Display display = field.getAnnotation(Display.class);
+
+            if (display == null || !onlyVisible || display.visible()) {
+                int order = display != null ? display.order() : 1000;
+                orderStrings.add(new OrderString(order, StringUtil.underline(field.getName())));
+            }
+        }
+
+        Collections.sort(orderStrings);
+
+        List<String> list = new ArrayList<>();
+
+        for (OrderString os : orderStrings){
+            list.add(os.getString());
+        }
+
+        return list;
     }
 
     public Long getId() {

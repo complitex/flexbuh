@@ -29,6 +29,9 @@ public class PersonProfile extends SessionObject {
     @XmlElement(name = "NAME", required = true)
     private String name;
 
+    @XmlTransient
+    private String profileName;
+
     @XmlElement(name = "NUMPDVSVD")
     private String numPdvSvd; // номер свидетельства ПДВ
 
@@ -118,6 +121,14 @@ public class PersonProfile extends SessionObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 
     public String getNumPdvSvd() {

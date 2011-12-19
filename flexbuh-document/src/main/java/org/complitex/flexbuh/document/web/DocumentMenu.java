@@ -27,30 +27,6 @@ public class DocumentMenu extends ResourceTemplateMenu{
                 new ITemplateLink() {
                     @Override
                     public String getLabel(Locale locale) {
-                        return getString("declaration_list", locale);
-                    }
-
-                    @Override
-                    public Class<? extends Page> getPage() {
-                        return DeclarationList.class;
-                    }
-
-                    @Override
-                    public PageParameters getParameters() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getTagId() {
-                        return "declaration_list";
-                    }
-                }
-        );
-
-        templateLinks.add(
-                new ITemplateLink() {
-                    @Override
-                    public String getLabel(Locale locale) {
                         return getString("person_profile_list", locale);
                     }
 
@@ -67,6 +43,30 @@ public class DocumentMenu extends ResourceTemplateMenu{
                     @Override
                     public String getTagId() {
                         return "person_profile_list";
+                    }
+                }
+        );
+
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("declaration_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return DeclarationList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "declaration_list";
                     }
                 }
         );

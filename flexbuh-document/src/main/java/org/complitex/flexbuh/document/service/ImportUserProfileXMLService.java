@@ -58,6 +58,7 @@ public class ImportUserProfileXMLService extends ImportXMLService {
             try{
                 for (PersonProfile personProfile : docDictionaries) {
                     personProfile.setSessionId(sessionId);
+                    personProfile.setProfileName(personProfile.getName());
 
                     personProfileBean.save(personProfile);
 
