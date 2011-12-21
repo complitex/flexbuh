@@ -5,19 +5,128 @@
     <resultMap id="userResultMap" type="org.complitex.flexbuh.common.entity.user.User">
 		<id column="id" property="id"/>
         <result column="login" property="login"/>
-        <result column="password" property="password"/>
 
-       <!-- <association property="userProfile" column="session_id" javaType="org.complitex.flexbuh.common.entity.user.PersonProfile"
-					 resultMap="personProfileResultMap"/>-->
-		<collection property="companyProfiles" column="session_id" javaType="org.complitex.flexbuh.document.entity.PersonProfile"
-					resultMap="personProfileResultMap"/>
+        <result column="first_name" property="firstName"/>
+        <result column="middle_name" property="middleName"/>
+        <result column="last_name" property="lastName"/>
+        <result column="birthday" property="birthday"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="address" property="address"/>
+        <result column="organization_name" property="organizationName"/>
+        <result column="organization_phone" property="organizationPhone"/>
+        <result column="organization_zip_code" property="organizationZipCode"/>
+        <result column="organization_address" property="organizationAddress"/>
+
+        <association property="session" column="session_id" javaType="org.complitex.flexbuh.common.entity.user.Session">
+            <id property="id" column="session_id"/>
+            <result column="cookie" property="cookie"/>
+        </association>
+
+        <collection property="roles" ofType="string">
+            <result column="group_name"/>
+        </collection>
     </resultMap>
 
+    <sql id="userFilter">
+        from `user` u
+        <if test="role != null">
+            left join `usergroup` gc on u.`login` = gc.`login`
+        </if>
+
+        <where>
+            <if test="login != null">u.login like concat('%', #{login}, '%')</if>
+            <if test="firstName != null">and u.first_name like concat('%', #{firstName}, '%')</if>
+            <if test="middleName != null">and u.middle_name like concat('%', #{middleName}, '%')</if>
+            <if test="lastName != null">and u.last_name like concat('%', #{lastName}, '%')</if>
+            <if test="address != null">and u.address like concat('%', #{address}, '%')</if>
+            <if test="role != null">and gc.`group_name` in (
+              <foreach collection="roles" separator="," item="item">#{item}</foreach>)
+            </if>
+        </where>
+
+        <if test="sortProperty == 'login'">
+            order by u.`login` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        </if>
+    </sql>
+
     <insert id="insertUser" parameterType="org.complitex.flexbuh.common.entity.user.User" keyProperty="id" useGeneratedKeys="true">
-        insert into `user` (`login`, `password`, `session_id`) values (#{login}, #{password}, #{sessionId})
+        insert into `user` (`login`, `password`, `session_id`, `first_name`, `middle_name`, `last_name`, `birthday`,
+        `email`, `phone`, `zip_code`, `address`, `organization_name`, `organization_phone`, `organization_zip_code`, `organization_address`)
+        values (#{login}, #{password}, #{sessionId}, #{firstName}, #{middleName}, #{lastName}, #{birthday},
+        #{email}, #{phone}, #{zipCode}, #{address}, #{organizationName}, #{organizationPhone}, #{organizationZipCode}, #{organizationAddress})
     </insert>
 
-    <select id="selectUserBySessionId" parameterType="long" resultMap="userResultMap">
-        select * from `user` where `session_id` = #{sessionId}
+    <update id="updateUser" parameterType="org.complitex.flexbuh.common.entity.user.User">
+        update `user`
+        <set>
+            <if test="password != null"> `password` = #{password},</if>
+            <if test="sessionId != null"> `session_id` = #{sessionId},</if>
+            `first_name` = #{firstName}, `middle_name` = #{middleName}, `last_name` = #{lastName}, `birthday` = #{birthday},
+            `email` = #{email}, `phone` = #{phone}, `zip_code` = #{zipCode}, `address` = #{address},
+            `organization_name` = #{organizationName}, `organization_phone` = #{organizationPhone},
+            `organization_zip_code` = #{organizationZipCode}, `organization_address` = #{organizationAddress}
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectUsers" resultMap="userResultMap" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
+        select uc.*, s.`cookie` as `cookie`, gc.`group_name` as `group_name`
+        from
+        (select u.*
+        <include refid="userFilter"/>
+        limit #{first}, #{count}
+        ) as uc
+        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `session` s on s.`id` = uc.`session_id`
     </select>
+
+    <select id="selectUsersCount" resultType="int" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
+        select count(distinct u.id)
+        <include refid="userFilter"/>
+    </select>
+
+    <select id="selectUserBySessionId" parameterType="long" resultMap="userResultMap">
+        select u.*, s.`id` as `session_id`, s.`cookie` as `cookie`, gc.`group_name` as `group_name` from `user` u
+        left join `session` s on s.`id` = u.`session_id`
+        left join `usergroup` gc on u.`login` = gc.`login`
+        where u.`session_id` = #{sessionId}
+    </select>
+
+    <select id="selectUserById" parameterType="long" resultMap="userResultMap">
+        select u.`id` as `id`,
+               u.`login` as `login`,
+               u.`password` as `password`,
+               u.`session_id` as `session_id`,
+               u.`first_name` as `first_name`,
+               u.`middle_name` as `middle_name`,
+               u.`last_name` as `last_name`,
+               u.`birthday` as `birthday`,
+               u.`email` as `email`,
+               u.`phone` as `phone`,
+               u.`zip_code` as `zip_code`,
+               u.`address` as `address`,
+               u.`organization_name` as `organization_name`,
+               u.`organization_phone` as `organization_phone`,
+               u.`organization_zip_code` as `organization_zip_code`,
+               u.`organization_address` as `organization_address`,
+               s.`cookie` as `cookie`,
+               gc.`group_name` as `group_name`
+        from `user` u
+        left join `session` s on s.`id` = u.`session_id`
+        left join `usergroup` gc on u.`login` = gc.`login`
+        where u.`id` = #{id}
+        order by gc.`group_name`
+    </select>
+
+    <!--User Group-->
+    <insert id="insertUserRole" parameterType="map">
+        insert into `usergroup` (`login`, `group_name`) values (#{login}, #{role})
+    </insert>
+
+    <delete id="deleteUserRole" parameterType="map">
+        delete from `usergroup` where `login` = #{login} and `group_name` = #{role}
+    </delete>
+
 </mapper>

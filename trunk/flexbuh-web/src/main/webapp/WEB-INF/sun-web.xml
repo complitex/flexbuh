@@ -8,6 +8,7 @@ GlassFish Application Server 3.0 Servlet 3.0//EN"
 
     <security-role-mapping>
         <role-name>AUTHORIZED</role-name>
+        <group-name>AUTHORIZED</group-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>EMPLOYEES</group-name>
         <group-name>EMPLOYEES_CHILD_VIEW</group-name>
@@ -15,16 +16,19 @@ GlassFish Application Server 3.0 Servlet 3.0//EN"
 
     <security-role-mapping>
         <role-name>ADMIN_MODULE_EDIT</role-name>
+        <group-name>ADMIN_MODULE_EDIT</group-name>
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
 
 	<security-role-mapping>
         <role-name>LOG_VIEW</role-name>
+        <group-name>LOG_VIEW</group-name>
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
         <role-name>CHILD_ORGANIZATION_VIEW</role-name>
+        <group-name>CHILD_ORGANIZATION_VIEW</group-name>
         <group-name>EMPLOYEES_CHILD_VIEW</group-name>
     </security-role-mapping>
 

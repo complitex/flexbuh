@@ -3,6 +3,7 @@ package org.complitex.flexbuh.admin;
 import org.apache.wicket.Page;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.admin.user.web.UserList;
 import org.complitex.flexbuh.admin.web.FeedbackList;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.ITemplateLink;
@@ -64,6 +65,30 @@ public class AdminMenu extends ResourceTemplateMenu {
                     @Override
                     public Class<? extends Page> getPage() {
                         return FeedbackList.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return null;
+                    }
+                }
+        );
+
+        templateLinks.add(
+                new ITemplateLink() {
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getString("user_list", locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return UserList.class;
                     }
 
                     @Override
