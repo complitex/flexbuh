@@ -2,8 +2,8 @@
 -- User
 -- --------------------------------
 
-INSERT INTO user (`id`, `login`, `password`) VALUE (1, 'admin', '21232f297a57a5a743894a0e4a801fc3');
-INSERT INTO user (`id`, `login`, `password`)  VALUE (2, 'ANONYMOUS', 'ANONYMOUS');
+INSERT INTO user (`id`, `login`, `password`, `first_name`, `middle_name`, `last_name`, `email`) VALUE (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', '', '', '', '');
+INSERT INTO user (`id`, `login`, `password`, `first_name`, `middle_name`, `last_name`, `email`)  VALUE (2, 'ANONYMOUS', 'ANONYMOUS', '', '', '', '');
 INSERT INTO usergroup (`id`, `login`, `group_name`) VALUE (1, 'admin', 'ADMINISTRATORS');
 
 -- --------------------------------
