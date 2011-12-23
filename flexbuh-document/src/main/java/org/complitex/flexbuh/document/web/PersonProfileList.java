@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -29,6 +30,7 @@ import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.document.entity.PersonType;
 import org.complitex.flexbuh.document.entity.Settings;
 import org.complitex.flexbuh.document.service.ImportUserProfileXMLService;
 import org.complitex.flexbuh.document.service.PersonProfileBean;
@@ -105,7 +107,7 @@ public class PersonProfileList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<PersonProfile> item) {
-                PersonProfile profile = item.getModelObject();
+                final PersonProfile profile = item.getModelObject();
 
                 item.add(new Label("profile_name", profile.getProfileName()));
 
@@ -117,6 +119,13 @@ public class PersonProfileList extends TemplatePage {
                 pageParameters.set("id", profile.getId());
                 item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
                         PersonProfileEdit.class, pageParameters));
+                
+                item.add(new Link("action_delete") {
+                    @Override
+                    public void onClick() {
+                        personProfileBean.delete(profile.getId());
+                    }
+                });
             }
         };
         filterForm.add(dataView);
@@ -236,6 +245,12 @@ public class PersonProfileList extends TemplatePage {
                             @Override
                             public void write(Response output) {
                                 List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId(false));
+                                
+                                for(PersonProfile pp : personProfiles){
+                                    if (PersonType.PHYSICAL_PERSON.equals(pp.getPersonType())){
+                                        pp.mergePhysicalNames();
+                                    }                                    
+                                }
 
                                 if (!personProfiles.isEmpty()) {
                                     try {

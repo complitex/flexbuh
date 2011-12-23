@@ -4,7 +4,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.SessionObject;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
+
+import static org.complitex.flexbuh.common.util.StringUtil.getString;
 
 /**
  * @author Pavel Sknar
@@ -13,7 +16,7 @@ import java.util.Date;
 @XmlType
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class PersonProfile extends SessionObject {
-    //	@XmlJavaTypeAdapter( String2PersonType.class )
+    @XmlJavaTypeAdapter(PersonTypeAdapter.class)
     @XmlElement(name = "PERSON_TYPE", required = true)
     private PersonType personType = PersonType.JURIDICAL_PERSON; // тип плательщика
 
@@ -28,6 +31,15 @@ public class PersonProfile extends SessionObject {
 
     @XmlElement(name = "NAME", required = true)
     private String name;
+
+    @XmlTransient
+    private String firstName;
+
+    @XmlTransient
+    private String middleName;
+
+    @XmlTransient
+    private String lastName;
 
     @XmlTransient
     private String profileName;
@@ -82,6 +94,24 @@ public class PersonProfile extends SessionObject {
 
     @XmlTransient
     private Long taxInspectionId;
+    
+    public void parsePhysicalNames(){
+        String[] names = name.split(" ");
+
+        if (names.length > 0){
+            lastName = names[0];
+        }
+        if (names.length > 1){
+            firstName = names[1];
+        }
+        if (names.length > 2){
+            middleName = names[2];
+        }
+    }
+    
+    public void mergePhysicalNames(){
+        name = (getString(lastName) + " " + getString(firstName) + " " + getString(middleName)).trim();
+    }
 
     public PersonType getPersonType() {
         return personType;
@@ -121,6 +151,30 @@ public class PersonProfile extends SessionObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getProfileName() {

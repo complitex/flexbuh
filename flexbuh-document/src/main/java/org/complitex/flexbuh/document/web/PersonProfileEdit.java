@@ -86,7 +86,8 @@ public class PersonProfileEdit extends FormTemplatePage {
 
         add(new FeedbackPanel("messages"));
 
-        Form form = new Form("form");
+        final Form form = new Form("form");
+        form.setOutputMarkupId(true);
         add(form);
 
         // Название профиля
@@ -157,16 +158,35 @@ public class PersonProfileEdit extends FormTemplatePage {
         tinLabel.setOutputMarkupId(true);
         form.add(tinLabel);
 
-        // Имя
-        form.add(new TextField<>("name", new PropertyModel<String>(personProfile, "name")).setRequired(true));
-        final Label nameLabel = new Label("name_label", new LoadableDetachableModel<Object>() {
+        //Название
+        final WebMarkupContainer nameContainer = new WebMarkupContainer("name_container"){
+            @Override
+            public boolean isVisible() {
+                return !PersonType.PHYSICAL_PERSON.equals(personProfile.getPersonType());
+            }
+        };
+        form.add(nameContainer);
+
+        nameContainer.add(new TextField<>("name", new PropertyModel<String>(personProfile, "name")));
+        nameContainer.add(new Label("name_label", new LoadableDetachableModel<Object>() {
             @Override
             protected Object load() {
                 return getString("name_" + personProfile.getPersonType().getCode());
             }
-        });
-        nameLabel.setOutputMarkupId(true);
-        form.add(nameLabel);
+        }));
+
+        //ФИО
+        final WebMarkupContainer physicalNameContainer = new WebMarkupContainer("physical_name_container"){
+            @Override
+            public boolean isVisible() {
+                return PersonType.PHYSICAL_PERSON.equals(personProfile.getPersonType());
+            }
+        };        
+        form.add(physicalNameContainer);
+
+        physicalNameContainer.add(new TextField<>("last_name", new PropertyModel<>(personProfile, "lastName")));
+        physicalNameContainer.add(new TextField<>("first_name", new PropertyModel<>(personProfile, "firstName")));
+        physicalNameContainer.add(new TextField<>("middle_name", new PropertyModel<>(personProfile, "middleName")));
 
         // индивидуальный налоговый номер
         form.add(new TextField<>("ipn", new PropertyModel<String>(personProfile, "ipn")));
@@ -191,8 +211,7 @@ public class PersonProfileEdit extends FormTemplatePage {
         personType.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(tinLabel);
-                target.add(nameLabel);
+                target.add(form);
             }
         });
 

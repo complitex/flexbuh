@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.document.service;
 
-import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.document.entity.PersonProfile;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Stateless
 public class PersonProfileBean extends AbstractBean {
-	public static final String NS = PersonProfileBean.class.getName();
+    public static final String NS = PersonProfileBean.class.getName();
 
     public PersonProfile getPersonProfile(Long id){
         return (PersonProfile) sqlSession().selectOne(NS + ".selectPersonProfile", id);
@@ -21,8 +21,8 @@ public class PersonProfileBean extends AbstractBean {
 
     @SuppressWarnings("unchecked")
     public List<PersonProfile> getAllPersonProfiles(Long sessionId){
-            return sqlSession().selectList(NS + ".selectAllPersonProfiles", sessionId);
-        }
+        return sqlSession().selectList(NS + ".selectAllPersonProfiles", sessionId);
+    }
 
     @SuppressWarnings({"unchecked"})
     public List<PersonProfile> getPersonProfiles(Long sessionId, int first, int count){
@@ -39,5 +39,9 @@ public class PersonProfileBean extends AbstractBean {
         }else {
             sqlSession().insert(NS + ".updatePersonProfile", personProfile);
         }
+    }
+    
+    public void delete(Long personProfileId){
+        sqlSession().delete("deletePersonProfile", personProfileId);
     }
 }
