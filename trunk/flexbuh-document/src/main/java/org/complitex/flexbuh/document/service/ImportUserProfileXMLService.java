@@ -60,6 +60,10 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                     personProfile.setSessionId(sessionId);
                     personProfile.setProfileName(personProfile.getName());
 
+                    if (PersonType.PHYSICAL_PERSON.equals(personProfile.getPersonType())){
+                        personProfile.parsePhysicalNames();
+                    }
+
                     personProfileBean.save(personProfile);
 
 					log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,

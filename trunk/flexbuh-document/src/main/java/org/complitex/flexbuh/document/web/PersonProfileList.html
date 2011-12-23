@@ -43,6 +43,9 @@
                 <td><span wicket:id="tin"></span></td>
                 <td>
                     <span wicket:id="action_edit"></span>
+                    <a href="#" wicket:id="action_delete" onclick="return confirm('Желаете удалить?')">
+                        <wicket:message key="action_delete"/>
+                    </a>
                 </td>
             </tr>
             </tbody>

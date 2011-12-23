@@ -14,7 +14,7 @@ public class ResourceTemplateLink implements ITemplateLink{
     private Class<? extends Page> page; 
     private PageParameters pageParameters;
     private String tagId;
-    private  ResourceTemplateMenu resourceTemplateMenu;
+    private ResourceTemplateMenu resourceTemplateMenu;
 
     public ResourceTemplateLink(String key, ResourceTemplateMenu resourceTemplateMenu, Class<? extends Page> page,
                                 PageParameters pageParameters, String tagId) {

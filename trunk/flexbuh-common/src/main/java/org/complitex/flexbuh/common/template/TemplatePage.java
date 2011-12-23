@@ -46,8 +46,6 @@ import java.util.*;
 public abstract class TemplatePage extends WebPage {
     private static final Logger log = LoggerFactory.getLogger(TemplatePage.class);
 
-    private String page = getClass().getName();
-
     private Set<String> resourceBundle = new HashSet<String>();
 
 	@EJB
@@ -134,12 +132,11 @@ public abstract class TemplatePage extends WebPage {
      * Боковая панель с меню, которое устанавливается в конфигурационном файле.
      */
     private class TemplateMenu extends Fragment {
-
-        private String tagId;
-
         public TemplateMenu(String id, String markupId, MarkupContainer markupProvider, ITemplateMenu menu) {
             super(id, markupId, markupProvider);
-            this.tagId = menu.getTagId();
+
+            setMarkupId(menu.getTagId());
+            setOutputMarkupId(true);
 
             add(new Label("menu_title", menu.getTitle(getLocale())));
             add(new ListView<ITemplateLink>("menu_items", menu.getTemplateLinks(getLocale())) {
@@ -162,14 +159,6 @@ public abstract class TemplatePage extends WebPage {
                     item.add(link);
                 }
             });
-        }
-
-        @Override
-        protected void onComponentTag(ComponentTag tag) {
-            super.onComponentTag(tag);
-            if (!Strings.isEmpty(tagId)) {
-                setMarkupId(tagId);
-            }
         }
     }
 

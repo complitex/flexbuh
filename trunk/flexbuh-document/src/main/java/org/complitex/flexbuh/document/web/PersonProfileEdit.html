@@ -38,13 +38,27 @@
                 <td><input wicket:id="c_sti_tin" size="40"/></td>
             </tr>
             <tr>
-                <th><span wicket:id="tin_label"></span></th>
+                <th style="width: 240px"><span wicket:id="tin_label"></span></th>
                 <td><input type="text" maxlength="45" wicket:id="tin" size="40"/></td>
             </tr>
-            <tr>
+            <tr wicket:id="name_container">
                 <th style="width: 240px"><span wicket:id="name_label"></span></th>
                 <td><input type="text" maxlength="255" wicket:id="name" size="40"/></td>
             </tr>
+            <wicket:container wicket:id="physical_name_container">
+                <tr>
+                    <th><wicket:message key="last_name"/></th>
+                    <td><input type="text" maxlength="255" wicket:id="last_name" size="40"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="first_name"/></th>
+                    <td><input type="text" maxlength="255" wicket:id="first_name" size="40"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="middle_name"/></th>
+                    <td><input type="text" maxlength="255" wicket:id="middle_name" size="40"/></td>
+                </tr>
+            </wicket:container>
             <tr>
                 <th><wicket:message key="ipn"/> </th>
                 <td><input type="text" maxlength="45" wicket:id="ipn" size="40"/></td>
@@ -61,15 +75,13 @@
                 <th><wicket:message key="koatuu"/> </th>
                 <td><input type="text" maxlength="45" wicket:id="koatuu" size="40"/></td>
             </tr>
-            <tbody wicket:id="contract_container">
-            <tr>
+            <tr wicket:id="contract_container">
                 <th><wicket:message key="contract"/> </th>
                 <td>
                     <input type="text" maxlength="45" wicket:id="contract_date" style="width: 111px"/>
                     <input type="text" maxlength="45" wicket:id="contract_number"/>
                 </td>
             </tr>
-            </tbody>
         </table>
 
         <fieldset>
