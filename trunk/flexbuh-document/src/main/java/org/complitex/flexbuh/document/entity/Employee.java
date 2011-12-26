@@ -13,6 +13,9 @@ import java.util.Date;
 @XmlType(name = "row")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class Employee extends SessionObject{
+    @XmlTransient
+    private Long personProfileId;
+
     @XmlElement(name = "HTIN")
     private Integer htin;
 
@@ -48,6 +51,14 @@ public class Employee extends SessionObject{
         hdateOut = DateUtil.getDate(hdateOutString);
         hdateIn = DateUtil.getDate(hdateInString);
         hbirthday = DateUtil.getDate(hbirthdayString);
+    }
+
+    public Long getPersonProfileId() {
+        return personProfileId;
+    }
+
+    public void setPersonProfileId(Long personProfileId) {
+        this.personProfileId = personProfileId;
     }
 
     public Integer getHtin() {

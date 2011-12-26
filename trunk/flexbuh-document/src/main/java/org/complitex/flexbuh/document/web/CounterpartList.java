@@ -28,6 +28,7 @@ import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +48,19 @@ public class CounterpartList extends TemplatePage{
     @EJB
     private CounterpartBean counterpartBean;
 
+    @EJB
+    private PersonProfileBean personProfileBean;
+
     private Dialog uploadDialog;
 
     public CounterpartList() {
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        final Form<CounterpartFilter> filterForm = new Form<>("filter_form",
-                new CompoundPropertyModel<>(new CounterpartFilter(getSessionId(false))));
+        CounterpartFilter filter = new CounterpartFilter(getSessionId(),
+                personProfileBean.getSelectedPersonProfileId(getSessionId()));
+
+        final Form<CounterpartFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
         add(filterForm);
 
         filterForm.add(new TextField<>("hk")); //ИНН

@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -11,6 +12,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.service.CounterpartBean;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 
 import javax.ejb.EJB;
 
@@ -21,6 +23,9 @@ import javax.ejb.EJB;
 public class CounterpartEdit extends FormTemplatePage{
     @EJB    
     private CounterpartBean counterpartBean;
+    
+    @EJB
+    private PersonProfileBean personProfileBean;
     
     public CounterpartEdit() {
         init(null);
@@ -34,10 +39,13 @@ public class CounterpartEdit extends FormTemplatePage{
         Counterpart counterpart = id != null ? counterpartBean.getCounterpart(id) : new Counterpart(getSessionId(true));
         
         if (counterpart == null){
-            //todo            
+            throw new WicketRuntimeException("Кажись нет записи по такому id в базе");
         }else if (!counterpart.getSessionId().equals(getSessionId(false))){
             throw new UnauthorizedInstantiationException(CounterpartEdit.class);
         }
+        
+        //Профиль
+        counterpart.setPersonProfileId(personProfileBean.getSelectedPersonProfileId(getSessionId()));
         
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));

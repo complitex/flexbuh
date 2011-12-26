@@ -22,6 +22,7 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.common.security.CookieWebSession;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ResourceService;
+import org.complitex.flexbuh.common.service.UserSessionBean;
 import org.complitex.flexbuh.common.service.user.SessionBean;
 import org.complitex.flexbuh.common.template.pages.login.Login;
 import org.complitex.flexbuh.common.template.toolbar.HelpButton;
@@ -53,6 +54,9 @@ public abstract class TemplatePage extends WebPage {
     
     @EJB
     private ResourceService resourceService;
+
+    @EJB
+    private UserSessionBean userSessionBean;
 
     protected TemplatePage(PageParameters parameters) {
         this();
@@ -107,7 +111,7 @@ public abstract class TemplatePage extends WebPage {
 //        todo empty panel
         add(new Label("current_user_fullname", "id: " + getSessionId(false)));
         add(new EmptyPanel("current_user_department"));
-        add(new EmptyPanel("profile"));
+        add(new Label("profile", userSessionBean.getSelectedPersonProfileName(getSessionId(false))));
 
         add(new BookmarkablePageLink<>("login", Login.class).setVisible(!isUserAuthorized()));
         add(new Form("exit") {
@@ -273,5 +277,9 @@ public abstract class TemplatePage extends WebPage {
 
     public Long getSessionId(boolean create){
         return getCookieWebSession().getSessionId(create);
+    }
+
+    public Long getSessionId(){
+        return getCookieWebSession().getSessionId(false);
     }
 }

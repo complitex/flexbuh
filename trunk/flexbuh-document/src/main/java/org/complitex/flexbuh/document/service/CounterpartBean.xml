@@ -5,6 +5,7 @@
     <resultMap id="counterpartResultMap" type="org.complitex.flexbuh.document.entity.Counterpart">
         <id column="id" property="id"/>
         <result column="session_id" property="sessionId"/>
+        <result column="person_profile_id" property="personProfileId"/>
         <result column="hk" property="hk"/>
         <result column="hname" property="hname"/>
         <result column="hloc" property="hloc"/>
@@ -18,7 +19,10 @@
 
     <sql id="selectCounterpartsWhere">
         <where>
-            <if test="hk != null">`hk` like concat('%', #{hk}, '%')</if>
+            <if test="personProfileId != null">
+                (`person_profile_id` = #{personProfileId} or `person_profile_id` is null)
+            </if>
+            <if test="hk != null">and `hk` like concat('%', #{hk}, '%')</if>
             <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
             <if test="hloc != null">and `hloc` like concat('%', #{hloc}, '%')</if>
             <if test="htel != null">and `htel` like concat('%', #{htel}, '%')</if>
@@ -41,8 +45,8 @@
     </select>
 
     <insert id="insertCounterpart">
-        insert into `counterpart` (`session_id`, `hk`, `hname`, `hloc`, `htel`, `hnspdv`)
-          values (#{sessionId}, #{hk}, #{hname}, #{hloc}, #{htel}, #{hnspdv})
+        insert into `counterpart` (`session_id`, `person_profile_id`, `hk`, `hname`, `hloc`, `htel`, `hnspdv`)
+          values (#{sessionId}, #{personProfileId}, #{hk}, #{hname}, #{hloc}, #{htel}, #{hnspdv})
     </insert>
 
     <update id="updateCounterpart">

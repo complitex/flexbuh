@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -11,6 +12,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.service.EmployeeBean;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 
 import javax.ejb.EJB;
@@ -22,6 +24,9 @@ import javax.ejb.EJB;
 public class EmployeeEdit extends FormTemplatePage{
     @EJB
     private EmployeeBean employeeBean;
+    
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     public EmployeeEdit() {
         init(null);
@@ -35,11 +40,14 @@ public class EmployeeEdit extends FormTemplatePage{
         Employee employee = id != null ? employeeBean.getEmployee(id) : new Employee(getSessionId(true));
 
         if (employee == null){
-            //todo
-        }else if (!employee.getSessionId().equals(getSessionId(false))){
+            throw new WicketRuntimeException("Похоже в базе нет записи по такому id");
+        }else if (!employee.getSessionId().equals(getSessionId())){
             throw new UnauthorizedInstantiationException(CounterpartEdit.class);
         }
-
+        
+        //Профиль
+        employee.setPersonProfileId(personProfileBean.getSelectedPersonProfileId(getSessionId()));
+        
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 

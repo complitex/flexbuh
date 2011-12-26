@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
@@ -85,6 +86,16 @@ public class PersonProfileList extends TemplatePage {
         add(filterForm);
 
         final Long sessionId = getSessionId(true);
+        
+        //Текущий профиль
+        add(new Label("selected_profile", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                PersonProfile selectedProfile = personProfileBean.getSelectedPersonProfile(sessionId);
+
+                return selectedProfile != null ? selectedProfile.getProfileName() : getString("no_selected_profile");
+            }
+        }));
 
         //Модель
         final DataProvider<PersonProfile> dataProvider = new DataProvider<PersonProfile>() {
@@ -126,6 +137,21 @@ public class PersonProfileList extends TemplatePage {
                         personProfileBean.delete(profile.getId());
                     }
                 });
+
+                Link select = new Link("action_select") {
+                    @Override
+                    public void onClick() {
+                        if (!profile.isSelected()) {
+                            personProfileBean.setSelectedPersonProfile(profile);
+                        }else{
+                            personProfileBean.deselectAllPersonProfile(sessionId);
+                        }
+                    }
+                };
+                item.add(select);
+                
+                select.add(new Label("action_select_label", getString(!profile.isSelected() ? "action_select"
+                        : "action_deselect")));
             }
         };
         filterForm.add(dataView);

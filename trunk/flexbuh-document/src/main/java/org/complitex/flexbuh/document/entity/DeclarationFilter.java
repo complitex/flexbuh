@@ -14,6 +14,7 @@ public class DeclarationFilter extends AbstractFilter{
     private Integer periodType;
     private Integer periodYear;
     private Date date;
+    private Long personProfileId;
 
     public DeclarationFilter() {
     }
@@ -68,5 +69,13 @@ public class DeclarationFilter extends AbstractFilter{
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Long getPersonProfileId() {
+        return personProfileId;
+    }
+
+    public void setPersonProfileId(Long personProfileId) {
+        this.personProfileId = personProfileId;
     }
 }

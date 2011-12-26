@@ -9,6 +9,7 @@ import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 
 import javax.ejb.EJB;
@@ -24,6 +25,9 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
 
     @EJB
     private CounterpartBean counterpartBean;
+
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     private Long sessionId;
 
@@ -59,7 +63,7 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
     @Override
     protected List<Counterpart> getValues(String tern) {
         try {
-            CounterpartFilter filter = new CounterpartFilter(sessionId);
+            CounterpartFilter filter = new CounterpartFilter(sessionId, personProfileBean.getSelectedPersonProfileId(sessionId));
 
             switch (getAlias()){
                 case "HK":

@@ -30,6 +30,7 @@ import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,15 +49,20 @@ public class EmployeeList extends TemplatePage{
 
     @EJB
     private EmployeeBean employeeBean;
+    
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     private Dialog uploadDialog;
 
     public EmployeeList() {
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
+        
+        EmployeeFilter filter = new EmployeeFilter(getSessionId(),
+                personProfileBean.getSelectedPersonProfileId(getSessionId()));
 
-        final Form<EmployeeFilter> filterForm = new Form<>("filter_form",
-                new CompoundPropertyModel<>(new EmployeeFilter(getSessionId(false))));
+        final Form<EmployeeFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
         add(filterForm);
 
         filterForm.add(new TextField<>("htin")); //Идентификационный номер

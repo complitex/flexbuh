@@ -7,6 +7,7 @@ import org.complitex.flexbuh.common.entity.AbstractFilter;
  *         Date: 16.11.11 14:54
  */
 public class CounterpartFilter extends AbstractFilter{
+    private Long personProfileId;
     private String hk;
     private String hname;
     private String hloc;
@@ -16,12 +17,9 @@ public class CounterpartFilter extends AbstractFilter{
     public CounterpartFilter() {
     }
 
-    public CounterpartFilter(Long sessionId) {
+    public CounterpartFilter(Long sessionId, Long personProfileId) {
         super(sessionId);
-    }
-
-    public CounterpartFilter(Long sessionId, int first, int count) {
-        super(sessionId, first, count);
+        this.personProfileId = personProfileId;
     }
 
     public void clear(){
@@ -30,6 +28,14 @@ public class CounterpartFilter extends AbstractFilter{
         hloc = null;
         htel = null;
         hnspdv = null;
+    }
+
+    public Long getPersonProfileId() {
+        return personProfileId;
+    }
+
+    public void setPersonProfileId(Long personProfileId) {
+        this.personProfileId = personProfileId;
     }
 
     public String getHk() {
