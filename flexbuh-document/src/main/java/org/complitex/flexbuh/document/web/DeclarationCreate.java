@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -51,9 +52,14 @@ public class DeclarationCreate extends FormTemplatePage{
         Form form = new Form("form");
         add(form);
 
+        //Выбранный профиль
+        final PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(getSessionId(false));
+
         //Тип лица
-        final DropDownChoice<PersonType> person = new DropDownChoice<>("person",
-                new Model<>(PersonType.JURIDICAL_PERSON),
+        IModel<PersonType> personModel = new Model<>(selectedPersonProfile != null
+                ? selectedPersonProfile.getPersonType() : PersonType.JURIDICAL_PERSON);
+
+        final DropDownChoice<PersonType> person = new DropDownChoice<>("person", personModel,
                 Arrays.asList(PersonType.JURIDICAL_PERSON, PersonType.PHYSICAL_PERSON),
                 new IChoiceRenderer<PersonType>() {
                     @Override
@@ -66,10 +72,13 @@ public class DeclarationCreate extends FormTemplatePage{
                         return object.getCode() + "";
                     }
                 });
+        person.setEnabled(selectedPersonProfile == null);
         person.setOutputMarkupId(true);
         form.add(person);
 
         //Профиль
+        declaration.setPersonProfile(selectedPersonProfile);
+        
         final DropDownChoice<PersonProfile> personProfile = new DropDownChoice<>("person_profile",
                 new PropertyModel<PersonProfile>(declaration, "personProfile"),
                 new LoadableDetachableModel<List<PersonProfile>>() {
@@ -81,7 +90,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 new IChoiceRenderer<PersonProfile>() {
                     @Override
                     public Object getDisplayValue(PersonProfile object) {
-                        return object.getName();
+                        return object.getProfileName();
                     }
 
                     @Override
@@ -89,6 +98,7 @@ public class DeclarationCreate extends FormTemplatePage{
                         return object.getId().toString();
                     }
                 });
+        personProfile.setEnabled(selectedPersonProfile == null);
         personProfile.setNullValid(true);
         person.setOutputMarkupId(true);
         form.add(personProfile);

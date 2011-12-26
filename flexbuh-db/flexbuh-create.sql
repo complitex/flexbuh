@@ -33,6 +33,7 @@ CREATE TABLE  `person_profile` (
   `b_inn` VARCHAR(45),
   `b_fio` VARCHAR(255),
   `tax_inspection_id` BIGINT(20),
+  `selected` BOOLEAN,
   PRIMARY KEY (`id`),
   KEY `key_session_id` (`session_id`),
   KEY `key_tax_inspection_id` (`tax_inspection_id`),
@@ -344,6 +345,7 @@ CREATE TABLE `declaration` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `parent_id` BIGINT(20),
   `session_id` BIGINT(20) NOT NULL,
+  `person_profile_id` BIGINT(20),
   `tin` INTEGER,
   `c_doc` VARCHAR(3) NOT NULL,
   `c_doc_sub` VARCHAR(3) NOT NULL,
@@ -366,8 +368,10 @@ CREATE TABLE `declaration` (
   PRIMARY KEY (`id`),
   KEY `key_declaration__parent_id` (`parent_id`),
   KEY `key_declaration__session_id` (`session_id`),
+  KEY `key_declaration__person_profile_id` (`person_profile_id`),
   CONSTRAINT `fk_declaration__declaration` FOREIGN KEY (`parent_id`) REFERENCES `declaration` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_declaration__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+  CONSTRAINT `fk_declaration__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
+  CONSTRAINT `fk_declaration__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -415,6 +419,7 @@ DROP TABLE IF EXISTS `counterpart`;
 CREATE TABLE `counterpart` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `session_id` BIGINT(20) NOT NULL,
+  `person_profile_id` BIGINT(20),
   `hk` VARCHAR(64),
   `hname` VARCHAR(255) NOT NULL,
   `hloc` VARCHAR(255),
@@ -422,7 +427,9 @@ CREATE TABLE `counterpart` (
   `hnspdv` VARCHAR(64),
   PRIMARY KEY (`id`),
   KEY `key_counterpart__session_id` (`session_id`),
-  CONSTRAINT `fk_counterpart__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+  KEY `key_counterpart__person_profile_id` (`person_profile_id`),
+  CONSTRAINT `fk_counterpart__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
+  CONSTRAINT `fk_counterpart__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -435,6 +442,7 @@ DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `session_id` BIGINT(20) NOT NULL,
+  `person_profile_id` BIGINT(20),
   `htin` INTEGER,
   `hname` VARCHAR(255) NOT NULL,
   `hbirthday` DATE,
@@ -442,7 +450,9 @@ CREATE TABLE `employee` (
   `hdate_out` DATE,
   PRIMARY KEY (`id`),
   KEY `key_employee__session_id` (`session_id`),
-  CONSTRAINT `fk_employee__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+  KEY `key_employee__person_profile_id` (`person_profile_id`),
+  CONSTRAINT `fk_employee__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
+  CONSTRAINT `fk_employee__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

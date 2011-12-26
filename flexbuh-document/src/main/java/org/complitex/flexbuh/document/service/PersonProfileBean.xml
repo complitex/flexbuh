@@ -30,17 +30,18 @@
         <result column="b_inn" property="bInn"/>
         <result column="b_fio" property="bFio"/>
         <result column="tax_inspection_id" property="taxInspectionId"/>
+        <result column="selected" property="selected"/>
     </resultMap>
 
     <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
         insert into `person_profile`
           (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `last_name`, `first_name`, `middle_name`,
             `profile_name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`, `contract_date`, `contract_number`, `zip_code`,
-            `address`, `phone`, `fax`, `email`, `d_inn` , `d_fio`, `b_inn`, `b_fio`, `tax_inspection_id`)
+            `address`, `phone`, `fax`, `email`, `d_inn` , `d_fio`, `b_inn`, `b_fio`, `tax_inspection_id`, `selected`)
         values
           (#{sessionId}, #{personType}, #{cSti}, #{cStiTin}, #{tin}, #{name}, #{lastName}, #{firstName}, #{middleName},
             #{profileName}, #{numPdvSvd}, #{ipn}, #{kved}, #{koatuu}, #{contractDate}, #{contractNumber}, #{zipCode},
-            #{address}, #{phone}, #{fax}, #{email}, #{dInn}, #{dFio}, #{bInn}, #{bFio}, #{taxInspectionId})
+            #{address}, #{phone}, #{fax}, #{email}, #{dInn}, #{dFio}, #{bInn}, #{bFio}, #{taxInspectionId}, #{selected})
     </insert>
 
 	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile">
@@ -49,7 +50,8 @@
           `profile_name` = #{profileName}, `num_pdv_svd` = #{numPdvSvd}, `ipn` = #{ipn}, `kved` = #{kved},
           `koatuu` = #{koatuu}, `contract_date` = #{contractDate}, `contract_number` = #{contractNumber},
           `zip_code` = #{zipCode}, `address` = #{address}, `phone` = #{phone}, `fax` = #{fax}, `email` = #{email},
-          `d_inn` = #{dInn}, `d_fio` = #{dFio}, `b_inn` = #{bInn}, `b_fio` = #{bFio}, `tax_inspection_id` = #{taxInspectionId}
+          `d_inn` = #{dInn}, `d_fio` = #{dFio}, `b_inn` = #{bInn}, `b_fio` = #{bFio}, `tax_inspection_id` = #{taxInspectionId},
+          `selected` = #{selected}
         where `id` = #{id}
     </update>
 
@@ -72,4 +74,16 @@
     <delete id="deletePersonProfile" parameterType="long">
         delete from `person_profile` where `id` = #{id}
     </delete>
+
+    <update id="deselectAllPersonProfile" parameterType="long">
+        update `person_profile` set `selected` = false where `session_id` = #{sessionId}
+    </update>
+
+    <select id="selectSelectedPersonProfile" parameterType="long" resultMap="personProfileResultMap">
+        select * from `person_profile` where `selected` = true and `session_id` = #{sessionId} limit 1
+    </select>
+
+    <select id="selectSelectedPersonProfileId" parameterType="long" resultType="long">
+        select `id` from `person_profile` where `selected` = true and `session_id` = #{sessionId} limit 1
+    </select>
 </mapper>

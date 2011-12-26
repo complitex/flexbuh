@@ -5,6 +5,7 @@
     <resultMap id="employeeResultMap" type="org.complitex.flexbuh.document.entity.Employee">
         <id column="id" property="id"/>
         <result column="session_id" property="sessionId"/>
+        <result column="person_profile_id" property="personProfileId"/>
         <result column="htin" property="htin"/>
         <result column="hname" property="hname"/>
         <result column="hbirthday" property="hbirthday"/>
@@ -18,7 +19,10 @@
 
     <sql id="selectEmployeesWhere">
         <where>
-            <if test="htin != null">`htin` like concat('%', #{htin}, '%')</if>
+            <if test="personProfileId != null">
+                (`person_profile_id` = #{personProfileId} or `person_profile_id` is null)
+            </if>
+            <if test="htin != null">and `htin` like concat('%', #{htin}, '%')</if>
             <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
             <if test="hbirthday != null">and `hbirthday` = DATE(#{hbirthday})</if>
             <if test="hdateIn != null">and `hdate_in` = DATE(#{hdateIn})</if>
@@ -41,13 +45,13 @@
     </select>
 
     <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
-        insert into `employee` (`session_id`, `htin`, `hname`, `hbirthday`, `hdate_in`, `hdate_out`)
-          values (#{sessionId}, #{htin}, #{hname}, #{hbirthday}, #{hdateIn}, #{hdateOut})
+        insert into `employee` (`session_id`, `person_profile_id`, `htin`, `hname`, `hbirthday`, `hdate_in`, `hdate_out`)
+          values (#{sessionId}, #{personProfileId}, #{htin}, #{hname}, #{hbirthday}, #{hdateIn}, #{hdateOut})
     </insert>
 
     <update id="updateEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
-        update `employee` set `htin` = #{htin}, `hname` = #{hname}, `hbirthday` = #{hbirthday}, `hdate_in` = #{hdateIn},
-          `hdate_out` = #{hdateOut}
+        update `employee` set `person_profile_id` = #{personProfileId}, `htin` = #{htin}, `hname` = #{hname},
+          `hbirthday` = #{hbirthday}, `hdate_in` = #{hdateIn}, `hdate_out` = #{hdateOut}
     </update>
 
     <delete id="deleteEmployee" parameterType="long">

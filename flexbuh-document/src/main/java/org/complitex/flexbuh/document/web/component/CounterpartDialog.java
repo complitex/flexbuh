@@ -16,6 +16,7 @@ import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
+import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
@@ -28,6 +29,9 @@ import java.util.List;
 public class CounterpartDialog extends Panel implements IAutocompleteDialog<Counterpart> {
     @EJB
     private CounterpartBean counterpartBean;
+
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     private AutocompleteDialogComponent<Counterpart> component;
     
@@ -69,7 +73,8 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
         final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Counterpart> list = counterpartBean.getCounterparts(new CounterpartFilter(sessionId));
+        List<Counterpart> list = counterpartBean.getCounterparts(new CounterpartFilter(sessionId,
+                personProfileBean.getSelectedPersonProfileId(sessionId)));
 
         ListView listView = new ListView<Counterpart>("counterparts", list) {
             @Override

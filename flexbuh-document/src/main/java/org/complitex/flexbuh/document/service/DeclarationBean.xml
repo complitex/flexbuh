@@ -86,6 +86,9 @@
              <if test="periodType != null">and `period_type` = #{periodType}</if>
              <if test="periodYear != null">and `period_year` = #{periodYear}</if>
              <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
+             <if test="personProfileId != null">
+                 and (`person_profile_id` = #{personProfileId} or `person_profile_id` is null)
+             </if>
              and `session_id` = #{sessionId}
          </where>
     </sql>

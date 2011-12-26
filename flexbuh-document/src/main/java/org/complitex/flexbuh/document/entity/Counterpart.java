@@ -2,10 +2,7 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.SessionObject;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -14,6 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "row")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class Counterpart extends SessionObject {
+    @XmlTransient
+    private Long personProfileId;
+    
     @XmlElement(name = "HK")
     private String hk;
 
@@ -34,6 +34,14 @@ public class Counterpart extends SessionObject {
 
     public Counterpart(Long sessionId) {
         super(sessionId);
+    }
+
+    public Long getPersonProfileId() {
+        return personProfileId;
+    }
+
+    public void setPersonProfileId(Long personProfileId) {
+        this.personProfileId = personProfileId;
     }
 
     public String getHk() {

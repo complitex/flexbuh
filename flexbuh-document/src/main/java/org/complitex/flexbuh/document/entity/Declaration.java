@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.document.entity;
 
-import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.util.DateUtil;
+import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;
@@ -32,6 +32,9 @@ public class Declaration implements Serializable{
 
     @XmlTransient
     private Long sessionId;
+
+    @XmlTransient
+    private Long personProfileId;
 
     @XmlTransient
     private List<DeclarationValue> declarationValues = new ArrayList<>();
@@ -268,6 +271,14 @@ public class Declaration implements Serializable{
 
     public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public Long getPersonProfileId() {
+        return personProfileId;
+    }
+
+    public void setPersonProfileId(Long personProfileId) {
+        this.personProfileId = personProfileId;
     }
 
     public List<DeclarationValue> getDeclarationValues() {
