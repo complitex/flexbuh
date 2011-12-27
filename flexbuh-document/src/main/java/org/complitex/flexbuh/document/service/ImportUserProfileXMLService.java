@@ -2,14 +2,15 @@ package org.complitex.flexbuh.document.service;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventModel;
 import org.complitex.flexbuh.common.logging.EventObjectFactory;
 import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.ImportXMLService;
-import org.complitex.flexbuh.document.entity.PersonProfile;
-import org.complitex.flexbuh.document.entity.PersonType;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

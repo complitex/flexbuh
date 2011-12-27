@@ -36,11 +36,9 @@ import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
-import org.complitex.flexbuh.document.entity.PersonProfile;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -69,9 +67,6 @@ public class DeclarationList extends TemplatePage{
     @EJB
     private DeclarationService declarationService;
 
-    @EJB
-    private PersonProfileBean personProfileBean;
-
     private Dialog uploadDialog;
 
     public DeclarationList() {
@@ -82,13 +77,7 @@ public class DeclarationList extends TemplatePage{
         add(filterForm);
 
         //Фильтр
-        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId(false));
-
-        //Профиль
-        PersonProfile personProfile = personProfileBean.getSelectedPersonProfile(getSessionId(false));
-        if (personProfile != null){
-            declarationFilter.setPersonProfileId(personProfile.getId());
-        }
+        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId());
 
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));

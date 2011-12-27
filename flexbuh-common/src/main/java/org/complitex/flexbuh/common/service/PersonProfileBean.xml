@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.complitex.flexbuh.document.service.PersonProfileBean">
-    <resultMap id="personProfileResultMap" type="org.complitex.flexbuh.document.entity.PersonProfile">
+<mapper namespace="org.complitex.flexbuh.common.service.PersonProfileBean">
+    <resultMap id="personProfileResultMap" type="org.complitex.flexbuh.common.entity.PersonProfile">
         <id column="id" property="id"/>
         <result column="session_id" property="sessionId"/>
         <result column="person_type" property="personType"/>
@@ -33,7 +33,7 @@
         <result column="selected" property="selected"/>
     </resultMap>
 
-    <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
         insert into `person_profile`
           (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `last_name`, `first_name`, `middle_name`,
             `profile_name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`, `contract_date`, `contract_number`, `zip_code`,
@@ -44,7 +44,7 @@
             #{address}, #{phone}, #{fax}, #{email}, #{dInn}, #{dFio}, #{bInn}, #{bFio}, #{taxInspectionId}, #{selected})
     </insert>
 
-	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.document.entity.PersonProfile">
+	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile">
         update `person_profile` set `person_type` = #{personType}, `c_sti` = #{cSti}, `c_sti_tin` = #{cStiTin},
           `tin` = #{tin}, `name` = #{name}, `last_name` = #{lastName}, `first_name` = #{firstName}, `middle_name` = #{middleName},
           `profile_name` = #{profileName}, `num_pdv_svd` = #{numPdvSvd}, `ipn` = #{ipn}, `kved` = #{kved},

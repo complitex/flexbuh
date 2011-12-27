@@ -19,6 +19,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
@@ -28,7 +29,6 @@ import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +57,7 @@ public class CounterpartList extends TemplatePage{
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        CounterpartFilter filter = new CounterpartFilter(getSessionId(),
-                personProfileBean.getSelectedPersonProfileId(getSessionId()));
+        CounterpartFilter filter = new CounterpartFilter(getSessionId());
 
         final Form<CounterpartFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
         add(filterForm);

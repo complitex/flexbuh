@@ -19,21 +19,21 @@
 
     <sql id="selectEmployeesWhere">
         <where>
-            <if test="personProfileId != null">
-                (`person_profile_id` = #{personProfileId} or `person_profile_id` is null)
-            </if>
             <if test="htin != null">and `htin` like concat('%', #{htin}, '%')</if>
             <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
             <if test="hbirthday != null">and `hbirthday` = DATE(#{hbirthday})</if>
             <if test="hdateIn != null">and `hdate_in` = DATE(#{hdateIn})</if>
             <if test="hdateOut != null">and `hdate_out` = DATE(#{hdateOut})</if>
-            and `session_id` = #{sessionId}
+            and e.`session_id` = #{sessionId}
+            and pp.`selected` = true
         </where>
     </sql>
 
     <select id="selectEmployees" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
             resultMap="employeeResultMap">
-        select * from `employee` <include refid="selectEmployeesWhere"/>
+        select e.* from `employee` e left join `person_profile` pp on (e.`person_profile_id` = pp.`id`)
+
+        <include refid="selectEmployeesWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
@@ -41,7 +41,8 @@
 
     <select id="selectEmployeesCount" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
             resultType="int">
-        select count(*) from `employee` <include refid="selectEmployeesWhere"/>
+        select count(*) from `employee` e left join `person_profile` pp on (e.`person_profile_id` = pp.`id`)
+        <include refid="selectEmployeesWhere"/>
     </select>
 
     <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">

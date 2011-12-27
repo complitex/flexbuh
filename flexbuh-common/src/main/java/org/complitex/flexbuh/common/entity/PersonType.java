@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.document.entity;
+package org.complitex.flexbuh.common.entity;
 
 /**
 * @author Anatoly A. Ivanov java@inheaven.ru

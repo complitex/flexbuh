@@ -8,7 +8,6 @@ import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 
 import javax.ejb.EJB;
@@ -25,9 +24,6 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
 
     @EJB
     private EmployeeBean employeeBean;
-
-    @EJB
-    private PersonProfileBean personProfileBean;
 
     private Long sessionId;
     private DeclarationStringModel model;
@@ -60,7 +56,7 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
     @Override
     protected List<Employee> getValues(String tern) {
         try {
-            EmployeeFilter filter = new EmployeeFilter(sessionId, personProfileBean.getSelectedPersonProfileId(sessionId));
+            EmployeeFilter filter = new EmployeeFilter(sessionId);
 
             switch (getAlias()){
                 case "HTIN":

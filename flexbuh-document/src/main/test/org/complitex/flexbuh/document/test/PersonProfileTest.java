@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.document.test;
 
-import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

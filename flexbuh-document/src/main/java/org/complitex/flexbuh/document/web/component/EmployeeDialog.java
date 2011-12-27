@@ -18,7 +18,6 @@ import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
@@ -31,9 +30,6 @@ import java.util.List;
 public class EmployeeDialog extends Panel implements IAutocompleteDialog<Employee>{
     @EJB
     private EmployeeBean employeeBean;
-
-    @EJB
-    private PersonProfileBean personProfileBean;
 
     private AutocompleteDialogComponent<Employee> component;
     
@@ -74,8 +70,7 @@ public class EmployeeDialog extends Panel implements IAutocompleteDialog<Employe
         final RadioGroup<Employee> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Employee> list = employeeBean.getEmployees(new EmployeeFilter(sessionId,
-                personProfileBean.getSelectedPersonProfileId(sessionId)));
+        List<Employee> list = employeeBean.getEmployees(new EmployeeFilter(sessionId));
 
         ListView listView = new ListView<Employee>("employees", list) {
             @Override

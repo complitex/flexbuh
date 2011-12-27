@@ -1,8 +1,7 @@
-package org.complitex.flexbuh.document.service;
+package org.complitex.flexbuh.common.service;
 
 import org.complitex.flexbuh.common.entity.AbstractFilter;
-import org.complitex.flexbuh.common.service.AbstractBean;
-import org.complitex.flexbuh.document.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 
 import javax.ejb.Stateless;
 import java.util.List;

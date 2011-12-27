@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
+import org.complitex.flexbuh.common.entity.PersonProfile;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
