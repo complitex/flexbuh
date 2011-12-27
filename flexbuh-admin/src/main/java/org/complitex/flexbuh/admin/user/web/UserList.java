@@ -142,9 +142,9 @@ public class UserList extends TemplatePage {
                 item.add(new BookmarkablePageLinkPanel<User>("action_edit", getString("action_edit"),
                         UserEdit.class, pageParameters));
 
-                pageParameters.set("action", "copy");
-                item.add(new BookmarkablePageLinkPanel<User>("action_copy", getString("action_copy"),
-                        UserEdit.class, pageParameters));
+//                pageParameters.set("action", "copy");
+//                item.add(new BookmarkablePageLinkPanel<User>("action_copy", getString("action_copy"),
+//                        UserEdit.class, pageParameters));
             }
         };
         filterForm.add(dataView);

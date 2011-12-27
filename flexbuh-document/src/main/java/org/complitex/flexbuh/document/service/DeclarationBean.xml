@@ -88,8 +88,10 @@
              <if test="periodYear != null">and `period_year` = #{periodYear}</if>
              <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
              and de.`session_id` = #{sessionId}
-             and pp.`selected` = true
+             and (pp.`selected` = true
+              or (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true))
          </where>
+        <!-- todo performance select-->
     </sql>
 
     <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
