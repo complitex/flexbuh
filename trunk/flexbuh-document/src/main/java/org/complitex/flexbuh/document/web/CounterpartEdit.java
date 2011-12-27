@@ -9,10 +9,10 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.service.CounterpartBean;
-import org.complitex.flexbuh.document.service.PersonProfileBean;
 
 import javax.ejb.EJB;
 

@@ -1,7 +1,6 @@
-package org.complitex.flexbuh.document.entity;
+package org.complitex.flexbuh.common.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.common.entity.SessionObject;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

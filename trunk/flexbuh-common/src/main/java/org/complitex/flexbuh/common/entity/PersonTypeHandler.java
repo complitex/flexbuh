@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.document.entity;
+package org.complitex.flexbuh.common.entity;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;

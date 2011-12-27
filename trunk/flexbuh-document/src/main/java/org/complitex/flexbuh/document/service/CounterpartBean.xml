@@ -19,21 +19,20 @@
 
     <sql id="selectCounterpartsWhere">
         <where>
-            <if test="personProfileId != null">
-                (`person_profile_id` = #{personProfileId} or `person_profile_id` is null)
-            </if>
-            <if test="hk != null">and `hk` like concat('%', #{hk}, '%')</if>
+            <if test="hk != null">`hk` like concat('%', #{hk}, '%')</if>
             <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
             <if test="hloc != null">and `hloc` like concat('%', #{hloc}, '%')</if>
             <if test="htel != null">and `htel` like concat('%', #{htel}, '%')</if>
             <if test="hnspdv != null">and `hnspdv` like concat('%', #{hnspdv}, '%')</if>
-            and `session_id` = #{sessionId}
+            and c.`session_id` = #{sessionId}
+            and pp.`selected` = true
         </where>
     </sql>
 
     <select id="selectCounterparts" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
             resultMap="counterpartResultMap">
-        select * from `counterpart` <include refid="selectCounterpartsWhere"/>
+        select c.* from `counterpart` c left join `person_profile` pp on (c.`person_profile_id` = pp.`id`)
+        <include refid="selectCounterpartsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
@@ -41,7 +40,8 @@
 
     <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
             resultType="int">
-        select count(*) from `counterpart` <include refid="selectCounterpartsWhere"/>
+        select count(*) from `counterpart` c left join `person_profile` pp on (c.`person_profile_id` = pp.`id`)
+        <include refid="selectCounterpartsWhere"/>
     </select>
 
     <insert id="insertCounterpart">

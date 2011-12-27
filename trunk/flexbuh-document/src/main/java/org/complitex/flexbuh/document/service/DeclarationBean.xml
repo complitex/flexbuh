@@ -80,16 +80,15 @@
     <sql id="selectDeclarationsFromWhere">
         from `declaration` de
              left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+             left join `person_profile` pp on (de.`person_profile_id` = pp.`id`)
          <where>
              <if test="name != null">do.`name_uk` like  concat('%', #{name}, '%')</if>
              <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
              <if test="periodType != null">and `period_type` = #{periodType}</if>
              <if test="periodYear != null">and `period_year` = #{periodYear}</if>
              <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
-             <if test="personProfileId != null">
-                 and (`person_profile_id` = #{personProfileId} or `person_profile_id` is null)
-             </if>
-             and `session_id` = #{sessionId}
+             and de.`session_id` = #{sessionId}
+             and pp.`selected` = true
          </where>
     </sql>
 

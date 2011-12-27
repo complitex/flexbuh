@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.entity;
 
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.util.DeclarationUtil;

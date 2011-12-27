@@ -9,7 +9,6 @@ import java.util.Date;
  *         Date: 17.11.11 16:39
  */
 public class EmployeeFilter extends AbstractFilter{
-    private Long personProfileId;
     private Integer htin;
     private String hname;
     private Date hbirthday;
@@ -19,9 +18,8 @@ public class EmployeeFilter extends AbstractFilter{
     public EmployeeFilter() {
     }
 
-    public EmployeeFilter(Long sessionId, Long personProfileId) {
+    public EmployeeFilter(Long sessionId) {
         super(sessionId);
-        this.personProfileId = personProfileId;
     }
 
     public void clear(){
@@ -30,14 +28,6 @@ public class EmployeeFilter extends AbstractFilter{
         hbirthday = null;
         hdateIn = null;
         hdateOut = null;
-    }
-
-    public Long getPersonProfileId() {
-        return personProfileId;
-    }
-
-    public void setPersonProfileId(Long personProfileId) {
-        this.personProfileId = personProfileId;
     }
 
     public Integer getHtin() {

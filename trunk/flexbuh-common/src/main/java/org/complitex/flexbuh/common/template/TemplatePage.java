@@ -22,12 +22,13 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.common.security.CookieWebSession;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ResourceService;
-import org.complitex.flexbuh.common.service.UserSessionBean;
+import org.complitex.flexbuh.common.service.UserSessionService;
 import org.complitex.flexbuh.common.service.user.SessionBean;
 import org.complitex.flexbuh.common.template.pages.login.Login;
 import org.complitex.flexbuh.common.template.toolbar.HelpButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.util.ResourceUtil;
+import org.complitex.flexbuh.common.web.component.PersonProfileChoice;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
 import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public abstract class TemplatePage extends WebPage {
     private ResourceService resourceService;
 
     @EJB
-    private UserSessionBean userSessionBean;
+    private UserSessionService userSessionBean;
 
     protected TemplatePage(PageParameters parameters) {
         this();
@@ -109,9 +110,9 @@ public abstract class TemplatePage extends WebPage {
 //        add(new FeedbackCreate("feedback"));
 
 //        todo empty panel
-        add(new Label("current_user_fullname", "id: " + getSessionId(false)));
+        add(new Label("current_user_fullname", "id: " + getSessionId()));
         add(new EmptyPanel("current_user_department"));
-        add(new Label("profile", userSessionBean.getSelectedPersonProfileName(getSessionId(false))));
+        add(new PersonProfileChoice("profile", getSessionId()));
 
         add(new BookmarkablePageLink<>("login", Login.class).setVisible(!isUserAuthorized()));
         add(new Form("exit") {
