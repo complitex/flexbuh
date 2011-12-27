@@ -419,7 +419,7 @@ DROP TABLE IF EXISTS `counterpart`;
 CREATE TABLE `counterpart` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `session_id` BIGINT(20) NOT NULL,
-  `person_profile_id` BIGINT(20),
+  `person_profile_id` BIGINT(20) NOT NULL,
   `hk` VARCHAR(64),
   `hname` VARCHAR(255) NOT NULL,
   `hloc` VARCHAR(255),
@@ -434,7 +434,7 @@ CREATE TABLE `counterpart` (
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- Counterpart
+-- Employee
 -- --------------------------
 
 DROP TABLE IF EXISTS `employee`;
@@ -442,7 +442,7 @@ DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `session_id` BIGINT(20) NOT NULL,
-  `person_profile_id` BIGINT(20),
+  `person_profile_id` BIGINT(20) NOT NULL,
   `htin` INTEGER,
   `hname` VARCHAR(255) NOT NULL,
   `hbirthday` DATE,

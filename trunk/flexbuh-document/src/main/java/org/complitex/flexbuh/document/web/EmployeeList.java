@@ -20,6 +20,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
@@ -49,12 +50,15 @@ public class EmployeeList extends TemplatePage{
     @EJB
     private EmployeeBean employeeBean;
 
+    @EJB
+    private PersonProfileBean personProfileBean;
+
     private Dialog uploadDialog;
 
     public EmployeeList() {
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
-        
+
         EmployeeFilter filter = new EmployeeFilter(getSessionId());
 
         final Form<EmployeeFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
@@ -184,6 +188,11 @@ public class EmployeeList extends TemplatePage{
             @Override
             protected void onClick() {
                 setResponsePage(EmployeeEdit.class);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
             }
         });
 

@@ -187,6 +187,11 @@ public class CounterpartList extends TemplatePage{
             protected void onClick() {
                 setResponsePage(CounterpartEdit.class);
             }
+
+            @Override
+            public boolean isVisible() {
+                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+            }
         });
 
         list.add(new UploadButton(id, true){
