@@ -10,13 +10,17 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.web.component.PersonProfileChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 
@@ -30,6 +34,9 @@ public class DeclarationFormPage extends TemplatePage{
 
     @EJB
     private DocumentBean documentBean;
+    
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     private final Declaration declaration;
 
@@ -99,15 +106,51 @@ public class DeclarationFormPage extends TemplatePage{
             }
         };
         accordion.add(listView);
+        
+        //Профиль
+        final Dialog profileDialog = new Dialog("profile_dialog");
+        profileDialog.setTitle(getString("profile_dialog_title"));
+        add(profileDialog);
+        
+        Form profileForm = new Form("profile_form");
+        profileDialog.add(profileForm);
 
-        form.add(new Button("submit"){
+        final PersonProfileChoice profileChoice = new PersonProfileChoice("profile_choice", getSessionId()){
+            @Override
+            protected boolean wantOnSelectionChangedNotifications() {
+                return false;
+            }
+        };
+        profileForm.add(profileChoice);
+
+        profileForm.add(new Button("submit"){
             @Override
             public void onSubmit() {
+                PersonProfile personProfile = profileChoice.getModelObject();
+                declaration.setPersonProfileId(personProfile != null ? personProfile.getId() : null);
+
                 declarationBean.save(getSessionId(true), declaration);
 
                 getSession().info(getString("info_saved"));
 
                 setResponsePage(DeclarationList.class);
+            }
+        });
+
+        //Submit
+        form.add(new Button("submit"){
+            @Override
+            public void onSubmit() {
+                Long selected = personProfileBean.getSelectedPersonProfileId(getSessionId());
+                if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
+                    declarationBean.save(getSessionId(true), declaration);
+
+                    getSession().info(getString("info_saved"));
+
+                    setResponsePage(DeclarationList.class);
+                }else {
+                    profileDialog.setAutoOpen(true);
+                }
             }
         });
 

@@ -14,6 +14,14 @@
 
     <div style="float: right;" wicket:id="templateName"></div>
 
+    <div wicket:id="profile_dialog">
+        <form action="#" wicket:id="profile_form">
+            <div><wicket:message key="profile_dialog_info"/></div>
+            <div style="padding: 10px 0 20px 0"><select wicket:id="profile_choice"></select></div>
+            <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+        </form>
+    </div>
+
     <form action="#" wicket:id="form">
         <div wicket:id="declaration"></div>
 

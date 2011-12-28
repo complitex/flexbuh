@@ -1,13 +1,13 @@
 package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.exception.DeclarationSaveException;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.common.service.AbstractBean;
-import org.complitex.flexbuh.common.util.DateUtil;
 
 import javax.ejb.Stateless;
 import java.io.InputStream;
@@ -70,6 +70,8 @@ public class DeclarationBean extends AbstractBean{
             for (LinkedDeclaration linkedDeclaration : declaration.getLinkedDeclarations()){
                 Declaration d = linkedDeclaration.getDeclaration();
                 d.setParentId(declaration.getId());
+                d.setPersonProfile(declaration.getPersonProfile());
+
                 save(sessionId, d);
             }
         }
