@@ -136,4 +136,19 @@
           <foreach collection="list" separator="," item="item">#{item}</foreach>
         )
     </select>
+
+    <sql id="fromDeclarationWhereProfile">
+        from `declaration` d left join `person_profile` pp on (d.`person_profile_id` = pp.`id`)
+          where d.`session_id` = #{sessionId} and (pp.`selected` = true or (d.`person_profile_id` is null
+            and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
+    </sql>
+
+    <select id="selectDeclarationYears" parameterType="long" resultType="int">
+        select `period_year` <include refid="fromDeclarationWhereProfile"/> group by `period_year`
+    </select>
+
+    <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
+        select `period_type` as type, `period_month` - 1 as month <include refid="fromDeclarationWhereProfile"/>
+          and `period_year` = #{year} group by `period_type`, `period_month`
+    </select>
 </mapper>

@@ -2,15 +2,13 @@ package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.util.DateUtil;
-import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.DeclarationFilter;
-import org.complitex.flexbuh.document.entity.DeclarationValue;
-import org.complitex.flexbuh.document.entity.LinkedDeclaration;
+import org.complitex.flexbuh.document.entity.*;
 import org.complitex.flexbuh.document.exception.DeclarationSaveException;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
 
 import javax.ejb.Stateless;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -110,5 +108,18 @@ public class DeclarationBean extends AbstractBean{
     @SuppressWarnings("unchecked")
     public List<Declaration> getDeclarations(List<Long> ids){
         return sqlSession().selectList(NS + ".selectDeclarationsByIds", ids);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Integer> getYears(Long sessionId){
+        return sqlSession().selectList(NS + ".selectDeclarationYears", sessionId);        
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Period> getPeriods(final Long sessionId, final int year){
+        return sqlSession().selectList(NS + ".selectDeclarationPeriods", new HashMap<String, Object>(){{
+            put("sessionId", sessionId);
+            put("year", year);
+        }});
     }
 }
