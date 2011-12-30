@@ -3,7 +3,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
-    <wicket:head><title wicket:id="title"></title></wicket:head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+
+        <script type="text/javascript">
+            function selectAll(cb){
+                var items = document.getElementsByTagName('input');
+                for (i=0; i< items.length; i++){
+                    if (items[i].type == 'checkbox' && !items[i].disabled){
+                        items[i].checked = cb.checked;
+                    }
+                }
+            }
+        </script>
+    </wicket:head>
 </head>
 
 <body>
@@ -30,6 +43,7 @@
         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
             <tr>
+                <th><input type="checkbox" onclick="selectAll(this)"/></th>
                 <th><wicket:message key="htin"/></th>
                 <th><wicket:message key="hname"/></th>
                 <th><wicket:message key="hbirthday"/></th>
@@ -40,6 +54,7 @@
                 </th>
             </tr>
             <tr>
+                <th></th>
                 <th><input type="text" wicket:id="htin"/></th>
                 <th><input type="text" wicket:id="hname"/></th>
                 <th><input type="text" wicket:id="hbirthday"/></th>
@@ -52,17 +67,12 @@
             </thead>
             <tbody>
             <tr wicket:id="list">
-                <td><span wicket:id="htin"></span></td>
+                <td><input type="checkbox" wicket:id="select"/></td>
                 <td><span wicket:id="hname"></span></td>
+                <td><span wicket:id="htin"></span></td>
                 <td><span wicket:id="hbirthday"></span></td>
                 <td><span wicket:id="hdateIn"></span></td>
                 <td><span wicket:id="hdateOut"></span></td>
-                <td>
-                    <span wicket:id="action_edit"></span>
-                    <a href="#" wicket:id="action_delete" onclick="return confirm('И в правду удалить?')">
-                        <wicket:message key="action_delete"/>
-                    </a>
-                </td>
             </tr>
             </tbody>
         </table>

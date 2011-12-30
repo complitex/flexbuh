@@ -1,9 +1,11 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -13,6 +15,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
@@ -26,10 +29,7 @@ import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
-import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
-import org.complitex.flexbuh.common.template.toolbar.SaveButton;
-import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
-import org.complitex.flexbuh.common.template.toolbar.UploadButton;
+import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -45,7 +45,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -64,7 +66,7 @@ public class PersonProfileList extends TemplatePage {
     @EJB
     private ImportUserProfileXMLService importUserProfileXMLService;
 
-    private FileUploadField fileUpload;
+    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
     private Dialog uploadDialog;
 
@@ -86,7 +88,7 @@ public class PersonProfileList extends TemplatePage {
         add(filterForm);
 
         final Long sessionId = getSessionId(true);
-        
+
         //Текущий профиль
         add(new Label("selected_profile", new LoadableDetachableModel<String>() {
             @Override
@@ -120,23 +122,26 @@ public class PersonProfileList extends TemplatePage {
             protected void populateItem(Item<PersonProfile> item) {
                 final PersonProfile profile = item.getModelObject();
 
-                item.add(new Label("profile_name", profile.getProfileName()));
+                IModel<Boolean> selectModel = new Model<>(false);
+
+                selectMap.put(profile.getId(), selectModel);
+
+                item.add(new CheckBox("select", selectModel)
+                        .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                //update
+                            }
+                        }));
+
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.set("id", profile.getId());
+                item.add(new BookmarkablePageLinkPanel<PersonProfile>("profile_name", profile.getProfileName(),
+                        PersonProfileEdit.class, pageParameters));
 
                 item.add(new Label("name", profile.getName()));
 
                 item.add(new Label("tin", profile.getTin()));
-
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.set("id", profile.getId());
-                item.add(new BookmarkablePageLinkPanel<PersonProfile>("action_edit", getString("action_edit"),
-                        PersonProfileEdit.class, pageParameters));
-                
-                item.add(new Link("action_delete") {
-                    @Override
-                    public void onClick() {
-                        personProfileBean.delete(profile.getId());
-                    }
-                });
 
                 Link select = new Link("action_select") {
                     @Override
@@ -149,7 +154,7 @@ public class PersonProfileList extends TemplatePage {
                     }
                 };
                 item.add(select);
-                
+
                 select.add(new Label("action_select_label", getString(!profile.isSelected() ? "action_select"
                         : "action_deselect")));
             }
@@ -249,13 +254,6 @@ public class PersonProfileList extends TemplatePage {
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
-        list.add(new AddDocumentButton(id){
-            @Override
-            protected void onClick() {
-                setResponsePage(PersonProfileEdit.class);
-            }
-        });
-
         list.add(new UploadButton(id, true){
             @Override
             protected void onClick(AjaxRequestTarget target) {
@@ -271,11 +269,11 @@ public class PersonProfileList extends TemplatePage {
                             @Override
                             public void write(Response output) {
                                 List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId(false));
-                                
+
                                 for(PersonProfile pp : personProfiles){
                                     if (PersonType.PHYSICAL_PERSON.equals(pp.getPersonType())){
                                         pp.mergePhysicalNames();
-                                    }                                    
+                                    }
                                 }
 
                                 if (!personProfiles.isEmpty()) {
@@ -299,6 +297,28 @@ public class PersonProfileList extends TemplatePage {
                                 return "application/xml";
                             }
                         }, "SETTINGS.XML"));
+            }
+        });
+
+        list.add(new AddDocumentButton(id){
+            @Override
+            protected void onClick() {
+                setResponsePage(PersonProfileEdit.class);
+            }
+        });
+
+        list.add(new DeleteItemButton(id){
+            @Override
+            protected void onClick() {
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        try {
+                            personProfileBean.delete(id);
+                        } catch (Exception e) {
+                            error(personProfileBean.getPersonProfile(id).getProfileName() + " - " + getString("error_delete"));
+                        }
+                    }
+                }
             }
         });
 

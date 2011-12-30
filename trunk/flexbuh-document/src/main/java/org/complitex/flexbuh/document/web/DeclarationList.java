@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -33,6 +32,7 @@ import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.util.DateUtil;
@@ -65,9 +65,6 @@ public class DeclarationList extends TemplatePage{
 
     private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
-    private final static int MIN_YEAR = DateUtil.getCurrentYear() - 4;
-    private final static int MAX_YEAR = DateUtil.getCurrentYear() + 1;
-
     @EJB
     private DeclarationBean declarationBean;
 
@@ -75,6 +72,8 @@ public class DeclarationList extends TemplatePage{
     private DeclarationService declarationService;
 
     private Dialog uploadDialog;
+
+    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
     final String[] MONTH = dateFormatSymbols.getMonths();
     final List<Period> PERIODS = Arrays.asList(
@@ -274,9 +273,6 @@ public class DeclarationList extends TemplatePage{
             }
         });
 
-        //Выбор
-        final Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
-
         //Модель
         SortableDataProvider<Declaration> dataProvider = new SortableDataProvider<Declaration>() {
             @Override
@@ -313,35 +309,26 @@ public class DeclarationList extends TemplatePage{
 
                 selectMap.put(declaration.getId(), selectModel);
 
-                item.add(new CheckBox("select", selectModel));
-                item.add(new Label("name", declaration.getTemplateName() + " " + declaration.getName()));
+                item.add(new CheckBox("select", selectModel)
+                        .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                //update
+                            }
+                        }));
+
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.set("id", declaration.getId());
+
+                item.add(new BookmarkablePageLinkPanel<>("name", declaration.getTemplateName() + " " + declaration.getName(),
+                        DeclarationFormPage.class, pageParameters));
                 item.add(new Label("period_type", getString("period_type_" + declaration.getHead().getPeriodType())));
                 item.add(new Label("period_month", dateFormatSymbols.getMonths()[declaration.getHead().getPeriodMonth()-1]));
                 item.add(new Label("period_year", StringUtil.getString(declaration.getHead().getPeriodYear())));
                 item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy HH:mm"));
 
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.set("id", declaration.getId());
-
-                item.add(new BookmarkablePageLinkPanel<>("action_edit", getString("action_edit"), DeclarationFormPage.class,
-                        pageParameters));
-
                 item.add(new DeclarationXmlLink("action_xml", declaration));
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
-
-                item.add(new Link("action_delete") {
-                    @Override
-                    public void onClick() {
-                        declarationBean.deleteDeclaration(declaration.getId());
-
-                        info(getString("deleted"));
-                    }
-
-                    @Override
-                    public boolean isVisible() {
-                        return declaration.getParentId() == null;
-                    }
-                });
             }
         };
         filterForm.add(dataView);
@@ -506,6 +493,13 @@ public class DeclarationList extends TemplatePage{
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
+        list.add(new UploadButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                uploadDialog.open(target);
+            }
+        });
+
         list.add(new AddDocumentButton(id){
             @Override
             protected void onClick() {
@@ -513,10 +507,14 @@ public class DeclarationList extends TemplatePage{
             }
         });
 
-        list.add(new UploadButton(id, true){
+        list.add(new DeleteItemButton(id){
             @Override
-            protected void onClick(AjaxRequestTarget target) {
-                uploadDialog.open(target);
+            protected void onClick() {
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        declarationBean.deleteDeclaration(id);
+                    }
+                }
             }
         });
 

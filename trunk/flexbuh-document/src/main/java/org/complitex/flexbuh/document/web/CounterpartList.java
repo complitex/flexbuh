@@ -1,16 +1,17 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -22,6 +23,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
@@ -34,9 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -52,6 +52,8 @@ public class CounterpartList extends TemplatePage{
     private PersonProfileBean personProfileBean;
 
     private Dialog uploadDialog;
+
+    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
     public CounterpartList() {
         add(new Label("title", getString("title")));
@@ -80,6 +82,8 @@ public class CounterpartList extends TemplatePage{
         SortableDataProvider<Counterpart> dataProvider = new SortableDataProvider<Counterpart>() {
             @Override
             public Iterator<? extends Counterpart> iterator(int first, int count) {
+                selectMap.clear();
+
                 CounterpartFilter counterpartFilter = filterForm.getModelObject();
 
                 counterpartFilter.setFirst(first);
@@ -108,23 +112,27 @@ public class CounterpartList extends TemplatePage{
             protected void populateItem(Item<Counterpart> item) {
                 final Counterpart counterpart = item.getModelObject();
 
-                item.add(new Label("hk", counterpart.getHk()));
-                item.add(new Label("hname", counterpart.getHname()));
-                item.add(new Label("hloc", counterpart.getHloc()));
-                item.add(new Label("htel", counterpart.getHtel()));
-                item.add(new Label("hnspdv", counterpart.getHnspdv()));
+                IModel<Boolean> selectModel = new Model<>(false);
+
+                selectMap.put(counterpart.getId(), selectModel);
+
+                item.add(new CheckBox("select", selectModel)
+                        .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                //update
+                            }
+                        }));
 
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", counterpart.getId());
-                item.add(new BookmarkablePageLinkPanel<CounterpartEdit>("action_edit", getString("action_edit"),
+                item.add(new BookmarkablePageLinkPanel<CounterpartEdit>("hname", counterpart.getHname(),
                         CounterpartEdit.class, pageParameters));
 
-                item.add(new Link("action_delete") {
-                    @Override
-                    public void onClick() {
-                        counterpartBean.delete(counterpart.getId());
-                    }
-                });
+                item.add(new Label("hk", counterpart.getHk()));
+                item.add(new Label("hloc", counterpart.getHloc()));
+                item.add(new Label("htel", counterpart.getHtel()));
+                item.add(new Label("hnspdv", counterpart.getHnspdv()));
             }
         };
         dataView.setOutputMarkupId(true);
@@ -182,6 +190,13 @@ public class CounterpartList extends TemplatePage{
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
+        list.add(new UploadButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                uploadDialog.open(target);
+            }
+        });
+
         list.add(new AddDocumentButton(id){
             @Override
             protected void onClick() {
@@ -194,10 +209,14 @@ public class CounterpartList extends TemplatePage{
             }
         });
 
-        list.add(new UploadButton(id, true){
+        list.add(new DeleteItemButton(id){
             @Override
-            protected void onClick(AjaxRequestTarget target) {
-                uploadDialog.open(target);
+            protected void onClick() {
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        counterpartBean.delete(id);
+                    }
+                }
             }
         });
 

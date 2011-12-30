@@ -68,7 +68,7 @@ public class DeclarationBean extends AbstractBean{
             for (LinkedDeclaration linkedDeclaration : declaration.getLinkedDeclarations()){
                 Declaration d = linkedDeclaration.getDeclaration();
                 d.setParentId(declaration.getId());
-                d.setPersonProfile(declaration.getPersonProfile());
+                d.setPersonProfileId(declaration.getPersonProfileId());
 
                 save(sessionId, d);
             }
