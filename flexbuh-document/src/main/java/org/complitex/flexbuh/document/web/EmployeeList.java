@@ -1,17 +1,18 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -23,6 +24,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.util.StringUtil;
@@ -36,9 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -54,6 +54,8 @@ public class EmployeeList extends TemplatePage{
     private PersonProfileBean personProfileBean;
 
     private Dialog uploadDialog;
+
+    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
     public EmployeeList() {
         add(new Label("title", getString("title")));
@@ -82,6 +84,8 @@ public class EmployeeList extends TemplatePage{
         SortableDataProvider<Employee> dataProvider = new SortableDataProvider<Employee>() {
             @Override
             public Iterator<? extends Employee> iterator(int first, int count) {
+                selectMap.clear();
+
                 EmployeeFilter filter = filterForm.getModelObject();
 
                 filter.setFirst(first);
@@ -110,23 +114,27 @@ public class EmployeeList extends TemplatePage{
             protected void populateItem(Item<Employee> item) {
                 final Employee employee = item.getModelObject();
 
-                item.add(new Label("htin", StringUtil.getString(employee.getHtin())));
-                item.add(new Label("hname", employee.getHname()));
-                item.add(DateLabel.forDateStyle("hbirthday", new Model<>(employee.getHbirthday()), "M-"));
-                item.add(DateLabel.forDateStyle("hdateIn", new Model<>(employee.getHdateIn()), "M-"));
-                item.add(DateLabel.forDateStyle("hdateOut", new Model<>(employee.getHdateOut()), "M-"));
+                IModel<Boolean> selectModel = new Model<>(false);
+
+                selectMap.put(employee.getId(), selectModel);
+
+                item.add(new CheckBox("select", selectModel)
+                        .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                //update
+                            }
+                        }));
 
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", employee.getId());
-                item.add(new BookmarkablePageLinkPanel<EmployeeEdit>("action_edit", getString("action_edit"),
+                item.add(new BookmarkablePageLinkPanel<EmployeeEdit>("hname", employee.getHname(),
                         EmployeeEdit.class, pageParameters));
 
-                item.add(new Link("action_delete") {
-                    @Override
-                    public void onClick() {
-                        employeeBean.delete(employee.getId());
-                    }
-                });
+                item.add(new Label("htin", StringUtil.getString(employee.getHtin())));
+                item.add(DateLabel.forDateStyle("hbirthday", new Model<>(employee.getHbirthday()), "M-"));
+                item.add(DateLabel.forDateStyle("hdateIn", new Model<>(employee.getHdateIn()), "M-"));
+                item.add(DateLabel.forDateStyle("hdateOut", new Model<>(employee.getHdateOut()), "M-"));
             }
         };
         dataView.setOutputMarkupId(true);
@@ -184,6 +192,13 @@ public class EmployeeList extends TemplatePage{
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
+        list.add(new UploadButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                uploadDialog.open(target);
+            }
+        });
+
         list.add(new AddDocumentButton(id){
             @Override
             protected void onClick() {
@@ -196,10 +211,14 @@ public class EmployeeList extends TemplatePage{
             }
         });
 
-        list.add(new UploadButton(id, true){
+        list.add(new DeleteItemButton(id){
             @Override
-            protected void onClick(AjaxRequestTarget target) {
-                uploadDialog.open(target);
+            protected void onClick() {
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        employeeBean.delete(id);
+                    }
+                }
             }
         });
 

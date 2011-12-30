@@ -57,7 +57,7 @@ public class DeclarationCreate extends FormTemplatePage{
         add(form);
 
         //Выбранный профиль
-        final PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(getSessionId(false));
+        final PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(getSessionId());
 
         //Тип лица
         IModel<PersonType> personModel = new Model<>(selectedPersonProfile != null

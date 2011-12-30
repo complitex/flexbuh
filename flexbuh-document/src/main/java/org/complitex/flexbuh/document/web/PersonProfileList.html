@@ -3,7 +3,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
-    <wicket:head><title wicket:id="title"></title></wicket:head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+
+        <script type="text/javascript">
+            function selectAll(cb){
+                var items = document.getElementsByTagName('input');
+                for (i=0; i< items.length; i++){
+                    if (items[i].type == 'checkbox' && !items[i].disabled){
+                        items[i].checked = cb.checked;
+                    }
+                }
+            }
+        </script>
+    </wicket:head>
 </head>
 
 <body>
@@ -39,6 +52,7 @@
         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
             <tr>
+                <th><input type="checkbox" onclick="selectAll(this)"/></th>
                 <th><wicket:message key="profile_name"/></th>
                 <th><wicket:message key="name"/></th>
                 <th><wicket:message key="tin"/></th>
@@ -47,15 +61,12 @@
             </thead>
             <tbody>
             <tr wicket:id="companyProfiles">
+                <td><input type="checkbox" wicket:id="select"/></td>
                 <td><span wicket:id="profile_name"></span></td>
                 <td><span wicket:id="name"></span></td>
                 <td><span wicket:id="tin"></span></td>
                 <td>
                     <a wicket:id="action_select"><span wicket:id="action_select_label"></span></a>
-                    <span wicket:id="action_edit"></span>
-                    <a href="#" wicket:id="action_delete" onclick="return confirm('Желаете удалить?')">
-                        <wicket:message key="action_delete"/>
-                    </a>
                 </td>
             </tr>
             </tbody>

@@ -142,8 +142,13 @@ public class DeclarationFormPage extends TemplatePage{
             @Override
             public void onSubmit() {
                 Long selected = personProfileBean.getSelectedPersonProfileId(getSessionId());
-                if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
-                    declarationBean.save(getSessionId(true), declaration);
+
+                PersonProfile personProfile = declaration.getPersonProfile();
+
+                if ((selected != null && personProfile != null && selected.equals(personProfile.getId()))){
+                    declaration.setPersonProfileId(personProfile.getId());
+
+                    declarationBean.save(getSessionId(), declaration);
 
                     getSession().info(getString("info_saved"));
 

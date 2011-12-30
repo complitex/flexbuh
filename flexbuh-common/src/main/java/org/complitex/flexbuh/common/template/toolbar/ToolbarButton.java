@@ -11,6 +11,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
+import java.util.Random;
+
 /**
  *
  * @author Artem
@@ -52,6 +54,7 @@ public abstract class ToolbarButton extends Panel {
     }
 
     protected class ToolbarButtonLink extends Link<Void> {
+        private Random random = new Random();
 
         public ToolbarButtonLink() {
             super(LINK_MARKUP_ID);
@@ -60,6 +63,11 @@ public abstract class ToolbarButton extends Panel {
         @Override
         public void onClick() {
             ToolbarButton.this.onClick();
+        }
+
+        @Override
+        protected CharSequence getURL() {
+            return super.getURL() + "&" + random.nextInt();
         }
     }
 
