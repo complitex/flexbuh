@@ -2,16 +2,21 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -30,12 +35,14 @@ import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.template.toolbar.UploadButton;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
+import org.complitex.flexbuh.document.entity.Period;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
@@ -58,8 +65,8 @@ public class DeclarationList extends TemplatePage{
 
     private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
-    private final static int MIN_YEAR = 1990;
-    private final static int MAX_YEAR = Calendar.getInstance().get(Calendar.YEAR);
+    private final static int MIN_YEAR = DateUtil.getCurrentYear() - 4;
+    private final static int MAX_YEAR = DateUtil.getCurrentYear() + 1;
 
     @EJB
     private DeclarationBean declarationBean;
@@ -69,15 +76,138 @@ public class DeclarationList extends TemplatePage{
 
     private Dialog uploadDialog;
 
+    final String[] MONTH = dateFormatSymbols.getMonths();
+    final List<Period> PERIODS = Arrays.asList(
+            new Period(1, 0, MONTH[0]), new Period(1, 1, MONTH[1]), new Period(1, 2, MONTH[2]),
+            new Period(2, 2, "1 " + getString("period_type_2")),
+            new Period(1, 2, MONTH[3]), new Period(1, 4, MONTH[4]), new Period(1, 5, MONTH[5]),
+            new Period(2, 5, "2 " + getString("period_type_2")),
+            new Period(3, 5, "1 " + getString("period_type_3")),
+            new Period(1, 6, MONTH[6]), new Period(1, 7, MONTH[7]), new Period(1, 8, MONTH[8]),
+            new Period(2, 8, "3 " + getString("period_type_2")),
+            new Period(1, 8, MONTH[9]), new Period(1, 10, MONTH[10]), new Period(1, 11, MONTH[11]),
+            new Period(2, 11, "4 " + getString("period_type_2")),
+            new Period(3, 11, "1 " + getString("period_type_3")),
+            new Period(4, 8, getString("period_type_4")),
+            new Period(5, 11, getString("period_type_5"))
+    );
+
     public DeclarationList() {
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        Form filterForm = new Form("filter_form");
-        add(filterForm);
+        final WebMarkupContainer yearContainer = new WebMarkupContainer("year_container");
+        yearContainer.setOutputMarkupId(true);
+
+        add(yearContainer);
 
         //Фильтр
-        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId());
+        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId(true));
+        declarationFilter.setPeriodYear(DateUtil.getCurrentYear());
+        declarationFilter.setPeriodType(1);
+        declarationFilter.setPeriodMonth(DateUtil.getCurrentMonth() + 1);
+
+        //Таблица
+        final WebMarkupContainer filterContainer = new WebMarkupContainer("filter_container");
+
+        //Форма
+        Form filterForm = new Form("filter_form");
+        filterContainer.add(filterForm);
+        
+        IModel<List<? extends Integer>> yearModel = new LoadableDetachableModel<List<? extends Integer>>() {
+            @Override
+            protected List<? extends Integer> load() {
+                return declarationBean.getYears(getSessionId());
+            }
+        }; 
+
+        //Дерево - годы
+        ListView yearList = new ListView<Integer>("year_list", yearModel) {
+            @Override
+            protected void populateItem(final ListItem<Integer> item) {
+                final Integer year = item.getModelObject();
+                final boolean selectedYear = year.equals(declarationFilter.getPeriodYear());
+                item.setRenderBodyOnly(true);
+
+                AjaxLink action = new AjaxLink("action_select") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        declarationFilter.setPeriodYear(year);
+
+                        target.add(yearContainer);
+                    }
+
+                    @Override
+                    public boolean isEnabled() {
+                        return !selectedYear;
+                    }
+                };
+                item.add(action);
+
+                action.add((new Label("year_header", year + "")));
+
+                final WebMarkupContainer periodContainer = new WebMarkupContainer("period_container");
+                periodContainer.setOutputMarkupId(true);
+                item.add(periodContainer);
+
+                //Load periods for year and set labels
+                List<Period> periods = declarationBean.getPeriods(getSessionId(), year);
+                for (Period p : periods){
+                    for (Period label : PERIODS){
+                        if (p.getMonth().equals(label.getMonth()) && p.getType().equals(label.getType())){
+                            p.setLabel(label.getLabel());
+                        }
+                    }
+                }
+                
+                //Дерево - периоды
+                if (selectedYear) {
+                    ListView periodList = new ListView<Period>("period_list", periods) {
+                        @Override
+                        protected void populateItem(ListItem<Period> periodItem) {
+                            periodItem.setRenderBodyOnly(true);
+    
+                            final Period period = periodItem.getModelObject();
+    
+                            final boolean selectedPeriod = period.getMonth().equals(declarationFilter.getPeriodMonth() - 1)
+                                    && period.getType().equals(declarationFilter.getPeriodType());
+    
+                            if (selectedPeriod){
+                                periodItem.add(filterContainer);
+                            }else {
+                                WebMarkupContainer emptyDiv = new WebMarkupContainer("filter_container");
+                                emptyDiv.add(new Form("filter_form").setVisible(false));
+    
+                                periodItem.add(emptyDiv);
+                            }
+    
+                            AjaxLink action = new AjaxLink("action_select") {
+                                @Override
+                                public void onClick(AjaxRequestTarget target) {
+                                    declarationFilter.setPeriodYear(year);
+                                    declarationFilter.setPeriodType(period.getType());
+                                    declarationFilter.setPeriodMonth(period.getMonth() + 1);
+    
+                                    target.add(yearContainer);
+                                }
+    
+                                @Override
+                                public boolean isEnabled() {
+                                    return !selectedPeriod;
+                                }
+                            };
+                            periodItem.add(action);
+    
+                            action.add(new Label("period_header", period.getLabel()));
+                        }
+                    };
+                    periodContainer.add(periodList);
+                }else {
+                    periodContainer.add(new EmptyPanel("period_list").setVisible(false));
+                }
+            }
+        };
+        yearContainer.add(yearList);
 
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));
@@ -121,7 +251,6 @@ public class DeclarationList extends TemplatePage{
         //Период (1-месяц, 2-квартал, 3-полугодие, 4-9 месяцев, 5-год)
         PeriodTypeChoice periodTypeChoice = new PeriodTypeChoice("period_type", new PropertyModel<Integer>(declarationFilter, "periodType"));
         periodTypeChoice.setOutputMarkupId(true);
-        periodTypeChoice.setNullValid(true);
         filterForm.add(periodTypeChoice);
         periodTypeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
@@ -131,12 +260,8 @@ public class DeclarationList extends TemplatePage{
         });
 
         //Год
-        List<Integer> years = new ArrayList<>();
-        for (int i = MIN_YEAR; i <= MAX_YEAR; ++i){
-            years.add(i);
-        }
         filterForm.add(new DropDownChoice<>("period_year", new PropertyModel<Integer>(declarationFilter, "periodYear"),
-                years).setNullValid(true));
+                yearModel).setNullValid(true));
 
         //Дата
         filterForm.add(new DatePicker<>("date", new PropertyModel<Date>(declarationFilter, "date")));

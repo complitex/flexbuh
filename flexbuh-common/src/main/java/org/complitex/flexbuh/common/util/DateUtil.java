@@ -152,4 +152,16 @@ public class DateUtil {
 
         return date;
     }
+    
+    public static int getCurrentYear(){
+        Calendar calendar = Calendar.getInstance();
+        
+        return calendar.get(Calendar.YEAR);
+    }
+    
+    public static int getCurrentMonth(){
+        Calendar calendar = Calendar.getInstance();
+        
+        return calendar.get(calendar.get(Calendar.MONTH));
+    }
 }

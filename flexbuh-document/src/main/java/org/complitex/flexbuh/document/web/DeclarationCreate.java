@@ -19,13 +19,17 @@ import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -40,8 +44,8 @@ public class DeclarationCreate extends FormTemplatePage{
 
     private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
-    private final static int MIN_YEAR = 1990;
-    private final static int MAX_YEAR = Calendar.getInstance().get(Calendar.YEAR);
+    private final static int MIN_YEAR = DateUtil.getCurrentYear() - 4;
+    private final static int MAX_YEAR = DateUtil.getCurrentYear() + 1;
 
     public DeclarationCreate() {
         add(new Label("title", getString("title")));
