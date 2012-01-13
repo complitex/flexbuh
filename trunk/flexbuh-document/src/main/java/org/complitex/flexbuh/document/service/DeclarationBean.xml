@@ -88,6 +88,8 @@
              <if test="periodType != null">and `period_type` = #{periodType}</if>
              <if test="periodYear != null">and `period_year` = #{periodYear}</if>
              <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
+             <if test="parentId != null">and `parent_id` = #{parentId}</if>
+             <if test="parentId == null">and `parent_id` is null</if>
              and de.`session_id` = #{sessionId}
              and (pp.`selected` = true or (de.`person_profile_id` is null
                     and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
@@ -132,9 +134,8 @@
     </update>
 
     <select id="selectDeclarationsByIds" parameterType="list" resultMap="declarationResultMap">
-        select * from `declaration` where `id` in (
-          <foreach collection="list" separator="," item="item">#{item}</foreach>
-        )
+        select * from `declaration`
+          where `id` in (<foreach collection="list" separator="," item="item">#{item}</foreach>)
     </select>
 
     <sql id="fromDeclarationWhereProfile">
@@ -151,4 +152,17 @@
         select `period_type` as type, `period_month` - 1 as month <include refid="fromDeclarationWhereProfile"/>
           and `period_year` = #{year} group by `period_type`, `period_month`
     </select>
+
+    <select id="selectPossibleParentDeclarations" parameterType="list" resultMap="declarationResultMap">
+        select distinct p.*, p_doc.`name_uk` as `name` from declaration d
+          left join document doc on (d.c_doc = doc.c_doc and d.c_doc_sub = doc.c_doc_sub)
+          left join declaration p on (p.c_doc = doc.parent_c_doc and p.c_doc_sub = doc.parent_c_doc_sub)
+          left join document p_doc on (p.c_doc = p_doc.c_doc and p.c_doc_sub = p_doc.c_doc_sub)
+        where d.id in (<foreach collection="list" separator="," item="item">#{item}</foreach>) and p.`id` is not null
+    </select>
+
+    <update id="updateDeclarationParent" parameterType="map">
+        update `declaration` set `parent_id` = #{parentId}
+          where `id` in (<foreach collection="ids" separator="," item="item">#{item}</foreach>)
+    </update>
 </mapper>

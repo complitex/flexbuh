@@ -14,4 +14,8 @@ public abstract class AddItemButton extends ToolbarButton {
     public AddItemButton(String id) {
         super(id, new PackageResourceReference(IMAGE_SRC), TITLE_KEY);
     }
+
+    public AddItemButton(String id, boolean useAjax) {
+        super(id, new PackageResourceReference(IMAGE_SRC), TITLE_KEY, useAjax);
+    }
 }

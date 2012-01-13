@@ -39,6 +39,8 @@
         </form>
     </div>
 
+    <div wicket:id="link_dialog"></div>
+
     <div wicket:id="year_container">
         <!--todo move style to class-->
         <div wicket:id="year_list">
@@ -65,18 +67,10 @@
                             <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
                                 <thead>
                                 <tr>
-                                    <th><input type="checkbox" onclick="selectAll(this)"/></th>
+                                    <th width="20px"><input type="checkbox" onclick="selectAll(this)"/></th>
+                                    <th></th>
                                     <th>
                                         <span wicket:id="header.name"><wicket:message key="name"/></span>
-                                    </th>
-                                    <th>
-                                        <span wicket:id="header.period_type"><wicket:message key="period_type"/></span>
-                                    </th>
-                                    <th>
-                                        <span wicket:id="header.period_month"><wicket:message key="period_month"/></span>
-                                    </th>
-                                    <th>
-                                        <span wicket:id="header.period_year"><wicket:message key="period_year"/></span>
                                     </th>
                                     <th>
                                         <span wicket:id="header.date"><wicket:message key="date"/></span>
@@ -87,10 +81,8 @@
                                 </tr>
                                 <tr>
                                     <th></th>
+                                    <th></th>
                                     <th><input type="text" wicket:id="name"/></th>
-                                    <th><select wicket:id="period_type"></select></th>
-                                    <th><select wicket:id="period_month"></select></th>
-                                    <th><select wicket:id="period_year" style="width: 60px"></select></th>
                                     <th><input wicket:id="date" size="10"/></th>
 
                                     <th class="center">
@@ -98,20 +90,30 @@
                                     </th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr wicket:id="declarations">
-                                    <td><input type="checkbox" wicket:id="select"/></td>
-                                    <td><span wicket:id="name"></span></td>
-                                    <td><span wicket:id="period_type"></span></td>
-                                    <td><span wicket:id="period_month"></span></td>
-                                    <td><span wicket:id="period_year"></span></td>
-                                    <td><span wicket:id="date"></span></td>
-                                    <td>
-                                        <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
-                                        <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <wicket:container wicket:id="declarations">
+                                    <tr>
+                                        <td><input type="checkbox" wicket:id="select"/></td>
+                                        <td><a href="#" wicket:id="expand">[<span wicket:id="label"></span>]</a></td>
+                                        <td><span wicket:id="name"></span></td>
+                                        <td><span wicket:id="date"></span></td>
+                                        <td>
+                                            <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
+                                            <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
+                                        </td>
+                                    </tr>
+                                    <tbody wicket:id="linked_container">
+                                    <tr wicket:id="linked_declarations">
+                                        <td></td>
+                                        <td></td>
+                                        <td style="padding-left: 40px;"><span wicket:id="name"></span></td>
+                                        <td><span wicket:id="date"></span></td>
+                                        <td>
+                                            <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
+                                            <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </wicket:container>
                             </table>
 
                             <div style="margin-top: 8px">

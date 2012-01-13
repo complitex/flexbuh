@@ -122,4 +122,16 @@ public class DeclarationBean extends AbstractBean{
             put("year", year);
         }});
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Declaration> getPossibleParentDeclarations(List<Long> ids){
+        return sqlSession().selectList(NS + ".selectPossibleParentDeclarations", ids);
+    }
+    
+    public void updateDeclarationParent(final List<Long> ids, final Long parentId){
+        sqlSession().update("updateDeclarationParent", new HashMap<String, Object>(){{
+            put("ids", ids);
+            put("parentId", parentId);
+        }});
+    }
 }

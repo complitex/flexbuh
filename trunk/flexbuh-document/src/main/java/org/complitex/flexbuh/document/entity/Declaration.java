@@ -69,6 +69,9 @@ public class Declaration implements Serializable{
     @XmlTransient
     private PersonProfile personProfile;
 
+    @XmlTransient
+    private Integer childrenCount;
+
     public Declaration() {
         head.setDFill(DeclarationUtil.getString(DateUtil.getCurrentDate()));
     }
@@ -258,6 +261,14 @@ public class Declaration implements Serializable{
         name = document.getNameUk(); //todo add locale
     }
 
+    public boolean hasLinkedDeclarations(){
+        return linkedDeclarations != null && !linkedDeclarations.isEmpty();
+    }
+    
+    public String getFullName(){
+        return getTemplateName() + " " + getName();
+    }
+
     public Long getId() {
         return id;
     }
@@ -344,5 +355,13 @@ public class Declaration implements Serializable{
 
     public void setPersonProfile(PersonProfile personProfile) {
         this.personProfile = personProfile;
+    }
+
+    public Integer getChildrenCount() {
+        return childrenCount;
+    }
+
+    public void setChildrenCount(Integer childrenCount) {
+        this.childrenCount = childrenCount;
     }
 }

@@ -15,6 +15,7 @@ public class DeclarationFilter extends AbstractFilter{
     private Integer periodYear;
     private Date date;
     private Long personProfileId;
+    private Long parentId;
 
     public DeclarationFilter() {
     }
@@ -23,11 +24,13 @@ public class DeclarationFilter extends AbstractFilter{
         super(sessionId);
     }
 
+    public DeclarationFilter(Long sessionId, Long parentId) {
+        super(sessionId);
+        this.parentId = parentId;
+    }
+
     public void clear(){
         name = null;
-        periodMonth = null;
-        periodType = null;
-        periodYear = null;
         date = null;
     }
 
@@ -77,5 +80,13 @@ public class DeclarationFilter extends AbstractFilter{
 
     public void setPersonProfileId(Long personProfileId) {
         this.personProfileId = personProfileId;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }
