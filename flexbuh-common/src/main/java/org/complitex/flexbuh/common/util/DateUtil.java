@@ -162,6 +162,6 @@ public class DateUtil {
     public static int getCurrentMonth(){
         Calendar calendar = Calendar.getInstance();
         
-        return calendar.get(calendar.get(Calendar.MONTH));
+        return calendar.get(Calendar.MONTH);
     }
 }

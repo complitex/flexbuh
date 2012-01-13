@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -16,7 +15,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
 import org.complitex.flexbuh.common.entity.dictionary.DictionaryType;
@@ -83,22 +81,12 @@ public class ImportDictionary extends TemplatePage {
 
 		//Begin Date
 		final IModel<Date> beginDateModel = new Model<>();
-		final DatePicker<Date> beginDatePicker = new DatePicker<Date>("beginDate", beginDateModel, Date.class) {
-			@Override
-			public <Date> IConverter<Date> getConverter(Class<Date> type) {
-				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
-			}
-		};
+		final DatePicker<Date> beginDatePicker = new DatePicker<Date>("beginDate", beginDateModel, Date.class);
 		form.add(beginDatePicker);
 
         //End Date
 		final IModel<Date> endDateModel = new Model<>();
-		final DatePicker<Date> endDatePicker = new DatePicker<Date>("endDate", endDateModel, Date.class) {
-			@Override
-			public <Date> IConverter<Date> getConverter(Class<Date> type) {
-				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
-			}
-		};
+		final DatePicker<Date> endDatePicker = new DatePicker<Date>("endDate", endDateModel, Date.class);
 		form.add(endDatePicker);
 
         //Кнопка импортировать

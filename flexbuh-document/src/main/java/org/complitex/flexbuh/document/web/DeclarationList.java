@@ -10,7 +10,10 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -31,21 +34,18 @@ import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.template.TemplatePage;
-import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
-import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
-import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
-import org.complitex.flexbuh.common.template.toolbar.UploadButton;
+import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.DateUtil;
-import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.entity.Period;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
+import org.complitex.flexbuh.document.web.component.DeclarationLinkDialog;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -73,6 +73,8 @@ public class DeclarationList extends TemplatePage{
 
     private Dialog uploadDialog;
 
+    private DeclarationLinkDialog declarationLinkDialog;
+
     private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
     final String[] MONTH = dateFormatSymbols.getMonths();
@@ -93,7 +95,9 @@ public class DeclarationList extends TemplatePage{
 
     public DeclarationList() {
         add(new Label("title", getString("title")));
-        add(new FeedbackPanel("messages"));
+        final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
+        feedbackPanel.setOutputMarkupId(true);
+        add(feedbackPanel);
 
         final WebMarkupContainer yearContainer = new WebMarkupContainer("year_container");
         yearContainer.setOutputMarkupId(true);
@@ -211,57 +215,6 @@ public class DeclarationList extends TemplatePage{
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));
 
-        //Месяц (для 1,2,3,4 кварталов это 3,6,9,12 месяц соответственно, для года - 12)
-        final DropDownChoice periodMonthChoice = new DropDownChoice<>("period_month",
-                new PropertyModel<Integer>(declarationFilter, "periodMonth"),
-                new LoadableDetachableModel<List<Integer>>() {
-                    @Override
-                    protected List<Integer> load() {
-                        Integer type = declarationFilter.getPeriodType();
-
-                        if (type == null || type == 1){
-                            return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                        }
-
-                        switch (declarationFilter.getPeriodType()){
-                            case 2: return Arrays.asList(3, 6, 9, 12);
-                            case 3: return Arrays.asList(6);
-                            case 4: return Arrays.asList(9);
-                            case 5: return Arrays.asList(12);
-                        }
-
-                        return Collections.emptyList();
-                    }
-                }, new IChoiceRenderer<Integer>() {
-            @Override
-            public Object getDisplayValue(Integer object) {
-                return dateFormatSymbols.getMonths()[object - 1];
-            }
-
-            @Override
-            public String getIdValue(Integer object, int index) {
-                return object.toString();
-            }
-        });
-        periodMonthChoice.setOutputMarkupId(true);
-        periodMonthChoice.setNullValid(true);
-        filterForm.add(periodMonthChoice);
-
-        //Период (1-месяц, 2-квартал, 3-полугодие, 4-9 месяцев, 5-год)
-        PeriodTypeChoice periodTypeChoice = new PeriodTypeChoice("period_type", new PropertyModel<Integer>(declarationFilter, "periodType"));
-        periodTypeChoice.setOutputMarkupId(true);
-        filterForm.add(periodTypeChoice);
-        periodTypeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(periodMonthChoice);
-            }
-        });
-
-        //Год
-        filterForm.add(new DropDownChoice<>("period_year", new PropertyModel<Integer>(declarationFilter, "periodYear"),
-                yearModel).setNullValid(true));
-
         //Дата
         filterForm.add(new DatePicker<>("date", new PropertyModel<Date>(declarationFilter, "date")));
 
@@ -303,8 +256,9 @@ public class DeclarationList extends TemplatePage{
         DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
             @Override
             protected void populateItem(Item<Declaration> item) {
-                final Declaration declaration = item.getModelObject();
-
+                Declaration declaration = item.getModelObject();
+                
+                //Select
                 IModel<Boolean> selectModel = new Model<>(false);
 
                 selectMap.put(declaration.getId(), selectModel);
@@ -317,27 +271,73 @@ public class DeclarationList extends TemplatePage{
                             }
                         }));
 
+                //Name
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.set("id", declaration.getId());
 
                 item.add(new BookmarkablePageLinkPanel<>("name", declaration.getTemplateName() + " " + declaration.getName(),
                         DeclarationFormPage.class, pageParameters));
-                item.add(new Label("period_type", getString("period_type_" + declaration.getHead().getPeriodType())));
-                item.add(new Label("period_month", dateFormatSymbols.getMonths()[declaration.getHead().getPeriodMonth()-1]));
-                item.add(new Label("period_year", StringUtil.getString(declaration.getHead().getPeriodYear())));
+                
+                //Date
                 item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy HH:mm"));
-
+                
+                //Action
                 item.add(new DeclarationXmlLink("action_xml", declaration));
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
+
+                //Linked
+                final WebMarkupContainer linkedContainer = new WebMarkupContainer("linked_container");
+                linkedContainer.setOutputMarkupId(true);
+                item.add(linkedContainer);
+                
+                final ListView linkedDeclarations = new ListView<LinkedDeclaration>("linked_declarations",
+                        declaration.getLinkedDeclarations()) {
+                    @Override
+                    protected void populateItem(ListItem<LinkedDeclaration> linkedItem) {
+                        Declaration linkedDeclaration = linkedItem.getModelObject().getDeclaration();
+
+                        PageParameters pageParameters = new PageParameters();
+                        pageParameters.set("id", linkedDeclaration.getId());
+
+                        linkedItem.add(new BookmarkablePageLinkPanel<>("name", linkedDeclaration.getTemplateName()
+                                + " " + linkedDeclaration.getName(), DeclarationFormPage.class, pageParameters));
+
+                        linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()), "dd.MM.yyyy HH:mm"));
+
+                        linkedItem.add(new DeclarationXmlLink("action_xml", linkedDeclaration));
+                        linkedItem.add(new DeclarationPdfLink("action_pdf", linkedDeclaration));
+                    }
+                };                     
+                linkedDeclarations.setVisible(false);
+                linkedContainer.add(linkedDeclarations);
+                
+                //Expand
+                final Label expandLabel = new Label("label", new LoadableDetachableModel<String>() {
+                    @Override
+                    protected String load() {
+                        return linkedDeclarations.isVisible() ? "-" : "+";
+                    }
+                });
+                expandLabel.setOutputMarkupId(true);
+                
+                AjaxLink expand = new AjaxLink("expand") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        linkedDeclarations.setVisible(!linkedDeclarations.isVisible());
+                        target.add(linkedContainer);
+                        target.add(expandLabel);
+                    }
+                };
+                expand.setVisible(declaration.hasLinkedDeclarations());
+                item.add(expand);
+                
+                expand.add(expandLabel);
             }
         };
         filterForm.add(dataView);
 
         //Названия колонок и сортировка
         filterForm.add(new OrderByBorder("header.name", "name", dataProvider));
-        filterForm.add(new OrderByBorder("header.period_type", "period_type", dataProvider));
-        filterForm.add(new OrderByBorder("header.period_month", "period_month", dataProvider));
-        filterForm.add(new OrderByBorder("header.period_year", "period_year", dataProvider));
         filterForm.add(new OrderByBorder("header.date", "date", dataProvider));
 
         //Сохранение архива
@@ -487,6 +487,10 @@ public class DeclarationList extends TemplatePage{
         uploadDialog.add(fileUploadForm);
 
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
+        
+        //Link Dialog
+        declarationLinkDialog = new DeclarationLinkDialog("link_dialog", feedbackPanel, filterForm);
+        add(declarationLinkDialog);
     }
 
     @Override
@@ -515,6 +519,21 @@ public class DeclarationList extends TemplatePage{
                         declarationBean.deleteDeclaration(id);
                     }
                 }
+            }
+        });
+
+        list.add(new AddItemButton(id, true){
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                List<Long> list = new ArrayList<>();
+
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        list.add(id);
+                    }
+                }
+                
+                declarationLinkDialog.open(target, list);
             }
         });
 
