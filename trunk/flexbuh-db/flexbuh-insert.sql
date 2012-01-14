@@ -28,3 +28,14 @@ INSERT INTO dictionary_type (`id`, `code`, `file_name`, `name_uk`, `name_ru`)
   VALUES (6, 'tax_inspection', 'SPR_STI.XML', 'Довідник податкових інспекцій', 'Справочник налоговых инспекций');
 INSERT INTO dictionary_type (`id`, `code`, `file_name`, `name_uk`, `name_ru`)
   VALUES (7, 'spr_for_fields', 'sprForFields.xml', 'Справочник полей ввода', 'Справочник полей ввода');
+
+-- --------------------------------
+-- Street type
+-- --------------------------------
+insert into `street_type` (`name_uk`, `name_ru`) values ('вулиця', 'улица');
+
+-- --------------------------------
+-- Street type
+-- --------------------------------
+insert into `city_type` (`name_uk`, `name_ru`) values ('місто', 'город');
+

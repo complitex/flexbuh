@@ -37,6 +37,15 @@ public class UserBean extends AbstractBean {
     }
 
     @Transactional
+    public void save(User user) {
+        if (user.getId() != null) {
+            update(user);
+        } else {
+            create(user);
+        }
+    }
+
+    @Transactional
     public void create(User user) {
         user.setPassword(DigestUtils.md5Hex(user.getLogin())); //md5 password
 
@@ -47,13 +56,13 @@ public class UserBean extends AbstractBean {
         newRole.put("login", user.getLogin());
         for(String role : user.getRoles()){
             newRole.put("role", role);
-            sqlSession().insert(NS + ".insertUserGroup", newRole);
+            sqlSession().insert(NS + ".insertUserRole", newRole);
         }
     }
 
     @Transactional
     public void update(User user) {
-        User dbUser = (User) sqlSession().selectOne(NS + ".selectUser", user.getId());
+        User dbUser = (User) sqlSession().selectOne(NS + ".selectUserById", user.getId());
 
         //удаление групп привилегий
         Collections.sort(user.getRoles());
@@ -64,7 +73,7 @@ public class UserBean extends AbstractBean {
 
             String dbUserRole = dbUser.getRoles().get(k);
 
-            while (i < user.getRoles().size() || j == 0) {
+            while (i < user.getRoles().size()) {
                 j = dbUserRole.compareTo(user.getRoles().get(i));
                 role.put("role", dbUserRole);
                 if (j < 0) {
@@ -80,10 +89,16 @@ public class UserBean extends AbstractBean {
 
             j = -1;
         }
+
+        sqlSession().update(NS + ".updateUser", user);
     }
 
 	public User getUser(long id) {
 		return (User) sqlSession().selectOne(NS + ".selectUserById", id);
+	}
+
+    public User getUser(String login) {
+		return (User) sqlSession().selectOne(NS + ".selectUserByLogin", login);
 	}
 
     public User getUserBySessionId(Long sessionId) {

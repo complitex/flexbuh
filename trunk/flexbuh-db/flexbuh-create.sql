@@ -70,11 +70,30 @@ CREATE TABLE  `user` (
   `email` VARCHAR(45) NOT NULL COMMENT 'E-mail',
   `phone` VARCHAR(255) COMMENT 'Телефоны',
   `zip_code` VARCHAR(45) COMMENT 'Почтовый индекс',
-  `address` VARCHAR(1000) COMMENT 'Адрес',
+  `country` VARCHAR(45) COMMENT 'Страна',
+  `region` VARCHAR(45) COMMENT 'Регион',
+  `area` VARCHAR(45) COMMENT 'Район',
+  `city` VARCHAR(45) COMMENT 'Селение',
+  `city_type` VARCHAR(45) COMMENT 'Тип селения (город/деревня/поселок)',
+  `street` VARCHAR(45) COMMENT 'Улица',
+  `street_type` VARCHAR(45) COMMENT 'Тип улицы',
+  `building` VARCHAR(45) COMMENT 'Дом',
+  `apartment` VARCHAR(45) COMMENT 'Квартира',
   `organization_name` VARCHAR(45) COMMENT 'Название организации',
   `organization_phone` VARCHAR(255) COMMENT 'Телефоны организации',
+  `organization_department` VARCHAR(255) COMMENT 'Отдел',
+  `organization_post` VARCHAR (45) COMMENT 'Должность',
   `organization_zip_code` VARCHAR(45) COMMENT 'Почтовый индекс организации',
-  `organization_address` VARCHAR(100) COMMENT 'Адрес организации',
+  `organization_country` VARCHAR(45) COMMENT 'Страна',
+  `organization_region` VARCHAR(45) COMMENT 'Регион',
+  `organization_area` VARCHAR(45) COMMENT 'Район',
+  `organization_city` VARCHAR(45) COMMENT 'Селение',
+  `organization_city_type` VARCHAR(45) COMMENT 'Тип селения (город/деревня/поселок)',
+  `organization_street` VARCHAR(45) COMMENT 'Улица',
+  `organization_street_type` VARCHAR(45) COMMENT 'Тип улицы',
+  `organization_building` VARCHAR(45) COMMENT 'Дом',
+  `organization_apartment` VARCHAR(45) COMMENT 'Квартира',
+
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_session` (`session_id`),
   UNIQUE KEY `unique_key_login` (`login`),
@@ -647,6 +666,34 @@ CREATE TABLE `personnel` (
   CONSTRAINT `fk_personnel__position` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
   CONSTRAINT `fk_personnel__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
   CONSTRAINT `fk_personnel__payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Street type
+-- --------------------------
+
+DROP TABLE IF EXISTS `street_type`;
+
+CREATE TABLE `street_type` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_uk` VARCHAR(255),
+  `name_ru` VARCHAR(255),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- City type
+-- --------------------------
+
+DROP TABLE IF EXISTS `city_type`;
+
+CREATE TABLE `city_type` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_uk` VARCHAR(255),
+  `name_ru` VARCHAR(255),
+  PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

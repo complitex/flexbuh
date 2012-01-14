@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.common.entity.user;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.DomainObject;
 import org.complitex.flexbuh.common.entity.SessionObject;
@@ -15,7 +16,7 @@ import java.util.List;
 public class User extends DomainObject {
 	private String login;
 	private String password;
-    private Session session;
+    private Long sessionId;
     private String firstName;
     private String middleName;
     private String lastName;
@@ -23,13 +24,31 @@ public class User extends DomainObject {
     private String email;
     private String phone;
     private String zipCode;
-    private String address;
+    private String country;
+    private String region;
+    private String area;
+    private String city;
+    private String cityType;
+    private String street;
+    private String streetType;
+    private String building;
+    private String apartment;
     private String organizationName;
     private String organizationPhone;
+    private String organizationDepartment;
+    private String organizationPost;
     private String organizationZipCode;
-    private String organizationAddress;
+    private String organizationCountry;
+    private String organizationRegion;
+    private String organizationArea;
+    private String organizationCity;
+    private String organizationCityType;
+    private String organizationStreet;
+    private String organizationStreetType;
+    private String organizationBuilding;
+    private String organizationApartment;
 
-    private List<String> roles;
+    private List<String> roles = Lists.newArrayList();
 
 	public String getLogin() {
 		return login;
@@ -47,12 +66,12 @@ public class User extends DomainObject {
 		this.password = password;
 	}
 
-    public Session getSession() {
-        return session;
+    public Long getSessionId() {
+        return sessionId;
     }
 
-    public void setSession(Session session) {
-        this.session = session;
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
     }
 
     public String getFirstName() {
@@ -111,12 +130,76 @@ public class User extends DomainObject {
         this.zipCode = zipCode;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCountry() {
+        return country;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCityType() {
+        return cityType;
+    }
+
+    public void setCityType(String cityType) {
+        this.cityType = cityType;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getStreetType() {
+        return streetType;
+    }
+
+    public void setStreetType(String streetType) {
+        this.streetType = streetType;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(String building) {
+        this.building = building;
+    }
+
+    public String getApartment() {
+        return apartment;
+    }
+
+    public void setApartment(String apartment) {
+        this.apartment = apartment;
     }
 
     public String getOrganizationName() {
@@ -135,6 +218,22 @@ public class User extends DomainObject {
         this.organizationPhone = organizationPhone;
     }
 
+    public String getOrganizationDepartment() {
+        return organizationDepartment;
+    }
+
+    public void setOrganizationDepartment(String organizationDepartment) {
+        this.organizationDepartment = organizationDepartment;
+    }
+
+    public String getOrganizationPost() {
+        return organizationPost;
+    }
+
+    public void setOrganizationPost(String organizationPost) {
+        this.organizationPost = organizationPost;
+    }
+
     public String getOrganizationZipCode() {
         return organizationZipCode;
     }
@@ -143,12 +242,76 @@ public class User extends DomainObject {
         this.organizationZipCode = organizationZipCode;
     }
 
-    public String getOrganizationAddress() {
-        return organizationAddress;
+    public String getOrganizationCountry() {
+        return organizationCountry;
     }
 
-    public void setOrganizationAddress(String organizationAddress) {
-        this.organizationAddress = organizationAddress;
+    public void setOrganizationCountry(String organizationCountry) {
+        this.organizationCountry = organizationCountry;
+    }
+
+    public String getOrganizationRegion() {
+        return organizationRegion;
+    }
+
+    public void setOrganizationRegion(String organizationRegion) {
+        this.organizationRegion = organizationRegion;
+    }
+
+    public String getOrganizationArea() {
+        return organizationArea;
+    }
+
+    public void setOrganizationArea(String organizationArea) {
+        this.organizationArea = organizationArea;
+    }
+
+    public String getOrganizationCity() {
+        return organizationCity;
+    }
+
+    public void setOrganizationCity(String organizationCity) {
+        this.organizationCity = organizationCity;
+    }
+
+    public String getOrganizationCityType() {
+        return organizationCityType;
+    }
+
+    public void setOrganizationCityType(String organizationCityType) {
+        this.organizationCityType = organizationCityType;
+    }
+
+    public String getOrganizationStreet() {
+        return organizationStreet;
+    }
+
+    public void setOrganizationStreet(String organizationStreet) {
+        this.organizationStreet = organizationStreet;
+    }
+
+    public String getOrganizationStreetType() {
+        return organizationStreetType;
+    }
+
+    public void setOrganizationStreetType(String organizationStreetType) {
+        this.organizationStreetType = organizationStreetType;
+    }
+
+    public String getOrganizationBuilding() {
+        return organizationBuilding;
+    }
+
+    public void setOrganizationBuilding(String organizationBuilding) {
+        this.organizationBuilding = organizationBuilding;
+    }
+
+    public String getOrganizationApartment() {
+        return organizationApartment;
+    }
+
+    public void setOrganizationApartment(String organizationApartment) {
+        this.organizationApartment = organizationApartment;
     }
 
     public List<String> getRoles() {

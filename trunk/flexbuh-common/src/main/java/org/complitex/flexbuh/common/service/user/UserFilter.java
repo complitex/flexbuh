@@ -17,8 +17,6 @@ public class UserFilter extends AbstractFilter {
     private String middleName;
     private String lastName;
 
-    private String address;
-
     private List<String> roles = Lists.newArrayList();
 
     public String getLogin() {
@@ -51,14 +49,6 @@ public class UserFilter extends AbstractFilter {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getRole() {

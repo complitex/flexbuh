@@ -5,6 +5,7 @@
     <resultMap id="userResultMap" type="org.complitex.flexbuh.common.entity.user.User">
 		<id column="id" property="id"/>
         <result column="login" property="login"/>
+        <result column="session_id" property="sessionId"/>
 
         <result column="first_name" property="firstName"/>
         <result column="middle_name" property="middleName"/>
@@ -13,16 +14,29 @@
         <result column="email" property="email"/>
         <result column="phone" property="phone"/>
         <result column="zip_code" property="zipCode"/>
-        <result column="address" property="address"/>
+        <result column="country" property="country"/>
+        <result column="region" property="region" />
+        <result column="area" property="area" />
+        <result column="city" property="city" />
+        <result column="city_type" property="cityType" />
+        <result column="street" property="street" />
+        <result column="street_type" property="streetType" />
+        <result column="building" property="building" />
+        <result column="apartment" property="apartment" />
         <result column="organization_name" property="organizationName"/>
         <result column="organization_phone" property="organizationPhone"/>
+        <result column="organization_department" property="organizationDepartment"/>
+        <result column="organization_post" property="organizationPost"/>
         <result column="organization_zip_code" property="organizationZipCode"/>
-        <result column="organization_address" property="organizationAddress"/>
-
-        <association property="session" column="session_id" javaType="org.complitex.flexbuh.common.entity.user.Session">
-            <id property="id" column="session_id"/>
-            <result column="cookie" property="cookie"/>
-        </association>
+        <result column="organization_country" property="organizationCountry"/>
+        <result column="organization_region" property="organizationRegion" />
+        <result column="organization_area" property="organizationArea" />
+        <result column="organization_city" property="organizationCity" />
+        <result column="organization_city_type" property="organizationCityType" />
+        <result column="organization_street" property="organizationStreet" />
+        <result column="organization_street_type" property="organizationStreetType" />
+        <result column="organization_building" property="organizationBuilding" />
+        <result column="organization_apartment" property="organizationApartment" />
 
         <collection property="roles" ofType="string">
             <result column="group_name"/>
@@ -40,7 +54,6 @@
             <if test="firstName != null">and u.first_name like concat('%', #{firstName}, '%')</if>
             <if test="middleName != null">and u.middle_name like concat('%', #{middleName}, '%')</if>
             <if test="lastName != null">and u.last_name like concat('%', #{lastName}, '%')</if>
-            <if test="address != null">and u.address like concat('%', #{address}, '%')</if>
             <if test="role != null">and gc.`group_name` in (
               <foreach collection="roles" separator="," item="item">#{item}</foreach>)
             </if>
@@ -53,9 +66,15 @@
 
     <insert id="insertUser" parameterType="org.complitex.flexbuh.common.entity.user.User" keyProperty="id" useGeneratedKeys="true">
         insert into `user` (`login`, `password`, `session_id`, `first_name`, `middle_name`, `last_name`, `birthday`,
-        `email`, `phone`, `zip_code`, `address`, `organization_name`, `organization_phone`, `organization_zip_code`, `organization_address`)
+        `email`, `phone`, `zip_code`, `country`, `region`, `area`, `city`, `city_type`, `street`, `street_type`, `building`, `apartment`,
+         `organization_name`, `organization_phone`, `organization_zip_code`,
+         `organization_country`, `organization_region`, `organization_area`, `organization_city`, `organization_city_type`,
+         `organization_street`, `organization_street_type`, `organization_building`, `organization_apartment`)
         values (#{login}, #{password}, #{sessionId}, #{firstName}, #{middleName}, #{lastName}, #{birthday},
-        #{email}, #{phone}, #{zipCode}, #{address}, #{organizationName}, #{organizationPhone}, #{organizationZipCode}, #{organizationAddress})
+        #{email}, #{phone}, #{zipCode}, #{country}, #{region}, #{area}, #{city}, #{cityType}, #{street}, #{streetType}, #{building}, #{apartment},
+        #{organizationName}, #{organizationPhone}, #{organizationZipCode},
+        #{organizationCountry}, #{organizationRegion}, #{organizationArea}, #{organizationCity}, #{organizationCityType},
+        #{organizationStreet}, #{organizationStreetType}, #{organizationBuilding}, #{organizationApartment})
     </insert>
 
     <update id="updateUser" parameterType="org.complitex.flexbuh.common.entity.user.User">
@@ -64,22 +83,27 @@
             <if test="password != null"> `password` = #{password},</if>
             <if test="sessionId != null"> `session_id` = #{sessionId},</if>
             `first_name` = #{firstName}, `middle_name` = #{middleName}, `last_name` = #{lastName}, `birthday` = #{birthday},
-            `email` = #{email}, `phone` = #{phone}, `zip_code` = #{zipCode}, `address` = #{address},
+            `email` = #{email}, `phone` = #{phone}, `zip_code` = #{zipCode}, `country` = #{country}, `region` = #{region},
+            `city` = #{city}, `city_type` = #{cityType}, `street` = #{street}, `street_type` = #{streetType},
+            `building` = #{building}, `apartment` = #{apartment},
             `organization_name` = #{organizationName}, `organization_phone` = #{organizationPhone},
-            `organization_zip_code` = #{organizationZipCode}, `organization_address` = #{organizationAddress}
+            `organization_zip_code` = #{organizationZipCode}, `organization_country` = #{organizationCountry},
+            `organization_region` = #{organizationRegion}, `organization_area` = #{organizationArea},
+            `organization_city` = #{organizationCity}, `organization_city_type` = #{organizationCityType},
+            `organization_street` = #{organizationStreet}, `organization_street_type` = #{organizationStreetType},
+            `organization_building` = #{organizationBuilding}, `organization_apartment` = #{organizationApartment}
         </set>
         where id = #{id}
     </update>
 
     <select id="selectUsers" resultMap="userResultMap" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
-        select uc.*, s.`cookie` as `cookie`, gc.`group_name` as `group_name`
+        select uc.*, gc.`group_name` as `group_name`
         from
         (select u.*
         <include refid="userFilter"/>
         limit #{first}, #{count}
         ) as uc
         left join `usergroup` gc on uc.`login` = gc.`login`
-        left join `session` s on s.`id` = uc.`session_id`
     </select>
 
     <select id="selectUsersCount" resultType="int" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
@@ -88,35 +112,26 @@
     </select>
 
     <select id="selectUserBySessionId" parameterType="long" resultMap="userResultMap">
-        select u.*, s.`id` as `session_id`, s.`cookie` as `cookie`, gc.`group_name` as `group_name` from `user` u
-        left join `session` s on s.`id` = u.`session_id`
+        select u.*, gc.`group_name` as `group_name` from `user` u
         left join `usergroup` gc on u.`login` = gc.`login`
         where u.`session_id` = #{sessionId}
     </select>
 
     <select id="selectUserById" parameterType="long" resultMap="userResultMap">
-        select u.`id` as `id`,
-               u.`login` as `login`,
-               u.`password` as `password`,
-               u.`session_id` as `session_id`,
-               u.`first_name` as `first_name`,
-               u.`middle_name` as `middle_name`,
-               u.`last_name` as `last_name`,
-               u.`birthday` as `birthday`,
-               u.`email` as `email`,
-               u.`phone` as `phone`,
-               u.`zip_code` as `zip_code`,
-               u.`address` as `address`,
-               u.`organization_name` as `organization_name`,
-               u.`organization_phone` as `organization_phone`,
-               u.`organization_zip_code` as `organization_zip_code`,
-               u.`organization_address` as `organization_address`,
-               s.`cookie` as `cookie`,
+        select u.*,
                gc.`group_name` as `group_name`
         from `user` u
-        left join `session` s on s.`id` = u.`session_id`
         left join `usergroup` gc on u.`login` = gc.`login`
         where u.`id` = #{id}
+        order by gc.`group_name`
+    </select>
+
+    <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
+        select u.*,
+               gc.`group_name` as `group_name`
+        from `user` u
+        left join `usergroup` gc on u.`login` = gc.`login`
+        where u.`login` = #{login}
         order by gc.`group_name`
     </select>
 
