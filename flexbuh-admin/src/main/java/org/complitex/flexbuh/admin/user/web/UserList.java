@@ -53,8 +53,6 @@ public class UserList extends TemplatePage {
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
-        log.debug("get user: {}", userBean.getUser(1L));
-
         //Фильтр
         UserFilter filterObject = new UserFilter();
         final IModel<UserFilter> filterModel = new Model<UserFilter>(filterObject);
@@ -78,7 +76,6 @@ public class UserList extends TemplatePage {
         filterForm.add(new TextField<String>("last_name", new PropertyModel<String>(filterModel, "lastName")));
         filterForm.add(new TextField<String>("first_name", new PropertyModel<String>(filterModel, "firstName")));
         filterForm.add(new TextField<String>("middle_name", new PropertyModel<String>(filterModel, "middleName")));
-        filterForm.add(new TextField<String>("address", new PropertyModel<String>(filterModel, "address")));
 
         filterForm.add(new DropDownChoice<String>("roles",
                 new PropertyModel<String>(filterModel, "role"),
@@ -130,21 +127,20 @@ public class UserList extends TemplatePage {
 
                 item.add(new Label("last_name", user.getLastName()));
 
-                item.add(new Label("first_name", user.getLastName()));
+                item.add(new Label("first_name", user.getFirstName()));
 
-                item.add(new Label("middle_name", user.getLastName()));
-
-                item.add(new Label("address", user.getLastName()));
+                item.add(new Label("middle_name", user.getMiddleName()));
 
                 PageParameters pageParameters = new PageParameters();
 
                 pageParameters.set("user_id", user.getId());
                 item.add(new BookmarkablePageLinkPanel<User>("action_edit", getString("action_edit"),
                         UserEdit.class, pageParameters));
-
+                /*
 //                pageParameters.set("action", "copy");
 //                item.add(new BookmarkablePageLinkPanel<User>("action_copy", getString("action_copy"),
 //                        UserEdit.class, pageParameters));
+                        */
             }
         };
         filterForm.add(dataView);
@@ -154,7 +150,6 @@ public class UserList extends TemplatePage {
         filterForm.add(new OrderByBorder("header.last_name", "lastName", dataProvider));
         filterForm.add(new OrderByBorder("header.first_name", "firstName", dataProvider));
         filterForm.add(new OrderByBorder("header.middle_name", "middleName", dataProvider));
-        filterForm.add(new OrderByBorder("header.address", "address", dataProvider));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, UserList.class.getName(), filterForm));
