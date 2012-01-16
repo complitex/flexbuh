@@ -1,12 +1,14 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,6 +22,9 @@ import java.util.List;
 @Stateless
 public class EmployeeBean extends AbstractBean{
     private final static Logger log = LoggerFactory.getLogger(CounterpartBean.class);
+    
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     public Employee getEmployee(Long id){
         return (Employee) sqlSession().selectOne("selectEmployee", id);
@@ -52,9 +57,12 @@ public class EmployeeBean extends AbstractBean{
                     .newInstance(EmployeeRowSet.class)
                     .createUnmarshaller()
                     .unmarshal(inputStream);
+            
+            Long personalProfileId = personProfileBean.getSelectedPersonProfileId(sessionId);
 
             for (Employee employee : employeeRowSet.getEmployees()){
                 employee.setSessionId(sessionId);
+                employee.setPersonProfileId(personalProfileId);
                 employee.updateDates();
 
                 save(employee);
