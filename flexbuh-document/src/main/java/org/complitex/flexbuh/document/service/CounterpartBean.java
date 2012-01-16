@@ -1,12 +1,14 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.entity.CounterpartRowSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,6 +22,9 @@ import java.util.List;
 @Stateless
 public class CounterpartBean extends AbstractBean{
     private final static Logger log = LoggerFactory.getLogger(CounterpartBean.class);
+    
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     public Counterpart getCounterpart(Long id){
         return (Counterpart) sqlSession().selectOne("selectCounterpart", id);
@@ -52,9 +57,12 @@ public class CounterpartBean extends AbstractBean{
                     .newInstance(CounterpartRowSet.class)
                     .createUnmarshaller()
                     .unmarshal(inputStream);
+            
+            Long personalProfileId = personProfileBean.getSelectedPersonProfileId(sessionId);
 
             for (Counterpart counterpart : counterpartRowSet.getCounterparts()){
                 counterpart.setSessionId(sessionId);
+                counterpart.setPersonProfileId(personalProfileId);
 
                 save(counterpart);
             }
