@@ -6,6 +6,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import java.util.Collections;
@@ -21,6 +23,8 @@ import static org.complitex.flexbuh.common.security.SecurityRole.*;
 @Stateless
 public class UserBean extends AbstractBean {
 	public static final String NS = UserBean.class.getName();
+
+    private final static Logger log = LoggerFactory.getLogger(UserBean.class);
 
     private static final List<String> ALL_ROLES = Lists.newArrayList(
             AUTHORIZED,
@@ -64,30 +68,48 @@ public class UserBean extends AbstractBean {
     public void update(User user) {
         User dbUser = (User) sqlSession().selectOne(NS + ".selectUserById", user.getId());
 
+        log.debug("Db roles: {}", dbUser.getRoles());
+        log.debug("New roles: {}", user.getRoles());
+
         //удаление групп привилегий
         Collections.sort(user.getRoles());
         Map<String, String> role = Maps.newHashMap();
         role.put("login", user.getLogin());
-        int i = 0, j = -1;
-        for (int k = 0 ; k < dbUser.getRoles().size(); k++) {
+        int i = 0, k = 0, j;
+        for (; k < dbUser.getRoles().size() && i < user.getRoles().size(); k++) {
 
             String dbUserRole = dbUser.getRoles().get(k);
 
             while (i < user.getRoles().size()) {
-                j = dbUserRole.compareTo(user.getRoles().get(i));
-                role.put("role", dbUserRole);
+                String userRole = user.getRoles().get(i);
+                j = dbUserRole.compareTo(userRole);
                 if (j < 0) {
+                    role.put("role", dbUserRole);
                     sqlSession().delete(NS + ".deleteUserRole", role);
                     if (k < dbUser.getRoles().size()) {
                         break;
                     }
                 } else if (j > 0) {
+                    role.put("role", userRole);
                     sqlSession().delete(NS + ".insertUserRole", role);
+                } else {
+                    i++;
+                    break;
                 }
                 i++;
             }
+        }
 
-            j = -1;
+        while (k < dbUser.getRoles().size()) {
+            role.put("role", dbUser.getRoles().get(k));
+            sqlSession().delete(NS + ".deleteUserRole", role);
+            k++;
+        }
+
+        while (i < user.getRoles().size()) {
+            role.put("role", user.getRoles().get(i));
+            sqlSession().delete(NS + ".insertUserRole", role);
+            i++;
         }
 
         sqlSession().update(NS + ".updateUser", user);

@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.admin.user.web;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -293,7 +292,12 @@ public class UserEdit extends FormTemplatePage {
         form.add(new TextField<>("organizationApartment", new PropertyModel<String>(user, "organizationApartment")));
 
         final IModel<ArrayList<String>> selectedEnabledRoles = new Model<ArrayList<String>>();
-        final ListMultipleChoice<String> enabledRolesChoice = new ListMultipleChoice<String>("enabled_roles", selectedEnabledRoles, new PropertyModel<List<String>>(user, "roles"));
+        final ListMultipleChoice<String> enabledRolesChoice = new ListMultipleChoice<String>("enabled_roles", selectedEnabledRoles, new PropertyModel<List<String>>(user, "roles")) {
+            @Override
+            protected boolean localizeDisplayValues() {
+                return true;
+            }
+        };
         enabledRolesChoice.setMaxRows(10);
         enabledRolesChoice.setOutputMarkupId(true);
         form.add(enabledRolesChoice);
@@ -301,7 +305,12 @@ public class UserEdit extends FormTemplatePage {
 
         final ArrayList<String> selectedNewRoles = new ArrayList<String>();
         final List<String> selectRoles = getSelectRoles();
-        final ListMultipleChoice<String> selectRolesChoice = new ListMultipleChoice<String>("select_roles", new Model<ArrayList<String>>(selectedNewRoles), selectRoles);
+        final ListMultipleChoice<String> selectRolesChoice = new ListMultipleChoice<String>("select_roles", new Model<ArrayList<String>>(selectedNewRoles), selectRoles) {
+            @Override
+            protected boolean localizeDisplayValues() {
+                return true;
+            }
+        };
         selectRolesChoice.setMaxRows(10);
         selectRolesChoice.setOutputMarkupId(true);
         form.add(selectRolesChoice);

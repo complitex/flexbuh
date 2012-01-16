@@ -55,20 +55,37 @@
                 <td><input type="text" wicket:id="organizationPost" maxlength="45" size="40"/></td>
             </tr>
             <tr>
-                <td>
-                    <select wicket:id="select_roles">
-                        <option></option>
-                    </select>
-                </td>
-                <td>
-                    <input class="btnSmall default" wicket:id="add" type="submit" wicket:message="value:add" tabindex="0"/>
-                    <br/>
-                    <input class="btnSmall default" wicket:id="remove" type="submit" wicket:message="value:remove" tabindex="0"/>
-                </td>
-                <td align="left">
-                    <select wicket:id="enabled_roles">
-                        <option></option>
-                    </select>
+                <td colspan="2">
+                    <table class="tbForm">
+                        <thead>
+                        <tr>
+                            <th>
+                                <wicket:message key="available"/>
+                            </th>
+                            <th/>
+                            <th>
+                                <wicket:message key="enabled"/>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <td>
+                                <select wicket:id="select_roles" style="height: 75px; width: 277px">
+                                    <option></option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="btnSmall default" wicket:id="add" type="submit" wicket:message="value:add" tabindex="0"/>
+                                <br/>
+                                <input class="btnSmall default" wicket:id="remove" type="submit" wicket:message="value:remove" tabindex="0"/>
+                            </td>
+                            <td>
+                                <select wicket:id="enabled_roles" style="height: 75px; width: 277px">
+                                    <option></option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
