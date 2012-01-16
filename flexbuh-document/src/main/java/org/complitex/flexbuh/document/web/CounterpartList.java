@@ -195,6 +195,12 @@ public class CounterpartList extends TemplatePage{
             protected void onClick(AjaxRequestTarget target) {
                 uploadDialog.open(target);
             }
+
+            @Override
+            public boolean isVisible() {
+                //todo cache selected profile id
+                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+            }
         });
 
         list.add(new AddDocumentButton(id){
@@ -217,6 +223,11 @@ public class CounterpartList extends TemplatePage{
                         counterpartBean.delete(id);
                     }
                 }
+            }
+
+            @Override
+            public boolean isVisible() {
+                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
             }
         });
 
