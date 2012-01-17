@@ -164,4 +164,10 @@ public class DateUtil {
         
         return calendar.get(Calendar.MONTH);
     }
+
+    public static int getCurrentDay(){
+        Calendar calendar = Calendar.getInstance();
+
+        return calendar.get(Calendar.DAY_OF_MONTH);
+    }
 }

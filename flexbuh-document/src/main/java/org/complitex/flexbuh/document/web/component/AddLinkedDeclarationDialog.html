@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <title>DeclarationLinkDialog</title>
+</head>
+<body>
+<wicket:panel>
+    <div wicket:id="dialog">
+        <div wicket:id="container">
+            <span wicket:id="info"></span>
+
+            <form action="#" wicket:id="form">
+                <div style="max-height: 150px; overflow-y: auto;">
+                    <div wicket:id="radio_group">
+                        <table>
+                            <tr wicket:id="list">
+                                <td width="20px"><input wicket:id="select" type="radio"/></td>
+                                <td><span wicket:id="label"></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <input type="submit" wicket:id="add" wicket:message="value:add" class="btnMiddle"/>
+            </form>
+        </div>
+    </div>
+</wicket:panel>
+</body>
+</html>

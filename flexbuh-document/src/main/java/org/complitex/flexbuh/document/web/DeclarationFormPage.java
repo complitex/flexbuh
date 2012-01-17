@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
@@ -14,15 +15,21 @@ import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.AddItemButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.common.web.component.PersonProfileChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
+import org.complitex.flexbuh.document.web.component.AddLinkedDeclarationDialog;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -39,6 +46,8 @@ public class DeclarationFormPage extends TemplatePage{
     private PersonProfileBean personProfileBean;
 
     private final Declaration declaration;
+    
+    private AddLinkedDeclarationDialog addLinkedDeclarationDialog;
 
     public DeclarationFormPage(Declaration declaration){
         this.declaration = declaration;
@@ -73,7 +82,9 @@ public class DeclarationFormPage extends TemplatePage{
             throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
         }
 
-        add(new FeedbackPanel("messages"));
+        final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
+        feedbackPanel.setOutputMarkupId(true);
+        add(feedbackPanel);
 
         add(new Label("title", declaration.getName()));
         add(new Label("templateName", declaration.getTemplateName()));
@@ -85,11 +96,12 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(new DeclarationFormComponent("declaration", declaration, getSessionId(true)));
 
         //Linked declaration
-        Accordion accordion = new Accordion("accordion");
+        final Accordion accordion = new Accordion("accordion");
         accordion.setCollapsible(true);
         accordion.setClearStyle(true);
         accordion.setNavigation(true);
         accordion.setActive(new AccordionActive(false));
+        accordion.setOutputMarkupId(true);
         form.add(accordion);
 
         ListView listView = new ListView<LinkedDeclaration>("declarations", declaration.getLinkedDeclarations()) {
@@ -105,6 +117,7 @@ public class DeclarationFormPage extends TemplatePage{
                 item.setRenderBodyOnly(true);
             }
         };
+        listView.setReuseItems(true);
         accordion.add(listView);
         
         //Профиль
@@ -143,11 +156,7 @@ public class DeclarationFormPage extends TemplatePage{
             public void onSubmit() {
                 Long selected = personProfileBean.getSelectedPersonProfileId(getSessionId());
 
-                PersonProfile personProfile = declaration.getPersonProfile();
-
-                if ((selected != null && personProfile != null && selected.equals(personProfile.getId()))){
-                    declaration.setPersonProfileId(personProfile.getId());
-
+                if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
                     declarationBean.save(getSessionId(), declaration);
 
                     getSession().info(getString("info_saved"));
@@ -165,5 +174,31 @@ public class DeclarationFormPage extends TemplatePage{
                 setResponsePage(DeclarationList.class);
             }
         }.setDefaultFormProcessing(false));
+
+        //Add linked declaration dialog
+        addLinkedDeclarationDialog = new AddLinkedDeclarationDialog("add_dialog", new IAjaxUpdate(){
+
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                target.add(accordion);
+                target.add(feedbackPanel);
+            }
+        });
+        add(addLinkedDeclarationDialog);
+    }
+
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        List<ToolbarButton> list = new ArrayList<>();
+
+        //todo hide on no linked
+        list.add(new AddItemButton(id, true) {
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                addLinkedDeclarationDialog.open(target, declaration);
+            }
+        });
+        
+        return list;
     }
 }

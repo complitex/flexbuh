@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.w3c.dom.Element;
@@ -267,6 +268,27 @@ public class Declaration implements Serializable{
     
     public String getFullName(){
         return getTemplateName() + " " + getName();
+    }
+
+    public void addLinkedDeclaration(Document document){
+        Declaration declaration = new Declaration();
+
+        declaration.setDocument(document);
+
+        //todo add version
+        List<DocumentVersion> dv = document.getDocumentVersions();
+
+        if (dv != null && !dv.isEmpty()){
+            declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
+        }
+
+        declaration.setParent(this);
+
+        declaration.getHead().setPeriodType(getHead().getPeriodType());
+        declaration.getHead().setPeriodMonth(getHead().getPeriodMonth());
+        declaration.getHead().setPeriodYear(getHead().getPeriodYear());
+
+        linkedDeclarations.add(new LinkedDeclaration(declaration));
     }
 
     public Long getId() {
