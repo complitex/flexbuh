@@ -3,6 +3,7 @@ package org.complitex.flexbuh.common.entity.dictionary;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -25,6 +26,12 @@ public class Document extends AbstractPeriodDictionary {
     public Document(String cDoc, String cDocSub) {
         this.cDoc = cDoc;
         this.cDocSub = cDocSub;
+    }
+    
+    public String getFullName(Locale locale){
+        return documentVersions.get(0) != null
+                ? cDoc + cDocSub + String.format("%02d", documentVersions.get(0).getCDocVer()) + " " + getName(locale)
+                : null;
     }
 
     public String getCDoc() {

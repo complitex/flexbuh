@@ -22,7 +22,6 @@ import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;
@@ -52,6 +51,13 @@ public class DeclarationCreate extends FormTemplatePage{
         add(new FeedbackPanel("messages"));
 
         final Declaration declaration = new Declaration();
+
+        //Default date
+        int month = DateUtil.getCurrentMonth() + (DateUtil.getCurrentDay() < 20 ? 0 : 1);
+        int year = DateUtil.getCurrentYear();
+                
+        declaration.getHead().setPeriodMonth(month > 0 ? month : 1);
+        declaration.getHead().setPeriodYear(month > 0 ? year : year - 1);
 
         Form form = new Form("form");
         add(form);
@@ -220,19 +226,14 @@ public class DeclarationCreate extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                final List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
-
-                List<Document> linkedDocuments = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(), declaration.getHead().getCDocSub());
-
-                for (Document document : linkedDocuments){
-                    linkedDeclarations.add(createLinkedDeclaration(document, declaration));
-                }
-
-                declaration.setLinkedDeclarations(linkedDeclarations);
-
-                //todo add version
+                //todo select version by date
                 List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions();
-                declaration.getHead().setCDocVer(documentVersions.get(documentVersions.size() - 1).getCDocVer());
+                declaration.getHead().setCDocVer(documentVersions.get(0).getCDocVer());
+
+                //Person profile
+                if (declaration.getPersonProfile() != null) {
+                    declaration.setPersonProfileId(declaration.getPersonProfile().getId());
+                }
 
                 setResponsePage(new DeclarationFormPage(declaration));
             }
@@ -244,26 +245,5 @@ public class DeclarationCreate extends FormTemplatePage{
                 setResponsePage(DeclarationList.class);
             }
         }.setDefaultFormProcessing(false));
-    }
-
-    private LinkedDeclaration createLinkedDeclaration(Document document, Declaration parent){
-        Declaration declaration = new Declaration();
-
-        declaration.setDocument(document);
-
-        //todo add version
-        List<DocumentVersion> dv = document.getDocumentVersions();
-
-        if (dv != null && !dv.isEmpty()){
-            declaration.getHead().setCDocVer(dv.get(dv.size() - 1).getCDocVer());
-        }
-
-        declaration.setParent(parent);
-
-        declaration.getHead().setPeriodType(parent.getHead().getPeriodType());
-        declaration.getHead().setPeriodMonth(parent.getHead().getPeriodMonth());
-        declaration.getHead().setPeriodYear(parent.getHead().getPeriodYear());
-
-        return new LinkedDeclaration(declaration);
     }
 }

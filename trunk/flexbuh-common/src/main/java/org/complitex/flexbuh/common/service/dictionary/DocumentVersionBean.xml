@@ -49,6 +49,6 @@
     </select>
 
     <select id="selectDocumentVersionsByDocument" parameterType="map" resultMap="documentVersionResultMap">
-        select * from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
+        select * from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub} order by `c_doc_ver` desc
     </select>
 </mapper>
