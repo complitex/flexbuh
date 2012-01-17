@@ -37,13 +37,13 @@ import java.util.List;
  */
 public class DeclarationFormPage extends TemplatePage{
     @EJB
-    private DeclarationBean declarationBean;
+    private transient DeclarationBean declarationBean;
 
     @EJB
-    private DocumentBean documentBean;
+    private transient DocumentBean documentBean;
     
     @EJB
-    private PersonProfileBean personProfileBean;
+    private transient PersonProfileBean personProfileBean;
 
     private final Declaration declaration;
     

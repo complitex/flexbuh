@@ -89,12 +89,12 @@ public class AddLinkedDeclarationDialog extends Panel {
             }
         };
 
-        container.add(new Label("info", getString("info_empty")){
+        container.add(new Label("info", new LoadableDetachableModel<String>() {
             @Override
-            public boolean isVisible() {
-                return documentModel.getObject().isEmpty();
+            protected String load() {
+                return documentModel.getObject().isEmpty() ? getString("info_empty") : "";
             }
-        });
+        }));
 
         ListView documents = new ListView<Document>("list", documentModel) {
             @Override

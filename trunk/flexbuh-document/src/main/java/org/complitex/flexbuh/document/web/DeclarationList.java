@@ -33,6 +33,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.DateUtil;
@@ -70,6 +71,9 @@ public class DeclarationList extends TemplatePage{
 
     @EJB
     private DeclarationService declarationService;
+
+    @EJB
+    private PersonProfileBean personProfileBean;
 
     private Dialog uploadDialog;
 
@@ -464,14 +468,16 @@ public class DeclarationList extends TemplatePage{
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        declarationBean.save(getSessionId(true), fileUpload.getInputStream());
+                        declarationBean.save(getSessionId(true),
+                                personProfileBean.getSelectedPersonProfileId(getSessionId()),
+                                fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);
 
                     setResponsePage(DeclarationList.class);
 
-                    info("Документы успешно загружены");
+                    getSession().info("Документы успешно загружены");
                 } catch (Exception e) {
                     log.error("Ошибка загрузки файла", e);
                     error("Ошибка загрузки файла");
