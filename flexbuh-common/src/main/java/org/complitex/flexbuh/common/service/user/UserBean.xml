@@ -135,6 +135,10 @@
         order by gc.`group_name`
     </select>
 
+    <select id="isLoginExist" parameterType="string" resultType="boolean">
+        select count(*) > 0 from `user` where `login` = #{name}
+    </select>
+
     <!--User Group-->
     <insert id="insertUserRole" parameterType="map">
         insert into `usergroup` (`login`, `group_name`) values (#{login}, #{role})

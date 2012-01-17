@@ -90,11 +90,11 @@
             </tr>
         </table>
 
-        <fieldset>
-            <legend>
-                <wicket:message key="legend_address"/>
-            </legend>
+        <div wicket:id="user_address">
 
+            <h3><a href="#" wicket:id="user_address_title" /></h3>
+
+            <div>
             <table class="tbForm">
                 <tr>
                     <th><wicket:message key="phone"/></th>
@@ -133,15 +133,16 @@
                     <td><input type="text" maxlength="45" wicket:id="apartment" size="40"/></td>
                 </tr>
             </table>
-        </fieldset>
+            </div>
+        </div>
 
         <br/>
 
-        <fieldset>
-            <legend>
-                <wicket:message key="legend_organization_address"/>
-            </legend>
+        <div wicket:id="organization_address">
 
+            <h3><a href="#" wicket:id="organization_address_title" /></h3>
+
+            <div>
             <table class="tbForm">
                 <tr>
                     <th><wicket:message key="phone"/></th>
@@ -180,7 +181,8 @@
                     <td><input type="text" maxlength="45" wicket:id="organizationApartment" size="40"/></td>
                 </tr>
             </table>
-        </fieldset>
+            </div>
+        </div>
 
         <br/>
 

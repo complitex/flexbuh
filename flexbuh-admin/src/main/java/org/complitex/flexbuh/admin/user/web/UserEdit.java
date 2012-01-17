@@ -25,12 +25,16 @@ import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.odlabs.wiquery.ui.accordion.Accordion;
+import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Pavel Sknar
@@ -93,7 +97,6 @@ public class UserEdit extends FormTemplatePage {
 
         // Login
         TextField<String> loginField = new TextField<>("login", new PropertyModel<String>(user, "login"));
-        loginField.setRequired(true);
         form.add(loginField);
         if (user.getId() != null) {
             loginField.setEnabled(false);
@@ -101,24 +104,19 @@ public class UserEdit extends FormTemplatePage {
 
         // Password
         PasswordTextField password = new PasswordTextField("password", new PropertyModel<String>(user, "password"));
-        if (user.getId() != null) {
-            password.setRequired(false);
-        }
+        password.setRequired(false);
         form.add(password);
 
         // First name
         TextField<String> firstNameField = new TextField<>("firstName", new PropertyModel<String>(user, "firstName"));
-        firstNameField.setRequired(true);
         form.add(firstNameField);
 
         // Last name
         TextField<String> lastNameField = new TextField<>("lastName", new PropertyModel<String>(user, "lastName"));
-        lastNameField.setRequired(true);
         form.add(lastNameField);
 
         // E-mail
         TextField<String> emailField = new TextField<>("email", new PropertyModel<String>(user, "email"));
-        emailField.setRequired(true);
         form.add(emailField);
 
         // Middle name
@@ -134,20 +132,29 @@ public class UserEdit extends FormTemplatePage {
 		};
 		form.add(birthdayPicker);
 
+        // User home address
+        Accordion userAddress = new Accordion("user_address");
+        userAddress.setCollapsible(true);
+        userAddress.setClearStyle(true);
+        userAddress.setNavigation(true);
+        userAddress.setActive(new AccordionActive(false));
+        userAddress.add(new Label("user_address_title", getString("legend_address")));
+        form.add(userAddress);
+
         // Phone
-        form.add(new TextField<>("phone", new PropertyModel<String>(user, "phone")));
+        userAddress.add(new TextField<>("phone", new PropertyModel<String>(user, "phone")));
 
         // Zip code
-        form.add(new TextField<>("zipCode", new PropertyModel<String>(user, "zipCode")));
+        userAddress.add(new TextField<>("zipCode", new PropertyModel<String>(user, "zipCode")));
 
         // Country
-        form.add(new TextField<>("country", new PropertyModel<String>(user, "country")));
+        userAddress.add(new TextField<>("country", new PropertyModel<String>(user, "country")));
 
         // Region
-        form.add(new TextField<>("region", new PropertyModel<String>(user, "region")));
+        userAddress.add(new TextField<>("region", new PropertyModel<String>(user, "region")));
 
         // Area
-        form.add(new TextField<>("area", new PropertyModel<String>(user, "area")));
+        userAddress.add(new TextField<>("area", new PropertyModel<String>(user, "area")));
 
         //form.add(new TextField<>("city", new PropertyModel<String>(user, "city")));
 
@@ -175,7 +182,7 @@ public class UserEdit extends FormTemplatePage {
                 return choices.iterator();
             }
         };
-        form.add(cityField);
+        userAddress.add(cityField);
 
         // Street
         final IModel<String> streetModel = new Model<String>();
@@ -201,19 +208,16 @@ public class UserEdit extends FormTemplatePage {
                 return choices.iterator();
             }
         };
-        form.add(streetField);
+        userAddress.add(streetField);
 
         // Building
-        form.add(new TextField<>("building", new PropertyModel<String>(user, "building")));
+        userAddress.add(new TextField<>("building", new PropertyModel<String>(user, "building")));
 
         // Apartment
-        form.add(new TextField<>("apartment", new PropertyModel<String>(user, "apartment")));
+        userAddress.add(new TextField<>("apartment", new PropertyModel<String>(user, "apartment")));
 
         // Organization name
         form.add(new TextField<>("organizationName", new PropertyModel<String>(user, "organizationName")));
-
-        // Organization phone
-        form.add(new TextField<>("organizationPhone", new PropertyModel<String>(user, "organizationPhone")));
 
         // Organization department
         form.add(new TextField<>("organizationDepartment", new PropertyModel<String>(user, "organizationDepartment")));
@@ -221,17 +225,29 @@ public class UserEdit extends FormTemplatePage {
         // Organization post
         form.add(new TextField<>("organizationPost", new PropertyModel<String>(user, "organizationPost")));
 
+        // Organization address
+        Accordion organizationAddress = new Accordion("organization_address");
+        organizationAddress.setCollapsible(true);
+        organizationAddress.setClearStyle(true);
+        organizationAddress.setNavigation(true);
+        organizationAddress.setActive(new AccordionActive(false));
+        organizationAddress.add(new Label("organization_address_title", getString("legend_organization_address")));
+        form.add(organizationAddress);
+
+        // Organization phone
+        organizationAddress.add(new TextField<>("organizationPhone", new PropertyModel<String>(user, "organizationPhone")));
+
         // Organization zip code
-        form.add(new TextField<>("organizationZipCode", new PropertyModel<String>(user, "organizationZipCode")));
+        organizationAddress.add(new TextField<>("organizationZipCode", new PropertyModel<String>(user, "organizationZipCode")));
 
         // Organization country
-        form.add(new TextField<>("organizationCountry", new PropertyModel<String>(user, "organizationCountry")));
+        organizationAddress.add(new TextField<>("organizationCountry", new PropertyModel<String>(user, "organizationCountry")));
 
         // Organization region
-        form.add(new TextField<>("organizationRegion", new PropertyModel<String>(user, "organizationRegion")));
+        organizationAddress.add(new TextField<>("organizationRegion", new PropertyModel<String>(user, "organizationRegion")));
 
         // Organization area
-        form.add(new TextField<>("organizationArea", new PropertyModel<String>(user, "organizationArea")));
+        organizationAddress.add(new TextField<>("organizationArea", new PropertyModel<String>(user, "organizationArea")));
 
         // Organization city
         final IModel<String> organizationCityModel = new Model<String>();
@@ -257,7 +273,7 @@ public class UserEdit extends FormTemplatePage {
                 return choices.iterator();
             }
         };
-        form.add(organizationCityField);
+        organizationAddress.add(organizationCityField);
 
         // Organization street
         final IModel<String> organizationStreetModel = new Model<String>();
@@ -283,13 +299,13 @@ public class UserEdit extends FormTemplatePage {
                 return choices.iterator();
             }
         };
-        form.add(organizationStreetField);
+        organizationAddress.add(organizationStreetField);
 
         // Organization building
-        form.add(new TextField<>("organizationBuilding", new PropertyModel<String>(user, "organizationBuilding")));
+        organizationAddress.add(new TextField<>("organizationBuilding", new PropertyModel<String>(user, "organizationBuilding")));
 
         // Organization apartment
-        form.add(new TextField<>("organizationApartment", new PropertyModel<String>(user, "organizationApartment")));
+        organizationAddress.add(new TextField<>("organizationApartment", new PropertyModel<String>(user, "organizationApartment")));
 
         final IModel<ArrayList<String>> selectedEnabledRoles = new Model<ArrayList<String>>();
         final ListMultipleChoice<String> enabledRolesChoice = new ListMultipleChoice<String>("enabled_roles", selectedEnabledRoles, new PropertyModel<List<String>>(user, "roles")) {
@@ -302,7 +318,7 @@ public class UserEdit extends FormTemplatePage {
         enabledRolesChoice.setOutputMarkupId(true);
         form.add(enabledRolesChoice);
 
-
+        // User roles
         final ArrayList<String> selectedNewRoles = new ArrayList<String>();
         final List<String> selectRoles = getSelectRoles();
         final ListMultipleChoice<String> selectRolesChoice = new ListMultipleChoice<String>("select_roles", new Model<ArrayList<String>>(selectedNewRoles), selectRoles) {
@@ -315,6 +331,7 @@ public class UserEdit extends FormTemplatePage {
         selectRolesChoice.setOutputMarkupId(true);
         form.add(selectRolesChoice);
 
+        // Button add role
         AjaxButton add = new AjaxButton("add") {
 
             @Override
@@ -324,21 +341,12 @@ public class UserEdit extends FormTemplatePage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                log.error("error add");
                 update(target);
             }
 
             private void update(AjaxRequestTarget target) {
-                log.debug("current selectRoles: {}", selectRoles);
-                log.debug("current enabledRoles: {}", user.getRoles());
-                log.debug("selectedNewRoles: {}", selectedNewRoles);
-                log.debug("selectRolesChoice.getModelObject(): {}", selectRolesChoice.getModelObject());
-
                 selectRoles.removeAll(selectedNewRoles);
                 user.getRoles().addAll(selectedNewRoles);
-
-                log.debug("add selectRoles: {}", selectRoles);
-                log.debug("add enabledRoles: {}", user.getRoles());
 
                 target.add(enabledRolesChoice);
                 target.add(selectRolesChoice);
@@ -346,6 +354,7 @@ public class UserEdit extends FormTemplatePage {
         };
         form.add(add);
 
+        // Button remove role
         AjaxButton remove = new AjaxButton("remove") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
@@ -354,19 +363,13 @@ public class UserEdit extends FormTemplatePage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                log.error("error remove");
+                log.debug("error remove");
                 update(target);
             }
 
             private void update(AjaxRequestTarget target) {
-                log.error("current selectRoles: {}", selectRoles);
-                log.error("current enabledRoles: {}", user.getRoles());
-
                 selectRoles.addAll(selectedEnabledRoles.getObject());
                 user.getRoles().removeAll(selectedEnabledRoles.getObject());
-
-                log.error("remove selectRoles: {}", selectRoles);
-                log.error("remove enabledRoles: {}", user.getRoles());
 
                 target.add(enabledRolesChoice);
                 target.add(selectRolesChoice);
@@ -375,9 +378,32 @@ public class UserEdit extends FormTemplatePage {
         form.add(remove);
 
         // Button update/create user
-        Button updateOrCreate = new Button("submit") {
+        AtomicReference<Button> updateOrCreate = new AtomicReference<Button>(new Button("submit") {
             @Override
             public void onSubmit() {
+
+                boolean emptyRequiredField = !checkRequiredField(user.getLogin(), "login");
+                if (user.getId() == null && !checkRequiredField(user.getPassword(), "password")) {
+                    emptyRequiredField = true;
+                }
+                if (!checkRequiredField(user.getFirstName(), "firstName")) {
+                    emptyRequiredField = true;
+                }
+                if(!checkRequiredField(user.getLastName(), "lastName")) {
+                    emptyRequiredField = true;
+                }
+                if(!checkRequiredField(user.getEmail(), "email")) {
+                    emptyRequiredField = true;
+                }
+
+                if (emptyRequiredField) {
+                    return;
+                }
+
+                if (user.getId() == null && userBean.isLoginExist(user.getLogin())) {
+                    error(getString("error_login_exist"));
+                    return;
+                }
 
                 // Street
                 String street = streetModel.getObject();
@@ -434,6 +460,14 @@ public class UserEdit extends FormTemplatePage {
                 setResponsePage(UserList.class);
             }
 
+            private boolean checkRequiredField(String value, String fieldName) {
+                if (value == null) {
+                    error(MessageFormat.format(getString("required_field"), getString(fieldName)));
+                    return false;
+                }
+                return true;
+            }
+
             private boolean updateStreetType(String[] resultSplit) {
 
                 if (resultSplit.length == 2) {
@@ -459,8 +493,8 @@ public class UserEdit extends FormTemplatePage {
             public boolean isVisible() {
                 return true;
             }
-        };
-        form.add(updateOrCreate);
+        });
+        form.add(updateOrCreate.get());
 
         form.add(new Link("cancel") {
 
