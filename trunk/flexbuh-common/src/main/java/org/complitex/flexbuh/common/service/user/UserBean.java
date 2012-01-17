@@ -138,6 +138,10 @@ public class UserBean extends AbstractBean {
         return (Integer) sqlSession().selectOne(NS + ".selectUsersCount", filter);
     }
 
+    public boolean isLoginExist(String login) {
+        return (Boolean)sqlSession().selectOne(NS + ".isLoginExist", login);
+    }
+
     private void appendRoleGroup(UserFilter filter) {
         String role = filter.getRole();
         for (Map.Entry<String, List<String>> group : GROUPS.entrySet()) {
