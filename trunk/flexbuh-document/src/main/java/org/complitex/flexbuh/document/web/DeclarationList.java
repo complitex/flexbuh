@@ -3,7 +3,6 @@ package org.complitex.flexbuh.document.web;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -14,8 +13,6 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -26,19 +23,18 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
-import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
+import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationFilter;
@@ -48,8 +44,8 @@ import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.document.web.component.DeclarationLinkDialog;
+import org.complitex.flexbuh.document.web.component.DeclarationUploadDialog;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +72,9 @@ public class DeclarationList extends TemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
-    private Dialog uploadDialog;
-
     private DeclarationLinkDialog declarationLinkDialog;
+    
+    private DeclarationUploadDialog declarationUploadDialog;
 
     private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
@@ -117,6 +113,7 @@ public class DeclarationList extends TemplatePage{
 
         //Таблица
         final WebMarkupContainer filterContainer = new WebMarkupContainer("filter_container");
+        filterContainer.setOutputMarkupId(true);
 
         //Форма
         Form filterForm = new Form("filter_form");
@@ -449,86 +446,20 @@ public class DeclarationList extends TemplatePage{
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, DeclarationList.class.getName(), filterForm));
 
+        IAjaxUpdate update =  new IAjaxUpdate() {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                target.add(feedbackPanel);
+                target.add(filterContainer);
+            }
+        };
+
         //Загрузка файлов
-        uploadDialog = new Dialog("upload_dialog");
-        uploadDialog.setTitle(getString("upload_title"));
-        uploadDialog.setWidth(500);
-        uploadDialog.setHeight(100);
-
-        add(uploadDialog);
-
-        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
-
-        Form fileUploadForm = new Form("upload_form");
-
-        fileUploadForm.add(new AjaxButton("upload") {
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<FileUpload> fileUploads = fileUploadModel.getObject();
-
-                try {
-                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
-                    
-                    for (FileUpload fileUpload : fileUploads){
-                        String fileName = fileUpload.getClientFileName();
-                        
-                        if (fileName.length() > 15) {
-                            PersonProfile personProfile = null;
-
-                            String tin;
-
-                            try {
-                                tin = Long.valueOf(fileName.substring(4, 14)).toString();
-                            } catch (NumberFormatException e) {
-                                getSession().error(getStringFormat("error_filename", fileName));
-
-                                break;
-                            }
-
-                            for (PersonProfile pp : personProfiles){
-                                if (tin.equals(pp.getTin())){
-                                    personProfile = pp;
-                                    break;
-                                }                                   
-                            }
-
-                            Declaration declaration = declarationBean.save(getSessionId(true),
-                                    personProfile != null ? personProfile.getId() : null,
-                                    fileUpload.getInputStream());
-                            
-                            getSession().info(getStringFormat("info_declaration_upload",
-                                    fileName,
-                                    getString("period_type_" + declaration.getHead().getPeriodType()),
-                                    declaration.getHead().getPeriodMonth(),
-                                    declaration.getHead().getPeriodYear(),
-                                    personProfile != null ? personProfile.getProfileName() : getString("empty_profile")));
-                        }
-                    }
-
-                    uploadDialog.close(target);
-
-                    setResponsePage(DeclarationList.class);
-                    
-                    target.add(feedbackPanel);
-                } catch (Exception e) {
-                    log.error("Ошибка загрузки файла", e);
-                    error("Ошибка загрузки файла");
-                }
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //wtf
-            }
-        });
-
-        uploadDialog.add(fileUploadForm);
-
-        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
+        declarationUploadDialog = new DeclarationUploadDialog("upload_dialog", update);
+        add(declarationUploadDialog);
         
         //Link Dialog
-        declarationLinkDialog = new DeclarationLinkDialog("link_dialog", feedbackPanel, filterForm);
+        declarationLinkDialog = new DeclarationLinkDialog("link_dialog", update);
         add(declarationLinkDialog);
     }
 
@@ -539,7 +470,7 @@ public class DeclarationList extends TemplatePage{
         list.add(new UploadButton(id, true){
             @Override
             protected void onClick(AjaxRequestTarget target) {
-                uploadDialog.open(target);
+                declarationUploadDialog.open(target);
             }
         });
 

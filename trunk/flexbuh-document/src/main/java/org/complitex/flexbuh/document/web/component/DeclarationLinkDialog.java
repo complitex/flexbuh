@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.document.web.component;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -14,6 +13,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -35,7 +35,7 @@ public class DeclarationLinkDialog extends Panel {
     private WebMarkupContainer container;
     private IModel<Declaration> model;
 
-    public DeclarationLinkDialog(String id, final Component... updateOnSummit) {
+    public DeclarationLinkDialog(String id, final IAjaxUpdate update) {
         super(id);
 
         dialog = new Dialog("dialog");
@@ -90,10 +90,8 @@ public class DeclarationLinkDialog extends Panel {
 
                     getSession().info(getString("info_linked") + " " + declaration.getFullName());
 
-                    if (updateOnSummit != null) {
-                        for (Component component : updateOnSummit){
-                            target.add(component);
-                        }
+                    if (update != null) {
+                        update.onUpdate(target);
                     }
                 }
             }
