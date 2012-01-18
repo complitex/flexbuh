@@ -7,11 +7,10 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.complitex.flexbuh.common.entity.Feedback;
 import org.complitex.flexbuh.common.service.FeedbackBean;
-import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.TemplatePanel;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
@@ -20,7 +19,7 @@ import javax.ejb.EJB;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.11.11 16:27
  */
-public class FeedbackCreate extends Panel {
+public class FeedbackCreate extends TemplatePanel {
     @EJB
     private FeedbackBean feedbackBean;
 
@@ -55,7 +54,7 @@ public class FeedbackCreate extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> f) {
                 Feedback feedback = form.getModelObject();
-                feedback.setSessionId(((TemplatePage)getPage()).getSessionId(true));
+                feedback.setSessionId(getSessionId(true));
 
                 feedbackBean.save(feedback);
 

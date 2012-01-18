@@ -272,15 +272,15 @@ public abstract class TemplatePage extends WebPage {
         return getTemplateWebApplication().hasAnyRole(SecurityRole.AUTHORIZED);
     }
 
-    public CookieWebSession getCookieWebSession(){
+    protected CookieWebSession getCookieWebSession(){
         return (CookieWebSession) getSession();
     }
 
-    public Long getSessionId(boolean create){
+    protected Long getSessionId(boolean create){
         return getCookieWebSession().getSessionId(create);
     }
 
-    public Long getSessionId(){
+    protected Long getSessionId(){
         return getCookieWebSession().getSessionId(false);
     }
 }
