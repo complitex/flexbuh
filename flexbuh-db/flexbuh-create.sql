@@ -697,5 +697,47 @@ CREATE TABLE `city_type` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------
+-- First name
+-- --------------------------
+
+DROP TABLE IF EXISTS `first_name`;
+
+CREATE TABLE `first_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_uk` VARCHAR(255),
+  `name_ru` VARCHAR(255),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Middle name
+-- --------------------------
+
+DROP TABLE IF EXISTS `middle_name`;
+
+CREATE TABLE `middle_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_uk` VARCHAR(255),
+  `name_ru` VARCHAR(255),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Last name
+-- --------------------------
+
+DROP TABLE IF EXISTS `last_name`;
+
+CREATE TABLE `last_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_uk` VARCHAR(255),
+  `name_ru` VARCHAR(255),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
