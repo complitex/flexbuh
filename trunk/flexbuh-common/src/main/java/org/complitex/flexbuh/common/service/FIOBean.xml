@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.FIOBean">
+    <resultMap id="firstNameResultMap" type="org.complitex.flexbuh.common.entity.FirstName"
+            extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
+    </resultMap>
+
+    <resultMap id="middleNameResultMap" type="org.complitex.flexbuh.common.entity.MiddleName"
+            extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
+    </resultMap>
+
+    <resultMap id="lastNameResultMap" type="org.complitex.flexbuh.common.entity.LastName"
+            extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
+    </resultMap>
+
+    <!-- First name -->
+    <insert id="insertFirstName" parameterType="org.complitex.flexbuh.common.entity.FirstName" keyProperty="id" useGeneratedKeys="true">
+        insert into `first_name` (`name_ru`, `name_uk`)
+        	values (#{nameRu}, #{nameUk})
+    </insert>
+
+    <sql id="selectFirstNamesWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like concat(#{startName}, '%')</when>
+                <otherwise>`name_uk` like concat(#{startName}, '%')</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="selectFirstNames" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultMap="firstNameResultMap">
+        select * from `first_name` <include refid="selectFirstNamesWhere"/>
+        order by
+        <choose><when test="locale.getLanguage().equals('ru')">`name_ru`</when><otherwise>`name_uk`</otherwise></choose>
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+    <sql id="selectFirstNameWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like #{startName}</when>
+                <otherwise>`name_uk` like #{startName}</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="isFirstNameExist" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultType="boolean">
+        select count(*) > 0 from `first_name` <include refid="selectFirstNameWhere"/>
+    </select>
+
+    <!-- Middle name -->
+    <insert id="insertMiddleName" parameterType="org.complitex.flexbuh.common.entity.MiddleName" keyProperty="id" useGeneratedKeys="true">
+        insert into `middle_name` (`name_ru`, `name_uk`)
+        	values (#{nameRu}, #{nameUk})
+    </insert>
+
+    <sql id="selectMiddleNamesWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like concat(#{startName}, '%')</when>
+                <otherwise>`name_uk` like concat(#{startName}, '%')</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="selectMiddleNames" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultMap="middleNameResultMap">
+        select * from `middle_name` <include refid="selectMiddleNamesWhere"/>
+        order by
+        <choose><when test="locale.getLanguage().equals('ru')">`name_ru`</when><otherwise>`name_uk`</otherwise></choose>
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+    <sql id="selectMiddleNameWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like #{startName}</when>
+                <otherwise>`name_uk` like #{startName}</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="isMiddleNameExist" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultType="boolean">
+        select count(*) > 0 from `middle_name` <include refid="selectMiddleNameWhere"/>
+    </select>
+
+    <!-- Last name -->
+    <insert id="insertLastName" parameterType="org.complitex.flexbuh.common.entity.LastName" keyProperty="id" useGeneratedKeys="true">
+        insert into `last_name` (`name_ru`, `name_uk`)
+        	values (#{nameRu}, #{nameUk})
+    </insert>
+
+    <sql id="selectLastNamesWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like concat(#{startName}, '%')</when>
+                <otherwise>`name_uk` like concat(#{startName}, '%')</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="selectLastNames" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultMap="lastNameResultMap">
+        select * from `last_name` <include refid="selectLastNamesWhere"/>
+        order by
+        <choose><when test="locale.getLanguage().equals('ru')">`name_ru`</when><otherwise>`name_uk`</otherwise></choose>
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+    <sql id="selectLastNameWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like #{startName}</when>
+                <otherwise>`name_uk` like #{startName}</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="isLastNameExist" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultType="boolean">
+        select count(*) > 0 from `last_name` <include refid="selectLastNameWhere"/>
+    </select>
+
+</mapper>

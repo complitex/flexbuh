@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.admin.user.web;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,11 +18,11 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.flexbuh.common.entity.CityType;
-import org.complitex.flexbuh.common.entity.StreetType;
+import org.complitex.flexbuh.common.entity.*;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
+import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -46,6 +47,8 @@ public class UserEdit extends FormTemplatePage {
     private final static Logger log = LoggerFactory.getLogger(UserEdit.class);
 
     private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
+    
+    private final static int LIST_INIT_SIZE = 10;
 
     @EJB
     private UserBean userBean;
@@ -55,6 +58,9 @@ public class UserEdit extends FormTemplatePage {
 
     @EJB
     private CityTypeBean cityTypeBean;
+    
+    @EJB
+    private FIOBean fioBean;
 
     private User user;
 
@@ -108,11 +114,43 @@ public class UserEdit extends FormTemplatePage {
         form.add(password);
 
         // First name
-        TextField<String> firstNameField = new TextField<>("firstName", new PropertyModel<String>(user, "firstName"));
+        AutoCompleteTextField<String> firstNameField = new AutoCompleteTextField<String>("firstName", new PropertyModel<String>(user, "firstName")) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                if (Strings.isEmpty(input)) {
+                    List<String> emptyList = Collections.emptyList();
+                    return emptyList.iterator();
+                }
+
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
+
+                for (FirstName firstName : fioBean.getFirstNames(input, getLocale())) {
+                    choices.add(firstName.getName(getLocale()));
+                }
+
+                return choices.iterator();
+            }
+        };
         form.add(firstNameField);
 
         // Last name
-        TextField<String> lastNameField = new TextField<>("lastName", new PropertyModel<String>(user, "lastName"));
+        final AutoCompleteTextField<String> lastNameField = new AutoCompleteTextField<String>("lastName", new PropertyModel<String>(user, "lastName")) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                if (Strings.isEmpty(input)) {
+                    List<String> emptyList = Collections.emptyList();
+                    return emptyList.iterator();
+                }
+
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
+
+                for (LastName lastName : fioBean.getLastNames(input, getLocale())) {
+                    choices.add(lastName.getName(getLocale()));
+                }
+
+                return choices.iterator();
+            }
+        };
         form.add(lastNameField);
 
         // E-mail
@@ -120,7 +158,24 @@ public class UserEdit extends FormTemplatePage {
         form.add(emailField);
 
         // Middle name
-        form.add(new TextField<>("middleName", new PropertyModel<String>(user, "middleName")));
+        final AutoCompleteTextField<String> middleNameField = new AutoCompleteTextField<String>("middleName", new PropertyModel<String>(user, "middleName")) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                if (Strings.isEmpty(input)) {
+                    List<String> emptyList = Collections.emptyList();
+                    return emptyList.iterator();
+                }
+
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
+
+                for (MiddleName middleName : fioBean.getMiddleNames(input, getLocale())) {
+                    choices.add(middleName.getName(getLocale()));
+                }
+
+                return choices.iterator();
+            }
+        };
+        form.add(middleNameField);
 
         // Birthday
 		final DatePicker<Date> birthdayPicker = new DatePicker<Date>("birthday", new PropertyModel<Date>(user, "birthday"), Date.class) {
@@ -173,7 +228,7 @@ public class UserEdit extends FormTemplatePage {
                     return emptyList.iterator();
                 }
 
-                List<String> choices = new ArrayList<String>(10);
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
 
                 for (CityType cityType : cityTypeBean.getCityTypes(input, getLocale())) {
                     choices.add(cityType.getName(getLocale()));
@@ -199,7 +254,7 @@ public class UserEdit extends FormTemplatePage {
                     return emptyList.iterator();
                 }
 
-                List<String> choices = new ArrayList<String>(10);
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
 
                 for (StreetType streetType : streetTypeBean.getStreetTypes(input, getLocale())) {
                     choices.add(streetType.getName(getLocale()));
@@ -264,7 +319,7 @@ public class UserEdit extends FormTemplatePage {
                     return emptyList.iterator();
                 }
 
-                List<String> choices = new ArrayList<String>(10);
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
 
                 for (CityType cityType : cityTypeBean.getCityTypes(input, getLocale())) {
                     choices.add(cityType.getName(getLocale()));
@@ -290,7 +345,7 @@ public class UserEdit extends FormTemplatePage {
                     return emptyList.iterator();
                 }
 
-                List<String> choices = new ArrayList<String>(10);
+                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
 
                 for (StreetType streetType : streetTypeBean.getStreetTypes(input, getLocale())) {
                     choices.add(streetType.getName(getLocale()));
@@ -452,6 +507,8 @@ public class UserEdit extends FormTemplatePage {
                         user.setOrganizationCity(organizationCity);
                     }
                 }
+
+                fioBean.createFIO(user.getFirstName(), user.getMiddleName(), user.getLastName(), getLocale());
 
                 userBean.save(user);
 
