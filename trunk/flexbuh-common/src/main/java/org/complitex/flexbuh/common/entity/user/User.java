@@ -33,20 +33,6 @@ public class User extends DomainObject {
     private String streetType;
     private String building;
     private String apartment;
-    private String organizationName;
-    private String organizationPhone;
-    private String organizationDepartment;
-    private String organizationPost;
-    private String organizationZipCode;
-    private String organizationCountry;
-    private String organizationRegion;
-    private String organizationArea;
-    private String organizationCity;
-    private String organizationCityType;
-    private String organizationStreet;
-    private String organizationStreetType;
-    private String organizationBuilding;
-    private String organizationApartment;
 
     private List<String> roles = Lists.newArrayList();
 
@@ -200,118 +186,6 @@ public class User extends DomainObject {
 
     public void setApartment(String apartment) {
         this.apartment = apartment;
-    }
-
-    public String getOrganizationName() {
-        return organizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
-    }
-
-    public String getOrganizationPhone() {
-        return organizationPhone;
-    }
-
-    public void setOrganizationPhone(String organizationPhone) {
-        this.organizationPhone = organizationPhone;
-    }
-
-    public String getOrganizationDepartment() {
-        return organizationDepartment;
-    }
-
-    public void setOrganizationDepartment(String organizationDepartment) {
-        this.organizationDepartment = organizationDepartment;
-    }
-
-    public String getOrganizationPost() {
-        return organizationPost;
-    }
-
-    public void setOrganizationPost(String organizationPost) {
-        this.organizationPost = organizationPost;
-    }
-
-    public String getOrganizationZipCode() {
-        return organizationZipCode;
-    }
-
-    public void setOrganizationZipCode(String organizationZipCode) {
-        this.organizationZipCode = organizationZipCode;
-    }
-
-    public String getOrganizationCountry() {
-        return organizationCountry;
-    }
-
-    public void setOrganizationCountry(String organizationCountry) {
-        this.organizationCountry = organizationCountry;
-    }
-
-    public String getOrganizationRegion() {
-        return organizationRegion;
-    }
-
-    public void setOrganizationRegion(String organizationRegion) {
-        this.organizationRegion = organizationRegion;
-    }
-
-    public String getOrganizationArea() {
-        return organizationArea;
-    }
-
-    public void setOrganizationArea(String organizationArea) {
-        this.organizationArea = organizationArea;
-    }
-
-    public String getOrganizationCity() {
-        return organizationCity;
-    }
-
-    public void setOrganizationCity(String organizationCity) {
-        this.organizationCity = organizationCity;
-    }
-
-    public String getOrganizationCityType() {
-        return organizationCityType;
-    }
-
-    public void setOrganizationCityType(String organizationCityType) {
-        this.organizationCityType = organizationCityType;
-    }
-
-    public String getOrganizationStreet() {
-        return organizationStreet;
-    }
-
-    public void setOrganizationStreet(String organizationStreet) {
-        this.organizationStreet = organizationStreet;
-    }
-
-    public String getOrganizationStreetType() {
-        return organizationStreetType;
-    }
-
-    public void setOrganizationStreetType(String organizationStreetType) {
-        this.organizationStreetType = organizationStreetType;
-    }
-
-    public String getOrganizationBuilding() {
-        return organizationBuilding;
-    }
-
-    public void setOrganizationBuilding(String organizationBuilding) {
-        this.organizationBuilding = organizationBuilding;
-    }
-
-    public String getOrganizationApartment() {
-        return organizationApartment;
-    }
-
-    public void setOrganizationApartment(String organizationApartment) {
-        this.organizationApartment = organizationApartment;
     }
 
     public List<String> getRoles() {

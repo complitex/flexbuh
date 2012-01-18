@@ -23,20 +23,6 @@
         <result column="street_type" property="streetType" />
         <result column="building" property="building" />
         <result column="apartment" property="apartment" />
-        <result column="organization_name" property="organizationName"/>
-        <result column="organization_phone" property="organizationPhone"/>
-        <result column="organization_department" property="organizationDepartment"/>
-        <result column="organization_post" property="organizationPost"/>
-        <result column="organization_zip_code" property="organizationZipCode"/>
-        <result column="organization_country" property="organizationCountry"/>
-        <result column="organization_region" property="organizationRegion" />
-        <result column="organization_area" property="organizationArea" />
-        <result column="organization_city" property="organizationCity" />
-        <result column="organization_city_type" property="organizationCityType" />
-        <result column="organization_street" property="organizationStreet" />
-        <result column="organization_street_type" property="organizationStreetType" />
-        <result column="organization_building" property="organizationBuilding" />
-        <result column="organization_apartment" property="organizationApartment" />
 
         <collection property="roles" ofType="string">
             <result column="group_name"/>
@@ -66,15 +52,9 @@
 
     <insert id="insertUser" parameterType="org.complitex.flexbuh.common.entity.user.User" keyProperty="id" useGeneratedKeys="true">
         insert into `user` (`login`, `password`, `session_id`, `first_name`, `middle_name`, `last_name`, `birthday`,
-        `email`, `phone`, `zip_code`, `country`, `region`, `area`, `city`, `city_type`, `street`, `street_type`, `building`, `apartment`,
-         `organization_name`, `organization_phone`, `organization_zip_code`,
-         `organization_country`, `organization_region`, `organization_area`, `organization_city`, `organization_city_type`,
-         `organization_street`, `organization_street_type`, `organization_building`, `organization_apartment`)
+        `email`, `phone`, `zip_code`, `country`, `region`, `area`, `city`, `city_type`, `street`, `street_type`, `building`, `apartment`)
         values (#{login}, #{password}, #{sessionId}, #{firstName}, #{middleName}, #{lastName}, #{birthday},
-        #{email}, #{phone}, #{zipCode}, #{country}, #{region}, #{area}, #{city}, #{cityType}, #{street}, #{streetType}, #{building}, #{apartment},
-        #{organizationName}, #{organizationPhone}, #{organizationZipCode},
-        #{organizationCountry}, #{organizationRegion}, #{organizationArea}, #{organizationCity}, #{organizationCityType},
-        #{organizationStreet}, #{organizationStreetType}, #{organizationBuilding}, #{organizationApartment})
+        #{email}, #{phone}, #{zipCode}, #{country}, #{region}, #{area}, #{city}, #{cityType}, #{street}, #{streetType}, #{building}, #{apartment})
     </insert>
 
     <update id="updateUser" parameterType="org.complitex.flexbuh.common.entity.user.User">
@@ -85,13 +65,7 @@
             `first_name` = #{firstName}, `middle_name` = #{middleName}, `last_name` = #{lastName}, `birthday` = #{birthday},
             `email` = #{email}, `phone` = #{phone}, `zip_code` = #{zipCode}, `country` = #{country}, `region` = #{region},
             `city` = #{city}, `city_type` = #{cityType}, `street` = #{street}, `street_type` = #{streetType},
-            `building` = #{building}, `apartment` = #{apartment},
-            `organization_name` = #{organizationName}, `organization_phone` = #{organizationPhone},
-            `organization_zip_code` = #{organizationZipCode}, `organization_country` = #{organizationCountry},
-            `organization_region` = #{organizationRegion}, `organization_area` = #{organizationArea},
-            `organization_city` = #{organizationCity}, `organization_city_type` = #{organizationCityType},
-            `organization_street` = #{organizationStreet}, `organization_street_type` = #{organizationStreetType},
-            `organization_building` = #{organizationBuilding}, `organization_apartment` = #{organizationApartment}
+            `building` = #{building}, `apartment` = #{apartment}
         </set>
         where id = #{id}
     </update>
