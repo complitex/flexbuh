@@ -33,6 +33,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
@@ -467,17 +468,49 @@ public class DeclarationList extends TemplatePage{
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
                 try {
+                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
+                    
                     for (FileUpload fileUpload : fileUploads){
-                        declarationBean.save(getSessionId(true),
-                                personProfileBean.getSelectedPersonProfileId(getSessionId()),
-                                fileUpload.getInputStream());
+                        String fileName = fileUpload.getClientFileName();
+                        
+                        if (fileName.length() > 15) {
+                            PersonProfile personProfile = null;
+
+                            String tin;
+
+                            try {
+                                tin = Long.valueOf(fileName.substring(4, 14)).toString();
+                            } catch (NumberFormatException e) {
+                                getSession().error(getStringFormat("error_filename", fileName));
+
+                                break;
+                            }
+
+                            for (PersonProfile pp : personProfiles){
+                                if (tin.equals(pp.getTin())){
+                                    personProfile = pp;
+                                    break;
+                                }                                   
+                            }
+
+                            Declaration declaration = declarationBean.save(getSessionId(true),
+                                    personProfile != null ? personProfile.getId() : null,
+                                    fileUpload.getInputStream());
+                            
+                            getSession().info(getStringFormat("info_declaration_upload",
+                                    fileName,
+                                    getString("period_type_" + declaration.getHead().getPeriodType()),
+                                    declaration.getHead().getPeriodMonth(),
+                                    declaration.getHead().getPeriodYear(),
+                                    personProfile != null ? personProfile.getProfileName() : getString("empty_profile")));
+                        }
                     }
 
                     uploadDialog.close(target);
 
                     setResponsePage(DeclarationList.class);
-
-                    getSession().info("Документы успешно загружены");
+                    
+                    target.add(feedbackPanel);
                 } catch (Exception e) {
                     log.error("Ошибка загрузки файла", e);
                     error("Ошибка загрузки файла");
