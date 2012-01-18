@@ -96,13 +96,15 @@ public class DeclarationBean extends AbstractBean{
         sqlSession().delete(NS + ".deleteDeclarationValue", id);
     }
     
-    public void save(Long sessionId, Long personProfileId, InputStream inputStream) throws DeclarationSaveException {
+    public Declaration save(Long sessionId, Long personProfileId, InputStream inputStream) throws DeclarationSaveException {
         try {
             //todo add linked
             Declaration declaration = DeclarationUtil.getDeclaration(inputStream);
             declaration.setPersonProfileId(personProfileId);
             
             save(sessionId, declaration);
+
+            return declaration;
         } catch (Exception e) {
             throw new DeclarationSaveException(e);
         }
