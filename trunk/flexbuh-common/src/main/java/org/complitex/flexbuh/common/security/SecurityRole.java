@@ -8,4 +8,5 @@ public class SecurityRole {
     public final static String AUTHORIZED = "AUTHORIZED";
     public final static String ADMIN_MODULE_EDIT = "ADMIN_MODULE_EDIT";
 	public final static String LOG_VIEW = "LOG_VIEW";
+    public final static String PERSONAL_MANAGER = "PERSONAL_MANAGER";
 }

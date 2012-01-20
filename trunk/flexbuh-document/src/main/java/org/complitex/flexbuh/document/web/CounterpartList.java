@@ -190,6 +190,8 @@ public class CounterpartList extends TemplatePage{
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
+        final Long sessionId = getSessionId();
+
         list.add(new UploadButton(id, true){
             @Override
             protected void onClick(AjaxRequestTarget target) {
@@ -199,7 +201,7 @@ public class CounterpartList extends TemplatePage{
             @Override
             public boolean isVisible() {
                 //todo cache selected profile id
-                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
             }
         });
 
@@ -211,7 +213,7 @@ public class CounterpartList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
             }
         });
 
@@ -227,7 +229,7 @@ public class CounterpartList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
             }
         });
 

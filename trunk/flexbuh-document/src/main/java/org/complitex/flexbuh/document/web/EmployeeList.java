@@ -192,6 +192,8 @@ public class EmployeeList extends TemplatePage{
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
+        final Long sessionId = getSessionId();
+
         list.add(new UploadButton(id, true){
             @Override
             protected void onClick(AjaxRequestTarget target) {
@@ -200,7 +202,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
             }
         });
 
@@ -212,7 +214,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
             }
         });
 
@@ -228,7 +230,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(getSessionId()) != null;
+                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
             }
         });
 
