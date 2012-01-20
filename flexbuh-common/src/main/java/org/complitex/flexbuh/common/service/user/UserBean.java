@@ -29,12 +29,13 @@ public class UserBean extends AbstractBean {
     private static final List<String> ALL_ROLES = Lists.newArrayList(
             AUTHORIZED,
             ADMIN_MODULE_EDIT,
-            LOG_VIEW);
+            LOG_VIEW,
+            PERSONAL_MANAGER);
 
     private static final Map<String, List<String>> GROUPS = Maps.newHashMap();
 
     static {
-        GROUPS.put("ADMINISTRATORS", Lists.<String>newArrayList(AUTHORIZED, ADMIN_MODULE_EDIT, LOG_VIEW));
+        GROUPS.put("ADMINISTRATORS", Lists.<String>newArrayList(AUTHORIZED, ADMIN_MODULE_EDIT, LOG_VIEW, PERSONAL_MANAGER));
         GROUPS.put("EMPLOYEES", Lists.<String>newArrayList(AUTHORIZED));
 
         ALL_ROLES.addAll(GROUPS.keySet());
@@ -51,7 +52,7 @@ public class UserBean extends AbstractBean {
 
     @Transactional
     public void create(User user) {
-        user.setPassword(DigestUtils.md5Hex(user.getLogin())); //md5 password
+        user.setPassword(DigestUtils.md5Hex(user.getPassword())); //md5 password
 
         sqlSession().insert(NS + ".insertUser", user);
 
@@ -67,6 +68,9 @@ public class UserBean extends AbstractBean {
     @Transactional
     public void update(User user) {
         User dbUser = (User) sqlSession().selectOne(NS + ".selectUserById", user.getId());
+        if (user.getPassword() != null) {
+            user.setPassword(DigestUtils.md5Hex(user.getPassword()));
+        }
 
         log.debug("Db roles: {}", dbUser.getRoles());
         log.debug("New roles: {}", user.getRoles());
@@ -153,5 +157,14 @@ public class UserBean extends AbstractBean {
 
     public List<String> getAllRoles() {
         return ALL_ROLES;
+    }
+
+    public boolean isPersonalManager(User user) {
+        for (String role : user.getRoles()) {
+            if (role.equals(PERSONAL_MANAGER)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
