@@ -27,10 +27,13 @@ public class UserBean extends AbstractBean {
     private final static Logger log = LoggerFactory.getLogger(UserBean.class);
 
     private static final List<String> ALL_ROLES = Lists.newArrayList(
+            /*
             AUTHORIZED,
             ADMIN_MODULE_EDIT,
             LOG_VIEW,
-            PERSONAL_MANAGER);
+            PERSONAL_MANAGER
+            */
+            );
 
     private static final Map<String, List<String>> GROUPS = Maps.newHashMap();
 
