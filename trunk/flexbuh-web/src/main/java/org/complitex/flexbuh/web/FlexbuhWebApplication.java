@@ -3,6 +3,7 @@ package org.complitex.flexbuh.web;
 import org.apache.wicket.Page;
 import org.complitex.flexbuh.common.template.TemplateWebApplication;
 import org.complitex.flexbuh.common.template.pages.login.Login;
+import org.complitex.flexbuh.document.web.DeclarationList;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -26,6 +27,6 @@ public class FlexbuhWebApplication extends TemplateWebApplication{
 
     @Override
     public Class<? extends Page> getHomePage() {
-        return WelcomePage.class;
+        return DeclarationList.class;
     }
 }
