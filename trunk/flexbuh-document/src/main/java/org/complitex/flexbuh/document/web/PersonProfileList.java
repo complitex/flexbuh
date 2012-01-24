@@ -87,7 +87,7 @@ public class PersonProfileList extends TemplatePage {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
-        final Long sessionId = getSessionId(true);
+        final Long sessionId = getSessionId();
 
         //Текущий профиль
         add(new Label("selected_profile", new LoadableDetachableModel<String>() {
