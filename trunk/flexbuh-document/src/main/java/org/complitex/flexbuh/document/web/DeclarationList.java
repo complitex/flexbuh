@@ -106,7 +106,7 @@ public class DeclarationList extends TemplatePage{
         add(yearContainer);
 
         //Фильтр
-        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId(true));
+        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId());
         declarationFilter.setPeriodYear(DateUtil.getCurrentYear());
         declarationFilter.setPeriodType(1);
         declarationFilter.setPeriodMonth(DateUtil.getCurrentMonth() + 1);
