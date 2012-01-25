@@ -51,7 +51,7 @@ public class EmployeeBean extends AbstractBean{
         sqlSession().delete("deleteEmployee", id);
     }
 
-    public void save(Long sessionId, InputStream inputStream) {
+    public int save(Long sessionId, InputStream inputStream) {
         try {
             EmployeeRowSet employeeRowSet = (EmployeeRowSet) JAXBContext
                     .newInstance(EmployeeRowSet.class)
@@ -60,15 +60,21 @@ public class EmployeeBean extends AbstractBean{
             
             Long personalProfileId = personProfileBean.getSelectedPersonProfileId(sessionId);
 
-            for (Employee employee : employeeRowSet.getEmployees()){
-                employee.setSessionId(sessionId);
-                employee.setPersonProfileId(personalProfileId);
-                employee.updateDates();
+            if (employeeRowSet != null && employeeRowSet.getEmployees() != null) {
+                for (Employee employee : employeeRowSet.getEmployees()){
+                    employee.setSessionId(sessionId);
+                    employee.setPersonProfileId(personalProfileId);
+                    employee.updateDates();
 
-                save(employee);
+                    save(employee);
+                }
+
+                return employeeRowSet.getEmployees().size();
             }
         } catch (JAXBException e) {
             log.error("Ошибка импорта контрагентов", e);
         }
+
+        return 0;
     }
 }

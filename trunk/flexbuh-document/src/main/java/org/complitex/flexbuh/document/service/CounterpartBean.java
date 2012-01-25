@@ -51,7 +51,7 @@ public class CounterpartBean extends AbstractBean{
         sqlSession().delete("deleteCounterpart", id);
     }
 
-    public void save(Long sessionId, InputStream inputStream) {
+    public int save(Long sessionId, InputStream inputStream) {
         try {
             CounterpartRowSet counterpartRowSet = (CounterpartRowSet) JAXBContext
                     .newInstance(CounterpartRowSet.class)
@@ -60,14 +60,20 @@ public class CounterpartBean extends AbstractBean{
             
             Long personalProfileId = personProfileBean.getSelectedPersonProfileId(sessionId);
 
-            for (Counterpart counterpart : counterpartRowSet.getCounterparts()){
-                counterpart.setSessionId(sessionId);
-                counterpart.setPersonProfileId(personalProfileId);
+            if (counterpartRowSet != null && counterpartRowSet.getCounterparts() != null) {
+                for (Counterpart counterpart : counterpartRowSet.getCounterparts()){
+                    counterpart.setSessionId(sessionId);
+                    counterpart.setPersonProfileId(personalProfileId);
 
-                save(counterpart);
+                    save(counterpart);
+                }
+
+                return counterpartRowSet.getCounterparts().size();
             }
         } catch (JAXBException e) {
             log.error("Ошибка импорта контрагентов", e);
         }
+
+        return 0;
     }
 }

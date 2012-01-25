@@ -25,6 +25,7 @@ import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.logging.EventCategory;
+import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Pavel Sknar
@@ -189,22 +191,10 @@ public class PersonProfileList extends TemplatePage {
 
                                 final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
                                 canceled.set(false);
+                                
+                                final AtomicInteger count = new AtomicInteger(0);
 
-                                importUserProfileXMLService.process(getSessionId(true), new ImportListener() {
-                                    @Override
-                                    public void begin() {
-                                    }
-
-                                    @Override
-                                    public void completed() {
-
-                                    }
-
-                                    @Override
-                                    public void completedWithError() {
-
-                                    }
-
+                                importUserProfileXMLService.process(getSessionId(true), new AbstractImportListener() {
                                     @Override
                                     public void cancel() {
                                         canceled.set(true);
@@ -212,18 +202,24 @@ public class PersonProfileList extends TemplatePage {
 
                                     @Override
                                     public ImportListener getChildImportListener(Object o) {
-                                        return null;
+                                        return new AbstractImportListener() {
+                                            @Override
+                                            public void completed() {
+                                                count.incrementAndGet();
+                                            }
+                                        };
                                     }
                                 }, fileUpload.getClientFileName(), fileUpload.getInputStream(), null, null);
+
                                 if (canceled.get()) {
                                     log.error("Failed import");
-                                    error(getString("failed_import"));
+                                    getSession().error(getString("error_failed_import"));
                                 } else {
-                                    info(getString("profile_imported"));
+                                    getSession().info(getStringFormat("info_profile_imported", count.get()));
                                 }
                             } catch (Exception e) {
                                 log.error("Failed import", e);
-                                error(getString("failed_import"));
+                                getSession().error(getString("error_failed_import"));
                             }
                         }
                     }
