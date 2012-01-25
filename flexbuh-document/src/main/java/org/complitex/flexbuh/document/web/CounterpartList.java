@@ -158,20 +158,22 @@ public class CounterpartList extends TemplatePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
+                
+                int count = 0;
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        counterpartBean.save(getSessionId(true), fileUpload.getInputStream());
+                        count += counterpartBean.save(getSessionId(true), fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);
 
                     setResponsePage(CounterpartList.class);
 
-                    info("Документы успешно загружены");
+                    getSession().info(getStringFormat("info_counterparts_loaded", count));
                 } catch (Exception e) {
                     log.error("Ошибка загрузки файла", e);
-                    error("Ошибка загрузки файла");
+                    getSession().error("Ошибка загрузки файла");
                 }
             }
 

@@ -67,6 +67,8 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 
                     personProfileBean.save(personProfile);
 
+                    listener.getChildImportListener(personProfile).completed();
+
 					log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
                             new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
                             eventObjectFactory.getEventNewObject(personProfile)});
