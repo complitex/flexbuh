@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -31,7 +32,10 @@ import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
-import org.complitex.flexbuh.common.template.toolbar.*;
+import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.template.toolbar.UploadButton;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
@@ -43,7 +47,6 @@ import org.complitex.flexbuh.document.entity.Period;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
-import org.complitex.flexbuh.document.web.component.DeclarationLinkDialog;
 import org.complitex.flexbuh.document.web.component.DeclarationUploadDialog;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
@@ -72,11 +75,9 @@ public class DeclarationList extends TemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
-    private DeclarationLinkDialog declarationLinkDialog;
-    
     private DeclarationUploadDialog declarationUploadDialog;
 
-    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
+    private Map<Declaration, IModel<Boolean>> selectMap = new HashMap<>();
 
     final String[] MONTH = dateFormatSymbols.getMonths();
     final List<Period> PERIODS = Arrays.asList(
@@ -104,9 +105,11 @@ public class DeclarationList extends TemplatePage{
         yearContainer.setOutputMarkupId(true);
 
         add(yearContainer);
+        
+        final Long sessionId = getSessionId();
 
         //Фильтр
-        final DeclarationFilter declarationFilter = new DeclarationFilter(getSessionId());
+        final DeclarationFilter declarationFilter = new DeclarationFilter(sessionId);
         declarationFilter.setPeriodYear(DateUtil.getCurrentYear());
         declarationFilter.setPeriodType(1);
         declarationFilter.setPeriodMonth(DateUtil.getCurrentMonth() + 1);
@@ -118,13 +121,13 @@ public class DeclarationList extends TemplatePage{
         //Форма
         Form filterForm = new Form("filter_form");
         filterContainer.add(filterForm);
-        
+
         IModel<List<? extends Integer>> yearModel = new LoadableDetachableModel<List<? extends Integer>>() {
             @Override
             protected List<? extends Integer> load() {
-                return declarationBean.getYears(getSessionId());
+                return declarationBean.getYears(sessionId);
             }
-        }; 
+        };
 
         //Дерево - годы
         ListView yearList = new ListView<Integer>("year_list", yearModel) {
@@ -156,7 +159,7 @@ public class DeclarationList extends TemplatePage{
                 item.add(periodContainer);
 
                 //Load periods for year and set labels
-                List<Period> periods = declarationBean.getPeriods(getSessionId(), year);
+                List<Period> periods = declarationBean.getPeriods(sessionId, year);
                 for (Period p : periods){
                     for (Period label : PERIODS){
                         if (p.getMonth().equals(label.getMonth()) && p.getType().equals(label.getType())){
@@ -164,45 +167,45 @@ public class DeclarationList extends TemplatePage{
                         }
                     }
                 }
-                
+
                 //Дерево - периоды
                 if (selectedYear) {
                     ListView periodList = new ListView<Period>("period_list", periods) {
                         @Override
                         protected void populateItem(ListItem<Period> periodItem) {
                             periodItem.setRenderBodyOnly(true);
-    
+
                             final Period period = periodItem.getModelObject();
-    
+
                             final boolean selectedPeriod = period.getMonth().equals(declarationFilter.getPeriodMonth() - 1)
                                     && period.getType().equals(declarationFilter.getPeriodType());
-    
+
                             if (selectedPeriod){
                                 periodItem.add(filterContainer);
                             }else {
                                 WebMarkupContainer emptyDiv = new WebMarkupContainer("filter_container");
                                 emptyDiv.add(new Form("filter_form").setVisible(false));
-    
+
                                 periodItem.add(emptyDiv);
                             }
-    
+
                             AjaxLink action = new AjaxLink("action_select") {
                                 @Override
                                 public void onClick(AjaxRequestTarget target) {
                                     declarationFilter.setPeriodYear(year);
                                     declarationFilter.setPeriodType(period.getType());
                                     declarationFilter.setPeriodMonth(period.getMonth() + 1);
-    
+
                                     target.add(yearContainer);
                                 }
-    
+
                                 @Override
                                 public boolean isEnabled() {
                                     return !selectedPeriod;
                                 }
                             };
                             periodItem.add(action);
-    
+
                             action.add(new Label("period_header", period.getLabel()));
                         }
                     };
@@ -258,12 +261,12 @@ public class DeclarationList extends TemplatePage{
         DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
             @Override
             protected void populateItem(Item<Declaration> item) {
-                Declaration declaration = item.getModelObject();
-                
+                final Declaration declaration = item.getModelObject();
+
                 //Select
                 IModel<Boolean> selectModel = new Model<>(false);
 
-                selectMap.put(declaration.getId(), selectModel);
+                selectMap.put(declaration, selectModel);
 
                 item.add(new CheckBox("select", selectModel)
                         .add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -279,24 +282,37 @@ public class DeclarationList extends TemplatePage{
 
                 item.add(new BookmarkablePageLinkPanel<>("name", declaration.getTemplateName() + " " + declaration.getName(),
                         DeclarationFormPage.class, pageParameters));
-                
+
                 //Date
                 item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy HH:mm"));
-                
+
                 //Action
                 item.add(new DeclarationXmlLink("action_xml", declaration));
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
+
+                //Attach
+                item.add(new Link("action_attach") {
+                    @Override
+                    public void onClick() {
+                        Declaration parent = declarationBean.getPossibleDeclarationParent(declaration.getId());
+
+                        declaration.setParentId(parent.getId());
+                        declarationBean.save(declaration);
+
+                        info(getStringFormat("info_attached", declaration.getFullName(), parent.getFullName()));
+                    }
+                }.setVisible(declaration.getPossibleParentId() != null));
 
                 //Linked
                 final WebMarkupContainer linkedContainer = new WebMarkupContainer("linked_container");
                 linkedContainer.setOutputMarkupId(true);
                 item.add(linkedContainer);
-                
+
                 final ListView linkedDeclarations = new ListView<LinkedDeclaration>("linked_declarations",
                         declaration.getLinkedDeclarations()) {
                     @Override
                     protected void populateItem(ListItem<LinkedDeclaration> linkedItem) {
-                        Declaration linkedDeclaration = linkedItem.getModelObject().getDeclaration();
+                        final Declaration linkedDeclaration = linkedItem.getModelObject().getDeclaration();
 
                         PageParameters pageParameters = new PageParameters();
                         pageParameters.set("id", linkedDeclaration.getId());
@@ -308,11 +324,22 @@ public class DeclarationList extends TemplatePage{
 
                         linkedItem.add(new DeclarationXmlLink("action_xml", linkedDeclaration));
                         linkedItem.add(new DeclarationPdfLink("action_pdf", linkedDeclaration));
+
+                        //Detach
+                        linkedItem.add(new Link("action_detach") {
+                            @Override
+                            public void onClick() {
+                                linkedDeclaration.setParentId(null);
+                                declarationBean.save(linkedDeclaration);
+
+                                info(getStringFormat("info_detached", linkedDeclaration.getFullName()));
+                            }
+                        });
                     }
-                };                     
+                };
                 linkedDeclarations.setVisible(false);
                 linkedContainer.add(linkedDeclarations);
-                
+
                 //Expand
                 final Label expandLabel = new Label("label", new LoadableDetachableModel<String>() {
                     @Override
@@ -321,7 +348,7 @@ public class DeclarationList extends TemplatePage{
                     }
                 });
                 expandLabel.setOutputMarkupId(true);
-                
+
                 AjaxLink expand = new AjaxLink("expand") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -332,7 +359,7 @@ public class DeclarationList extends TemplatePage{
                 };
                 expand.setVisible(declaration.hasLinkedDeclarations());
                 item.add(expand);
-                
+
                 expand.add(expandLabel);
             }
         };
@@ -346,15 +373,9 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(new Button("download_xml_zip"){
             @Override
             public void onSubmit() {
-                List<Long> selectedIds = new ArrayList<>();
+                List<Declaration> selectedDeclarations = getSelectedDeclaration();
 
-                for (Long id : selectMap.keySet()){
-                    if (selectMap.get(id).getObject()){
-                        selectedIds.add(id);
-                    }
-                }
-
-                if (selectedIds.isEmpty()){
+                if (selectedDeclarations.isEmpty()){
                     info(getString("info_select_declarations"));
                     return;
                 }
@@ -362,7 +383,7 @@ public class DeclarationList extends TemplatePage{
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                 try {
-                    declarationService.writeXmlZip(selectedIds, outputStream);
+                    declarationService.writeXmlZip(selectedDeclarations, outputStream);
                 } catch (DeclarationZipException e) {
                     error(getString("error_download_xml_zip"));
                 }
@@ -396,15 +417,9 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(new Button("download_pdf_zip"){
             @Override
             public void onSubmit() {
-                List<Long> selectedIds = new ArrayList<>();
+                List<Declaration> selectedDeclarations = getSelectedDeclaration();
 
-                for (Long id : selectMap.keySet()){
-                    if (selectMap.get(id).getObject()){
-                        selectedIds.add(id);
-                    }
-                }
-
-                if (selectedIds.isEmpty()){
+                if (selectedDeclarations.isEmpty()){
                     info(getString("info_select_declarations"));
                     return;
                 }
@@ -412,7 +427,7 @@ public class DeclarationList extends TemplatePage{
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                 try {
-                    declarationService.writePdfZip(selectedIds, outputStream);
+                    declarationService.writePdfZip(selectedDeclarations, outputStream);
                 } catch (DeclarationZipException e) {
                     error(getString("error_download_pdf_zip"));
                 }
@@ -457,10 +472,17 @@ public class DeclarationList extends TemplatePage{
         //Загрузка файлов
         declarationUploadDialog = new DeclarationUploadDialog("upload_dialog", update);
         add(declarationUploadDialog);
-        
-        //Link Dialog
-        declarationLinkDialog = new DeclarationLinkDialog("link_dialog", update);
-        add(declarationLinkDialog);
+    }
+
+    private List<Declaration> getSelectedDeclaration() {
+        List<Declaration> selectedDeclarations = new ArrayList<>();
+
+        for (Declaration declaration : selectMap.keySet()){
+            if (selectMap.get(declaration).getObject()){
+                selectedDeclarations.add(declaration);
+            }
+        }
+        return selectedDeclarations;
     }
 
     @Override
@@ -484,26 +506,11 @@ public class DeclarationList extends TemplatePage{
         list.add(new DeleteItemButton(id){
             @Override
             protected void onClick() {
-                for (Long id : selectMap.keySet()){
-                    if (selectMap.get(id).getObject()){
-                        declarationBean.deleteDeclaration(id);
+                for (Declaration declaration : selectMap.keySet()){
+                    if (selectMap.get(declaration).getObject()){
+                        declarationBean.deleteDeclaration(declaration.getId());
                     }
                 }
-            }
-        });
-
-        list.add(new AddItemButton(id, true){
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                List<Long> list = new ArrayList<>();
-
-                for (Long id : selectMap.keySet()){
-                    if (selectMap.get(id).getObject()){
-                        list.add(id);
-                    }
-                }
-                
-                declarationLinkDialog.open(target, list);
             }
         });
 

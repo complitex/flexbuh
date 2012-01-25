@@ -77,8 +77,10 @@ public class DeclarationFormPage extends TemplatePage{
     }
 
     private void init(){
+        final Long sessionId = declaration.getSessionId();
+
         //security check
-        if (declaration.getSessionId() != null && !declaration.getSessionId().equals(getSessionId(false))){
+        if (sessionId != null && !sessionId.equals(getSessionId(false))){
             throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
         }
 
@@ -93,7 +95,7 @@ public class DeclarationFormPage extends TemplatePage{
         add(form);
 
         //Declaration
-        form.add(new DeclarationFormComponent("declaration", declaration, getSessionId(true)));
+        form.add(new DeclarationFormComponent("declaration", declaration));
 
         //Linked declaration
         final Accordion accordion = new Accordion("accordion");
@@ -112,7 +114,7 @@ public class DeclarationFormPage extends TemplatePage{
 
                 item.add(new Label("label", declaration.getTemplateName() + " " + declaration.getName()));
 
-                item.add(new DeclarationFormComponent("linked_declaration", declaration, getSessionId(true)));
+                item.add(new DeclarationFormComponent("linked_declaration", declaration));
 
                 item.setRenderBodyOnly(true);
             }
@@ -128,7 +130,7 @@ public class DeclarationFormPage extends TemplatePage{
         Form profileForm = new Form("profile_form");
         profileDialog.add(profileForm);
 
-        final PersonProfileChoice profileChoice = new PersonProfileChoice("profile_choice", getSessionId()){
+        final PersonProfileChoice profileChoice = new PersonProfileChoice("profile_choice", declaration.getSessionId()){
             @Override
             protected boolean wantOnSelectionChangedNotifications() {
                 return false;
@@ -142,7 +144,7 @@ public class DeclarationFormPage extends TemplatePage{
                 PersonProfile personProfile = profileChoice.getModelObject();
                 declaration.setPersonProfileId(personProfile != null ? personProfile.getId() : null);
 
-                declarationBean.save(getSessionId(true), declaration);
+                declarationBean.save(declaration);
 
                 getSession().info(getString("info_saved"));
 
@@ -154,10 +156,10 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                Long selected = personProfileBean.getSelectedPersonProfileId(getSessionId());
+                Long selected = personProfileBean.getSelectedPersonProfileId(declaration.getSessionId());
 
                 if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
-                    declarationBean.save(getSessionId(), declaration);
+                    declarationBean.save(declaration);
 
                     getSession().info(getString("info_saved"));
 

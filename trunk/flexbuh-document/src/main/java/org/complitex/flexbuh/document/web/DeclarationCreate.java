@@ -229,6 +229,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 //todo select version by date
                 List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions();
                 declaration.getHead().setCDocVer(documentVersions.get(0).getCDocVer());
+                declaration.setSessionId(getSessionId(true));
 
                 //Person profile
                 if (declaration.getPersonProfile() != null) {

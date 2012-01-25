@@ -84,15 +84,11 @@ public class DeclarationFormComponent extends Panel{
 
     private int nextId = 1;
 
-    private Long sessionId;
-
     private CounterpartDialog counterpartDialog = null;
     private EmployeeDialog employeeDialog = null;
 
-    public DeclarationFormComponent(String id, Declaration declaration, Long sessionId){
+    public DeclarationFormComponent(String id, Declaration declaration){
         super(id);
-
-        this.sessionId = sessionId;
 
         templateName = declaration.getTemplateName();
 
@@ -189,11 +185,11 @@ public class DeclarationFormComponent extends Panel{
                     }else if (wicketId.contains("dialog")){
                         switch (wicketId.replace("dialog_", "")){
                             case FieldCode.COUNTERPART_SPR_NAME:
-                                counterpartDialog = new CounterpartDialog(wicketId, sessionId);
+                                counterpartDialog = new CounterpartDialog(wicketId, declaration.getSessionId());
                                 container.add(counterpartDialog);
                                 break;
                             case FieldCode.EMPLOYEE_SPR_NAME:
-                                employeeDialog = new EmployeeDialog(wicketId, sessionId);
+                                employeeDialog = new EmployeeDialog(wicketId, declaration.getSessionId());
                                 container.add(employeeDialog);
                                 break;
                             
@@ -282,7 +278,7 @@ public class DeclarationFormComponent extends Panel{
             });
 
         } else if (field.equals(FieldCode.COUNTERPART_SPR_NAME)) {
-            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, sessionId, counterpartDialog);
+            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, declaration.getSessionId(), counterpartDialog);
             container.add(component);
 
             //restriction
@@ -290,7 +286,7 @@ public class DeclarationFormComponent extends Panel{
 
             declarationStringComponent = component;
         } else if (field.equals(FieldCode.EMPLOYEE_SPR_NAME)) {
-            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, sessionId, employeeDialog);
+            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, declaration.getSessionId(), employeeDialog);
             container.add(component);
 
             //restriction

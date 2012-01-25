@@ -71,7 +71,7 @@ public class Declaration implements Serializable{
     private PersonProfile personProfile;
 
     @XmlTransient
-    private Integer childrenCount;
+    private Long possibleParentId;
 
     public Declaration() {
         head.setDFill(DeclarationUtil.getString(DateUtil.getCurrentDate()));
@@ -379,11 +379,11 @@ public class Declaration implements Serializable{
         this.personProfile = personProfile;
     }
 
-    public Integer getChildrenCount() {
-        return childrenCount;
+    public Long getPossibleParentId() {
+        return possibleParentId;
     }
 
-    public void setChildrenCount(Integer childrenCount) {
-        this.childrenCount = childrenCount;
+    public void setPossibleParentId(Long possibleParentId) {
+        this.possibleParentId = possibleParentId;
     }
 }

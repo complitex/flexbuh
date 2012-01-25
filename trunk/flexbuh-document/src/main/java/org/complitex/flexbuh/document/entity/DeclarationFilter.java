@@ -9,13 +9,15 @@ import java.util.Date;
  *         Date: 09.09.11 18:09
  */
 public class DeclarationFilter extends AbstractFilter{
-    private String name;
-    private Integer periodMonth;
-    private Integer periodType;
-    private Integer periodYear;
-    private Date date;
     private Long personProfileId;
     private Long parentId;
+    private String cDoc;
+    private String cDocSub;
+    private String name;
+    private Integer periodType;
+    private Integer periodMonth;
+    private Integer periodYear;
+    private Date date;
 
     public DeclarationFilter() {
     }
@@ -34,6 +36,38 @@ public class DeclarationFilter extends AbstractFilter{
         date = null;
     }
 
+    public Long getPersonProfileId() {
+        return personProfileId;
+    }
+
+    public void setPersonProfileId(Long personProfileId) {
+        this.personProfileId = personProfileId;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getCDoc() {
+        return cDoc;
+    }
+
+    public void setCDoc(String cDoc) {
+        this.cDoc = cDoc;
+    }
+
+    public String getCDocSub() {
+        return cDocSub;
+    }
+
+    public void setCDocSub(String cDocSub) {
+        this.cDocSub = cDocSub;
+    }
+
     public String getName() {
         return name;
     }
@@ -42,20 +76,20 @@ public class DeclarationFilter extends AbstractFilter{
         this.name = name;
     }
 
-    public Integer getPeriodMonth() {
-        return periodMonth;
-    }
-
-    public void setPeriodMonth(Integer periodMonth) {
-        this.periodMonth = periodMonth;
-    }
-
     public Integer getPeriodType() {
         return periodType;
     }
 
     public void setPeriodType(Integer periodType) {
         this.periodType = periodType;
+    }
+
+    public Integer getPeriodMonth() {
+        return periodMonth;
+    }
+
+    public void setPeriodMonth(Integer periodMonth) {
+        this.periodMonth = periodMonth;
     }
 
     public Integer getPeriodYear() {
@@ -72,21 +106,5 @@ public class DeclarationFilter extends AbstractFilter{
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public Long getPersonProfileId() {
-        return personProfileId;
-    }
-
-    public void setPersonProfileId(Long personProfileId) {
-        this.personProfileId = personProfileId;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
     }
 }

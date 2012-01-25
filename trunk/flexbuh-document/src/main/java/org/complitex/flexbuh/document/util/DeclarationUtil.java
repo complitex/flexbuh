@@ -173,4 +173,10 @@ public class DeclarationUtil {
 
         return null;
     }
+
+    public static boolean isSamePeriod(Declaration d1, Declaration d2){
+        return d1.getHead().getPeriodType().equals(d2.getHead().getPeriodType())
+                && d1.getHead().getPeriodMonth().equals(d2.getHead().getPeriodMonth())
+                && d1.getHead().getPeriodYear().equals(d2.getHead().getPeriodYear());
+    }
 }
