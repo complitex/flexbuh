@@ -19,8 +19,7 @@ import java.util.List;
 public class DeclarationBean extends AbstractBean{
     public final static String NS = DeclarationBean.class.getName();
 
-    public void save(Long sessionId, Declaration declaration){
-        declaration.setSessionId(sessionId);
+    public void save(Declaration declaration){
         declaration.setDate(DateUtil.getCurrentDate());
 
         if (declaration.getId() != null){
@@ -69,8 +68,9 @@ public class DeclarationBean extends AbstractBean{
                 Declaration d = linkedDeclaration.getDeclaration();
                 d.setParentId(declaration.getId());
                 d.setPersonProfileId(declaration.getPersonProfileId());
+                d.setSessionId(declaration.getSessionId());
 
-                save(sessionId, d);
+                save(d);
             }
         }
     }
@@ -95,31 +95,32 @@ public class DeclarationBean extends AbstractBean{
     public void deleteDeclarationValue(Long id){
         sqlSession().delete(NS + ".deleteDeclarationValue", id);
     }
-    
+
     public Declaration save(Long sessionId, Long personProfileId, InputStream inputStream) throws DeclarationSaveException {
         try {
             //todo add linked
             Declaration declaration = DeclarationUtil.getDeclaration(inputStream);
+            declaration.setSessionId(sessionId);
             declaration.setPersonProfileId(personProfileId);
-            
-            save(sessionId, declaration);
+
+            save(declaration);
 
             return declaration;
         } catch (Exception e) {
             throw new DeclarationSaveException(e);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<Declaration> getDeclarations(List<Long> ids){
         return sqlSession().selectList(NS + ".selectDeclarationsByIds", ids);
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<Integer> getYears(Long sessionId){
-        return sqlSession().selectList(NS + ".selectDeclarationYears", sessionId);        
+        return sqlSession().selectList(NS + ".selectDeclarationYears", sessionId);
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<Period> getPeriods(final Long sessionId, final int year){
         return sqlSession().selectList(NS + ".selectDeclarationPeriods", new HashMap<String, Object>(){{
@@ -127,16 +128,8 @@ public class DeclarationBean extends AbstractBean{
             put("year", year);
         }});
     }
-    
-    @SuppressWarnings("unchecked")
-    public List<Declaration> getPossibleParentDeclarations(List<Long> ids){
-        return sqlSession().selectList(NS + ".selectPossibleParentDeclarations", ids);
-    }
-    
-    public void updateDeclarationParent(final List<Long> ids, final Long parentId){
-        sqlSession().update("updateDeclarationParent", new HashMap<String, Object>(){{
-            put("ids", ids);
-            put("parentId", parentId);
-        }});
+
+    public Declaration getPossibleDeclarationParent(Long childId){
+        return (Declaration) sqlSession().selectOne(NS + ".selectPossibleDeclarationParent", childId);
     }
 }

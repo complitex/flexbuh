@@ -25,6 +25,8 @@
         <result column="software" property="head.software"/>
         <result column="date" property="date"/>
 
+        <association property="possibleParentId" column="id" select="selectPossibleDeclarationParentId"/>
+
         <collection property="declarationValues" column="id" ofType="org.complitex.flexbuh.document.entity.DeclarationValue"
                     select="selectDeclarationValues"/>
 
@@ -121,11 +123,13 @@
     </delete>
 
     <update id="updateDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration">
-        update `declaration` set `session_id` = #{sessionId}, `person_profile_id` = #{personProfileId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc}, `c_doc_sub` = #{head.cDocSub},
-          `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType}, `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg},
-          `c_raj` = #{head.cRaj}, `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
-          `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill}, `software` = #{head.software},
-          `date` = #{date}
+        update `declaration` set `session_id` = #{sessionId}, `parent_id` = #{parentId},
+          `person_profile_id` = #{personProfileId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc},
+          `c_doc_sub` = #{head.cDocSub}, `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType},
+          `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg}, `c_raj` = #{head.cRaj},
+          `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
+          `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill},
+          `software` = #{head.software}, `date` = #{date}
         where `id` = #{id}
     </update>
 
@@ -153,16 +157,33 @@
           and `period_year` = #{year} group by `period_type`, `period_month`
     </select>
 
-    <select id="selectPossibleParentDeclarations" parameterType="list" resultMap="declarationResultMap">
-        select distinct p.*, p_doc.`name_uk` as `name` from declaration d
-          left join document doc on (d.c_doc = doc.c_doc and d.c_doc_sub = doc.c_doc_sub)
-          left join declaration p on (p.c_doc = doc.parent_c_doc and p.c_doc_sub = doc.parent_c_doc_sub)
-          left join document p_doc on (p.c_doc = p_doc.c_doc and p.c_doc_sub = p_doc.c_doc_sub)
-        where d.id in (<foreach collection="list" separator="," item="item">#{item}</foreach>) and p.`id` is not null
+    <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">
+        select
+           distinct parent.`id`
+        from
+           `declaration` child
+            left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
+            left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
+            left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
+        where
+            child.`period_type` = parent.`period_type`
+            and child.`period_month` = parent.`period_month`
+            and child.`period_year` = parent.`period_year`
+            and child.`id` = #{id};
     </select>
 
-    <update id="updateDeclarationParent" parameterType="map">
-        update `declaration` set `parent_id` = #{parentId}
-          where `id` in (<foreach collection="ids" separator="," item="item">#{item}</foreach>)
-    </update>
+    <select id="selectPossibleDeclarationParent" parameterType="long" resultMap="declarationResultMap">
+        select
+           distinct parent.*, parent_doc.`name_uk` as `name`
+        from
+           `declaration` child
+            left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
+            left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
+            left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
+        where
+            child.`period_type` = parent.`period_type`
+            and child.`period_month` = parent.`period_month`
+            and child.`period_year` = parent.`period_year`
+            and child.`id` = #{id};
+        </select>
 </mapper>

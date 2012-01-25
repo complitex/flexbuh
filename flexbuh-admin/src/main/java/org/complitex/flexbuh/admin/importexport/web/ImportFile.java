@@ -21,6 +21,7 @@ import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSLService
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,8 @@ public class ImportFile extends TemplatePage {
         add(container);
 
 		final IModel<List<DataFile>> dataFileModel = new ListModel<>();
+
+        container.add(new Dialog("dialog")); //fix: ajax timer don't work without jquery
 
         container.add(new FeedbackPanel("messages"));
 

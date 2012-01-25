@@ -4,6 +4,7 @@ import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.util.crypt.Base64;
 import org.complitex.flexbuh.common.entity.user.Session;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.Cookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.util.Date;
 
 /**
@@ -51,31 +53,34 @@ public class CookieWebSession extends WebSession{
         Session session = null;
 
         WebResponse webResponse = ((WebResponse) RequestCycle.get().getResponse());
-        ServletWebRequest webRequest = (ServletWebRequest) RequestCycle.get().getRequest();
+        WebRequest webRequest = (WebRequest) RequestCycle.get().getRequest();
 
         Cookie cookie = webRequest.getCookie(SESSION_COOKIE_NAME);
+        
+        String login = null;
 
-        log.debug("Start get session");
+        if (webRequest instanceof ServletWebRequest){
+            Principal principal = ((ServletWebRequest)webRequest).getContainerRequest().getUserPrincipal();
+            login = principal != null ? principal.getName() : null;
+        }else {
+            System.out.println(webRequest);
 
-        if (webRequest.getContainerRequest().getUserPrincipal() != null) {
-            String login = webRequest.getContainerRequest().getUserPrincipal().getName();
+        }
+
+        if (login != null) {
             User user = getUserBean().getUser(login);
-            log.debug("User principal not null. User: {} ({})", user, login);
             if (user != null) {
                 if (user.getSessionId() != null) {
-                    log.debug("User session id not null: {}", user.getSessionId());
                     return getSessionBean().getSessionById(user.getSessionId());
                 }
                 if (cookie != null) {
-                    log.debug("Cookie not null. Get session.");
                     session = getSessionBean().getSessionByCookie(cookie.getValue());
                     webResponse.clearCookie(cookie);
                 }
                 if (session == null) {
-                    log.debug("Session in null. Create new session.");
                     session = createSession(generateEncodeBase64MD5((new Date()).toString().getBytes()));
                 }
-                log.debug("Update user.");
+
                 user.setSessionId(session.getId());
                 getUserBean().update(user);
                 return session;
