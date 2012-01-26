@@ -7,6 +7,7 @@ import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 
 import javax.ejb.EJB;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -23,8 +24,17 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
         
         this.sessionId = sessionId;
 
-        setChoices(personProfileBean.getAllPersonProfiles(sessionId));
-        setModel(new Model<>(personProfileBean.getSelectedPersonProfile(sessionId)));
+        List<PersonProfile> profiles = personProfileBean.getAllPersonProfiles(sessionId);
+        PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(sessionId);
+        
+        for (PersonProfile pp : profiles){
+            if (pp.getId().equals(selectedPersonProfile.getId())){
+                setModel(new Model<>(pp));
+                break;
+            }
+        }
+        
+        setChoices(profiles);
         
         setChoiceRenderer(new IChoiceRenderer<PersonProfile>() {
             @Override
@@ -44,6 +54,7 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
     @Override
     protected void onSelectionChanged(PersonProfile newSelection) {
         personProfileBean.deselectAllPersonProfile(sessionId);
+
         if (newSelection != null){
             personProfileBean.setSelectedPersonProfile(newSelection);
         }

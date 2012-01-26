@@ -39,7 +39,6 @@ public class DeclarationUploadDialog extends TemplatePanel {
         super(id);
 
         dialog = new Dialog("dialog");
-        dialog.setTitle(getString("upload_title"));
         dialog.setWidth(500);
         dialog.setHeight(100);
 

@@ -96,7 +96,6 @@ public abstract class TemplatePage extends WebPage {
         };
         toolbar.add(pagePart);
 
-
         //menu
         add(new ListView<ITemplateMenu>("sidebar", newTemplateMenus()) {
 
