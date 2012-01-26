@@ -166,10 +166,11 @@
             left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
             left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
         where
-            child.`period_type` = parent.`period_type`
+            (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
+            and child.`period_type` = parent.`period_type`
             and child.`period_month` = parent.`period_month`
             and child.`period_year` = parent.`period_year`
-            and child.`id` = #{id};
+            and child.`id` = #{id}
     </select>
 
     <select id="selectPossibleDeclarationParent" parameterType="long" resultMap="declarationResultMap">
@@ -181,9 +182,10 @@
             left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
             left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
         where
-            child.`period_type` = parent.`period_type`
+            (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
+            and child.`period_type` = parent.`period_type`
             and child.`period_month` = parent.`period_month`
             and child.`period_year` = parent.`period_year`
-            and child.`id` = #{id};
+            and child.`id` = #{id}
         </select>
 </mapper>
