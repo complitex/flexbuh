@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS `session`;
 
 CREATE TABLE  `session` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сессии',
-  `cookie` VARCHAR(255) NOT NULL COMMENT 'Куки сессии',
+  `cookie` VARCHAR(255) COMMENT 'Куки сессии',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_cookie` (`cookie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Сессия';
@@ -60,7 +60,7 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE  `user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор пользователя',
-  `session_id` BIGINT(20) COMMENT 'Идентификатор сессии',
+  `session_id` NOT NULL BIGINT(20) COMMENT 'Идентификатор сессии',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
   `password` VARCHAR(45) NOT NULL COMMENT 'MD5 хэш пароля',
   `first_name` VARCHAR(45) NOT NULL COMMENT 'Имя',
