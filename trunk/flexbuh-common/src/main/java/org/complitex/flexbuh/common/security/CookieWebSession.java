@@ -67,7 +67,7 @@ public class CookieWebSession extends WebSession{
 
         }
 
-        if (login != null) {
+        if (login != null) {  //todo SessionBean.create(new Session(null))
             User user = getUserBean().getUser(login);
             if (user != null) {
                 if (user.getSessionId() != null) {
