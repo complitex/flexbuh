@@ -53,13 +53,13 @@ public class ImportFile extends TemplatePage {
 	@EJB
 	private ImportTemplateControlService importTemplateControlService;
 
+    private IModel<List<DataFile>> dataFileModel = new ListModel<>();
+
 	@SuppressWarnings("unchecked")
     public ImportFile() {
 
 		final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
-
-		final IModel<List<DataFile>> dataFileModel = new ListModel<>();
 
         container.add(new Dialog("dialog")); //fix: ajax timer don't work without jquery
 
@@ -157,6 +157,8 @@ public class ImportFile extends TemplatePage {
 						new Object[]{listener.currentImportFile(), listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
 
 				if (listener.isEnded()) {
+                    dataFileModel.getObject().clear();
+
 					info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
 					stop();
 				} else {
