@@ -10,8 +10,8 @@ CREATE TABLE  `person_profile` (
   `session_id` BIGINT(20) NOT NULL,
   `person_type` INTEGER NOT NULL,
   `c_sti` INTEGER,
-  `c_sti_tin` VARCHAR(45),
-  `tin` VARCHAR(45),
+  `c_sti_tin` INTEGER,
+  `tin` INTEGER,
   `name` VARCHAR(255),
   `last_name` VARCHAR(45),
   `first_name` VARCHAR(45),
@@ -60,7 +60,7 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE  `user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор пользователя',
-  `session_id` NOT NULL BIGINT(20) COMMENT 'Идентификатор сессии',
+  `session_id` BIGINT(20) COMMENT 'Идентификатор сессии',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
   `password` VARCHAR(45) NOT NULL COMMENT 'MD5 хэш пароля',
   `first_name` VARCHAR(45) NOT NULL COMMENT 'Имя',
