@@ -48,13 +48,13 @@ public class ImportDictionary extends TemplatePage {
 	@EJB
 	private ImportDictionaryService importDictionaryService;
 
+    private IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
+
 	@SuppressWarnings("unchecked")
     public ImportDictionary() {
 
 		final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
-
-		final IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
 
         container.add(new FeedbackPanel("messages"));
 
@@ -141,6 +141,8 @@ public class ImportDictionary extends TemplatePage {
 						new Object[]{listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
 
 				if (listener.isEnded()) {
+                    dictionaryModel.getObject().clear();
+
 					info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
 					stop();
 				} else {
