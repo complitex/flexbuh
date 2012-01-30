@@ -22,12 +22,8 @@ public abstract class TemplatePanel extends Panel {
         return (CookieWebSession) getSession();
     }
 
-    protected Long getSessionId(boolean create){
-        return getCookieWebSession().getSessionId(create);
-    }
-
-    protected Long getSessionId(){
-        return getCookieWebSession().getSessionId(false);
+    protected Long getSessionId() {
+        return getCookieWebSession().getSessionId();
     }
 
     protected String getStringFormat(String key, Object... args){

@@ -163,7 +163,7 @@ public class CounterpartList extends TemplatePage{
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        count += counterpartBean.save(getSessionId(true), fileUpload.getInputStream());
+                        count += counterpartBean.save(getSessionId(), fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);

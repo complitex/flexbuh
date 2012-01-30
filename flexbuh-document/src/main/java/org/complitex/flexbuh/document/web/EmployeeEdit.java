@@ -37,7 +37,7 @@ public class EmployeeEdit extends FormTemplatePage{
     }
 
     private void init(Long id){
-        Employee employee = id != null ? employeeBean.getEmployee(id) : new Employee(getSessionId(true));
+        Employee employee = id != null ? employeeBean.getEmployee(id) : new Employee(getSessionId());
 
         if (employee == null){
             throw new WicketRuntimeException("Похоже в базе нет записи по такому id");

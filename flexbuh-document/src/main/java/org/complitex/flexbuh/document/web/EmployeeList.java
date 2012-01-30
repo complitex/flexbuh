@@ -165,7 +165,7 @@ public class EmployeeList extends TemplatePage{
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        count += employeeBean.save(getSessionId(true), fileUpload.getInputStream());
+                        count += employeeBean.save(getSessionId(), fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);

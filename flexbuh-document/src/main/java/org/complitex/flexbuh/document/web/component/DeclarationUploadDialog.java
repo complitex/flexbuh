@@ -80,7 +80,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
                                 }
                             }
 
-                            Declaration declaration = declarationBean.save(getSessionId(true),
+                            Declaration declaration = declarationBean.save(getSessionId(),
                                     personProfile != null ? personProfile.getId() : null,
                                     fileUpload.getInputStream());
 

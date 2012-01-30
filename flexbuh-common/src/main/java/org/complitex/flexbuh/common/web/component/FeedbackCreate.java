@@ -54,7 +54,7 @@ public class FeedbackCreate extends TemplatePanel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> f) {
                 Feedback feedback = form.getModelObject();
-                feedback.setSessionId(getSessionId(true));
+                feedback.setSessionId(getSessionId());
 
                 feedbackBean.save(feedback);
 

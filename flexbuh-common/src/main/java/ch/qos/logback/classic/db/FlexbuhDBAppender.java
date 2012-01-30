@@ -4,7 +4,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
+import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.logging.EventProperty;
+import org.complitex.flexbuh.common.service.user.UserBean;
+import org.complitex.flexbuh.common.util.EjbUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +23,10 @@ public class FlexbuhDBAppender extends DBAppender {
 	private static final Logger log = LoggerFactory.getLogger(FlexbuhDBAppender.class);
 
 	private static final String ROOT_PACKAGE = "org.complitex.flexbuh";
+
+    public UserBean getUserBean(){
+        return EjbUtil.getBean(UserBean.class);
+    }
 
 	@Override
 	Map<String, String> mergePropertyMaps(ILoggingEvent event) {
@@ -58,24 +65,10 @@ public class FlexbuhDBAppender extends DBAppender {
 	private void addLogin(Map<String, String> result) {
 		try {
 
-			if (RequestCycle.get() == null) {
-				return;
-			}
+			User user = getUserBean().getCurrentUser();
 
-			WebRequest servletWebRequest = (WebRequest) RequestCycle.get().getRequest();
-
-			if (servletWebRequest == null) {
-				return;
-			}
-
-			HttpServletRequest servletRequest = (HttpServletRequest) servletWebRequest.getContainerRequest();
-
-			if (servletRequest == null) {
-				return;
-			}
-
-			if (servletRequest.getUserPrincipal() != null) {
-				result.put("login", servletRequest.getUserPrincipal().getName());
+			if (user != null) {
+				result.put("login", user.getLogin());
 			} else {
 				result.put("login", "ANONYMOUS");
 			}

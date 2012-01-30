@@ -94,7 +94,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 new LoadableDetachableModel<List<PersonProfile>>() {
                     @Override
                     protected List<PersonProfile> load() {
-                        return personProfileBean.getAllPersonProfiles(getSessionId(false));
+                        return personProfileBean.getAllPersonProfiles(getSessionId());
                     }
                 },
                 new IChoiceRenderer<PersonProfile>() {
@@ -229,7 +229,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 //todo select version by date
                 List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions();
                 declaration.getHead().setCDocVer(documentVersions.get(0).getCDocVer());
-                declaration.setSessionId(getSessionId(true));
+                declaration.setSessionId(getSessionId());
 
                 //Person profile
                 if (declaration.getPersonProfile() != null) {

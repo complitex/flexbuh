@@ -194,7 +194,7 @@ public class PersonProfileList extends TemplatePage {
                                 
                                 final AtomicInteger count = new AtomicInteger(0);
 
-                                importUserProfileXMLService.process(getSessionId(true), new AbstractImportListener() {
+                                importUserProfileXMLService.process(getSessionId(), new AbstractImportListener() {
                                     @Override
                                     public void cancel() {
                                         canceled.set(true);
@@ -264,7 +264,7 @@ public class PersonProfileList extends TemplatePage {
                         new AbstractResourceStreamWriter() {
                             @Override
                             public void write(Response output) {
-                                List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId(false));
+                                List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
                                 for(PersonProfile pp : personProfiles){
                                     if (PersonType.PHYSICAL_PERSON.equals(pp.getPersonType())){
