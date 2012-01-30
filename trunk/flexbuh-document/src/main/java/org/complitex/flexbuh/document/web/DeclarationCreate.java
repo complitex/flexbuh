@@ -234,6 +234,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 //Person profile
                 if (declaration.getPersonProfile() != null) {
                     declaration.setPersonProfileId(declaration.getPersonProfile().getId());
+                    declaration.getHead().setTin(Integer.valueOf(declaration.getPersonProfile().getTin()));
                 }
 
                 setResponsePage(new DeclarationFormPage(declaration));

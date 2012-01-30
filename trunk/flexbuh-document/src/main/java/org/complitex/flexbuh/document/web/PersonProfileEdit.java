@@ -145,10 +145,10 @@ public class PersonProfileEdit extends FormTemplatePage {
         });
 
         // Код ЄДРПОУ ДПІ
-        form.add(new TextField<>("c_sti_tin", new PropertyModel<String>(personProfile, "cStiTin")));
+        form.add(new TextField<>("c_sti_tin", new PropertyModel<Integer>(personProfile, "cStiTin")));
 
         // Код ЕДРПОУ
-        form.add(new TextField<>("tin", new PropertyModel<String>(personProfile, "tin")));
+        form.add(new TextField<>("tin", new PropertyModel<Integer>(personProfile, "tin")));
         final Label tinLabel = new Label("tin_label", new LoadableDetachableModel<Object>() {
             @Override
             protected Object load() {

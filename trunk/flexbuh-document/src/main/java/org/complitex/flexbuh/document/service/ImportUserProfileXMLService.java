@@ -119,13 +119,13 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                     personProfile.setName(value);
                     break;
                 case "TIN":
-                    personProfile.setTin(value);
+                    personProfile.setTin(Integer.valueOf(value));
                     break;
                 case "C_STI":
                     personProfile.setCSti(Integer.parseInt(value));
                     break;
                 case "C_STI_TIN":
-                    personProfile.setCStiTin(value);
+                    personProfile.setCStiTin(Integer.valueOf(value));
                     break;
                 case "KVED":
                     personProfile.setKved(value);

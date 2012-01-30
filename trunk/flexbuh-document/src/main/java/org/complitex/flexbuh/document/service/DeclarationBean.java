@@ -69,6 +69,7 @@ public class DeclarationBean extends AbstractBean{
                 d.setParentId(declaration.getId());
                 d.setPersonProfileId(declaration.getPersonProfileId());
                 d.setSessionId(declaration.getSessionId());
+                d.getHead().setTin(declaration.getHead().getTin());
 
                 save(d);
             }

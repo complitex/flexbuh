@@ -46,9 +46,9 @@ public class DeclarationFillService {
             declaration.fillValueByType("DGHSTI", taxInspection.getCSti() + " " + taxInspection.getNameRajUk());
         }
 
-        declaration.fillValueByType("DGYear", StringUtil.getString(head.getPeriodYear()));
-        declaration.fillValueByType("DGKv", StringUtil.getString(head.getPeriodMonth() / 3));
-        declaration.fillValueByType("DGMonth", StringUtil.getString(head.getPeriodMonth()));
+        declaration.fillValueByType("DGYear", head.getPeriodYear());
+        declaration.fillValueByType("DGKv", head.getPeriodMonth() / 3);
+        declaration.fillValueByType("DGMonth", head.getPeriodMonth());
 
         declaration.fillValueByType("DGHLOC", personProfile.getAddress());
         declaration.fillValueByType("DGHZIP", personProfile.getZipCode());

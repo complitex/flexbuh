@@ -27,13 +27,17 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
         List<PersonProfile> profiles = personProfileBean.getAllPersonProfiles(sessionId);
         PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(sessionId);
         
-        for (PersonProfile pp : profiles){
-            if (pp.getId().equals(selectedPersonProfile.getId())){
-                setModel(new Model<>(pp));
-                break;
+        setModel(new Model<PersonProfile>());
+
+        if (selectedPersonProfile != null) {
+            for (PersonProfile pp : profiles){
+                if (pp.getId().equals(selectedPersonProfile.getId())){
+                    setModelObject(pp);
+                    break;
+                }
             }
         }
-        
+
         setChoices(profiles);
         
         setChoiceRenderer(new IChoiceRenderer<PersonProfile>() {
