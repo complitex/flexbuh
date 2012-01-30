@@ -80,7 +80,7 @@ public class DeclarationFormPage extends TemplatePage{
         final Long sessionId = declaration.getSessionId();
 
         //security check
-        if (sessionId != null && !sessionId.equals(getSessionId(false))){
+        if (sessionId != null && !sessionId.equals(getSessionId())){
             throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
         }
 

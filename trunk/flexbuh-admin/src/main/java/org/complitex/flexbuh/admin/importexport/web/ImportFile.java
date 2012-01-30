@@ -96,7 +96,7 @@ public class ImportFile extends TemplatePage {
 
 				DictionaryImportListener importListener = new DictionaryImportListener();
 
-                final Long sessionId = getSessionId(true);
+                final Long sessionId = getSessionId();
 
 				for (DataFile dataFile : dataFileModel.getObject()) {
 					switch (dataFile) {

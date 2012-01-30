@@ -9,7 +9,10 @@ import org.complitex.flexbuh.common.service.AbstractBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,7 @@ import static org.complitex.flexbuh.common.security.SecurityRole.*;
 public class UserBean extends AbstractBean {
 	public static final String NS = UserBean.class.getName();
 
-    private final static Logger log = LoggerFactory.getLogger(UserBean.class);
+    private static final Logger log = LoggerFactory.getLogger(UserBean.class);
 
     private static final List<String> ALL_ROLES = Lists.newArrayList(
             /*
@@ -42,6 +45,16 @@ public class UserBean extends AbstractBean {
         GROUPS.put("EMPLOYEES", Lists.<String>newArrayList(AUTHORIZED));
 
         ALL_ROLES.addAll(GROUPS.keySet());
+    }
+
+    private static final String ANONYMOUS_USER_LOGIN_NAME = "ANONYMOUS";
+
+    @Resource
+    private SessionContext  sessionContext;
+
+    public User getCurrentUser() {
+        Principal principal = sessionContext.getCallerPrincipal();
+        return principal != null? getUser(principal.getName()): null;
     }
 
     @Transactional
@@ -169,5 +182,15 @@ public class UserBean extends AbstractBean {
             }
         }
         return false;
+    }
+
+    /**
+     * Check user
+     *
+     * @param user User object
+     * @return <code>true</code> if user is anonymous/null otherwise <code>false</code>
+     */
+    public boolean isAnonymous(User user) {
+        return user == null || ANONYMOUS_USER_LOGIN_NAME.equals(user.getLogin());
     }
 }

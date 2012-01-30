@@ -275,11 +275,7 @@ public abstract class TemplatePage extends WebPage {
         return (CookieWebSession) getSession();
     }
 
-    protected Long getSessionId(boolean create){
-        return getCookieWebSession().getSessionId(create);
-    }
-
     protected Long getSessionId(){
-        return getCookieWebSession().getSessionId(false);
+        return getCookieWebSession().getSessionId();
     }
 }

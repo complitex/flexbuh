@@ -105,7 +105,7 @@ public class DeclarationList extends TemplatePage{
         yearContainer.setOutputMarkupId(true);
 
         add(yearContainer);
-        
+
         final Long sessionId = getSessionId();
 
         //Фильтр
@@ -465,7 +465,7 @@ public class DeclarationList extends TemplatePage{
             @Override
             public void onUpdate(AjaxRequestTarget target) {
                 target.add(feedbackPanel);
-                target.add(filterContainer);
+                target.add(yearContainer);
             }
         };
 

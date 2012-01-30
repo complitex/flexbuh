@@ -36,11 +36,11 @@ public class CounterpartEdit extends FormTemplatePage{
     }
     
     private void init(Long id){
-        Counterpart counterpart = id != null ? counterpartBean.getCounterpart(id) : new Counterpart(getSessionId(true));
+        Counterpart counterpart = id != null ? counterpartBean.getCounterpart(id) : new Counterpart(getSessionId());
         
         if (counterpart == null){
             throw new WicketRuntimeException("Кажись нет записи по такому id в базе");
-        }else if (!counterpart.getSessionId().equals(getSessionId(false))){
+        }else if (!counterpart.getSessionId().equals(getSessionId())){
             throw new UnauthorizedInstantiationException(CounterpartEdit.class);
         }
         

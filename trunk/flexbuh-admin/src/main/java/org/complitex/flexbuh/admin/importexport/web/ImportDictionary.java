@@ -105,7 +105,7 @@ public class ImportDictionary extends TemplatePage {
 				}
 
 				DictionaryImportListener importListener = new DictionaryImportListener(fileNames.size());
-				importDictionaryService.processFiles(getSessionId(true), importListener, fileNames, beginDateModel.getObject(), endDateModel.getObject());
+				importDictionaryService.processFiles(getSessionId(), importListener, fileNames, beginDateModel.getObject(), endDateModel.getObject());
 
 				container.add(newTimer(importListener));
             }

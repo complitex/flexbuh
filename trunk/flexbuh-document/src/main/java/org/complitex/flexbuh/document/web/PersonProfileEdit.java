@@ -63,7 +63,7 @@ public class PersonProfileEdit extends FormTemplatePage {
             Long id = pageParameters.get("id").toLongObject();
             personProfile = personProfileBean.getPersonProfile(id);
 
-            if (personProfile != null && !personProfile.getSessionId().equals(getSessionId(false))){
+            if (personProfile != null && !personProfile.getSessionId().equals(getSessionId())){
                 // person profile not found
                 error(getString("error_person_profile_failed_session"));
                 setResponsePage(PersonProfileList.class);
@@ -266,7 +266,7 @@ public class PersonProfileEdit extends FormTemplatePage {
                     personProfile.setTaxInspectionId(ti.getId());
                 }
 
-                personProfile.setSessionId(getSessionId(true));
+                personProfile.setSessionId(getSessionId());
                 personProfileBean.save(personProfile);
 
                 info(getString("profile_saved"));

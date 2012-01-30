@@ -47,7 +47,7 @@ public class TemporalEntityListPage extends TemplatePage{
         final AbstractTemporalEntity entity = (AbstractTemporalEntity) _class.newInstance();
         
         @SuppressWarnings("unchecked")
-        final TemporalEntityFilter<AbstractTemporalEntity> filter = new TemporalEntityFilter(getSessionId(true), _class);
+        final TemporalEntityFilter<AbstractTemporalEntity> filter = new TemporalEntityFilter(getSessionId(), _class);
 
         //Форма
         final Form filterForm = new Form("filter_form");

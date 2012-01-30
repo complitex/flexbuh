@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.common.template.pages.login;
 
+import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -30,6 +31,7 @@ public final class Login extends WebPage {
     }
 
     private void init(boolean isError) {
+        closePreviousSession();
         add(new Label("login.title", new ResourceModel("login.title")));
         add(new Label("login.header", new ResourceModel(isError ? "login.errorLabel" : "login.enterLabel")));
         WebMarkupContainer errorPanel = new WebMarkupContainer("errorPanel");
@@ -42,6 +44,10 @@ public final class Login extends WebPage {
         response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
         response.renderJavaScriptReference(new PackageResourceReference(getClass(), "Login.js"));
         response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
+    }
+
+    private void closePreviousSession() {
+        Session.get().invalidateNow();
     }
 }
 
