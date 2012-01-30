@@ -4,6 +4,7 @@ import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.util.DateUtil;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.w3c.dom.Element;
 
@@ -207,12 +208,20 @@ public class Declaration implements Serializable{
         declarationValues.add(value);
     }
 
+    public void fillValue(String name, Integer value){
+        fillValue(name, StringUtil.getString(value));
+    }
+
     public void fillValue(String name, String value){
         DeclarationValue declarationValue = getDeclarationValue(name);
 
         if (declarationValue != null){
             declarationValue.setValue(value);
         }
+    }
+
+    public void fillValueByType(String type, Integer value){
+        fillValue(type, StringUtil.getString(value));
     }
 
     public void fillValueByType(String type, String value){
@@ -290,6 +299,11 @@ public class Declaration implements Serializable{
 
         linkedDeclarations.add(new LinkedDeclaration(declaration));
     }
+
+
+
+
+    /*Auto-generated Getters and Setters*/
 
     public Long getId() {
         return id;

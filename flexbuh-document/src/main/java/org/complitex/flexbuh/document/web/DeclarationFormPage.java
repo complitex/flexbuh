@@ -142,7 +142,9 @@ public class DeclarationFormPage extends TemplatePage{
             @Override
             public void onSubmit() {
                 PersonProfile personProfile = profileChoice.getModelObject();
+
                 declaration.setPersonProfileId(personProfile != null ? personProfile.getId() : null);
+                declaration.getHead().setTin(personProfile != null ? personProfile.getTin() : null);
 
                 declarationBean.save(declaration);
 

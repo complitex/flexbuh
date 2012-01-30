@@ -23,10 +23,10 @@ public class PersonProfile extends SessionObject {
     private Integer cSti; // код ДПІ
 
     @XmlElement(name = "C_STI_TIN")
-    private String cStiTin; //Код ЄДРПОУ ДПІ
+    private Integer cStiTin; //Код ЄДРПОУ ДПІ
 
     @XmlElement(name = "TIN")
-    private String tin; // код ЕДРПОУ
+    private Integer tin; // код ЕДРПОУ (Единый государственный реестр предприятий и организаций Украины)
 
     @XmlElement(name = "NAME", required = true)
     private String name;
@@ -128,19 +128,19 @@ public class PersonProfile extends SessionObject {
         this.cSti = cSti;
     }
 
-    public String getCStiTin() {
+    public Integer getCStiTin() {
         return cStiTin;
     }
 
-    public void setCStiTin(String cStiTin) {
+    public void setCStiTin(Integer cStiTin) {
         this.cStiTin = cStiTin;
     }
 
-    public String getTin() {
+    public Integer getTin() {
         return tin;
     }
 
-    public void setTin(String tin) {
+    public void setTin(Integer tin) {
         this.tin = tin;
     }
 

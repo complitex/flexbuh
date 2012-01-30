@@ -63,10 +63,10 @@ public class DeclarationUploadDialog extends TemplatePanel {
                         if (fileName.length() > 15) {
                             PersonProfile personProfile = null;
 
-                            String tin;
+                            Integer tin;
 
                             try {
-                                tin = Long.valueOf(fileName.substring(4, 14)).toString();
+                                tin = Integer.valueOf(fileName.substring(4, 14));
                             } catch (NumberFormatException e) {
                                 getSession().error(getStringFormat("error_filename", fileName));
 

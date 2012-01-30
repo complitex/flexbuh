@@ -143,7 +143,7 @@ public class PersonProfileList extends TemplatePage {
 
                 item.add(new Label("name", profile.getName()));
 
-                item.add(new Label("tin", profile.getTin()));
+                item.add(new Label("tin", profile.getTin() + ""));
 
                 Link select = new Link("action_select") {
                     @Override
