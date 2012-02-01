@@ -69,7 +69,12 @@ public class CookieWebSession extends WebSession{
         // или создаем новую сессию (без куки) и прописываем ее в атрибуты пользователя.
         if (!getUserBean().isAnonymous(user)) {
             if (user.getSessionId() != null) {
-                return getSessionBean().getSessionById(user.getSessionId());
+                Session session = getSessionBean().getSessionById(user.getSessionId());
+
+                // Обновить информацио о последнем входе пользователя в систему
+                updateLastAccessDateSession(session);
+
+                return session;
             }
 
             Session session = createSession();
@@ -107,6 +112,9 @@ public class CookieWebSession extends WebSession{
 
             webResponse.clearCookie(cookie);
             webResponse.addCookie(new Cookie(SESSION_COOKIE_NAME, session.getCookie()));
+        } else {
+            // Обновить информацио о последнем входе пользователя в систему
+            updateLastAccessDateSession(session);
         }
 
         return session;
@@ -159,5 +167,10 @@ public class CookieWebSession extends WebSession{
         sessionBean.create(session);
 
         return session;
+    }
+
+    private void updateLastAccessDateSession(Session session) {
+        session.setLastAccessDate(new Date());
+        getSessionBean().updateLastAccessDate(session);
     }
 }

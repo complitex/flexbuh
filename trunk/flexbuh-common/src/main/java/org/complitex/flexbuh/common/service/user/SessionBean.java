@@ -24,4 +24,8 @@ public class SessionBean extends AbstractBean {
 	public void create(Session session) {
 		sqlSession().insert(NS + ".insertSession", session);
 	}
+
+    public void updateLastAccessDate(Session session) {
+        sqlSession().update(NS + ".updateLastAccessDateSession", session);
+    }
 }
