@@ -5,11 +5,17 @@
     <resultMap id="sessionResultMap" type="org.complitex.flexbuh.common.entity.user.Session">
 		<id column="id" property="id"/>
         <result column="cookie" property="cookie"/>
+        <result column="create_date" property="createDate"/>
+        <result column="last_access_date" property="lastAccessDate"/>
     </resultMap>
 
     <insert id="insertSession" parameterType="org.complitex.flexbuh.common.entity.user.Session" keyProperty="id" useGeneratedKeys="true">
-        insert into `session` (`cookie`) values (#{cookie})
+        insert into `session` (`cookie`, `create_date`, `last_access_date`) values (#{cookie}, #{createDate}, #{lastAccessDate})
     </insert>
+
+    <update id="updateLastAccessDateSession" parameterType="org.complitex.flexbuh.common.entity.user.Session">
+        update `session` set `last_access_date` = #{lastAccessDate} where `id` = #{id}
+    </update>
 
 	<select id="selectSession" parameterType="org.complitex.flexbuh.common.entity.user.Session" resultMap="sessionResultMap">
         select * from `session` where `id` = #{id}
