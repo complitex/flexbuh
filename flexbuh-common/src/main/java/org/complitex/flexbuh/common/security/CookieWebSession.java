@@ -1,13 +1,10 @@
 package org.complitex.flexbuh.common.security;
 
 import org.apache.wicket.protocol.http.WebSession;
-import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
-import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
-import org.apache.wicket.util.cookies.CookieUtils;
 import org.apache.wicket.util.crypt.Base64;
 import org.complitex.flexbuh.common.entity.user.Session;
 import org.complitex.flexbuh.common.entity.user.User;
@@ -16,8 +13,6 @@ import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.util.EjbUtil;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.servlet.http.Cookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +23,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 09.09.11 16:33
  */
-public class CookieWebSession extends WebSession{
+public class CookieWebSession extends WebSession {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CookieWebSession.class);
 
@@ -36,9 +31,11 @@ public class CookieWebSession extends WebSession{
     private static final int SESSION_MAX_AGE = 2592000;
 
     private Session session;
+    private String login;
 
-    public CookieWebSession(Request request) {
+    public CookieWebSession(Request request, Principal principal) {
         super(request);
+        this.login = principal != null ? principal.getName(): null;
     }
 
     public Long getSessionId() {
@@ -62,12 +59,12 @@ public class CookieWebSession extends WebSession{
 
         WebResponse webResponse = ((WebResponse) RequestCycle.get().getResponse());
         WebRequest webRequest = (WebRequest) RequestCycle.get().getRequest();
-        
-        User user = getUserBean().getCurrentUser();
 
         // Если пользователь не анонимный, то берем сессию из его атрибутов
         // или создаем новую сессию (без куки) и прописываем ее в атрибуты пользователя.
-        if (!getUserBean().isAnonymous(user)) {
+        if (login != null) {
+            User user = getUserBean().getUser(login);
+
             if (user.getSessionId() != null) {
                 Session session = getSessionBean().getSessionById(user.getSessionId());
 

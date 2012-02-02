@@ -80,6 +80,10 @@ public abstract class ServletAuthWebApplication extends WebApplication
 
     @Override
     public Session newSession(Request request, Response response) {
-        return new CookieWebSession(request);
+        WebRequest servletWebRequest = (WebRequest) RequestCycle.get().getRequest();
+        //todo test
+        HttpServletRequest servletRequest = (HttpServletRequest) servletWebRequest.getContainerRequest();
+
+        return new CookieWebSession(request, servletRequest.getUserPrincipal());
     }
 }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import java.security.Principal;
 import java.util.Collections;
@@ -54,7 +55,6 @@ public class UserBean extends AbstractBean {
 
     public User getCurrentUser() {
         Principal principal = sessionContext.getCallerPrincipal();
-        log.debug("caller principal: {}", principal);
         return principal != null? getUser(principal.getName()): null;
     }
 
