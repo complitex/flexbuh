@@ -54,6 +54,7 @@ public class UserBean extends AbstractBean {
 
     public User getCurrentUser() {
         Principal principal = sessionContext.getCallerPrincipal();
+        log.debug("caller principal: {}", principal);
         return principal != null? getUser(principal.getName()): null;
     }
 
