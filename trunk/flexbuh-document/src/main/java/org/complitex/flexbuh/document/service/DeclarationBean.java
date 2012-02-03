@@ -3,11 +3,8 @@ package org.complitex.flexbuh.document.service;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.entity.*;
-import org.complitex.flexbuh.document.exception.DeclarationSaveException;
-import org.complitex.flexbuh.document.util.DeclarationUtil;
 
 import javax.ejb.Stateless;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -95,21 +92,6 @@ public class DeclarationBean extends AbstractBean{
 
     public void deleteDeclarationValue(Long id){
         sqlSession().delete(NS + ".deleteDeclarationValue", id);
-    }
-
-    public Declaration save(Long sessionId, Long personProfileId, InputStream inputStream) throws DeclarationSaveException {
-        try {
-            //todo add linked
-            Declaration declaration = DeclarationUtil.getDeclaration(inputStream);
-            declaration.setSessionId(sessionId);
-            declaration.setPersonProfileId(personProfileId);
-
-            save(declaration);
-
-            return declaration;
-        } catch (Exception e) {
-            throw new DeclarationSaveException(e);
-        }
     }
 
     @SuppressWarnings("unchecked")

@@ -4,12 +4,12 @@ import org.apache.fop.apps.Driver;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
+import org.complitex.flexbuh.common.entity.template.TemplateFO;
+import org.complitex.flexbuh.common.service.TemplateBean;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
-import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.common.entity.template.TemplateFO;
-import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.document.service.DeclarationService;
 
 import javax.ejb.EJB;
 import javax.xml.transform.Result;
@@ -32,6 +32,9 @@ public class FopTestPage extends WebPage{
     
     @EJB
     private DeclarationBean declarationBean;
+
+    @EJB
+    private DeclarationService declarationService;
 
     public FopTestPage() {
         add(new Form("form"){
@@ -79,7 +82,7 @@ public class FopTestPage extends WebPage{
 
             // Step 5: Setup input and output for XSLT transformation
             // Setup input stream
-            Source src = new StreamSource(new StringReader(DeclarationUtil.getString(declaration)));
+            Source src = new StreamSource(new StringReader(declarationService.getString(declaration, false)));
 
 //            // Resulting SAX events (the generated FO) must be piped through to FOP
 //            Result res = new SAXResult(fop.getDefaultHandler());

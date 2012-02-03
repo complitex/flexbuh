@@ -6,10 +6,11 @@ import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationHead;
-import org.complitex.flexbuh.document.util.DeclarationUtil;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.complitex.flexbuh.common.entity.PersonType.*;
 
@@ -19,6 +20,8 @@ import static org.complitex.flexbuh.common.entity.PersonType.*;
  */
 @Stateless
 public class DeclarationFillService {
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+    
     @EJB
     private TaxInspectionBean taxInspectionBean;
 
@@ -70,12 +73,12 @@ public class DeclarationFillService {
         declaration.fillValueByType("DGHNSPDV", personProfile.getNumPdvSvd());
 
         if (JOINT_AGREEMENT.equals(personProfile.getPersonType())){
-            declaration.fillValueByType("DGHDDGVSD", DeclarationUtil.getString(personProfile.getContractDate()));
+            declaration.fillValueByType("DGHDDGVSD", getString(personProfile.getContractDate()));
             declaration.fillValueByType("DGHNDGVSD", personProfile.getContractNumber());
         }
 
         if (PROPERTY_AGREEMENT.equals(personProfile.getPersonType())){
-            declaration.fillValueByType("DGHDDGVUM", DeclarationUtil.getString(personProfile.getContractDate()));
+            declaration.fillValueByType("DGHDDGVUM", getString(personProfile.getContractDate()));
             declaration.fillValueByType("DGHNDGVUM", personProfile.getContractNumber());
         }
 
@@ -139,5 +142,14 @@ public class DeclarationFillService {
         declaration.fillValue("HNSPDV" + type, personProfile.getNumPdvSvd());
         declaration.fillValue("HLOC" + type, personProfile.getAddress());
     }
+
+    private String getString(Date date){
+        if (date != null){
+            return DATE_FORMAT.format(date);
+        }
+
+        return null;
+    }
+
 
 }

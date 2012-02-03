@@ -5,13 +5,13 @@ import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.util.StringUtil;
-import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -27,6 +27,9 @@ import java.util.regex.Pattern;
 @XmlSeeAlso(DeclarationValue.class)
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class Declaration implements Serializable{
+    @XmlTransient
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+
     @XmlTransient
     private final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
 
@@ -75,7 +78,7 @@ public class Declaration implements Serializable{
     private Long possibleParentId;
 
     public Declaration() {
-        head.setDFill(DeclarationUtil.getString(DateUtil.getCurrentDate()));
+        head.setDFill(DATE_FORMAT.format(DateUtil.getCurrentDate()));
     }
 
     public Declaration(String templateName) {
