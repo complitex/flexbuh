@@ -25,7 +25,7 @@
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+			<pattern>%d %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
 

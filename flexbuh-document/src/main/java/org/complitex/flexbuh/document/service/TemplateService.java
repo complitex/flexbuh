@@ -1,10 +1,9 @@
 package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.common.service.TemplateBean;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.exception.LoadDocumentException;
-import org.complitex.flexbuh.document.util.DeclarationUtil;
-import org.complitex.flexbuh.common.service.TemplateBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -37,9 +36,12 @@ public class TemplateService {
     @EJB
     private TemplateBean templateBean;
 
+    @EJB
+    private DeclarationService declarationService;
+
     public Document getTemplate(String templateName, Declaration declaration) throws LoadDocumentException{
         try {
-            return DeclarationUtil.getDocument(declaration, templateBean.getTemplateXSL(templateName));
+            return declarationService.getDocument(declaration, templateBean.getTemplateXSL(templateName));
         } catch (Exception e) {
             throw new LoadDocumentException(e);
         }

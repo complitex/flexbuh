@@ -12,7 +12,8 @@ import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePanel;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.service.DeclarationBean;
+import org.complitex.flexbuh.document.exception.DeclarationValidateException;
+import org.complitex.flexbuh.document.service.DeclarationService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,12 @@ import java.util.List;
  */
 public class DeclarationUploadDialog extends TemplatePanel {
     private final static Logger log = LoggerFactory.getLogger(DeclarationUploadDialog.class);
-    
+
     @EJB
     private PersonProfileBean personProfileBean;
-    
+
     @EJB
-    private DeclarationBean declarationBean;
+    private DeclarationService declarationService;
 
     private Dialog dialog;
 
@@ -54,52 +55,65 @@ public class DeclarationUploadDialog extends TemplatePanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
-                try {
-                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
-                    for (FileUpload fileUpload : fileUploads){
-                        String fileName = fileUpload.getClientFileName();
+                List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
-                        if (fileName.length() > 15) {
-                            PersonProfile personProfile = null;
+                for (FileUpload fileUpload : fileUploads){
+                    String fileName = fileUpload.getClientFileName();
 
-                            Integer tin;
+                    if (fileName.length() > 15) {
+                        PersonProfile personProfile = null;
 
-                            try {
-                                tin = Integer.valueOf(fileName.substring(4, 14));
-                            } catch (NumberFormatException e) {
-                                getSession().error(getStringFormat("error_filename", fileName));
+                        Integer tin;
 
+                        try {
+                            tin = Integer.valueOf(fileName.substring(4, 14));
+                        } catch (NumberFormatException e) {
+                            getSession().error(getStringFormat("error_filename", fileName));
+
+                            break;
+                        }
+
+                        for (PersonProfile pp : personProfiles){
+                            if (tin.equals(pp.getTin())){
+                                personProfile = pp;
                                 break;
                             }
+                        }
 
-                            for (PersonProfile pp : personProfiles){
-                                if (tin.equals(pp.getTin())){
-                                    personProfile = pp;
-                                    break;
-                                }
-                            }
-
-                            Declaration declaration = declarationBean.save(getSessionId(),
+                        try {
+                            Declaration declaration = declarationService.parseAndSave(getSessionId(),
                                     personProfile != null ? personProfile.getId() : null,
                                     fileUpload.getInputStream());
 
-                            getSession().info(getStringFormat("info_declaration_upload",
+                            String info = getStringFormat("info_declaration_upload",
                                     fileName,
                                     getString("period_type_" + declaration.getHead().getPeriodType()),
                                     declaration.getHead().getPeriodMonth(),
                                     declaration.getHead().getPeriodYear(),
-                                    personProfile != null ? personProfile.getProfileName() : getString("empty_profile")));
+                                    personProfile != null ? personProfile.getProfileName() : getString("empty_profile"));
+
+                            try {
+                                declarationService.validate(declaration);
+
+                                info += ", " + getString("info_validation_ok");
+                            } catch (DeclarationValidateException e) {
+                                info += ", " + getStringFormat("info_validation_error", e.getCause().getLocalizedMessage());
+                            }
+
+                            getSession().info(info);
+                        } catch (Exception e) {
+                            getSession().error(getStringFormat("error_upload", fileName));
+
+                            log.error("Ошибка загрузки файла", e);
                         }
                     }
-
-                    update.onUpdate(target);
-
-                    dialog.close(target);
-                } catch (Exception e) {
-                    log.error("Ошибка загрузки файла", e);
-                    error("Ошибка загрузки файла");
                 }
+
+                update.onUpdate(target);
+
+                dialog.close(target);
+
             }
 
             @Override

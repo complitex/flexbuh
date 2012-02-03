@@ -6,11 +6,12 @@ import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.util.DeclarationUtil;
+import org.complitex.flexbuh.document.exception.DeclarationParseException;
+import org.complitex.flexbuh.document.service.DeclarationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
+import javax.ejb.EJB;
 import java.nio.charset.Charset;
 
 /**
@@ -19,7 +20,10 @@ import java.nio.charset.Charset;
  */
 public class DeclarationXmlLink extends Link{  
     private final static Logger log = LoggerFactory.getLogger(DeclarationXmlLink.class);
-    
+
+    @EJB
+    private DeclarationService declarationService;
+
     private Declaration declaration;
     
     public DeclarationXmlLink(String id, Declaration declaration) {
@@ -31,14 +35,14 @@ public class DeclarationXmlLink extends Link{
     @Override
     public void onClick() {
         try {
-            String data = DeclarationUtil.getString(declaration);
+            String data = declarationService.getString(declaration);
             StringResourceStream stringResourceStream = new StringResourceStream(data, "application/xml");
             stringResourceStream.setCharset(Charset.forName("UTF-8"));
             stringResourceStream.setLastModified(Time.now());
 
             getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
                     stringResourceStream, declaration.getFileName() + ".xml"));
-        } catch (JAXBException e) {
+        } catch (DeclarationParseException e) {
             log.error("Ошибка генерации xml документа");
             
             throw new WicketRuntimeException(e);
