@@ -12,6 +12,25 @@
     </h1>
     <div wicket:id="messages"></div>
 
+    <div wicket:id="add_roles_dialog">
+        <form action="#" wicket:id="select_roles_form">
+            <table>
+                <tr>
+                    <td style="width: 100%">
+                        <select wicket:id="select_roles" style="height: 75px; width: 277px">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="btnSmall default" wicket:id="add" type="submit" wicket:message="value:add" tabindex="0"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
     <form action="#" wicket:id="form">
         <table class="tbForm">
             <tr>
@@ -44,36 +63,20 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <table class="tbForm">
-                        <thead>
-                        <tr>
-                            <th>
-                                <wicket:message key="available"/>
-                            </th>
-                            <th/>
-                            <th>
-                                <wicket:message key="enabled"/>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tr>
+                    <table class="tbForm" wicket:id="rolesContainer">
+                        <tr wicket:id="roles">
                             <td>
-                                <select wicket:id="select_roles" style="height: 75px; width: 277px">
-                                    <option></option>
-                                </select>
+                                <input class="selected" type="checkbox" wicket:id="selected"/>
                             </td>
                             <td>
-                                <input class="btnSmall default" wicket:id="add" type="submit" wicket:message="value:add" tabindex="0"/>
-                                <br/>
-                                <input class="btnSmall default" wicket:id="remove" type="submit" wicket:message="value:remove" tabindex="0"/>
-                            </td>
-                            <td>
-                                <select wicket:id="enabled_roles" style="height: 75px; width: 277px">
-                                    <option></option>
-                                </select>
+                                <span wicket:id="roleName"></span>
                             </td>
                         </tr>
                     </table>
+                    <div>
+                        <input type="button" wicket:id="addRoles" wicket:message="value:add_roles" class="btnMiddle"/>
+                        <input type="button" wicket:id="removeRoles" wicket:message="value:remove_roles" class="btnMiddle"/>
+                    </div>
                 </td>
             </tr>
         </table>

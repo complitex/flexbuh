@@ -5,12 +5,17 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -33,6 +38,7 @@ import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +46,8 @@ import javax.ejb.EJB;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * @author Pavel Sknar
@@ -72,6 +80,11 @@ public class UserEdit extends FormTemplatePage {
     private User user;
     private IModel<String> streetModel = new Model<String>();
     private IModel<String> cityModel = new Model<String>();
+
+    private Form form;
+
+    private Dialog addRolesDialog;
+
 
     public UserEdit() {
         user = new User();
@@ -107,7 +120,7 @@ public class UserEdit extends FormTemplatePage {
 
         add(new FeedbackPanel("messages"));
 
-        Form form = new Form("form");
+        form = new Form("form");
         add(form);
 
         // Login
@@ -278,76 +291,34 @@ public class UserEdit extends FormTemplatePage {
         // Apartment
         userAddress.add(new TextField<>("apartment", new PropertyModel<String>(user, "apartment")));
 
-        // Enabled roles
-        final IModel<ArrayList<String>> selectedEnabledRoles = new Model<ArrayList<String>>();
-        final ListMultipleChoice<String> enabledRolesChoice = new ListMultipleChoice<String>("enabled_roles", selectedEnabledRoles, new PropertyModel<List<String>>(user, "roles")) {
+        // Show enabled user roles
+        final WebMarkupContainer rolesContainer = new WebMarkupContainer("rolesContainer");
+        rolesContainer.setOutputMarkupId(true);
+        form.add(rolesContainer);
+
+        final Map<String, IModel<Boolean>> selectedMap = newHashMap();
+        for (String role : user.getRoles()) {
+            selectedMap.put(role, new Model<Boolean>(false));
+        }
+        ListView<String> roles = new ListView<String>("roles", new PropertyModel<List<String>>(user, "roles")) {
+
             @Override
-            protected boolean localizeDisplayValues() {
-                return true;
+            protected void populateItem(ListItem<String> item) {
+                final String roleName = item.getModelObject();
+
+                AjaxCheckBox selected = new AjaxCheckBox("selected", selectedMap.get(roleName)) {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+
+                    }
+                };
+                item.add(selected);
+                item.add(new Label("roleName", getStringOrKey(roleName)));
+
             }
         };
-        enabledRolesChoice.setMaxRows(10);
-        enabledRolesChoice.setOutputMarkupId(true);
-        form.add(enabledRolesChoice);
-
-        // Available roles
-        final ArrayList<String> selectedNewRoles = new ArrayList<String>();
-        final List<String> selectRoles = getSelectRoles();
-        final ListMultipleChoice<String> selectRolesChoice = new ListMultipleChoice<String>("select_roles", new Model<ArrayList<String>>(selectedNewRoles), selectRoles) {
-            @Override
-            protected boolean localizeDisplayValues() {
-                return true;
-            }
-        };
-        selectRolesChoice.setMaxRows(10);
-        selectRolesChoice.setOutputMarkupId(true);
-        form.add(selectRolesChoice);
-
-        // Button add role
-        AjaxButton add = new AjaxButton("add") {
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
-                update(target);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                update(target);
-            }
-
-            private void update(AjaxRequestTarget target) {
-                selectRoles.removeAll(selectedNewRoles);
-                user.getRoles().addAll(selectedNewRoles);
-
-                target.add(enabledRolesChoice);
-                target.add(selectRolesChoice);
-            }
-        };
-        form.add(add);
-
-        // Button remove role
-        AjaxButton remove = new AjaxButton("remove") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
-                update(target);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                log.debug("error remove");
-                update(target);
-            }
-
-            private void update(AjaxRequestTarget target) {
-                selectRoles.addAll(selectedEnabledRoles.getObject());
-                user.getRoles().removeAll(selectedEnabledRoles.getObject());
-
-                target.add(enabledRolesChoice);
-                target.add(selectRolesChoice);
-            }
-        };
-        form.add(remove);
+        rolesContainer.add(roles);
 
         // Button update/create user
         AtomicReference<Button> updateOrCreate = new AtomicReference<Button>(new SaveUserButton("submit"));
@@ -360,6 +331,112 @@ public class UserEdit extends FormTemplatePage {
                 setResponsePage(UserList.class);
             }
         });
+
+        // Dialog add roles
+        addRolesDialog = new Dialog("add_roles_dialog");
+        addRolesDialog.setTitle(getString("add_roles"));
+        //addRolesDialog.setWidth(500);
+        //addRolesDialog.setHeight(100);
+
+        add(addRolesDialog);
+
+        Form selectRolesForm = new Form("select_roles_form");
+
+        final ArrayList<String> selectedNewRoles = new ArrayList<String>();
+        final List<String> selectRoles = getSelectRoles();
+        final ListMultipleChoice<String> selectRolesChoice = new ListMultipleChoice<String>("select_roles", new Model<ArrayList<String>>(selectedNewRoles), selectRoles) {
+            @Override
+            protected boolean localizeDisplayValues() {
+                return true;
+            }
+        };
+        selectRolesChoice.setMaxRows(10);
+        selectRolesChoice.setOutputMarkupId(true);
+        selectRolesForm.add(selectRolesChoice);
+
+        // Button add roles on form. Show dialog
+        final AjaxSubmitLink addRoles = new AjaxSubmitLink("addRoles") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                addRolesDialog.open(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return selectRoles.size() > 0;
+            }
+        };
+        form.add(addRoles);
+
+        // Button remove roles on form
+        final AjaxButton remove = new AjaxButton("removeRoles") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form form) {
+                update(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                log.debug("error remove");
+                update(target);
+            }
+
+            private void update(AjaxRequestTarget target) {
+                for (Map.Entry<String, IModel<Boolean>> entry : selectedMap.entrySet()) {
+                    if (entry.getValue().getObject()) {
+                        selectRoles.add(entry.getKey());
+                        user.getRoles().remove(entry.getKey());
+                    }
+                }
+                selectedMap.clear();
+                for (String role : user.getRoles()) {
+                    selectedMap.put(role, new Model<Boolean>(false));
+                }
+
+                target.add(selectRolesChoice);
+                target.add(rolesContainer);
+                target.add(this);
+                target.add(addRoles);
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return user.getRoles().size() > 0;
+            }
+        };
+        form.add(remove);
+
+        // Button add roles on dialog
+        selectRolesForm.add(new AjaxButton("add") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                selectRoles.removeAll(selectedNewRoles);
+                user.getRoles().addAll(selectedNewRoles);
+                for (String newRole : selectedNewRoles) {
+                    selectedMap.put(newRole, new Model<Boolean>(false));
+                }
+
+                target.add(selectRolesChoice);
+                target.add(rolesContainer);
+                target.add(remove);
+                target.add(addRoles);
+
+                addRolesDialog.close(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+
+            }
+        });
+
+        addRolesDialog.add(selectRolesForm);
     }
 
     @SuppressWarnings("unchecked")

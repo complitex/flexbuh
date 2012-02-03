@@ -97,28 +97,31 @@ public class UserBean extends AbstractBean {
         Map<String, String> role = Maps.newHashMap();
         role.put("login", user.getLogin());
         int i = 0, k = 0, j;
-        for (; k < dbUser.getRoles().size() && i < user.getRoles().size(); k++) {
+        while (k < dbUser.getRoles().size()) {
 
             String dbUserRole = dbUser.getRoles().get(k);
 
+            j = -1;
             while (i < user.getRoles().size()) {
                 String userRole = user.getRoles().get(i);
                 j = dbUserRole.compareTo(userRole);
                 if (j < 0) {
                     role.put("role", dbUserRole);
                     sqlSession().delete(NS + ".deleteUserRole", role);
-                    if (k < dbUser.getRoles().size()) {
-                        break;
-                    }
+                    break;
                 } else if (j > 0) {
                     role.put("role", userRole);
-                    sqlSession().delete(NS + ".insertUserRole", role);
+                    sqlSession().insert(NS + ".insertUserRole", role);
                 } else {
                     i++;
                     break;
                 }
                 i++;
             }
+            if (i >= user.getRoles().size() && j != 0) {
+                break;
+            }
+            k++;
         }
 
         while (k < dbUser.getRoles().size()) {
