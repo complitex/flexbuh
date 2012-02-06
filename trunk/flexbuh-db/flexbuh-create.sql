@@ -372,6 +372,7 @@ CREATE TABLE `declaration` (
   `type`  VARCHAR(32),
   `filename`  VARCHAR(32),
   `date` DATETIME,
+  `validated` BOOLEAN,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`person_profile_id`, `c_doc`, `c_doc_sub`, `period_type`, `period_month`, `period_year`),
   KEY `key_declaration__parent_id` (`parent_id`),

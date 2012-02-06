@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.web.component;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -17,6 +18,22 @@ public class BookmarkablePageLinkPanel <T> extends Panel {
         super(id);
         Link link = new BookmarkablePageLink<T>("link", page, parameters);
         link.add(new Label("label", label));
+        add(link);
+    }
+    
+    public <C extends Page> BookmarkablePageLinkPanel(String id, String label, Class<C> page, PageParameters parameters, final String style) {
+        super(id);
+        Link link = new BookmarkablePageLink<T>("link", page, parameters);
+        link.add(new Label("label", label){
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+
+                if (style != null) {
+                    tag.put("style", style);
+                }
+            }
+        });
         add(link);
     }
 

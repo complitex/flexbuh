@@ -77,6 +77,12 @@ public class Declaration implements Serializable{
     @XmlTransient
     private Long possibleParentId;
 
+    @XmlTransient
+    private boolean validated;
+
+    @XmlTransient
+    private String validatorMessage;
+
     public Declaration() {
         head.setDFill(DATE_FORMAT.format(DateUtil.getCurrentDate()));
     }
@@ -402,5 +408,21 @@ public class Declaration implements Serializable{
 
     public void setPossibleParentId(Long possibleParentId) {
         this.possibleParentId = possibleParentId;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
+    }
+
+    public String getValidatorMessage() {
+        return validatorMessage;
+    }
+
+    public void setValidatorMessage(String validatorMessage) {
+        this.validatorMessage = validatorMessage;
     }
 }
