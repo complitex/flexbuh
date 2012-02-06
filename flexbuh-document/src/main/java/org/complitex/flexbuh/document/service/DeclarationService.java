@@ -8,6 +8,7 @@ import org.complitex.flexbuh.common.service.TemplateBean;
 import org.complitex.flexbuh.common.xml.LSInputImpl;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.exception.DeclarationParseException;
 import org.complitex.flexbuh.document.exception.DeclarationSaveException;
 import org.complitex.flexbuh.document.exception.DeclarationValidateException;
@@ -127,10 +128,34 @@ public class DeclarationService {
 
             validator.validate(new DOMSource(document));
         } catch (Exception e) {
-            log.error("Упс!", e);
-
             throw new DeclarationValidateException("Ошибка проверки структуры данных", e);
         }
+    }
+
+    public void validateAndSave(Declaration declaration){
+        try {
+            validate(declaration);
+            declaration.setValidated(true);
+        } catch (DeclarationValidateException e) {
+            declaration.setValidated(false);
+            declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
+        }
+
+        if (declaration.getLinkedDeclarations() != null){
+            for (LinkedDeclaration ld : declaration.getLinkedDeclarations()){
+                Declaration linked = ld.getDeclaration();
+
+                try {
+                    validate(linked);
+                    linked.setValidated(true);
+                } catch (DeclarationValidateException e) {
+                    linked.setValidated(false);
+                    declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
+                }
+            }
+        }
+
+        declarationBean.save(declaration);
     }
     
     public String getString(Declaration declaration, TemplateXSL xsl) throws DeclarationParseException{
@@ -353,6 +378,14 @@ public class DeclarationService {
         Declaration declaration = getDeclaration(inputStream);
         declaration.setSessionId(sessionId);
         declaration.setPersonProfileId(personProfileId);
+
+        try {
+            validate(declaration);
+            declaration.setValidated(true);
+        } catch (DeclarationValidateException e) {
+            declaration.setValidated(false);
+            declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
+        }
 
         declarationBean.save(declaration);
 

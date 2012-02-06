@@ -12,7 +12,6 @@ import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePanel;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.exception.DeclarationValidateException;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -93,12 +92,10 @@ public class DeclarationUploadDialog extends TemplatePanel {
                                     declaration.getHead().getPeriodYear(),
                                     personProfile != null ? personProfile.getProfileName() : getString("empty_profile"));
 
-                            try {
-                                declarationService.validate(declaration);
-
+                            if (declaration.isValidated()){
                                 info += ", " + getString("info_validation_ok");
-                            } catch (DeclarationValidateException e) {
-                                info += ", " + getStringFormat("info_validation_error", e.getCause().getLocalizedMessage());
+                            }else {
+                                info += ", " + getStringFormat("info_validation_error", declaration.getValidatorMessage());
                             }
 
                             getSession().info(info);

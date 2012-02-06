@@ -22,6 +22,7 @@ import org.complitex.flexbuh.common.web.component.PersonProfileChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
+import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.document.web.component.AddLinkedDeclarationDialog;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
@@ -38,6 +39,9 @@ import java.util.List;
 public class DeclarationFormPage extends TemplatePage{
     @EJB
     private transient DeclarationBean declarationBean;
+
+    @EJB
+    private transient DeclarationService declarationService;
 
     @EJB
     private transient DocumentBean documentBean;
@@ -146,9 +150,13 @@ public class DeclarationFormPage extends TemplatePage{
                 declaration.setPersonProfileId(personProfile != null ? personProfile.getId() : null);
                 declaration.getHead().setTin(personProfile != null ? personProfile.getTin() : null);
 
-                declarationBean.save(declaration);
+                declarationService.validateAndSave(declaration);
 
-                getSession().info(getString("info_saved"));
+                getSession().info(getStringFormat("info_saved"));
+
+                if (!declaration.isValidated()) {
+                    getSession().info(declaration.getValidatorMessage());
+                }
 
                 setResponsePage(DeclarationList.class);
             }
@@ -161,9 +169,13 @@ public class DeclarationFormPage extends TemplatePage{
                 Long selected = personProfileBean.getSelectedPersonProfileId(declaration.getSessionId());
 
                 if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
-                    declarationBean.save(declaration);
+                    declarationService.validateAndSave(declaration);
 
                     getSession().info(getString("info_saved"));
+
+                    if (!declaration.isValidated()) {
+                        getSession().info(declaration.getValidatorMessage());
+                    }
 
                     setResponsePage(DeclarationList.class);
                 }else {

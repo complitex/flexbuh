@@ -24,6 +24,7 @@
         <result column="d_fill" property="head.dFill"/>
         <result column="software" property="head.software"/>
         <result column="date" property="date"/>
+        <result column="validated" property="validated"/>
 
         <association property="possibleParentId" column="id" select="selectPossibleDeclarationParentId"/>
 
@@ -67,12 +68,15 @@
         select * from `declaration_value` where `declaration_id` = #{declaration_id}
     </select>
 
-    <insert id="insertDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration" keyProperty="id" useGeneratedKeys="true">
-        insert into `declaration` (`parent_id`, `session_id`, `person_profile_id`, `tin`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`,
-          `period_month`, `period_type`, `period_year`, `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`, `date`)
-        values (#{parentId}, #{sessionId}, #{personProfileId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub}, #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg},
-          #{head.cRaj}, #{head.periodMonth}, #{head.periodType}, #{head.periodYear}, #{head.cStiOrig}, #{head.cDocStan}, #{head.dFill},
-          #{head.software}, #{date})
+    <insert id="insertDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into `declaration` (`parent_id`, `session_id`, `person_profile_id`, `tin`, `c_doc`, `c_doc_sub`,
+          `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`, `period_month`, `period_type`, `period_year`,
+          `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`, `date`, `validated`)
+        values (#{parentId}, #{sessionId}, #{personProfileId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub},
+          #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg}, #{head.cRaj}, #{head.periodMonth},
+          #{head.periodType}, #{head.periodYear}, #{head.cStiOrig}, #{head.cDocStan}, #{head.dFill}, #{head.software},
+          #{date}, #{validated})
     </insert>
 
     <insert id="insertDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
@@ -129,7 +133,7 @@
           `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg}, `c_raj` = #{head.cRaj},
           `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
           `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill},
-          `software` = #{head.software}, `date` = #{date}
+          `software` = #{head.software}, `date` = #{date}, `validated` = #{validated}
         where `id` = #{id}
     </update>
 
