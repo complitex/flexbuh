@@ -60,7 +60,7 @@ public class DeclarationPdfLink extends NoCacheLink {
                     public Time lastModifiedTime() {
                         return Time.now();
                     }
-                }, declaration.getFileName() + ".pdf"));
+                }, declaration.getFileName().replace(".xml", ".pdf")));
 
     }
 }

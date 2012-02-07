@@ -309,8 +309,8 @@ public class DeclarationList extends TemplatePage{
                 item.add(linkedContainer);
 
                 final ListView linkedDeclarations = new ListView<LinkedDeclaration>("linked_declarations",
-                        declaration.getLinkedDeclarations() != null 
-                                ? declaration.getLinkedDeclarations() 
+                        declaration.getHead().getLinkedDeclarations() != null
+                                ? declaration.getHead().getLinkedDeclarations()
                                 : new ArrayList<LinkedDeclaration>()) {
                     @Override
                     protected void populateItem(ListItem<LinkedDeclaration> linkedItem) {

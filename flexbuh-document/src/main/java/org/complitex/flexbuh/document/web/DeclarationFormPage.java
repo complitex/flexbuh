@@ -111,8 +111,8 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(accordion);
 
         ListView listView = new ListView<LinkedDeclaration>("declarations",
-                declaration.getLinkedDeclarations() != null
-                        ? declaration.getLinkedDeclarations()
+                declaration.getHead().getLinkedDeclarations() != null
+                        ? declaration.getHead().getLinkedDeclarations()
                         : new ArrayList<LinkedDeclaration>()) {
 
             @Override

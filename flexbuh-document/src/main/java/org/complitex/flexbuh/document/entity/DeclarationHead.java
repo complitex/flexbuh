@@ -1,17 +1,15 @@
 package org.complitex.flexbuh.document.entity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 07.09.11 15:11
  */
 @XmlType
-@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DeclarationHead implements Serializable {
     @XmlElement(name = "TIN")
     private Integer tin = 0; // код плательщика
@@ -51,6 +49,10 @@ public class DeclarationHead implements Serializable {
 
     @XmlElement(name = "C_DOC_STAN")
     private Integer cDocStan = 0; // законодательство
+
+    @XmlElementWrapper(name = "LINKED_DOCS")
+    @XmlElement(name = "DOC")
+    private List<LinkedDeclaration> linkedDeclarations;
 
     @XmlElement(name = "D_FILL")
     private String dFill; // дата заполненные документы плательщиком
@@ -307,6 +309,14 @@ public class DeclarationHead implements Serializable {
      */
     public void setCDocStan(Integer cDocStan) {
         this.cDocStan = cDocStan;
+    }
+
+    public List<LinkedDeclaration> getLinkedDeclarations() {
+        return linkedDeclarations;
+    }
+
+    public void setLinkedDeclarations(List<LinkedDeclaration> linkedDeclarations) {
+        this.linkedDeclarations = linkedDeclarations;
     }
 
     /**

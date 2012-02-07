@@ -60,8 +60,8 @@ public class DeclarationBean extends AbstractBean{
         }
 
         //linked declaration
-        if (declaration.getLinkedDeclarations() != null){
-            for (LinkedDeclaration linkedDeclaration : declaration.getLinkedDeclarations()){
+        if (declaration.getHead().getLinkedDeclarations() != null){
+            for (LinkedDeclaration linkedDeclaration : declaration.getHead().getLinkedDeclarations()){
                 Declaration d = linkedDeclaration.getDeclaration();
                 d.setParentId(declaration.getId());
                 d.setPersonProfileId(declaration.getPersonProfileId());

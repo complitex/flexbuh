@@ -11,13 +11,12 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.07.11 17:29
  */
-@XmlType
-@XmlAccessorType(value = XmlAccessType.PUBLIC_MEMBER)
+@XmlType(propOrder = {"CDoc", "CDocSub", "CDocVer", "CDocType", "CDocCnt", "CDocStan", "filename", "num", "type"})
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class LinkedDeclaration implements Serializable{
     private Long id;
     private String num;         // номер связано документа в перечня
     private String type;        // тип связи
-    private String filename;    // имя файла
 
     @XmlTransient
     private Declaration declaration;
@@ -40,6 +39,125 @@ public class LinkedDeclaration implements Serializable{
 
     public String getName(){
         return declaration.getTemplateName();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDoc()
+     * @return Код документа
+     */
+    @XmlElement(name = "C_DOC")
+    public String getCDoc() {
+        return declaration.getHead().getCDoc();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDoc(String)
+     * @param cDoc Код документа
+     */
+    public void setСDoc(String cDoc) {
+        declaration.getHead().setCDoc(cDoc);
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocSub()
+     * @return Подтип документа
+     */
+    @XmlElement(name = "C_DOC_SUB")
+    public String getCDocSub() {
+        return declaration.getHead().getCDocSub();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocSub(String)
+     * @param cDocSub Подтип документа
+     */
+    public void setCDocSub(String cDocSub) {
+        declaration.getHead().setCDocSub(cDocSub);
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocVer()
+     * @return Номер версии документа
+     */
+    @XmlElement(name = "C_DOC_VER")
+    public Integer getCDocVer() {
+        return declaration.getHead().getCDocVer();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocVer(String)
+     * @param cDocVer Номер версии документа
+     */
+    public void setCDocVer(Integer cDocVer) {
+        declaration.getHead().setCDocVer(cDocVer);
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocType()
+     * @return Номер нового отчетного (уточняющего) документа
+     */
+    @XmlElement(name = "C_DOC_TYPE")
+    public Integer getCDocType() {
+        return declaration.getHead().getCDocType();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocType(String)
+     * @param cDocType Номер нового отчетного (уточняющего) документа
+     */
+    public void setCDocType(Integer cDocType) {
+        declaration.getHead().setCDocType(cDocType);
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocCnt()
+     * @return Номер однотипного документа в периоде
+     */
+    @XmlElement(name = "C_DOC_CNT")
+    public Integer getCDocCnt() {
+        return declaration.getHead().getCDocCnt();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocCnt(String)
+     * @param cDocCnt Номер однотипного документа в периоде
+     */
+    public void setCDocCnt(Integer cDocCnt) {
+        declaration.getHead().setCDocCnt(cDocCnt);
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocStan()
+     * @return Законодательство
+     */
+    @XmlElement(name = "C_DOC_STAN")
+    public Integer getCDocStan() {
+        return declaration.getHead().getCDocStan();
+    }
+
+    /**
+     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocStan(String)
+     * @param cDocStan Законодательство
+     */
+    public void setCDocStan(Integer cDocStan) {
+        declaration.getHead().setCDocStan(cDocStan);
+    }
+
+    /**
+     *
+     * @return Имя файла, содержащего связанный документ
+     */
+    @XmlElement(name = "FILENAME")
+    public String getFilename() {
+        return declaration.getFileName();
+    }
+
+    /**
+     *
+     * @param filename Имя файла, содержащего связанный документ
+     */
+    public void setFilename(String filename) {
+        declaration.setFileName(filename);
     }
 
     /**
@@ -74,125 +192,6 @@ public class LinkedDeclaration implements Serializable{
      */
     public void setType(String type) {
         this.type = type;
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDoc()
-     * @return Код документа
-     */
-    @XmlElement(name = "C_DOC")
-    public String getСDoc() {
-        return declaration.getHead().getCDoc();
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDoc(String)
-     * @param cDoc Код документа
-     */
-    public void setСDoc(String cDoc) {
-        declaration.getHead().setCDoc(cDoc);
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocSub()
-     * @return Подтип документа
-     */
-    @XmlElement(name = "C_DOC_SUB")
-    public String getСDocSub() {
-        return declaration.getHead().getCDocSub();
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocSub(String)
-     * @param cDocSub Подтип документа
-     */
-    public void setСDocSub(String cDocSub) {
-        declaration.getHead().setCDocSub(cDocSub);
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocVer()
-     * @return Номер версии документа
-     */
-    @XmlElement(name = "C_DOC_VER")
-    public Integer getСDocVer() {
-        return declaration.getHead().getCDocVer();
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocVer(String)
-     * @param cDocVer Номер версии документа
-     */
-    public void setСDocVer(Integer cDocVer) {
-        declaration.getHead().setCDocVer(cDocVer);
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocType()
-     * @return Номер нового отчетного (уточняющего) документа
-     */
-    @XmlElement(name = "C_DOC_TYPE")
-    public Integer getСDocType() {
-        return declaration.getHead().getCDocType();
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocType(String)
-     * @param cDocType Номер нового отчетного (уточняющего) документа
-     */
-    public void setCDocType(Integer cDocType) {
-        declaration.getHead().setCDocType(cDocType);
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocCnt()
-     * @return Номер однотипного документа в периоде
-     */
-    @XmlElement(name = "C_DOC_CNT")
-    public Integer getСDocCnt() {
-        return declaration.getHead().getCDocCnt();
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocCnt(String)
-     * @param cDocCnt Номер однотипного документа в периоде
-     */
-    public void setСDocCnt(Integer cDocCnt) {
-        declaration.getHead().setCDocCnt(cDocCnt);
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().getCDocStan()
-     * @return Законодательство
-     */
-    @XmlElement(name = "C_DOC_STAN")
-    public Integer getСDocStan() {
-        return declaration.getHead().getCDocStan();
-    }
-
-    /**
-     * @see org.complitex.flexbuh.document.entity.Declaration#getHead().setCDocStan(String)
-     * @param cDocStan Законодательство
-     */
-    public void setСDocStan(Integer cDocStan) {
-        declaration.getHead().setCDocStan(cDocStan);
-    }
-
-    /**
-     *
-     * @return Имя файла, содержащего связанный документ
-     */
-    @XmlElement(name = "FILENAME")
-    public String getFilename() {
-        return filename;
-    }
-
-    /**
-     *
-     * @param filename Имя файла, содержащего связанный документ
-     */
-    public void setFilename(String filename) {
-        this.filename = filename;
     }
 
     @XmlTransient

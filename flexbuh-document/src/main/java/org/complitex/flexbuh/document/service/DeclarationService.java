@@ -110,8 +110,8 @@ public class DeclarationService {
             declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
         }
 
-        if (declaration.getLinkedDeclarations() != null){
-            for (LinkedDeclaration ld : declaration.getLinkedDeclarations()){
+        if (declaration.getHead().getLinkedDeclarations() != null){
+            for (LinkedDeclaration ld : declaration.getHead().getLinkedDeclarations()){
                 Declaration linked = ld.getDeclaration();
 
                 try {
@@ -303,7 +303,7 @@ public class DeclarationService {
 
                 BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes("UTF-8")), BUFFER);
 
-                ZipEntry zipEntry = new ZipEntry(declaration.getFileName() + ".xml");
+                ZipEntry zipEntry = new ZipEntry(declaration.getFileName());
 
                 zipOutputStream.putNextEntry(zipEntry);
                 int count;
@@ -331,7 +331,7 @@ public class DeclarationService {
 
                 BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(pdf.toByteArray()), BUFFER);
 
-                ZipEntry zipEntry = new ZipEntry(declaration.getFileName() + ".pdf");
+                ZipEntry zipEntry = new ZipEntry(declaration.getFileName().replace(".xml",".pdf"));
 
                 zipOutputStream.putNextEntry(zipEntry);
                 int count;
