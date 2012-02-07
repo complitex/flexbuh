@@ -52,10 +52,6 @@ public class Declaration implements Serializable{
     @XmlAnyElement
     private List xmlValues = new ArrayList();
 
-    @XmlElementWrapper(name = "LINKED_DOCS")
-    @XmlElement(name = "DOC")
-    private List<LinkedDeclaration> linkedDeclarations;
-
     @XmlTransient
     private Long parentId;
 
@@ -110,7 +106,7 @@ public class Declaration implements Serializable{
 
     @SuppressWarnings("MalformedFormatString")
     public String getFileName(){
-        return String.format("%02d%02d%010d%s%s%02d%s%02d%07d%d%02d%d%04d", //todo check format
+        return String.format("%02d%02d%010d%s%s%02d%s%02d%07d%d%02d%d%04d.xml", //todo check format
                 head.getCReg(), head.getCRaj(), head.getTin(), head.getCDoc(), head.getCDocSub(), head.getCDocVer(),
                 head.getCDocStan(), head.getCDocType(), head.getCDocCnt(), head.getPeriodType(), head.getPeriodMonth(),
                 head.getPeriodYear(), head.getCStiOrig());
@@ -122,8 +118,8 @@ public class Declaration implements Serializable{
 
     @SuppressWarnings("unchecked")
     public void prepareXmlValues(){
-        if (linkedDeclarations != null && linkedDeclarations.isEmpty()){
-            linkedDeclarations = null;
+        if (head.getLinkedDeclarations() != null && head.getLinkedDeclarations().isEmpty()){
+            head.setLinkedDeclarations(null);
         }
 
         xmlValues.clear();
@@ -263,8 +259,8 @@ public class Declaration implements Serializable{
     }
 
     public LinkedDeclaration getLinkedDeclaration(String name){
-        if (linkedDeclarations != null) {
-            for (LinkedDeclaration linkedDeclaration : linkedDeclarations){
+        if (head.getLinkedDeclarations() != null) {
+            for (LinkedDeclaration linkedDeclaration : head.getLinkedDeclarations()){
                 if (name.equals(linkedDeclaration.getName())){
                     return linkedDeclaration;
                 }
@@ -287,7 +283,7 @@ public class Declaration implements Serializable{
     }
 
     public boolean hasLinkedDeclarations(){
-        return linkedDeclarations != null && !linkedDeclarations.isEmpty();
+        return head.getLinkedDeclarations() != null && !head.getLinkedDeclarations().isEmpty();
     }
     
     public String getFullName(){
@@ -295,8 +291,8 @@ public class Declaration implements Serializable{
     }
 
     public void addLinkedDeclaration(Document document){
-        if (linkedDeclarations == null){
-            linkedDeclarations = new ArrayList<>();
+        if (head.getLinkedDeclarations() == null){
+            head.setLinkedDeclarations(new ArrayList<LinkedDeclaration>());
         }
 
         Declaration declaration = new Declaration();
@@ -316,7 +312,7 @@ public class Declaration implements Serializable{
         declaration.getHead().setPeriodMonth(getHead().getPeriodMonth());
         declaration.getHead().setPeriodYear(getHead().getPeriodYear());
 
-        linkedDeclarations.add(new LinkedDeclaration(declaration));
+        head.getLinkedDeclarations().add(new LinkedDeclaration(declaration));
     }
 
 
@@ -360,14 +356,6 @@ public class Declaration implements Serializable{
 
     public void setHead(DeclarationHead head) {
         this.head = head;
-    }
-
-    public List<LinkedDeclaration> getLinkedDeclarations() {
-        return linkedDeclarations;
-    }
-
-    public void setLinkedDeclarations(List<LinkedDeclaration> linkedDeclarations) {
-        this.linkedDeclarations = linkedDeclarations;
     }
 
     public Long getParentId() {
