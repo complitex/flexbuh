@@ -2,43 +2,36 @@ package org.complitex.flexbuh.document.service;
 
 import org.apache.fop.apps.Driver;
 import org.complitex.flexbuh.common.entity.template.TemplateFO;
-import org.complitex.flexbuh.common.entity.template.TemplateXSD;
 import org.complitex.flexbuh.common.entity.template.TemplateXSL;
 import org.complitex.flexbuh.common.service.TemplateBean;
-import org.complitex.flexbuh.common.xml.LSInputImpl;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
-import org.complitex.flexbuh.document.exception.DeclarationParseException;
-import org.complitex.flexbuh.document.exception.DeclarationSaveException;
-import org.complitex.flexbuh.document.exception.DeclarationValidateException;
-import org.complitex.flexbuh.document.exception.DeclarationZipException;
+import org.complitex.flexbuh.document.exception.*;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -61,33 +54,13 @@ public class DeclarationService {
     @EJB
     private TemplateBean templateBean;
 
-    public Schema getSchema(String templateName) throws SAXException {
-        final TemplateXSD common = templateBean.getTemplateXSD("common_types");
-        TemplateXSD xsd = templateBean.getTemplateXSD(templateName);
-
-        Source xsdSource = new StreamSource(new StringReader(xsd.getData()), templateName + ".xsd");
-
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-        factory.setResourceResolver(new LSResourceResolver() {
-            @Override
-            public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-                if ("common_types.xsd".equals(systemId)){
-                    LSInputImpl lsInput = new LSInputImpl();
-                    lsInput.setStringData(common.getData());
-
-                    return lsInput;
-                }
-
-                return null;
-            }
-        });
-
-        return factory.newSchema(xsdSource);
-    }
+    @EJB
+    private TemplateService templateService;
 
     public String getString(Declaration declaration, boolean validate) throws DeclarationParseException {
         try {
+            sortDeclarationValues(declaration);
+
             declaration.prepareXmlValues();
 
             JAXBContext context = JAXBContext.newInstance(Declaration.class, DeclarationValue.class);
@@ -98,7 +71,7 @@ public class DeclarationService {
             m.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION, declaration.getTemplateName() + ".xsd");
 
             if (validate){
-                m.setSchema(getSchema(declaration.getTemplateName()));
+                m.setSchema(templateService.getSchema(declaration.getTemplateName()));
             }
 
             StringWriter writer = new StringWriter();
@@ -117,16 +90,12 @@ public class DeclarationService {
     
     public void validate(Declaration declaration) throws DeclarationValidateException {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(getString(declaration))));
-
-            Schema schema = getSchema(declaration.getTemplateName());
+            Schema schema = templateService.getSchema(declaration.getTemplateName());
             Validator validator = schema.newValidator();
 
-//            StreamSource streamSource = new StreamSource(new StringReader(getString(declaration)));
+            StreamSource streamSource = new StreamSource(new StringReader(getString(declaration)));
 
-            validator.validate(new DOMSource(document));
+            validator.validate(streamSource);
         } catch (Exception e) {
             throw new DeclarationValidateException("Ошибка проверки структуры данных", e);
         }
@@ -156,6 +125,37 @@ public class DeclarationService {
         }
 
         declarationBean.save(declaration);
+    }
+
+    public void sortDeclarationValues(Declaration declaration) {
+        try {
+            Document document = templateService.getTemplateXSDDocument(declaration.getTemplateName());
+
+            List<DeclarationValue> sortedDeclarationValues = new ArrayList<>();
+
+            NodeList nodeList = document.getElementsByTagName("xs:element");
+            
+            for (int i=0, size = nodeList.getLength(); i < size; ++i){
+                Element element = (Element) nodeList.item(i);
+                String name = element.getAttribute("name");
+
+                for (Iterator<DeclarationValue> it = declaration.getDeclarationValues().iterator(); it.hasNext();){
+                    DeclarationValue declarationValue = it.next();
+
+                    if (name.equals(declarationValue.getName())){
+                        sortedDeclarationValues.add(declarationValue);
+
+                        if (!name.contains("XXXX")){
+                            break;
+                        }
+                    }
+                }
+            }
+
+            declaration.setDeclarationValues(sortedDeclarationValues);
+        } catch (CreateDocumentException e) {
+            log.error("Ошибка сортировки списка значений", e);
+        }
     }
     
     public String getString(Declaration declaration, TemplateXSL xsl) throws DeclarationParseException{

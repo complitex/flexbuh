@@ -1,25 +1,34 @@
 package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.common.entity.template.TemplateXSD;
 import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.xml.LSInputImpl;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.Rule;
-import org.complitex.flexbuh.document.exception.LoadDocumentException;
+import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
@@ -39,15 +48,15 @@ public class TemplateService {
     @EJB
     private DeclarationService declarationService;
 
-    public Document getTemplate(String templateName, Declaration declaration) throws LoadDocumentException{
+    public Document getTemplate(String templateName, Declaration declaration) throws CreateDocumentException {
         try {
             return declarationService.getDocument(declaration, templateBean.getTemplateXSL(templateName));
         } catch (Exception e) {
-            throw new LoadDocumentException(e);
+            throw new CreateDocumentException(e);
         }
     }
 
-    public Document getDocument(String data) throws ParserConfigurationException, IOException, SAXException {
+    public Document createDocument(String data) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
 
@@ -56,16 +65,16 @@ public class TemplateService {
         return documentBuilder.parse(new InputSource(new StringReader(data)));
     }
 
-    public Document getSchema(String templateName) throws LoadDocumentException {
+    public Document getTemplateXSDDocument(String templateName) throws CreateDocumentException {
         try {
-            return getDocument(templateBean.getTemplateXSD(templateName).getData());
+            return createDocument(templateBean.getTemplateXSD(templateName).getData());
         } catch (Exception e) {
-            throw new LoadDocumentException(e);
+            throw new CreateDocumentException(e);
         }
     }
 
-    public Document getControl(String templateName) throws IOException, SAXException, ParserConfigurationException {
-        return getDocument(templateBean.getTemplateControl(templateName).getData());
+    public Document getTemplateControlDocument(String templateName) throws IOException, SAXException, ParserConfigurationException {
+        return createDocument(templateBean.getTemplateControl(templateName).getData());
     }
 
     public Unmarshaller getRuleUnmarshaller() throws JAXBException {
@@ -78,7 +87,7 @@ public class TemplateService {
             throws IOException, SAXException, ParserConfigurationException, JAXBException {
         Map<String, Rule> rules = new LinkedHashMap<>();
 
-        Document controls = getControl(templateName);
+        Document controls = getTemplateControlDocument(templateName);
 
         NodeList ruleNodeList = controls.getElementsByTagName("rule");
 
@@ -97,5 +106,30 @@ public class TemplateService {
 
     public Map<String, Rule> getRules(String templateName) throws JAXBException, IOException, SAXException, ParserConfigurationException {
         return getRules(templateName, getRuleUnmarshaller());
+    }
+
+    public Schema getSchema(String templateName) throws SAXException {
+        final TemplateXSD common = templateBean.getTemplateXSD("common_types");
+        TemplateXSD xsd = templateBean.getTemplateXSD(templateName);
+
+        Source xsdSource = new StreamSource(new StringReader(xsd.getData()), templateName + ".xsd");
+
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+        factory.setResourceResolver(new LSResourceResolver() {
+            @Override
+            public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+                if ("common_types.xsd".equals(systemId)){
+                    LSInputImpl lsInput = new LSInputImpl();
+                    lsInput.setStringData(common.getData());
+
+                    return lsInput;
+                }
+
+                return null;
+            }
+        });
+
+        return factory.newSchema(xsdSource);
     }
 }

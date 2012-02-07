@@ -54,7 +54,7 @@ public class Declaration implements Serializable{
 
     @XmlElementWrapper(name = "LINKED_DOCS")
     @XmlElement(name = "DOC")
-    private List<LinkedDeclaration> linkedDeclarations = new ArrayList<>();
+    private List<LinkedDeclaration> linkedDeclarations;
 
     @XmlTransient
     private Long parentId;
@@ -122,6 +122,10 @@ public class Declaration implements Serializable{
 
     @SuppressWarnings("unchecked")
     public void prepareXmlValues(){
+        if (linkedDeclarations != null && linkedDeclarations.isEmpty()){
+            linkedDeclarations = null;
+        }
+
         xmlValues.clear();
 
         for (DeclarationValue v : declarationValues){
@@ -259,9 +263,11 @@ public class Declaration implements Serializable{
     }
 
     public LinkedDeclaration getLinkedDeclaration(String name){
-        for (LinkedDeclaration linkedDeclaration : linkedDeclarations){
-            if (name.equals(linkedDeclaration.getName())){
-                return linkedDeclaration;
+        if (linkedDeclarations != null) {
+            for (LinkedDeclaration linkedDeclaration : linkedDeclarations){
+                if (name.equals(linkedDeclaration.getName())){
+                    return linkedDeclaration;
+                }
             }
         }
 
@@ -289,6 +295,10 @@ public class Declaration implements Serializable{
     }
 
     public void addLinkedDeclaration(Document document){
+        if (linkedDeclarations == null){
+            linkedDeclarations = new ArrayList<>();
+        }
+
         Declaration declaration = new Declaration();
 
         declaration.setDocument(document);
@@ -308,8 +318,6 @@ public class Declaration implements Serializable{
 
         linkedDeclarations.add(new LinkedDeclaration(declaration));
     }
-
-
 
 
     /*Auto-generated Getters and Setters*/

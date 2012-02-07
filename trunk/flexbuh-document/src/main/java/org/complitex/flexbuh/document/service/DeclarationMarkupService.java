@@ -11,7 +11,7 @@ import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
 import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.exception.LoadDocumentException;
+import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -61,7 +61,7 @@ public class DeclarationMarkupService {
         return markup;
     }
 
-    private Markup createMarkup(String templateName) throws IOException, ResourceStreamNotFoundException, LoadDocumentException {
+    private Markup createMarkup(String templateName) throws IOException, ResourceStreamNotFoundException, CreateDocumentException {
         StringResourceStream stringResourceStream = new StringResourceStream(getMarkupString(templateName), "text/html");
         stringResourceStream.setCharset(Charset.forName("UTF-8"));
         stringResourceStream.setLastModified(Time.now());
@@ -69,10 +69,10 @@ public class DeclarationMarkupService {
         return new MarkupParser(new MarkupResourceStream(stringResourceStream)).parse();
     }
 
-    private String getMarkupString(String templateName) throws LoadDocumentException{
+    private String getMarkupString(String templateName) throws CreateDocumentException {
         //Xml
         Document template = templateService.getTemplate(templateName, new Declaration());
-        Document schema = templateService.getSchema(templateName);
+        Document schema = templateService.getTemplateXSDDocument(templateName);
 
         //XPath
         XPath schemaXPath = XmlUtil.newSchemaXPath();
