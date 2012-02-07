@@ -1,11 +1,11 @@
 package org.complitex.flexbuh.document.web;
 
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.web.component.NoCacheLink;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.10.11 16:05
  */
-public class DeclarationPdfLink extends Link {
+public class DeclarationPdfLink extends NoCacheLink {
     private final static Logger log = LoggerFactory.getLogger(DeclarationPdfLink.class);
 
     @EJB

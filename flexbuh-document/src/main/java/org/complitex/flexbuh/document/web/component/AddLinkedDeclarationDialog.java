@@ -64,7 +64,7 @@ public class AddLinkedDeclarationDialog extends Panel {
             protected List<Document> load() {
                 List<Document> docs = new ArrayList<>();
 
-                if (declaration != null){
+                if (declaration != null && declaration.getLinkedDeclarations() != null){
                     List<Document> list = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(),
                             declaration.getHead().getCDocSub());
 

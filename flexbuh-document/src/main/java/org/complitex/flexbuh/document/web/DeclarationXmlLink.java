@@ -1,10 +1,10 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.web.component.NoCacheLink;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.exception.DeclarationParseException;
 import org.complitex.flexbuh.document.service.DeclarationService;
@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 13.10.11 16:18
  */
-public class DeclarationXmlLink extends Link{  
+public class DeclarationXmlLink extends NoCacheLink {
     private final static Logger log = LoggerFactory.getLogger(DeclarationXmlLink.class);
 
     @EJB

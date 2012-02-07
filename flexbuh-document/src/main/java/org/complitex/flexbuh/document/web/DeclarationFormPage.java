@@ -110,7 +110,10 @@ public class DeclarationFormPage extends TemplatePage{
         accordion.setOutputMarkupId(true);
         form.add(accordion);
 
-        ListView listView = new ListView<LinkedDeclaration>("declarations", declaration.getLinkedDeclarations()) {
+        ListView listView = new ListView<LinkedDeclaration>("declarations",
+                declaration.getLinkedDeclarations() != null
+                        ? declaration.getLinkedDeclarations()
+                        : new ArrayList<LinkedDeclaration>()) {
 
             @Override
             protected void populateItem(ListItem<LinkedDeclaration> item) {

@@ -94,7 +94,7 @@ public class DeclarationFormComponent extends Panel{
 
         try {
             //Common Types
-            commonTypes = templateService.getSchema("common_types");
+            commonTypes = templateService.getTemplateXSDDocument("common_types");
 
             //Rules
             rulesMap = templateService.getRules(templateName);

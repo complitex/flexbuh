@@ -309,7 +309,9 @@ public class DeclarationList extends TemplatePage{
                 item.add(linkedContainer);
 
                 final ListView linkedDeclarations = new ListView<LinkedDeclaration>("linked_declarations",
-                        declaration.getLinkedDeclarations()) {
+                        declaration.getLinkedDeclarations() != null 
+                                ? declaration.getLinkedDeclarations() 
+                                : new ArrayList<LinkedDeclaration>()) {
                     @Override
                     protected void populateItem(ListItem<LinkedDeclaration> linkedItem) {
                         final Declaration linkedDeclaration = linkedItem.getModelObject().getDeclaration();
@@ -319,7 +321,7 @@ public class DeclarationList extends TemplatePage{
 
                         linkedItem.add(new BookmarkablePageLinkPanel<>("name", linkedDeclaration.getTemplateName()
                                 + " " + linkedDeclaration.getName(), DeclarationFormPage.class, pageParameters,
-                                !declaration.isValidated() ? "color:indianRed" : null));
+                                !linkedDeclaration.isValidated() ? "color:indianRed" : null));
 
                         linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()), "dd.MM.yyyy HH:mm"));
 
