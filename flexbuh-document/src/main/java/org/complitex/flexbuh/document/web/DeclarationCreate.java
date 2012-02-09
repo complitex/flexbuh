@@ -21,6 +21,7 @@ import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.service.DeclarationService;
 
 import javax.ejb.EJB;
 import java.text.DateFormatSymbols;
@@ -39,6 +40,9 @@ public class DeclarationCreate extends FormTemplatePage{
 
     @EJB
     private PersonProfileBean personProfileBean;
+
+    @EJB
+    private DeclarationService declarationService;
 
     private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
@@ -225,19 +229,30 @@ public class DeclarationCreate extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                if (declaration.getHead().getCDocVer() != null) {
-                    declaration.setSessionId(getSessionId());
-
-                    //Person profile
-                    if (declaration.getPersonProfile() != null) {
-                        declaration.setPersonProfileId(declaration.getPersonProfile().getId());
-                        declaration.getHead().setTin(declaration.getPersonProfile().getTin());
-                    }
-
-                    setResponsePage(new DeclarationFormPage(declaration));
-                }else{
+                //check version
+                if (declaration.getHead().getCDocVer() == null) {
                     error(getStringFormat("error_not_version", declaration.getShortName()));
+
+                    return;
                 }
+
+
+                declaration.setSessionId(getSessionId());
+
+                //Person profile
+                if (declaration.getPersonProfile() != null) {
+                    declaration.setPersonProfileId(declaration.getPersonProfile().getId());
+                    declaration.getHead().setTin(declaration.getPersonProfile().getTin());
+                }
+
+                //check duplicate
+                if (declarationService.hasStoredDeclaration(declaration)){
+                    error(getStringFormat("error_same_period", declaration.getShortName()));
+
+                    return;
+                }
+
+                setResponsePage(new DeclarationFormPage(declaration));
             }
         });
 

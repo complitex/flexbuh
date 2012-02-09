@@ -96,6 +96,8 @@
              <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
              <if test="parentId != null">and `parent_id` = #{parentId}</if>
              <if test="parentId == null">and `parent_id` is null</if>
+             <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
+             <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
              and de.`session_id` = #{sessionId}
              and (pp.`selected` = true or (de.`person_profile_id` is null
                     and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
