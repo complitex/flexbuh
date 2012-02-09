@@ -225,15 +225,19 @@ public class DeclarationCreate extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                declaration.setSessionId(getSessionId());
+                if (declaration.getHead().getCDocVer() != null) {
+                    declaration.setSessionId(getSessionId());
 
-                //Person profile
-                if (declaration.getPersonProfile() != null) {
-                    declaration.setPersonProfileId(declaration.getPersonProfile().getId());
-                    declaration.getHead().setTin(declaration.getPersonProfile().getTin());
+                    //Person profile
+                    if (declaration.getPersonProfile() != null) {
+                        declaration.setPersonProfileId(declaration.getPersonProfile().getId());
+                        declaration.getHead().setTin(declaration.getPersonProfile().getTin());
+                    }
+
+                    setResponsePage(new DeclarationFormPage(declaration));
+                }else{
+                    error(getStringFormat("error_not_version", declaration.getShortName()));
                 }
-
-                setResponsePage(new DeclarationFormPage(declaration));
             }
         });
 

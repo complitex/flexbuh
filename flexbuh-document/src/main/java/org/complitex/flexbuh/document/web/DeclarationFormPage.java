@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.flexbuh.common.entity.PersonProfile;
@@ -112,9 +113,14 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(accordion);
 
         ListView listView = new ListView<LinkedDeclaration>("declarations",
-                declaration.getHead().getLinkedDeclarations() != null
-                        ? declaration.getHead().getLinkedDeclarations()
-                        : new ArrayList<LinkedDeclaration>()) {
+                new LoadableDetachableModel<List<? extends LinkedDeclaration>>() {
+                    @Override
+                    protected List<? extends LinkedDeclaration> load() {
+                        return declaration.getHead().getLinkedDeclarations() != null
+                                ? declaration.getHead().getLinkedDeclarations()
+                                : new ArrayList<LinkedDeclaration>();
+                    }
+                }) {
 
             @Override
             protected void populateItem(ListItem<LinkedDeclaration> item) {

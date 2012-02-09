@@ -291,6 +291,11 @@ public class Declaration implements Serializable{
         return getTemplateName() + " " + getName();
     }
 
+    public String getShortName(){
+        return head.getCDoc() + " " + head.getCDocSub();
+
+    }
+
     public void addLinkedDeclaration(Document document){
         if (head.getLinkedDeclarations() == null){
             head.setLinkedDeclarations(new ArrayList<LinkedDeclaration>());
