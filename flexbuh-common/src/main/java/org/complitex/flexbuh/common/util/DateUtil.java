@@ -52,7 +52,7 @@ public class DateUtil {
      */
     public static String displayMonth(int month, Locale locale) {
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.MONTH, month - 1);
+        c.set(Calendar.MONTH, month);
         return c.getDisplayName(Calendar.MONTH, Calendar.LONG, locale);
     }
 
@@ -87,7 +87,7 @@ public class DateUtil {
 
     public static Date getFirstDayOfMonth(int year, int month) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, 1);
+        calendar.set(year, month, 1);
         return calendar.getTime();
     }
 
@@ -129,7 +129,7 @@ public class DateUtil {
         Calendar c = Calendar.getInstance();
         c.clear();
         c.setLenient(false);
-        c.set(year, month - 1, day);
+        c.set(year, month, day);
         return c.getTime();
     }
     

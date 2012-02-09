@@ -55,8 +55,12 @@
         select * from `document` where `id` = #{id}
     </select>
 
-    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.common.entity.dictionary.Document" resultMap="linkedDocumentResultMap">
-        select * from `document` where `parent_c_doc` = #{cDoc} and `parent_c_doc_sub` = #{cDocSub}
+    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentFilter"
+            resultMap="linkedDocumentResultMap">
+        select * from `document` d
+          left join `document_version` dv on (d.`c_doc` = dv.`c_doc` and d.`c_doc_sub` = dv.`c_doc_sub`)
+        where d.`parent_c_doc` = #{cDoc} and d.`parent_c_doc_sub` = #{cDocSub}
+          and #{periodDate} >= dv.`begin_date` and (dv.`end_date` is null or dv.`end_date` > #{periodDate})
     </select>
 
     <select id="selectJuridicalDocuments" resultMap="linkedDocumentResultMap">

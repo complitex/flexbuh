@@ -139,7 +139,7 @@
             <dependency>
                 <groupId>org.wicketstuff</groupId>
                 <artifactId>wicketstuff-javaee-inject</artifactId>
-                <version>1.5.0</version>
+                <version>1.5.4</version>
             </dependency>
 
             <!--WiQuery-->

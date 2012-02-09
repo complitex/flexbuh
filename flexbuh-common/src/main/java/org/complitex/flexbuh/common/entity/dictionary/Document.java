@@ -1,7 +1,9 @@
 package org.complitex.flexbuh.common.entity.dictionary;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.util.DateUtil;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,15 +25,20 @@ public class Document extends AbstractPeriodDictionary {
     public Document() {
     }
 
-    public Document(String cDoc, String cDocSub) {
-        this.cDoc = cDoc;
-        this.cDocSub = cDocSub;
+    public String getFullName(Locale locale, int periodYear, int periodMonth){
+        return cDoc + cDocSub + String.format("%02d", getVersion(periodYear, periodMonth)) + " " + getName(locale);
     }
-    
-    public String getFullName(Locale locale){
-        return documentVersions.get(0) != null
-                ? cDoc + cDocSub + String.format("%02d", documentVersions.get(0).getCDocVer()) + " " + getName(locale)
-                : null;
+
+    public Integer getVersion(int periodYear, int periodMonth){    
+        Date date = DateUtil.getFirstDayOfMonth(periodYear, periodMonth - 1);
+
+        for (DocumentVersion dv : documentVersions){
+            if (dv.getBeginDate().before(date) && (dv.getEndDate() == null || dv.getEndDate().after(date))){
+                return dv.getCDocVer();
+            }
+        }
+
+        return null;
     }
 
     public String getCDoc() {

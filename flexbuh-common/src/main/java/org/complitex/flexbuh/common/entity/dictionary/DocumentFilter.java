@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.common.entity.dictionary;
 
+import java.util.Date;
+
 /**
  * @author Pavel Sknar
  *         Date: 23.11.11 10:20
@@ -15,7 +17,18 @@ public class DocumentFilter extends PeriodDictionaryFilter {
 
 	private String nameUk;
 
-	public String getCDoc() {
+    private Date periodDate;
+
+    public DocumentFilter() {
+    }
+
+    public DocumentFilter(String cDoc, String cDocSub, Date periodDate) {
+        this.cDoc = cDoc;
+        this.cDocSub = cDocSub;
+        this.periodDate = periodDate;
+    }
+
+    public String getCDoc() {
 		return cDoc;
 	}
 
@@ -62,4 +75,12 @@ public class DocumentFilter extends PeriodDictionaryFilter {
 	public void setNameUk(String nameUk) {
 		this.nameUk = nameUk;
 	}
+
+    public Date getPeriodDate() {
+        return periodDate;
+    }
+
+    public void setPeriodDate(Date periodDate) {
+        this.periodDate = periodDate;
+    }
 }

@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -38,16 +39,16 @@ import java.util.List;
  */
 public class DeclarationFormPage extends TemplatePage{
     @EJB
-    private transient DeclarationBean declarationBean;
+    private DeclarationBean declarationBean;
 
     @EJB
-    private transient DeclarationService declarationService;
+    private DeclarationService declarationService;
 
     @EJB
-    private transient DocumentBean documentBean;
+    private DocumentBean documentBean;
     
     @EJB
-    private transient PersonProfileBean personProfileBean;
+    private PersonProfileBean personProfileBean;
 
     private final Declaration declaration;
     
@@ -210,11 +211,19 @@ public class DeclarationFormPage extends TemplatePage{
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
 
-        //todo hide on no linked
         list.add(new AddItemButton(id, true) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 addLinkedDeclarationDialog.open(target, declaration);
+            }
+
+            @Override
+            public boolean isVisible() {
+                DocumentFilter filter = new DocumentFilter();
+                filter.setParentCDoc(declaration.getHead().getCDoc());
+                filter.setParentCDocSub(declaration.getHead().getCDocSub());
+                
+                return documentBean.getDocumentsCount(filter) > 0;
             }
         });
         
