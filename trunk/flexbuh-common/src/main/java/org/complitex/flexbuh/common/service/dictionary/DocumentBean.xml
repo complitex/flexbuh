@@ -61,6 +61,7 @@
           left join `document_version` dv on (d.`c_doc` = dv.`c_doc` and d.`c_doc_sub` = dv.`c_doc_sub`)
         where d.`parent_c_doc` = #{cDoc} and d.`parent_c_doc_sub` = #{cDocSub}
           and #{periodDate} >= dv.`begin_date` and (dv.`end_date` is null or dv.`end_date` > #{periodDate})
+        order by d.`c_doc`, d.c_doc_sub
     </select>
 
     <select id="selectJuridicalDocuments" resultMap="linkedDocumentResultMap">
