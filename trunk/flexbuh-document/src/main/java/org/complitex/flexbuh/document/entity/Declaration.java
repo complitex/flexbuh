@@ -2,7 +2,6 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.w3c.dom.Element;
@@ -279,7 +278,9 @@ public class Declaration implements Serializable{
 
         head.setCDoc(document.getCDoc());
         head.setCDocSub(document.getCDocSub());
-        name = document.getNameUk(); //todo add locale
+        head.setCDocVer(document.getVersion(head.getPeriodYear(), head.getPeriodMonth()));
+
+        name = document.getNameUk();
     }
 
     public boolean hasLinkedDeclarations(){
@@ -298,23 +299,14 @@ public class Declaration implements Serializable{
         Declaration declaration = new Declaration();
 
         declaration.setDocument(document);
-
-        //todo add version
-        List<DocumentVersion> dv = document.getDocumentVersions();
-
-        if (dv != null && !dv.isEmpty()){
-            declaration.getHead().setCDocVer(dv.get(0).getCDocVer());
-        }
-
         declaration.setParent(this);
-
         declaration.getHead().setPeriodType(getHead().getPeriodType());
         declaration.getHead().setPeriodMonth(getHead().getPeriodMonth());
         declaration.getHead().setPeriodYear(getHead().getPeriodYear());
+        declaration.getHead().setCDocVer(document.getVersion(head.getPeriodYear(), head.getPeriodMonth()));
 
         head.getLinkedDeclarations().add(new LinkedDeclaration(declaration));
     }
-
 
     /*Auto-generated Getters and Setters*/
 

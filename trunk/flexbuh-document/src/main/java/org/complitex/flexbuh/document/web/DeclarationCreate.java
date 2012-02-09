@@ -15,7 +15,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -226,15 +225,12 @@ public class DeclarationCreate extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                //todo select version by date
-                List<DocumentVersion> documentVersions = declaration.getDocument().getDocumentVersions();
-                declaration.getHead().setCDocVer(documentVersions.get(0).getCDocVer());
                 declaration.setSessionId(getSessionId());
 
                 //Person profile
                 if (declaration.getPersonProfile() != null) {
                     declaration.setPersonProfileId(declaration.getPersonProfile().getId());
-                    declaration.getHead().setTin(Integer.valueOf(declaration.getPersonProfile().getTin()));
+                    declaration.getHead().setTin(declaration.getPersonProfile().getTin());
                 }
 
                 setResponsePage(new DeclarationFormPage(declaration));

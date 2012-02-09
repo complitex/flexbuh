@@ -17,6 +17,7 @@ import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationHead;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
@@ -38,6 +39,7 @@ public class AddLinkedDeclarationDialog extends Panel {
     private WebMarkupContainer container;
 
     private IModel<Document> model;
+    private IModel<List<Document>> documentModel;
 
     public AddLinkedDeclarationDialog(String id, final IAjaxUpdate update) {
         super(id);
@@ -59,29 +61,36 @@ public class AddLinkedDeclarationDialog extends Panel {
         RadioGroup<Document> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        final IModel<List<Document>> documentModel = new LoadableDetachableModel<List<Document>>() {
+        documentModel = new LoadableDetachableModel<List<Document>>() {
             @Override
             protected List<Document> load() {
                 List<Document> docs = new ArrayList<>();
 
-                if (declaration != null && declaration.getHead().getLinkedDeclarations() != null){
-                    List<Document> list = documentBean.getLinkedDocuments(declaration.getHead().getCDoc(),
-                            declaration.getHead().getCDocSub());
+                //first run
+                if (declaration == null){
+                    return docs;
+                }
 
-                    for (Document doc : list){
-                        boolean found = false;
+                DeclarationHead head = declaration.getHead();
 
-                        for (LinkedDeclaration ld : declaration.getHead().getLinkedDeclarations()){
+                List<Document> list = documentBean.getLinkedDocuments(head.getCDoc(), head.getCDocSub(),
+                        head.getPeriodYear(), head.getPeriodMonth());
+
+                for (Document doc : list){
+                    boolean found = false;
+
+                    if (head.getLinkedDeclarations() != null) {
+                        for (LinkedDeclaration ld : head.getLinkedDeclarations()){
                             if (doc.getCDoc().equals(ld.getCDoc()) && doc.getCDocSub().equals(ld.getCDocSub())){
                                 found = true;
 
                                 break;
                             }
                         }
+                    }
 
-                        if (!found){
-                            docs.add(doc);
-                        }
+                    if (!found){
+                        docs.add(doc);
                     }
                 }
 
@@ -102,7 +111,8 @@ public class AddLinkedDeclarationDialog extends Panel {
                 Document document = item.getModelObject();
 
                 item.add(new Radio<>("select", new Model<>(document)));
-                item.add(new Label("label", document.getFullName(getLocale())));
+                item.add(new Label("label", document.getFullName(getLocale(), declaration.getHead().getPeriodYear(),
+                        declaration.getHead().getPeriodMonth())));
             }
         };
         radioGroup.add(documents);
@@ -119,7 +129,8 @@ public class AddLinkedDeclarationDialog extends Panel {
 
                     update.onUpdate(target);
 
-                    getSession().info(getString("info_linked_declaration_added") + ": " + document.getFullName(getLocale()));
+                    getSession().info(getString("info_linked_declaration_added") + ": " + document.getFullName(getLocale(),
+                            declaration.getHead().getPeriodYear(), declaration.getHead().getPeriodMonth()));
                 }
             }
 
@@ -138,6 +149,7 @@ public class AddLinkedDeclarationDialog extends Panel {
     public void open(AjaxRequestTarget target, Declaration declaration){
         this.declaration = declaration;
         model.setObject(new Document());
+        documentModel.detach();
 
         target.add(container);
 

@@ -3,6 +3,7 @@ package org.complitex.flexbuh.common.service.dictionary;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.util.DateUtil;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -33,8 +34,10 @@ public class DocumentBean extends AbstractBean {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Document> getLinkedDocuments(String cDoc, String cDocSub){
-        return sqlSession().selectList(NS + ".selectLinkedDocuments", new Document(cDoc, cDocSub));
+    public List<Document> getLinkedDocuments(String cDoc, String cDocSub, Integer periodYear, Integer periodMonth){
+        DocumentFilter filter = new DocumentFilter(cDoc, cDocSub, DateUtil.getFirstDayOfMonth(periodYear, periodMonth-1));
+
+        return sqlSession().selectList(NS + ".selectLinkedDocuments", filter);
     }
 
     @SuppressWarnings({"unchecked"})
