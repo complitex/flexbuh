@@ -79,6 +79,8 @@ public class DeclarationList extends TemplatePage{
 
     private Map<Declaration, IModel<Boolean>> selectMap = new HashMap<>();
 
+    private DeclarationFilter declarationFilter;
+
     final String[] MONTH = dateFormatSymbols.getMonths();
     final List<Period> PERIODS = Arrays.asList(
             new Period(1, 0, MONTH[0]), new Period(1, 1, MONTH[1]), new Period(1, 2, MONTH[2]),
@@ -95,6 +97,14 @@ public class DeclarationList extends TemplatePage{
             new Period(5, 11, getString("period_type_5"))
     );
 
+    public DeclarationList(PageParameters parameters) {
+        this();
+
+        declarationFilter.setPeriodType(parameters.get("period_type").toInt(1));
+        declarationFilter.setPeriodMonth(parameters.get("period_month").toInt(1));
+        declarationFilter.setPeriodYear(parameters.get("period_year").toInt(1));
+    }
+
     public DeclarationList() {
         add(new Label("title", getString("title")));
         final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
@@ -109,7 +119,7 @@ public class DeclarationList extends TemplatePage{
         final Long sessionId = getSessionId();
 
         //Фильтр
-        final DeclarationFilter declarationFilter = new DeclarationFilter(sessionId);
+        declarationFilter = new DeclarationFilter(sessionId);
         declarationFilter.setPeriodYear(DateUtil.getCurrentYear());
         declarationFilter.setPeriodType(1);
         declarationFilter.setPeriodMonth(DateUtil.getCurrentMonth() + 1);

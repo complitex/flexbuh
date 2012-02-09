@@ -168,7 +168,16 @@ public class DeclarationFormPage extends TemplatePage{
                     getSession().info(declaration.getValidatorMessage());
                 }
 
-                setResponsePage(DeclarationList.class);
+                if (personProfile != null) {
+                    personProfileBean.setSelectedPersonProfile(personProfile);
+                }
+
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("period_type", declaration.getHead().getPeriodType());
+                pageParameters.add("period_month", declaration.getHead().getPeriodMonth());
+                pageParameters.add("period_year", declaration.getHead().getPeriodYear());
+
+                setResponsePage(DeclarationList.class, pageParameters);
             }
         });
 
@@ -187,7 +196,12 @@ public class DeclarationFormPage extends TemplatePage{
                         getSession().info(declaration.getValidatorMessage());
                     }
 
-                    setResponsePage(DeclarationList.class);
+                    PageParameters pageParameters = new PageParameters();
+                    pageParameters.add("period_type", declaration.getHead().getPeriodType());
+                    pageParameters.add("period_month", declaration.getHead().getPeriodMonth());
+                    pageParameters.add("period_year", declaration.getHead().getPeriodYear());
+
+                    setResponsePage(DeclarationList.class, pageParameters);
                 }else {
                     profileDialog.setAutoOpen(true);
                 }
