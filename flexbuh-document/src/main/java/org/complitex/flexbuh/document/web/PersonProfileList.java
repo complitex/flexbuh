@@ -94,16 +94,6 @@ public class PersonProfileList extends TemplatePage {
 
         final Long sessionId = getSessionId();
 
-        //Текущий профиль
-        add(new Label("selected_profile", new LoadableDetachableModel<String>() {
-            @Override
-            protected String load() {
-                PersonProfile selectedProfile = personProfileBean.getSelectedPersonProfile(sessionId);
-
-                return selectedProfile != null ? selectedProfile.getProfileName() : getString("no_selected_profile");
-            }
-        }));
-
         //Модель
         final DataProvider<PersonProfile> dataProvider = new DataProvider<PersonProfile>() {
 
