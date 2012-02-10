@@ -2,12 +2,14 @@ package org.complitex.flexbuh.document.service;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.complitex.flexbuh.common.entity.ApplicationConfig;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventModel;
 import org.complitex.flexbuh.common.logging.EventObjectFactory;
 import org.complitex.flexbuh.common.logging.EventObjectId;
+import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.ImportXMLService;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
@@ -25,6 +27,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -45,7 +48,10 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 	@EJB
 	private EventObjectFactory eventObjectFactory;
 
-    public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
+    @EJB
+    private ConfigBean configBean;
+
+    public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
         listener.begin();
 
         Date importDate = new Date();
@@ -65,7 +71,7 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                         personProfile.parsePhysicalNames();
                     }
 
-                    personProfileBean.save(personProfile);
+                    personProfileBean.save(personProfile, locale != null? locale: getSystemLocale());
 
                     listener.getChildImportListener(personProfile).completed();
 
@@ -180,5 +186,9 @@ public class ImportUserProfileXMLService extends ImportXMLService {
         }
 
         return personProfile;
+    }
+
+    private Locale getSystemLocale() {
+        return new Locale(configBean.getString(ApplicationConfig.SYSTEM_LOCALE, true));
     }
 }

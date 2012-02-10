@@ -14,6 +14,7 @@ import javax.transaction.UserTransaction;
 import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -36,7 +37,7 @@ public class ImportTemplateFileService implements ImportFileService {
     protected UserTransaction userTransaction;
 
 	@Override
-	public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
         listener.begin();
         try{
             userTransaction.begin();

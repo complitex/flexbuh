@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.service.FIOBean;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -13,85 +14,64 @@ import static org.complitex.flexbuh.common.util.StringUtil.getString;
  *         Date: 31.08.11 14:26
  */
 @XmlType
-@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class PersonProfile extends SessionObject {
-    @XmlJavaTypeAdapter(PersonTypeAdapter.class)
-    @XmlElement(name = "PERSON_TYPE", required = true)
     private PersonType personType = PersonType.JURIDICAL_PERSON; // тип плательщика
 
-    @XmlElement(name = "C_STI")
     private Integer cSti; // код ДПІ
 
-    @XmlElement(name = "C_STI_TIN")
     private Integer cStiTin; //Код ЄДРПОУ ДПІ
 
-    @XmlElement(name = "TIN")
     private Integer tin; // код ЕДРПОУ (Единый государственный реестр предприятий и организаций Украины)
 
-    @XmlElement(name = "NAME", required = true)
     private String name;
 
-    @XmlTransient
     private String firstName;
 
-    @XmlTransient
     private String middleName;
 
-    @XmlTransient
     private String lastName;
 
-    @XmlTransient
     private String profileName;
 
-    @XmlElement(name = "NUMPDVSVD")
     private String numPdvSvd; // номер свидетельства ПДВ
 
-    @XmlElement(name = "IPN")
     private String ipn; // индивидуальный налоговый номер
 
-    @XmlElement(name = "KVED")
     private String kved; // код основного вида экономической деятельности(за КВЕД)
 
-    @XmlElement(name = "KOATUU")
     private String koatuu; // КОАТУУ
 
-    @XmlElement(name = "CONTRACT_DATE")
     private Date contractDate; // договор об общей (совместной) деятельности (дата)
 
-    @XmlElement(name = "CONTRACT_NUMBER")
     private String contractNumber; // договор об общей (совместной) деятельности (номер)
 
-    @XmlElement(name = "ZIPCODE")
     private String zipCode; // почтовый индекс
 
-    @XmlElement(name = "ADRESS")
     private String address; // адрес
 
-    @XmlElement(name = "PHONE")
     private String phone; // телефон
 
-    @XmlElement(name = "FAX")
     private String fax; // факс
 
-    @XmlElement(name = "EMAIL")
     private String email; // e-mail
 
-    @XmlElement(name = "DINN")
     private String dInn; // Код ДРФО директора
 
-    @XmlElement(name = "DFIO")
-    private String dFio; // ФИО директора предприятия
+    // ФИО директора предприятия
+    private String dLastName;
+    private String dFirstName;
+    private String dMiddleName;
 
-    @XmlElement(name = "BINN")
     private String bInn; // Код ДРФО  бухгалтера
 
-    @XmlElement(name = "BFIO")
-    private String bFio; // ФИО бухгалтера
+    // ФИО бухгалтера
+    private String bLastName;
+    private String bFirstName;
+    private String bMiddleName;
 
-    @XmlAttribute(name = "SELECTED")
     private boolean selected;
 
-    @XmlTransient
     private Long taxInspectionId;
     
     public void parsePhysicalNames(){
@@ -112,6 +92,8 @@ public class PersonProfile extends SessionObject {
         name = (getString(lastName) + " " + getString(firstName) + " " + getString(middleName)).trim();
     }
 
+    @XmlJavaTypeAdapter(PersonTypeAdapter.class)
+    @XmlElement(name = "PERSON_TYPE", required = true)
     public PersonType getPersonType() {
         return personType;
     }
@@ -120,6 +102,7 @@ public class PersonProfile extends SessionObject {
         this.personType = personType;
     }
 
+    @XmlElement(name = "C_STI")
     public Integer getCSti() {
         return cSti;
     }
@@ -128,6 +111,7 @@ public class PersonProfile extends SessionObject {
         this.cSti = cSti;
     }
 
+    @XmlElement(name = "C_STI_TIN")
     public Integer getCStiTin() {
         return cStiTin;
     }
@@ -136,6 +120,7 @@ public class PersonProfile extends SessionObject {
         this.cStiTin = cStiTin;
     }
 
+    @XmlElement(name = "TIN")
     public Integer getTin() {
         return tin;
     }
@@ -144,6 +129,7 @@ public class PersonProfile extends SessionObject {
         this.tin = tin;
     }
 
+    @XmlElement(name = "NAME", required = true)
     public String getName() {
         return name;
     }
@@ -152,6 +138,7 @@ public class PersonProfile extends SessionObject {
         this.name = name;
     }
 
+    @XmlTransient
     public String getFirstName() {
         return firstName;
     }
@@ -160,6 +147,7 @@ public class PersonProfile extends SessionObject {
         this.firstName = firstName;
     }
 
+    @XmlTransient
     public String getMiddleName() {
         return middleName;
     }
@@ -168,6 +156,7 @@ public class PersonProfile extends SessionObject {
         this.middleName = middleName;
     }
 
+    @XmlTransient
     public String getLastName() {
         return lastName;
     }
@@ -176,6 +165,7 @@ public class PersonProfile extends SessionObject {
         this.lastName = lastName;
     }
 
+    @XmlTransient
     public String getProfileName() {
         return profileName;
     }
@@ -184,6 +174,7 @@ public class PersonProfile extends SessionObject {
         this.profileName = profileName;
     }
 
+    @XmlElement(name = "NUMPDVSVD")
     public String getNumPdvSvd() {
         return numPdvSvd;
     }
@@ -192,6 +183,7 @@ public class PersonProfile extends SessionObject {
         this.numPdvSvd = numPdvSvd;
     }
 
+    @XmlElement(name = "IPN")
     public String getIpn() {
         return ipn;
     }
@@ -200,6 +192,7 @@ public class PersonProfile extends SessionObject {
         this.ipn = ipn;
     }
 
+    @XmlElement(name = "KVED")
     public String getKved() {
         return kved;
     }
@@ -208,6 +201,7 @@ public class PersonProfile extends SessionObject {
         this.kved = kved;
     }
 
+    @XmlElement(name = "KOATUU")
     public String getKoatuu() {
         return koatuu;
     }
@@ -216,6 +210,7 @@ public class PersonProfile extends SessionObject {
         this.koatuu = koatuu;
     }
 
+    @XmlElement(name = "CONTRACT_DATE")
     public Date getContractDate() {
         return contractDate;
     }
@@ -224,6 +219,7 @@ public class PersonProfile extends SessionObject {
         this.contractDate = contractDate;
     }
 
+    @XmlElement(name = "CONTRACT_NUMBER")
     public String getContractNumber() {
         return contractNumber;
     }
@@ -232,6 +228,7 @@ public class PersonProfile extends SessionObject {
         this.contractNumber = contractNumber;
     }
 
+    @XmlElement(name = "ZIPCODE")
     public String getZipCode() {
         return zipCode;
     }
@@ -240,6 +237,7 @@ public class PersonProfile extends SessionObject {
         this.zipCode = zipCode;
     }
 
+    @XmlElement(name = "ADRESS")
     public String getAddress() {
         return address;
     }
@@ -248,6 +246,7 @@ public class PersonProfile extends SessionObject {
         this.address = address;
     }
 
+    @XmlElement(name = "PHONE")
     public String getPhone() {
         return phone;
     }
@@ -256,6 +255,7 @@ public class PersonProfile extends SessionObject {
         this.phone = phone;
     }
 
+    @XmlElement(name = "FAX")
     public String getFax() {
         return fax;
     }
@@ -264,6 +264,7 @@ public class PersonProfile extends SessionObject {
         this.fax = fax;
     }
 
+    @XmlElement(name = "EMAIL")
     public String getEmail() {
         return email;
     }
@@ -272,6 +273,7 @@ public class PersonProfile extends SessionObject {
         this.email = email;
     }
 
+    @XmlElement(name = "DINN")
     public String getDInn() {
         return dInn;
     }
@@ -280,14 +282,45 @@ public class PersonProfile extends SessionObject {
         this.dInn = dInn;
     }
 
+    @XmlElement(name = "DFIO")
     public String getDFio() {
-        return dFio;
+        return FIOBean.getFIO(dLastName, dFirstName, dMiddleName);
     }
 
     public void setDFio(String dFio) {
-        this.dFio = dFio;
+        dLastName = FIOBean.getLastName(dFio);
+        dFirstName = FIOBean.getFirstName(dFio);
+        dMiddleName = FIOBean.getMiddleName(dFio);
     }
 
+    @XmlTransient
+    public String getDLastName() {
+        return dLastName;
+    }
+
+    public void setDLastName(String dLastName) {
+        this.dLastName = dLastName;
+    }
+
+    @XmlTransient
+    public String getDFirstName() {
+        return dFirstName;
+    }
+
+    public void setDFirstName(String dFirstName) {
+        this.dFirstName = dFirstName;
+    }
+
+    @XmlTransient
+    public String getDMiddleName() {
+        return dMiddleName;
+    }
+
+    public void setDMiddleName(String dMiddleName) {
+        this.dMiddleName = dMiddleName;
+    }
+
+    @XmlElement(name = "BINN")
     public String getBInn() {
         return bInn;
     }
@@ -296,14 +329,45 @@ public class PersonProfile extends SessionObject {
         this.bInn = bInn;
     }
 
+    @XmlElement(name = "BFIO")
     public String getBFio() {
-        return bFio;
+        return FIOBean.getFIO(bLastName, bFirstName, bMiddleName);
     }
 
     public void setBFio(String bFio) {
-        this.bFio = bFio;
+        bLastName = FIOBean.getLastName(bFio);
+        bFirstName = FIOBean.getFirstName(bFio);
+        bMiddleName = FIOBean.getMiddleName(bFio);
     }
 
+    @XmlTransient
+    public String getBLastName() {
+        return bLastName;
+    }
+
+    public void setBLastName(String bLastName) {
+        this.bLastName = bLastName;
+    }
+
+    @XmlTransient
+    public String getBFirstName() {
+        return bFirstName;
+    }
+
+    public void setBFirstName(String bFirstName) {
+        this.bFirstName = bFirstName;
+    }
+
+    @XmlTransient
+    public String getBMiddleName() {
+        return bMiddleName;
+    }
+
+    public void setBMiddleName(String bMiddleName) {
+        this.bMiddleName = bMiddleName;
+    }
+
+    @XmlAttribute(name = "SELECTED")
     public boolean isSelected() {
         return selected;
     }
@@ -312,6 +376,7 @@ public class PersonProfile extends SessionObject {
         this.selected = selected;
     }
 
+    @XmlTransient
     public Long getTaxInspectionId() {
         return taxInspectionId;
     }

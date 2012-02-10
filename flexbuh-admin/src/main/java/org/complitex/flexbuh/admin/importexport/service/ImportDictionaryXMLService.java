@@ -17,10 +17,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.*;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Pavel Sknar
@@ -36,7 +33,7 @@ public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Date beginDate, Date endDate) {
+	public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
 		listener.begin();
 
 		Date importDate = new Date();

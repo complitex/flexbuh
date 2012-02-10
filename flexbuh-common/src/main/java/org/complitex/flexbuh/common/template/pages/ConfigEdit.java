@@ -1,7 +1,9 @@
 package org.complitex.flexbuh.common.template.pages;
 
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -10,20 +12,18 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.entity.IConfig;
+import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.10.2010 13:21:37
  */
-//@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ConfigEdit extends FormTemplatePage {
     @EJB(name = "ConfigBean")
     private ConfigBean configBean;
@@ -68,7 +68,18 @@ public class ConfigEdit extends FormTemplatePage {
                         IConfig config = item.getModelObject();
 
                         item.add(new Label("label", getStringOrKey(config.name())));
-                        item.add(new TextField<String>("config", model.get(config)));
+                        if (config.getAllowedValues() != null && config.getAllowedValues().size() > 0) {
+                            item.add(new DropDownChoice<String>("config_select", model.get(config), config.getAllowedValues()) {
+                                @Override
+                                protected boolean localizeDisplayValues() {
+                                    return true;
+                                }
+                            });
+                            item.add(new TextField<String>("config_text").setVisible(false));
+                        } else {
+                            item.add(new DropDownChoice<>("config_select").setVisible(false));
+                            item.add(new TextField<String>("config_text", model.get(config)));
+                        }
                     }
                 });
             }

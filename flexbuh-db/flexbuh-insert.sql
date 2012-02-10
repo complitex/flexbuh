@@ -10,6 +10,7 @@ INSERT INTO usergroup (`id`, `login`, `group_name`) VALUE (1, 'admin', 'ADMINIST
 -- Config
 -- --------------------------------
 insert into `config` (`name`, `value`) values ('IMPORT_FILE_STORAGE_DIR', '/tmp/flexbuh');
+insert into `config` (`name`, `value`) values ('SYSTEM_LOCALE', 'ru');
 
 -- --------------------------------
 -- DictionaryType

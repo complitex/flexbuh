@@ -21,8 +21,7 @@ import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.service.user.SessionBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
-import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
-import org.complitex.flexbuh.common.web.component.TaxInspectionDialog;
+import org.complitex.flexbuh.common.web.component.*;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 
 import javax.ejb.EJB;
@@ -184,9 +183,9 @@ public class PersonProfileEdit extends FormTemplatePage {
         };        
         form.add(physicalNameContainer);
 
-        physicalNameContainer.add(new TextField<>("last_name", new PropertyModel<>(personProfile, "lastName")));
-        physicalNameContainer.add(new TextField<>("first_name", new PropertyModel<>(personProfile, "firstName")));
-        physicalNameContainer.add(new TextField<>("middle_name", new PropertyModel<>(personProfile, "middleName")));
+        physicalNameContainer.add(new LastNameAutoCompleteTextField("last_name", new PropertyModel<String>(personProfile, "lastName")));
+        physicalNameContainer.add(new FirstNameAutoCompleteTextField("first_name", new PropertyModel<String>(personProfile, "firstName")));
+        physicalNameContainer.add(new MiddleNameAutoCompleteTextField("middle_name", new PropertyModel<String>(personProfile, "middleName")));
 
         // индивидуальный налоговый номер
         form.add(new TextField<>("ipn", new PropertyModel<String>(personProfile, "ipn")));
@@ -248,13 +247,17 @@ public class PersonProfileEdit extends FormTemplatePage {
         form.add(new TextField<>("d_inn", new PropertyModel<String>(personProfile, "dInn")));
 
         // ФИО директора предприятия
-        form.add(new TextField<>("d_fio", new PropertyModel<String>(personProfile, "dFio")));
+        form.add(new LastNameAutoCompleteTextField("d_last_name", new PropertyModel<String>(personProfile, "dLastName")));
+        form.add(new FirstNameAutoCompleteTextField("d_first_name", new PropertyModel<String>(personProfile, "dFirstName")));
+        form.add(new MiddleNameAutoCompleteTextField("d_middle_name", new PropertyModel<String>(personProfile, "dMiddleName")));
 
         // Код ДРФО бухгалтера
         form.add(new TextField<>("b_inn", new PropertyModel<String>(personProfile, "bInn")));
 
         // ФИО бухгалтера
-        form.add(new TextField<>("b_fio", new PropertyModel<String>(personProfile, "bFio")));
+        form.add(new LastNameAutoCompleteTextField("b_last_name", new PropertyModel<String>(personProfile, "bLastName")));
+        form.add(new FirstNameAutoCompleteTextField("b_first_name", new PropertyModel<String>(personProfile, "bFirstName")));
+        form.add(new MiddleNameAutoCompleteTextField("b_middle_name", new PropertyModel<String>(personProfile, "bMiddleName")));
 
         form.add(new Button("submit"){
             @Override
@@ -267,7 +270,7 @@ public class PersonProfileEdit extends FormTemplatePage {
                 }
 
                 personProfile.setSessionId(getSessionId());
-                personProfileBean.save(personProfile);
+                personProfileBean.save(personProfile, getLocale());
 
                 info(getString("profile_saved"));
 
