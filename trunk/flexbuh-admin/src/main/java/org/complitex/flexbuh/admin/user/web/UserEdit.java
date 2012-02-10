@@ -406,10 +406,10 @@ public class UserEdit extends FormTemplatePage {
             if (user.getId() == null && !checkRequiredField(user.getPassword(), "password")) {
                 emptyRequiredField = true;
             }
-            if (!checkRequiredField(user.getFirstName(), "firstName")) {
+            if (!checkRequiredField(user.getFirstName(), "first_name")) {
                 emptyRequiredField = true;
             }
-            if(!checkRequiredField(user.getLastName(), "lastName")) {
+            if(!checkRequiredField(user.getLastName(), "last_name")) {
                 emptyRequiredField = true;
             }
             if(!checkRequiredField(user.getEmail(), "email")) {
