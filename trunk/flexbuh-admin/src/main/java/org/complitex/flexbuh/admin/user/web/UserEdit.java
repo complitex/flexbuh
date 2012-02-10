@@ -35,6 +35,7 @@ import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -136,68 +137,17 @@ public class UserEdit extends FormTemplatePage {
         form.add(password);
 
         // First name
-        AutoCompleteTextField<String> firstNameField = new AutoCompleteTextField<String>("firstName", new PropertyModel<String>(user, "firstName")) {
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                if (Strings.isEmpty(input)) {
-                    List<String> emptyList = Collections.emptyList();
-                    return emptyList.iterator();
-                }
-
-                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
-
-                for (FirstName firstName : fioBean.getFirstNames(input, getLocale())) {
-                    choices.add(firstName.getName(getLocale()));
-                }
-
-                return choices.iterator();
-            }
-        };
-        form.add(firstNameField);
+        form.add(new FirstNameAutoCompleteTextField("first_name", new PropertyModel<String>(user, "firstName")));
 
         // Last name
-        final AutoCompleteTextField<String> lastNameField = new AutoCompleteTextField<String>("lastName", new PropertyModel<String>(user, "lastName")) {
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                if (Strings.isEmpty(input)) {
-                    List<String> emptyList = Collections.emptyList();
-                    return emptyList.iterator();
-                }
-
-                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
-
-                for (LastName lastName : fioBean.getLastNames(input, getLocale())) {
-                    choices.add(lastName.getName(getLocale()));
-                }
-
-                return choices.iterator();
-            }
-        };
-        form.add(lastNameField);
+        form.add(new FirstNameAutoCompleteTextField("last_name", new PropertyModel<String>(user, "lastName")));
 
         // E-mail
         TextField<String> emailField = new TextField<>("email", new PropertyModel<String>(user, "email"));
         form.add(emailField);
 
         // Middle name
-        final AutoCompleteTextField<String> middleNameField = new AutoCompleteTextField<String>("middleName", new PropertyModel<String>(user, "middleName")) {
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                if (Strings.isEmpty(input)) {
-                    List<String> emptyList = Collections.emptyList();
-                    return emptyList.iterator();
-                }
-
-                List<String> choices = Lists.newArrayListWithCapacity(LIST_INIT_SIZE);
-
-                for (MiddleName middleName : fioBean.getMiddleNames(input, getLocale())) {
-                    choices.add(middleName.getName(getLocale()));
-                }
-
-                return choices.iterator();
-            }
-        };
-        form.add(middleNameField);
+        form.add(new FirstNameAutoCompleteTextField("middle_name", new PropertyModel<String>(user, "middleName")));
 
         // Birthday
 		final DatePicker<Date> birthdayPicker = new DatePicker<Date>("birthday", new PropertyModel<Date>(user, "birthday"), Date.class) {

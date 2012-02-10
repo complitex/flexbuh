@@ -10,9 +10,9 @@
         <result column="c_sti_tin" property="cStiTin"/>
         <result column="tin" property="tin"/>
         <result column="name" property="name"/>
-        <result column="firstName" property="first_name"/>
-        <result column="middleName" property="middle_name"/>
-        <result column="lastName" property="last_name"/>
+        <result column="first_name" property="firstName"/>
+        <result column="middle_name" property="middleName"/>
+        <result column="last_name" property="lastName"/>
         <result column="profile_name" property="profileName"/>
         <result column="num_pdv_svd" property="numPdvSvd"/>
         <result column="ipn" property="ipn"/>
@@ -26,9 +26,13 @@
         <result column="fax" property="fax"/>
         <result column="email" property="email"/>
         <result column="d_inn" property="dInn"/>
-        <result column="d_fio" property="dFio"/>
+        <result column="d_first_name" property="dFirstName"/>
+        <result column="d_middle_name" property="dMiddleName"/>
+        <result column="d_last_name" property="dLastName"/>
         <result column="b_inn" property="bInn"/>
-        <result column="b_fio" property="bFio"/>
+        <result column="b_first_name" property="bFirstName"/>
+        <result column="b_middle_name" property="bMiddleName"/>
+        <result column="b_last_name" property="bLastName"/>
         <result column="tax_inspection_id" property="taxInspectionId"/>
         <result column="selected" property="selected"/>
     </resultMap>
@@ -37,11 +41,13 @@
         insert into `person_profile`
           (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `last_name`, `first_name`, `middle_name`,
             `profile_name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`, `contract_date`, `contract_number`, `zip_code`,
-            `address`, `phone`, `fax`, `email`, `d_inn` , `d_fio`, `b_inn`, `b_fio`, `tax_inspection_id`, `selected`)
+            `address`, `phone`, `fax`, `email`, `d_inn` , `d_last_name`, `d_first_name`, `d_middle_name`,
+            `b_inn`, `b_last_name`, `b_first_name`, `b_middle_name`, `tax_inspection_id`, `selected`)
         values
           (#{sessionId}, #{personType}, #{cSti}, #{cStiTin}, #{tin}, #{name}, #{lastName}, #{firstName}, #{middleName},
             #{profileName}, #{numPdvSvd}, #{ipn}, #{kved}, #{koatuu}, #{contractDate}, #{contractNumber}, #{zipCode},
-            #{address}, #{phone}, #{fax}, #{email}, #{dInn}, #{dFio}, #{bInn}, #{bFio}, #{taxInspectionId}, #{selected})
+            #{address}, #{phone}, #{fax}, #{email}, #{dInn}, #{dLastName}, #{dFirstName}, #{dMiddleName},
+            #{bInn}, #{bLastName}, #{bFirstName}, #{bMiddleName}, #{taxInspectionId}, #{selected})
     </insert>
 
 	<update id="updatePersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile">
@@ -50,8 +56,9 @@
           `profile_name` = #{profileName}, `num_pdv_svd` = #{numPdvSvd}, `ipn` = #{ipn}, `kved` = #{kved},
           `koatuu` = #{koatuu}, `contract_date` = #{contractDate}, `contract_number` = #{contractNumber},
           `zip_code` = #{zipCode}, `address` = #{address}, `phone` = #{phone}, `fax` = #{fax}, `email` = #{email},
-          `d_inn` = #{dInn}, `d_fio` = #{dFio}, `b_inn` = #{bInn}, `b_fio` = #{bFio}, `tax_inspection_id` = #{taxInspectionId},
-          `selected` = #{selected}
+          `d_inn` = #{dInn}, `d_last_name` = #{dLastName}, `d_first_name` = #{dFirstName}, `d_middle_name` = #{dMiddleName},
+          `b_inn` = #{bInn}, `b_last_name` = #{bLastName}, `b_first_name` = #{bFirstName}, `b_middle_name` = #{bMiddleName},
+          `tax_inspection_id` = #{taxInspectionId}, `selected` = #{selected}
         where `id` = #{id}
     </update>
 

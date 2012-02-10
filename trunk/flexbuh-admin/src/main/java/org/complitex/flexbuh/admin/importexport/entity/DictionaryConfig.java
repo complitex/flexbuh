@@ -2,6 +2,9 @@ package org.complitex.flexbuh.admin.importexport.entity;
 
 import org.complitex.flexbuh.common.entity.IConfig;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Pavel Sknar
  *         Date: 12.08.11 16:49
@@ -18,6 +21,11 @@ public enum DictionaryConfig implements IConfig {
     @Override
     public String getDefaultValue() {
         return defaultValue;
+    }
+
+    @Override
+    public List<String> getAllowedValues() {
+        return Collections.emptyList();
     }
 
     @Override

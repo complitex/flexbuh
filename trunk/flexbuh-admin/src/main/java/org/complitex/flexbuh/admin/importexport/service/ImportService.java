@@ -93,7 +93,7 @@ public abstract class ImportService {
 		}
 
         try {
-            fileService.process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), beginDate, endDate);
+            fileService.process(sessionId, listener, importFile.getName(), new FileInputStream(importFile), null, beginDate, endDate);
         } catch (FileNotFoundException e) {
             listener.begin();
             log.warn("Can not find file: " + importFile, e);

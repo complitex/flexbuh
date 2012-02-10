@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -22,10 +23,12 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.complitex.flexbuh.common.entity.ApplicationConfig;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.AbstractImportListener;
+import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
@@ -45,10 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -67,6 +67,9 @@ public class PersonProfileList extends TemplatePage {
 
     @EJB
     private ImportUserProfileXMLService importUserProfileXMLService;
+
+    @EJB
+    private ConfigBean configBean;
 
     private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
@@ -169,12 +172,13 @@ public class PersonProfileList extends TemplatePage {
         //Загрузка файлов
         uploadDialog = new Dialog("upload_dialog");
         uploadDialog.setTitle(getString("upload_title"));
-        uploadDialog.setWidth(500);
-        uploadDialog.setHeight(100);
+        uploadDialog.setWidth(270);
+        uploadDialog.setHeight(130);
 
         add(uploadDialog);
 
         final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
+        final IModel<String> fileLocaleModel = new Model<>(getIsoCodeSystemLocale());
 
         Form fileUploadForm = new Form("upload_form");
 
@@ -209,7 +213,7 @@ public class PersonProfileList extends TemplatePage {
                                             }
                                         };
                                     }
-                                }, fileUpload.getClientFileName(), fileUpload.getInputStream(), null, null);
+                                }, fileUpload.getClientFileName(), fileUpload.getInputStream(), new Locale(fileLocaleModel.getObject()), null, null);
 
                                 if (canceled.get()) {
                                     log.error("Failed import");
@@ -244,6 +248,12 @@ public class PersonProfileList extends TemplatePage {
         uploadDialog.add(fileUploadForm);
 
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
+        fileUploadForm.add(new DropDownChoice<String>("file_locale", fileLocaleModel, ApplicationConfig.SYSTEM_LOCALE.getAllowedValues()) {
+            @Override
+            protected boolean localizeDisplayValues() {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -319,5 +329,9 @@ public class PersonProfileList extends TemplatePage {
         });
 
         return list;
+    }
+
+    private String getIsoCodeSystemLocale() {
+        return configBean.getString(ApplicationConfig.SYSTEM_LOCALE, true);
     }
 }

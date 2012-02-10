@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -35,7 +36,7 @@ public class ImportFieldCodeService extends ImportXMLService {
     private UserTransaction userTransaction;
 
     @Override
-    public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Date beginDate, Date endDate) {
+    public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
         try {
             listener.begin();
 
