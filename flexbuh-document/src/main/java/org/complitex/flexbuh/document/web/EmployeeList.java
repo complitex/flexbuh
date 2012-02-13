@@ -7,10 +7,7 @@ import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -21,6 +18,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.entity.ApplicationConfig;
+import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
@@ -52,6 +51,9 @@ public class EmployeeList extends TemplatePage{
 
     @EJB
     private PersonProfileBean personProfileBean;
+
+    @EJB
+    private ConfigBean configBean;
 
     private Dialog uploadDialog;
 
@@ -146,12 +148,13 @@ public class EmployeeList extends TemplatePage{
         //Загрузка файлов
         uploadDialog = new Dialog("upload_dialog");
         uploadDialog.setTitle(getString("upload_title"));
-        uploadDialog.setWidth(500);
-        uploadDialog.setHeight(100);
+        uploadDialog.setWidth(270);
+        uploadDialog.setHeight(130);
 
         add(uploadDialog);
 
         final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
+        final IModel<String> fileLocaleModel = new Model<>(getIsoCodeSystemLocale());
 
         Form fileUploadForm = new Form("upload_form");
 
@@ -165,7 +168,7 @@ public class EmployeeList extends TemplatePage{
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        count += employeeBean.save(getSessionId(), fileUpload.getInputStream());
+                        count += employeeBean.save(getSessionId(), fileUpload.getInputStream(), new Locale(fileLocaleModel.getObject()));
                     }
 
                     uploadDialog.close(target);
@@ -188,6 +191,12 @@ public class EmployeeList extends TemplatePage{
         uploadDialog.add(fileUploadForm);
 
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
+        fileUploadForm.add(new DropDownChoice<String>("file_locale", fileLocaleModel, ApplicationConfig.SYSTEM_LOCALE.getAllowedValues()) {
+            @Override
+            protected boolean localizeDisplayValues() {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -237,5 +246,9 @@ public class EmployeeList extends TemplatePage{
         });
 
         return list;
+    }
+
+    private String getIsoCodeSystemLocale() {
+        return configBean.getString(ApplicationConfig.SYSTEM_LOCALE, true);
     }
 }

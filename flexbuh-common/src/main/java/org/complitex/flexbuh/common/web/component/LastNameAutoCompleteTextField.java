@@ -24,28 +24,59 @@ public class LastNameAutoCompleteTextField extends Panel {
     @EJB
     private FIOBean fioBean;
 
+    public LastNameAutoCompleteTextField(String id) {
+        this(id, (Boolean) null);
+    }
+
+    public LastNameAutoCompleteTextField(String id, Boolean required) {
+        super(id);
+
+        // Last name
+        final AutoCompleteTextField<String> lastNameField = new AutoCompleteTextField<String>("lastName") {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                return LastNameAutoCompleteTextField.this.getChoices(input);
+            }
+        };
+        if (required != null) {
+            lastNameField.setRequired(required);
+        }
+        add(lastNameField);
+    }
+
     public LastNameAutoCompleteTextField(String id, IModel<String> model) {
+        this(id, model, null);
+    }
+
+    public LastNameAutoCompleteTextField(String id, IModel<String> model, Boolean required) {
         super(id);
 
         // Last name
         final AutoCompleteTextField<String> lastNameField = new AutoCompleteTextField<String>("lastName", model) {
             @Override
             protected Iterator<String> getChoices(String input) {
-                if (Strings.isEmpty(input)) {
-                    List<String> emptyList = Collections.emptyList();
-                    return emptyList.iterator();
-                }
-
-                List<String> choices = Lists.newArrayListWithCapacity(SIZE);
-
-                for (LastName lastName : fioBean.getLastNames(input, getLocale())) {
-                    choices.add(lastName.getName(getLocale()));
-                }
-
-                return choices.iterator();
+                return LastNameAutoCompleteTextField.this.getChoices(input);
             }
         };
+        if (required != null) {
+            lastNameField.setRequired(required);
+        }
         add(lastNameField);
+    }
+
+    private Iterator<String> getChoices(String input) {
+        if (Strings.isEmpty(input)) {
+            List<String> emptyList = Collections.emptyList();
+            return emptyList.iterator();
+        }
+
+        List<String> choices = Lists.newArrayListWithCapacity(SIZE);
+
+        for (LastName lastName : fioBean.getLastNames(input, getLocale())) {
+            choices.add(lastName.getName(getLocale()));
+        }
+
+        return choices.iterator();
     }
 }
 

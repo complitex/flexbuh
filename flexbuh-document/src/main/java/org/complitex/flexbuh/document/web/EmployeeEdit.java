@@ -8,9 +8,13 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
+import org.complitex.flexbuh.common.web.component.LastNameAutoCompleteTextField;
+import org.complitex.flexbuh.common.web.component.MiddleNameAutoCompleteTextField;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.service.EmployeeBean;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -55,7 +59,9 @@ public class EmployeeEdit extends FormTemplatePage{
         add(form);
 
         form.add(new TextField<>("htin", Integer.class));
-        form.add(new TextField("hname").setRequired(true));
+        form.add(new LastNameAutoCompleteTextField("lastName", true));
+        form.add(new FirstNameAutoCompleteTextField("firstName", true));
+        form.add(new MiddleNameAutoCompleteTextField("middleName", true));
         form.add(new DatePicker("hbirthday"));
         form.add(new DatePicker("hdateIn"));
         form.add(new DatePicker("hdateOut"));
@@ -63,7 +69,7 @@ public class EmployeeEdit extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                employeeBean.save(form.getModelObject());
+                employeeBean.save(form.getModelObject(), getLocale());
 
                 setResponsePage(EmployeeList.class);
 
