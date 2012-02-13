@@ -7,7 +7,9 @@
         <result column="session_id" property="sessionId"/>
         <result column="person_profile_id" property="personProfileId"/>
         <result column="htin" property="htin"/>
-        <result column="hname" property="hname"/>
+        <result column="last_name" property="lastName"/>
+        <result column="first_name" property="firstName"/>
+        <result column="middle_name" property="middleName"/>
         <result column="hbirthday" property="hbirthday"/>
         <result column="hdate_in" property="hdateIn"/>
         <result column="hdate_out" property="hdateOut"/>
@@ -19,11 +21,11 @@
 
     <sql id="selectEmployeesWhere">
         <where>
-            <if test="htin != null">and `htin` like concat('%', #{htin}, '%')</if>
-            <if test="hname != null">and `hname` like concat('%', #{hname}, '%')</if>
-            <if test="hbirthday != null">and `hbirthday` = DATE(#{hbirthday})</if>
-            <if test="hdateIn != null">and `hdate_in` = DATE(#{hdateIn})</if>
-            <if test="hdateOut != null">and `hdate_out` = DATE(#{hdateOut})</if>
+            <if test="htin != null">and e.`htin` like concat('%', #{htin}, '%')</if>
+            <if test="hname != null">and concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) like concat('%', #{hname}, '%')</if>
+            <if test="hbirthday != null">and e.`hbirthday` = DATE(#{hbirthday})</if>
+            <if test="hdateIn != null">and e.`hdate_in` = DATE(#{hdateIn})</if>
+            <if test="hdateOut != null">and e.`hdate_out` = DATE(#{hdateOut})</if>
             and e.`session_id` = #{sessionId}
             and pp.`selected` = true
         </where>
@@ -31,7 +33,8 @@
 
     <select id="selectEmployees" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
             resultMap="employeeResultMap">
-        select e.* from `employee` e left join `person_profile` pp on (e.`person_profile_id` = pp.`id`)
+        select e.*, concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) as `hname`
+        from `employee` e left join `person_profile` pp on (e.`person_profile_id` = pp.`id`)
 
         <include refid="selectEmployeesWhere"/>
         order by ${sortProperty}
@@ -46,13 +49,17 @@
     </select>
 
     <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
-        insert into `employee` (`session_id`, `person_profile_id`, `htin`, `hname`, `hbirthday`, `hdate_in`, `hdate_out`)
-          values (#{sessionId}, #{personProfileId}, #{htin}, #{hname}, #{hbirthday}, #{hdateIn}, #{hdateOut})
+        insert into `employee` (`session_id`, `person_profile_id`, `htin`, `last_name`, `first_name`, `middle_name`,
+         `hbirthday`, `hdate_in`, `hdate_out`)
+          values (#{sessionId}, #{personProfileId}, #{htin}, #{lastName}, #{firstName}, #{middleName},
+           #{hbirthday}, #{hdateIn}, #{hdateOut})
     </insert>
 
     <update id="updateEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
-        update `employee` set `person_profile_id` = #{personProfileId}, `htin` = #{htin}, `hname` = #{hname},
+        update `employee` set `person_profile_id` = #{personProfileId}, `htin` = #{htin},
+          `last_name` = #{lastName}, `first_name` = #{firstName}, `middle_name` = #{middleName},
           `hbirthday` = #{hbirthday}, `hdate_in` = #{hdateIn}, `hdate_out` = #{hdateOut}
+        where `id` = #{id}
     </update>
 
     <delete id="deleteEmployee" parameterType="long">

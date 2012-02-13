@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.SessionObject;
+import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.util.DateUtil;
 
 import javax.xml.bind.annotation.*;
@@ -11,34 +12,23 @@ import java.util.Date;
  *         Date: 17.11.11 15:58
  */
 @XmlType(name = "row")
-@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class Employee extends SessionObject{
-    @XmlTransient
     private Long personProfileId;
 
-    @XmlElement(name = "HTIN")
     private Integer htin;
 
-    @XmlElement(name = "HNAME")
-    private String hname;
+    private String lastName;
 
-    @XmlTransient
+    private String firstName;
+
+    private String middleName;
+
     private Date hbirthday;
 
-    @XmlTransient
     private Date hdateIn;
 
-    @XmlTransient
     private Date hdateOut;
-
-    @XmlElement(name = "HBIRTHDAY")
-    private String hbirthdayString;
-
-    @XmlElement(name = "HDATE_IN")
-    private String hdateInString;
-
-    @XmlElement(name = "HDATE_OUT")
-    private String hdateOutString;
 
     public Employee() {
     }
@@ -47,12 +37,7 @@ public class Employee extends SessionObject{
         super(sessionId);
     }
 
-    public void updateDates(){
-        hdateOut = DateUtil.getDate(hdateOutString);
-        hdateIn = DateUtil.getDate(hdateInString);
-        hbirthday = DateUtil.getDate(hbirthdayString);
-    }
-
+    @XmlTransient
     public Long getPersonProfileId() {
         return personProfileId;
     }
@@ -61,6 +46,7 @@ public class Employee extends SessionObject{
         this.personProfileId = personProfileId;
     }
 
+    @XmlElement(name = "HTIN")
     public Integer getHtin() {
         return htin;
     }
@@ -69,14 +55,18 @@ public class Employee extends SessionObject{
         this.htin = htin;
     }
 
+    @XmlElement(name = "HNAME")
     public String getHname() {
-        return hname;
+        return FIOBean.getFIO(lastName, firstName, middleName);
     }
 
     public void setHname(String hname) {
-        this.hname = hname;
+        lastName = FIOBean.getLastName(hname);
+        firstName = FIOBean.getFirstName(hname);
+        middleName = FIOBean.getMiddleName(hname);
     }
 
+    @XmlTransient
     public Date getHbirthday() {
         return hbirthday;
     }
@@ -85,6 +75,7 @@ public class Employee extends SessionObject{
         this.hbirthday = hbirthday;
     }
 
+    @XmlTransient
     public Date getHdateIn() {
         return hdateIn;
     }
@@ -93,6 +84,7 @@ public class Employee extends SessionObject{
         this.hdateIn = hdateIn;
     }
 
+    @XmlTransient
     public Date getHdateOut() {
         return hdateOut;
     }
@@ -101,27 +93,45 @@ public class Employee extends SessionObject{
         this.hdateOut = hdateOut;
     }
 
-    public String getHbirthdayString() {
-        return hbirthdayString;
-    }
-
+    @XmlElement(name = "HBIRTHDAY")
     public void setHbirthdayString(String hbirthdayString) {
-        this.hbirthdayString = hbirthdayString;
+        hbirthday = DateUtil.getDate(hbirthdayString);
     }
 
-    public String getHdateInString() {
-        return hdateInString;
-    }
-
+    @XmlElement(name = "HDATE_IN")
     public void setHdateInString(String hdateInString) {
-        this.hdateInString = hdateInString;
+        hdateIn = DateUtil.getDate(hdateInString);
     }
 
-    public String getHdateOutString() {
-        return hdateOutString;
-    }
-
+    @XmlElement(name = "HDATE_OUT")
     public void setHdateOutString(String hdateOutString) {
-        this.hdateOutString = hdateOutString;
+        hdateOut = DateUtil.getDate(hdateOutString);
+    }
+
+    @XmlTransient
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @XmlTransient
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @XmlTransient
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 }

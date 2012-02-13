@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
@@ -14,6 +15,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -25,6 +27,9 @@ public class EmployeeBean extends AbstractBean{
     
     @EJB
     private PersonProfileBean personProfileBean;
+
+    @EJB
+    private FIOBean fioBean;
 
     public Employee getEmployee(Long id){
         return (Employee) sqlSession().selectOne("selectEmployee", id);
@@ -39,7 +44,9 @@ public class EmployeeBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectEmployeesCount", filter);
     }
 
-    public void save(Employee employee){
+    public void save(Employee employee, Locale locale){
+        fioBean.createFIO(employee.getFirstName(), employee.getMiddleName(), employee.getLastName(), locale);
+
         if (employee.getId() == null){
             sqlSession().insert("insertEmployee", employee);
         }else {
@@ -51,7 +58,7 @@ public class EmployeeBean extends AbstractBean{
         sqlSession().delete("deleteEmployee", id);
     }
 
-    public int save(Long sessionId, InputStream inputStream) {
+    public int save(Long sessionId, InputStream inputStream, Locale locale) {
         try {
             EmployeeRowSet employeeRowSet = (EmployeeRowSet) JAXBContext
                     .newInstance(EmployeeRowSet.class)
@@ -64,9 +71,8 @@ public class EmployeeBean extends AbstractBean{
                 for (Employee employee : employeeRowSet.getEmployees()){
                     employee.setSessionId(sessionId);
                     employee.setPersonProfileId(personalProfileId);
-                    employee.updateDates();
 
-                    save(employee);
+                    save(employee, locale);
                 }
 
                 return employeeRowSet.getEmployees().size();
