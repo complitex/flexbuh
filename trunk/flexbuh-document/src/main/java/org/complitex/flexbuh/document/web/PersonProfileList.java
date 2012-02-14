@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.util.ListModel;
@@ -34,6 +33,7 @@ import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -136,7 +136,7 @@ public class PersonProfileList extends TemplatePage {
 
                 item.add(new Label("name", profile.getName()));
 
-                item.add(new Label("tin", profile.getTin() + ""));
+                item.add(new Label("tin", StringUtil.getString(profile.getTin())));
 
                 Link select = new Link("action_select") {
                     @Override
