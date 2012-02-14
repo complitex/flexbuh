@@ -75,21 +75,13 @@ public class PersonProfile extends SessionObject {
     private Long taxInspectionId;
     
     public void parsePhysicalNames(){
-        String[] names = name.split(" ");
-
-        if (names.length > 0){
-            lastName = names[0];
-        }
-        if (names.length > 1){
-            firstName = names[1];
-        }
-        if (names.length > 2){
-            middleName = names[2];
-        }
+        lastName = FIOBean.getLastName(name);
+        firstName = FIOBean.getFirstName(name);
+        middleName = FIOBean.getMiddleName(name);
     }
     
     public void mergePhysicalNames(){
-        name = (getString(lastName) + " " + getString(firstName) + " " + getString(middleName)).trim();
+        name = FIOBean.getFIO(lastName, firstName, middleName);
     }
 
     @XmlJavaTypeAdapter(PersonTypeAdapter.class)

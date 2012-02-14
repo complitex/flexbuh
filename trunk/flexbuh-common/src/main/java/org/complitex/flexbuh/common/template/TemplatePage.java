@@ -31,6 +31,7 @@ import org.complitex.flexbuh.common.util.ResourceUtil;
 import org.complitex.flexbuh.common.web.component.PersonProfileChoice;
 import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
 import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
+import org.odlabs.wiquery.core.resources.CoreJavaScriptResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,6 +127,7 @@ public abstract class TemplatePage extends WebPage {
     @Override
     public void renderHead(IHeaderResponse response) {
         response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
+        response.renderJavaScriptReference(CoreJavaScriptResourceReference.get());
         response.renderJavaScriptReference(new PackageResourceReference(TemplatePage.class, "TemplatePage.js"));
 
         response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);

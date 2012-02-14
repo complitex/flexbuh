@@ -36,6 +36,8 @@ import org.complitex.flexbuh.common.service.StreetTypeBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
+import org.complitex.flexbuh.common.web.component.LastNameAutoCompleteTextField;
+import org.complitex.flexbuh.common.web.component.MiddleNameAutoCompleteTextField;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -140,14 +142,14 @@ public class UserEdit extends FormTemplatePage {
         form.add(new FirstNameAutoCompleteTextField("first_name", new PropertyModel<String>(user, "firstName")));
 
         // Last name
-        form.add(new FirstNameAutoCompleteTextField("last_name", new PropertyModel<String>(user, "lastName")));
+        form.add(new LastNameAutoCompleteTextField("last_name", new PropertyModel<String>(user, "lastName")));
 
         // E-mail
         TextField<String> emailField = new TextField<>("email", new PropertyModel<String>(user, "email"));
         form.add(emailField);
 
         // Middle name
-        form.add(new FirstNameAutoCompleteTextField("middle_name", new PropertyModel<String>(user, "middleName")));
+        form.add(new MiddleNameAutoCompleteTextField("middle_name", new PropertyModel<String>(user, "middleName")));
 
         // Birthday
 		final DatePicker<Date> birthdayPicker = new DatePicker<Date>("birthday", new PropertyModel<Date>(user, "birthday"), Date.class) {
