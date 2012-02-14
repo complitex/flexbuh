@@ -2,8 +2,7 @@ package org.complitex.flexbuh.common.web.component;
 
 import com.google.common.collect.Lists;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.common.entity.MiddleName;
 import org.complitex.flexbuh.common.service.FIOBean;
@@ -19,52 +18,21 @@ import static org.complitex.flexbuh.common.service.FIOBean.SIZE;
  * @author Pavel Sknar
  *         Date: 07.02.12 17:54
  */
-public class MiddleNameAutoCompleteTextField extends Panel {
+public class MiddleNameAutoCompleteTextField extends AutoCompleteTextField<String> {
 
     @EJB
     private FIOBean fioBean;
 
     public MiddleNameAutoCompleteTextField(String id) {
-        this(id, (Boolean) null);
-    }
-
-    public MiddleNameAutoCompleteTextField(String id, Boolean required) {
         super(id);
-
-        // Middle name
-        final AutoCompleteTextField<String> middleNameField = new AutoCompleteTextField<String>("middleName") {
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                return MiddleNameAutoCompleteTextField.this.getChoices(input);
-            }
-        };
-        if (required != null) {
-            middleNameField.setRequired(required);
-        }
-        add(middleNameField);
     }
 
-    public MiddleNameAutoCompleteTextField(String id, IModel<String> model) {
-        this(id, model, null);
+    public MiddleNameAutoCompleteTextField(String id, PropertyModel<String> model) {
+        super(id, model);
     }
 
-    public MiddleNameAutoCompleteTextField(String id, IModel<String> model, Boolean required) {
-        super(id);
-
-        // Middle name
-        final AutoCompleteTextField<String> middleNameField = new AutoCompleteTextField<String>("middleName", model) {
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                return MiddleNameAutoCompleteTextField.this.getChoices(input);
-            }
-        };
-        if (required != null) {
-            middleNameField.setRequired(required);
-        }
-        add(middleNameField);
-    }
-
-    private Iterator<String> getChoices(String input) {
+    @Override
+    protected Iterator<String> getChoices(String input) {
         if (Strings.isEmpty(input)) {
             List<String> emptyList = Collections.emptyList();
             return emptyList.iterator();

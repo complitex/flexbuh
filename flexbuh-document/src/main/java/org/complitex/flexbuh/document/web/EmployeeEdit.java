@@ -59,9 +59,9 @@ public class EmployeeEdit extends FormTemplatePage{
         add(form);
 
         form.add(new TextField<>("htin", Integer.class));
-        form.add(new LastNameAutoCompleteTextField("lastName", true));
-        form.add(new FirstNameAutoCompleteTextField("firstName", true));
-        form.add(new MiddleNameAutoCompleteTextField("middleName", true));
+        form.add(new LastNameAutoCompleteTextField("lastName").setRequired(true));
+        form.add(new FirstNameAutoCompleteTextField("firstName").setRequired(true));
+        form.add(new MiddleNameAutoCompleteTextField("middleName"));
         form.add(new DatePicker("hbirthday"));
         form.add(new DatePicker("hdateIn"));
         form.add(new DatePicker("hdateOut"));

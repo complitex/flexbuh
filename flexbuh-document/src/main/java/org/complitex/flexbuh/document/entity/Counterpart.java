@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.SessionObject;
+import org.complitex.flexbuh.common.service.FIOBean;
 
 import javax.xml.bind.annotation.*;
 
@@ -9,24 +10,23 @@ import javax.xml.bind.annotation.*;
  *         Date: 16.11.11 14:45
  */
 @XmlType(name = "row")
-@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class Counterpart extends SessionObject {
     @XmlTransient
     private Long personProfileId;
-    
-    @XmlElement(name = "HK")
+
     private String hk;
 
-    @XmlElement(name = "HNAME")
-    private String hname;
+    private String lastName;
 
-    @XmlElement(name = "HLOC")
+    private String firstName;
+
+    private String middleName;
+
     private String hloc;
 
-    @XmlElement(name = "HTEL")
     private String htel;
 
-    @XmlElement(name = "HNSPDV")
     private String hnspdv;
 
     public Counterpart() {
@@ -44,6 +44,7 @@ public class Counterpart extends SessionObject {
         this.personProfileId = personProfileId;
     }
 
+    @XmlElement(name = "HK")
     public String getHk() {
         return hk;
     }
@@ -52,14 +53,18 @@ public class Counterpart extends SessionObject {
         this.hk = hk;
     }
 
+    @XmlElement(name = "HNAME")
     public String getHname() {
-        return hname;
+        return FIOBean.getFIO(lastName, firstName, middleName);
     }
 
     public void setHname(String hname) {
-        this.hname = hname;
+        lastName = FIOBean.getLastName(hname);
+        firstName = FIOBean.getFirstName(hname);
+        middleName = FIOBean.getMiddleName(hname);
     }
 
+    @XmlElement(name = "HLOC")
     public String getHloc() {
         return hloc;
     }
@@ -68,6 +73,7 @@ public class Counterpart extends SessionObject {
         this.hloc = hloc;
     }
 
+    @XmlElement(name = "HTEL")
     public String getHtel() {
         return htel;
     }
@@ -76,11 +82,39 @@ public class Counterpart extends SessionObject {
         this.htel = htel;
     }
 
+    @XmlElement(name = "HNSPDV")
     public String getHnspdv() {
         return hnspdv;
     }
 
     public void setHnspdv(String hnspdv) {
         this.hnspdv = hnspdv;
+    }
+
+    @XmlTransient
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @XmlTransient
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @XmlTransient
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 }
