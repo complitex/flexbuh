@@ -31,6 +31,25 @@
         </form>
     </div>
 
+    <div wicket:id="add_organizations_dialog">
+        <form action="#" wicket:id="select_organizations_form">
+            <table>
+                <tr>
+                    <td style="width: 100%">
+                        <select wicket:id="select_organizations" style="height: 75px; width: 277px">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="btnSmall default" wicket:id="addOrganizations" type="submit" wicket:message="value:add" tabindex="0"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
     <form action="#" wicket:id="form">
         <table class="tbForm">
             <tr>
@@ -64,21 +83,49 @@
             <tr>
                 <td colspan="2">
                     <fieldset>
-                    <table class="tbForm" wicket:id="rolesContainer">
-                        <tr wicket:id="roles">
-                            <td>
-                                <input class="selected" type="checkbox" wicket:id="selected"/>
-                            </td>
-                            <td>
-                                <span wicket:id="roleName"></span>
-                            </td>
-                        </tr>
-                    </table>
-                    <div>
-                        <input type="button" wicket:id="addRoles" wicket:message="value:add_roles" class="btnMiddle"/>
-                        <input type="button" wicket:id="removeRoles" wicket:message="value:remove_roles" class="btnMiddle"/>
-                    </div>
+                        <legend>
+                            <wicket:message key="legend_roles"/>
+                        </legend>
+                        <table class="tbForm" wicket:id="rolesContainer">
+                            <tr wicket:id="roles">
+                                <td>
+                                    <input class="selected" type="checkbox" wicket:id="selected"/>
+                                </td>
+                                <td>
+                                    <span wicket:id="roleName"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <div>
+                            <input type="button" wicket:id="addRoles" wicket:message="value:add" class="btnMiddle"/>
+                            <input type="button" wicket:id="removeRoles" wicket:message="value:remove" class="btnMiddle"/>
+                        </div>
                     </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div wicket:id="userOrganizationContainer">
+                    <fieldset>
+                        <legend>
+                            <wicket:message key="legend_organizations"/>
+                        </legend>
+                        <table class="tbForm" wicket:id="organizationsContainer">
+                            <tr wicket:id="organizations">
+                                <td>
+                                    <input class="selected" type="checkbox" wicket:id="selectedOrganization"/>
+                                </td>
+                                <td>
+                                    <span wicket:id="organizationName"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <div>
+                            <input type="button" wicket:id="addOrganizations" wicket:message="value:add" class="btnMiddle"/>
+                            <input type="button" wicket:id="removeOrganizations" wicket:message="value:remove" class="btnMiddle"/>
+                        </div>
+                    </fieldset>
+                    </div>
                 </td>
             </tr>
         </table>
