@@ -293,11 +293,11 @@ public class UserEdit extends FormTemplatePage {
 
         final WebMarkupContainer userOrganizationContainer = new WebMarkupContainer("userOrganizationContainer") {
             @Override
-            public boolean isEnabled() {
+            public boolean isVisible() {
                 return userBean.isPersonalManager(user);
             }
         };
-        userOrganizationContainer.setOutputMarkupId(true);//.setVisible(userBean.isPersonalManager(user));
+        userOrganizationContainer.setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true);
 
         // Dialog add roles
         addRolesDialog = new Dialog("add_roles_dialog");
