@@ -27,6 +27,13 @@
         <collection property="roles" ofType="string">
             <result column="group_name"/>
         </collection>
+
+        <collection property="organizations" column="id"
+                    ofType="org.complitex.flexbuh.common.entity.organization.OrganizationBase">
+            <result column="organization_id" property="id"/>
+            <result column="organization_name" property="name"/>
+            <result column="organization_type" property="type"/>
+        </collection>
     </resultMap>
 
     <sql id="userFilter">
@@ -71,13 +78,17 @@
     </update>
 
     <select id="selectUsers" resultMap="userResultMap" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
-        select uc.*, gc.`group_name` as `group_name`
+        select uc.*,
+               gc.`group_name` as `group_name`,
+               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
         from
         (select u.*
         <include refid="userFilter"/>
         limit #{first}, #{count}
         ) as uc
         left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `user_organization` uo on uc.`login` = uo.`login`
+        left join `organization` o on uo.`organization_id` = o.`id`
     </select>
 
     <select id="selectUsersCount" resultType="int" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
@@ -86,25 +97,36 @@
     </select>
 
     <select id="selectUserBySessionId" parameterType="long" resultMap="userResultMap">
-        select u.*, gc.`group_name` as `group_name` from `user` u
+        select u.*,
+               gc.`group_name` as `group_name`,
+               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
+        from `user` u
         left join `usergroup` gc on u.`login` = gc.`login`
+        left join `user_organization` uo on u.`login` = uo.`login`
+        left join `organization` o on uo.`organization_id` = o.`id`
         where u.`session_id` = #{sessionId}
     </select>
 
     <select id="selectUserById" parameterType="long" resultMap="userResultMap">
         select u.*,
-               gc.`group_name` as `group_name`
+               gc.`group_name` as `group_name`,
+               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
         from `user` u
         left join `usergroup` gc on u.`login` = gc.`login`
+        left join `user_organization` uo on u.`login` = uo.`login`
+        left join `organization` o on uo.`organization_id` = o.`id`
         where u.`id` = #{id}
         order by gc.`group_name`
     </select>
 
     <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
         select u.*,
-               gc.`group_name` as `group_name`
+               gc.`group_name` as `group_name`,
+               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
         from `user` u
         left join `usergroup` gc on u.`login` = gc.`login`
+        left join `user_organization` uo on u.`login` = uo.`login`
+        left join `organization` o on uo.`organization_id` = o.`id`
         where u.`login` = #{login}
         order by gc.`group_name`
     </select>
@@ -120,6 +142,15 @@
 
     <delete id="deleteUserRole" parameterType="map">
         delete from `usergroup` where `login` = #{login} and `group_name` = #{role}
+    </delete>
+
+    <!--User organization-->
+    <insert id="insertUserOrganization" parameterType="map">
+        insert into `user_organization` (`login`, `organization_id`) values (#{login}, #{organizationId})
+    </insert>
+
+    <delete id="deleteUserOrganization" parameterType="map">
+        delete from `user_organization` where `login` = #{login} and `organization_id` = #{organizationId}
     </delete>
 
 </mapper>

@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.DomainObject;
 import org.complitex.flexbuh.common.entity.SessionObject;
+import org.complitex.flexbuh.common.entity.organization.Organization;
+import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
@@ -35,6 +37,7 @@ public class User extends DomainObject {
     private String apartment;
 
     private List<String> roles = Lists.newArrayList();
+    private List<OrganizationBase> organizations = Lists.newArrayList();
 
 	public String getLogin() {
 		return login;
@@ -194,6 +197,14 @@ public class User extends DomainObject {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public List<OrganizationBase> getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(List<OrganizationBase> organizations) {
+        this.organizations = organizations;
     }
 
     @Override

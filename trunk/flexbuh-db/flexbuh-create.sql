@@ -107,6 +107,60 @@ CREATE TABLE  `usergroup` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Группа пользователей';
 
 -- ------------------------------
+-- Organization
+-- ------------------------------
+DROP TABLE IF EXISTS `organization`;
+
+CREATE TABLE  `organization` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор организации',
+  `name` VARCHAR(45) NOT NULL COMMENT 'Название организации',
+  `type` VARCHAR(45) COMMENT 'Тип организации (ООО/ОАО/ИП/ЗАО)',
+  `phone` VARCHAR(255) COMMENT 'Телефоны',
+  `fax` VARCHAR(255) COMMENT 'Факсы',
+  `email` VARCHAR(45) NOT NULL COMMENT 'E-mail',
+  `http_address` VARCHAR(255) NOT NULL COMMENT 'Официальный веб адрес организации',
+
+  `physical_address_zip_code` VARCHAR(45) COMMENT 'Физический адрес : почтовый индекс',
+  `physical_address_country` VARCHAR(45) COMMENT 'Физический адрес : страна',
+  `physical_address_region` VARCHAR(45) COMMENT 'Физический адрес : регион',
+  `physical_address_area` VARCHAR(45) COMMENT 'Физический адрес : район',
+  `physical_address_city` VARCHAR(45) COMMENT 'Физический адрес : селение',
+  `physical_address_city_type` VARCHAR(45) COMMENT 'Физический адрес : тип селения (город/деревня/поселок)',
+  `physical_address_street` VARCHAR(45) COMMENT 'Физический адрес : улица',
+  `physical_address_street_type` VARCHAR(45) COMMENT 'Физический адрес : тип улицы',
+  `physical_address_building` VARCHAR(45) COMMENT 'Физический адрес : дом',
+  `physical_address_apartment` VARCHAR(45) COMMENT 'Физический адрес : квартира',
+
+  `juridical_address_zip_code` VARCHAR(45) COMMENT 'Юридический адрес : почтовый индекс',
+  `juridical_address_country` VARCHAR(45) COMMENT 'Юридический адрес : страна',
+  `juridical_address_region` VARCHAR(45) COMMENT 'Юридический адрес : регион',
+  `juridical_address_area` VARCHAR(45) COMMENT 'Юридический адрес : район',
+  `juridical_address_city` VARCHAR(45) COMMENT 'Юридический адрес : селение',
+  `juridical_address_city_type` VARCHAR(45) COMMENT 'Юридический адрес : тип селения (город/деревня/поселок)',
+  `juridical_address_street` VARCHAR(45) COMMENT 'Юридический адрес : улица',
+  `juridical_address_street_type` VARCHAR(45) COMMENT 'Юридический адрес : тип улицы',
+  `juridical_address_building` VARCHAR(45) COMMENT 'Юридический адрес : дом',
+  `juridical_address_apartment` VARCHAR(45) COMMENT 'Юридический адрес : квартира',
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Организация';
+
+-- ------------------------------
+-- User organizations
+-- ------------------------------
+DROP TABLE IF EXISTS `user_organization`;
+
+CREATE TABLE  `user_organization` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор организации пользователя',
+  `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
+  `organization_id` BIGINT (20) NOT NULL COMMENT 'Идентификатор организации',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_login__organization_id` (`login`, `organization_id`),
+  CONSTRAINT `fk_user_organization__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`),
+  CONSTRAINT `fk_user_organization__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Организации пользователей';
+
+-- ------------------------------
 -- Config
 -- ------------------------------
 

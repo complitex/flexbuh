@@ -24,6 +24,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.common.entity.*;
+import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventModel;
@@ -33,6 +34,7 @@ import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
+import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
@@ -46,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.xml.registry.infomodel.Organization;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -79,6 +82,9 @@ public class UserEdit extends FormTemplatePage {
 
     @EJB
 	private EventObjectFactory eventObjectFactory;
+
+    @EJB
+    private OrganizationBean organizationBean;
 
     private User user;
     private IModel<String> streetModel = new Model<String>();
@@ -276,6 +282,7 @@ public class UserEdit extends FormTemplatePage {
         AtomicReference<Button> updateOrCreate = new AtomicReference<Button>(new SaveUserButton("submit"));
         form.add(updateOrCreate.get());
 
+        // Button cancel changes and return to "Users list" page
         form.add(new Link("cancel") {
 
             @Override
@@ -283,6 +290,14 @@ public class UserEdit extends FormTemplatePage {
                 setResponsePage(UserList.class);
             }
         });
+
+        final WebMarkupContainer userOrganizationContainer = new WebMarkupContainer("userOrganizationContainer") {
+            @Override
+            public boolean isEnabled() {
+                return userBean.isPersonalManager(user);
+            }
+        };
+        userOrganizationContainer.setOutputMarkupId(true);//.setVisible(userBean.isPersonalManager(user));
 
         // Dialog add roles
         addRolesDialog = new Dialog("add_roles_dialog");
@@ -354,6 +369,10 @@ public class UserEdit extends FormTemplatePage {
                 target.add(rolesContainer);
                 target.add(this);
                 target.add(addRoles);
+                //if (!userBean.isPersonalManager(user) && userOrganizationContainer.is) {
+                //    userOrganizationContainer.setVisible(false);
+                    target.add(userOrganizationContainer);
+                //}
             }
 
             @Override
@@ -378,6 +397,11 @@ public class UserEdit extends FormTemplatePage {
                 target.add(rolesContainer);
                 target.add(remove);
                 target.add(addRoles);
+                //if (userBean.isPersonalManager(user) && !userOrganizationContainer.isVisible()) {
+                //    log.debug("Visible userOrganizationContainer");
+                //    userOrganizationContainer.setVisible(true);
+                    target.add(userOrganizationContainer);
+                //}
 
                 addRolesDialog.close(target);
             }
@@ -389,11 +413,159 @@ public class UserEdit extends FormTemplatePage {
         });
 
         addRolesDialog.add(selectRolesForm);
+
+        // Show organizations of user
+        form.add(userOrganizationContainer);
+        final WebMarkupContainer organizationsContainer = new WebMarkupContainer("organizationsContainer");
+        organizationsContainer.setOutputMarkupId(true);
+        userOrganizationContainer.add(organizationsContainer);
+
+        final Map<OrganizationBase, IModel<Boolean>> selectedOrganizationsMap = newHashMap();
+        for (OrganizationBase organization : user.getOrganizations()) {
+            selectedOrganizationsMap.put(organization, new Model<Boolean>(false));
+        }
+        ListView<OrganizationBase> organizations = new ListView<OrganizationBase>("organizations",
+                new PropertyModel<List<OrganizationBase>>(user, "organizations")) {
+
+            @Override
+            protected void populateItem(ListItem<OrganizationBase> item) {
+                final OrganizationBase organization = item.getModelObject();
+
+                AjaxCheckBox selectedOrganization = new AjaxCheckBox("selectedOrganization", selectedOrganizationsMap.get(organization)) {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+
+                    }
+                };
+                item.add(selectedOrganization);
+                item.add(new Label("organizationName", getStringOrKey(organization.getFullName())));
+
+            }
+        };
+        organizationsContainer.add(organizations);
+
+        // Dialog add organizations
+        final Dialog addOrganizationsDialog = new Dialog("add_organizations_dialog");
+        addOrganizationsDialog.setTitle(getString("add_organizations"));
+
+        add(addOrganizationsDialog);
+
+        Form selectOrganizationsForm = new Form("select_organizations_form");
+
+        final ArrayList<OrganizationBase> selectedNewOrganizations = Lists.newArrayList();
+        final List<OrganizationBase> selectOrganizations = getSelectOrganizations();
+        final ListMultipleChoice<OrganizationBase> selectOrganizationsChoice = new ListMultipleChoice<OrganizationBase>("select_organizations",
+                new Model<ArrayList<OrganizationBase>>(selectedNewOrganizations), selectOrganizations,
+                new IChoiceRenderer<OrganizationBase>() {
+
+                    @Override
+                    public Object getDisplayValue(OrganizationBase object) {
+                        return getStringOrKey(object.getFullName());
+                    }
+
+                    @Override
+                    public String getIdValue(OrganizationBase object, int index) {
+                        return String.valueOf(object.getId());
+                    }
+                });
+        selectOrganizationsChoice.setOutputMarkupId(true);
+        selectOrganizationsForm.add(selectOrganizationsChoice);
+
+        // Button add organizations on form. Show dialog
+        final AjaxSubmitLink addOrganizations = new AjaxSubmitLink("addOrganizations") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                addOrganizationsDialog.open(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return selectOrganizations.size() > 0;
+            }
+        };
+        userOrganizationContainer.add(addOrganizations);
+
+        // Button remove organizations on form
+        final AjaxButton removeOrganizations = new AjaxButton("removeOrganizations") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form form) {
+                update(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                update(target);
+            }
+
+            private void update(AjaxRequestTarget target) {
+                for (Map.Entry<OrganizationBase, IModel<Boolean>> entry : selectedOrganizationsMap.entrySet()) {
+                    if (entry.getValue().getObject()) {
+                        selectOrganizations.add(entry.getKey());
+                        user.getOrganizations().remove(entry.getKey());
+                    }
+                }
+                selectedOrganizationsMap.clear();
+                for (OrganizationBase organization : user.getOrganizations()) {
+                    selectedOrganizationsMap.put(organization, new Model<Boolean>(false));
+                }
+
+                target.add(selectOrganizationsChoice);
+                target.add(organizationsContainer);
+                target.add(this);
+                target.add(addOrganizations);
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return user.getOrganizations().size() > 0;
+            }
+        };
+        userOrganizationContainer.add(removeOrganizations);
+
+        // Button add organizations on dialog
+        selectOrganizationsForm.add(new AjaxButton("addOrganizations") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                selectOrganizations.removeAll(selectedNewOrganizations);
+                user.getOrganizations().addAll(selectedNewOrganizations);
+                for (OrganizationBase newOrganization : selectedNewOrganizations) {
+                    selectedOrganizationsMap.put(newOrganization, new Model<Boolean>(false));
+                }
+
+                target.add(selectOrganizationsChoice);
+                target.add(organizationsContainer);
+                target.add(removeOrganizations);
+                target.add(addOrganizations);
+
+                addOrganizationsDialog.close(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+
+            }
+        });
+
+        addOrganizationsDialog.add(selectOrganizationsForm);
     }
 
     @SuppressWarnings("unchecked")
     private List<String> getSelectRoles() {
         return ListUtils.removeAll(userBean.getAllRoles(), user.getRoles());
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<OrganizationBase> getSelectOrganizations() {
+        log.debug("All organizations: {}", organizationBean.getOrganizations());
+        log.debug("User organizations: {}", user.getOrganizations());
+        return ListUtils.removeAll(organizationBean.getOrganizations(), user.getOrganizations());
     }
 
     private class SaveUserButton extends Button {
@@ -458,6 +630,9 @@ public class UserEdit extends FormTemplatePage {
             if (user.getId() != null) {
                 oldUser = userBean.getUser(user.getId());
                 createUser = false;
+            }
+            if (!userBean.isPersonalManager(user)) {
+                user.setOrganizations(Lists.<OrganizationBase>newArrayList());
             }
             userBean.save(user);
             if (createUser) {
