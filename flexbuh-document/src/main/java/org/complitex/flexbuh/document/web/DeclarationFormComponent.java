@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.document.web;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -18,7 +17,6 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.util.ScriptUtil;
-import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.RadioSet;
 import org.complitex.flexbuh.document.entity.Declaration;
@@ -26,6 +24,7 @@ import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.service.DeclarationFillService;
 import org.complitex.flexbuh.document.service.DeclarationMarkupService;
+import org.complitex.flexbuh.document.service.RuleService;
 import org.complitex.flexbuh.document.service.TemplateService;
 import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.*;
@@ -46,8 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -55,8 +52,6 @@ import java.util.regex.Pattern;
  */
 public class DeclarationFormComponent extends Panel{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
-
-    private Pattern LINKED_ID_PATTERN = Pattern.compile("(\\w*)\\.(\\w*)");
 
     @EJB
     private TemplateService templateService;
@@ -66,6 +61,9 @@ public class DeclarationFormComponent extends Panel{
 
     @EJB
     private DeclarationMarkupService declarationMarkupService;
+
+    @EJB
+    private RuleService ruleService;
 
     private transient Declaration declaration;
 
@@ -97,7 +95,7 @@ public class DeclarationFormComponent extends Panel{
             commonTypes = templateService.getTemplateXSDDocument("common_types");
 
             //Rules
-            rulesMap = templateService.getRules(templateName);
+            rulesMap = ruleService.getRules(templateName);
 
             //Declaration
             this.declaration = declaration;
@@ -411,12 +409,12 @@ public class DeclarationFormComponent extends Panel{
 
     private void autoFill(AjaxRequestTarget target){
         for (Rule rule : rulesMap.values()){
-            if ("SUMF".contains(rule.getExpression())){
+            if (!"=".equals(rule.getSign()) || "SUMF".contains(rule.getExpression())){
                 continue;
             }
 
             if ("Y".equals(rule.getRowNum())){
-                List list =  multiRowTextFieldMap.get(rule.getCDocRowCId());
+                List list =  multiRowTextFieldMap.get(rule.getCDocRowC().replace("^",""));
 
                 if (list != null){
                     for (int i = 0; i < list.size(); ++i){
@@ -424,69 +422,27 @@ public class DeclarationFormComponent extends Panel{
                     }
                 }
             }else {
-                applyRule(-1, rule, target);
+                applyRule(null, rule, target);
             }
         }
     }
 
-    private void applyRule(int index, Rule rule, AjaxRequestTarget target){
+    private void applyRule(Integer rowNum, Rule rule, AjaxRequestTarget target){
         try {
-            String value = rule.getExpression();
+            //Evaluate script
+            String value = scriptEngine.eval(ruleService.getExpression(rowNum, declaration, rule)).toString();
 
-            if (value.contains("SUM")){
-                double sum = 0;
-
-                for (IDeclarationStringComponent textField : multiRowTextFieldMap.get(rule.getExpressionIds().get(index > 0 ? index : 0))){
-                    sum += (StringUtil.isDecimal(textField.getValue())) ? Double.parseDouble(textField.getValue()) : 0;
-                }
-
-                value = sum + "";
-            }else{
-                for (String id : rule.getExpressionIds()){
-                    String input = "";
-
-                    //linked document
-                    if (id.contains(".")){
-                        Matcher m = LINKED_ID_PATTERN.matcher(id);
-                        if (m.matches()){
-                            Declaration d = declaration.getParent() != null ? declaration.getParent() : declaration;
-                            DeclarationValue dv = d.getLinkedDeclaration(m.group(1)).getDeclaration().getDeclarationValue(m.group(2));
-
-                            if (dv != null){
-                                input = dv.getValue();
-                            }
-                        }
-                    }else{
-                        if (index >= 0 && multiRowTextFieldMap.get(id) != null){
-                            input = multiRowTextFieldMap.get(id).get(index).getValue();
-                        } else if (maskTextFieldMap.get(id) != null){
-                            input = maskTextFieldMap.get(id).getValue();
-                        } else if (simpleTextFieldMap.get(id) != null){
-                            input = simpleTextFieldMap.get(id).getValue();
-                        }
-                    }
-
-                    //todo add validation checking
-                    String v = (StringUtil.isDecimal(input)) ? input : "0";
-
-                    value = StringUtil.replace(value, "^" + id, v);
-                }
-
-                value = value.replace("ABS", "Math.abs");
-                value = StringEscapeUtils.unescapeXml(value);
-
-                value = scriptEngine.eval(value).toString();
-            }
+            String name = rule.getCDocRowC().replace("^","");
 
             IDeclarationStringComponent autoFill;
 
-            if (index >= 0){
-                autoFill = multiRowTextFieldMap.get(rule.getCDocRowCId()).get(index);
+            if (rowNum != null){
+                autoFill = multiRowTextFieldMap.get(name).get(rowNum);
             }else{
-                autoFill = simpleTextFieldMap.get(rule.getCDocRowCId());
+                autoFill = simpleTextFieldMap.get(name);
 
                 if (autoFill == null) {
-                    autoFill = maskTextFieldMap.get(rule.getCDocRowCId());
+                    autoFill = maskTextFieldMap.get(name);
                 }
             }
 

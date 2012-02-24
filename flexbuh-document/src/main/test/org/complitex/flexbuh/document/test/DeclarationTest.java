@@ -48,7 +48,7 @@ public class DeclarationTest {
         ld.setNum("3");
         ld.setType("type");
 
-        declaration.getLinkedDeclarations().add(ld);
+//        declaration.getLinkedDeclarations().add(ld);
 
         declaration.prepareXmlValues();
 

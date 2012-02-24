@@ -7,8 +7,6 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
-import static org.complitex.flexbuh.common.util.StringUtil.getString;
-
 /**
  * @author Pavel Sknar
  *         Date: 31.08.11 14:26
@@ -380,5 +378,83 @@ public class PersonProfile extends SessionObject {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PersonProfile)) return false;
+
+        PersonProfile that = (PersonProfile) o;
+
+        if (selected != that.selected) return false;
+        if (address != null ? !address.equals(that.address) : that.address != null) return false;
+        if (bFirstName != null ? !bFirstName.equals(that.bFirstName) : that.bFirstName != null) return false;
+        if (bInn != null ? !bInn.equals(that.bInn) : that.bInn != null) return false;
+        if (bLastName != null ? !bLastName.equals(that.bLastName) : that.bLastName != null) return false;
+        if (bMiddleName != null ? !bMiddleName.equals(that.bMiddleName) : that.bMiddleName != null) return false;
+        if (cSti != null ? !cSti.equals(that.cSti) : that.cSti != null) return false;
+        if (cStiTin != null ? !cStiTin.equals(that.cStiTin) : that.cStiTin != null) return false;
+        if (contractDate != null ? !contractDate.equals(that.contractDate) : that.contractDate != null) return false;
+        if (contractNumber != null ? !contractNumber.equals(that.contractNumber) : that.contractNumber != null)
+            return false;
+        if (dFirstName != null ? !dFirstName.equals(that.dFirstName) : that.dFirstName != null) return false;
+        if (dInn != null ? !dInn.equals(that.dInn) : that.dInn != null) return false;
+        if (dLastName != null ? !dLastName.equals(that.dLastName) : that.dLastName != null) return false;
+        if (dMiddleName != null ? !dMiddleName.equals(that.dMiddleName) : that.dMiddleName != null) return false;
+        if (email != null ? !email.equals(that.email) : that.email != null) return false;
+        if (fax != null ? !fax.equals(that.fax) : that.fax != null) return false;
+        if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
+        if (ipn != null ? !ipn.equals(that.ipn) : that.ipn != null) return false;
+        if (koatuu != null ? !koatuu.equals(that.koatuu) : that.koatuu != null) return false;
+        if (kved != null ? !kved.equals(that.kved) : that.kved != null) return false;
+        if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
+        if (middleName != null ? !middleName.equals(that.middleName) : that.middleName != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (numPdvSvd != null ? !numPdvSvd.equals(that.numPdvSvd) : that.numPdvSvd != null) return false;
+        if (personType != that.personType) return false;
+        if (phone != null ? !phone.equals(that.phone) : that.phone != null) return false;
+        if (profileName != null ? !profileName.equals(that.profileName) : that.profileName != null) return false;
+        if (taxInspectionId != null ? !taxInspectionId.equals(that.taxInspectionId) : that.taxInspectionId != null)
+            return false;
+        if (tin != null ? !tin.equals(that.tin) : that.tin != null) return false;
+        if (zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = personType != null ? personType.hashCode() : 0;
+        result = 31 * result + (cSti != null ? cSti.hashCode() : 0);
+        result = 31 * result + (cStiTin != null ? cStiTin.hashCode() : 0);
+        result = 31 * result + (tin != null ? tin.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (profileName != null ? profileName.hashCode() : 0);
+        result = 31 * result + (numPdvSvd != null ? numPdvSvd.hashCode() : 0);
+        result = 31 * result + (ipn != null ? ipn.hashCode() : 0);
+        result = 31 * result + (kved != null ? kved.hashCode() : 0);
+        result = 31 * result + (koatuu != null ? koatuu.hashCode() : 0);
+        result = 31 * result + (contractDate != null ? contractDate.hashCode() : 0);
+        result = 31 * result + (contractNumber != null ? contractNumber.hashCode() : 0);
+        result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (phone != null ? phone.hashCode() : 0);
+        result = 31 * result + (fax != null ? fax.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (dInn != null ? dInn.hashCode() : 0);
+        result = 31 * result + (dLastName != null ? dLastName.hashCode() : 0);
+        result = 31 * result + (dFirstName != null ? dFirstName.hashCode() : 0);
+        result = 31 * result + (dMiddleName != null ? dMiddleName.hashCode() : 0);
+        result = 31 * result + (bInn != null ? bInn.hashCode() : 0);
+        result = 31 * result + (bLastName != null ? bLastName.hashCode() : 0);
+        result = 31 * result + (bFirstName != null ? bFirstName.hashCode() : 0);
+        result = 31 * result + (bMiddleName != null ? bMiddleName.hashCode() : 0);
+        result = 31 * result + (selected ? 1 : 0);
+        result = 31 * result + (taxInspectionId != null ? taxInspectionId.hashCode() : 0);
+        return result;
     }
 }
