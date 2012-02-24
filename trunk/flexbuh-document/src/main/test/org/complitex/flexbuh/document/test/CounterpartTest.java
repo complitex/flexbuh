@@ -28,7 +28,7 @@ public class CounterpartTest {
                         .unmarshal(new FileInputStream("C:\\OPZ\\spr\\spr_works.xml"));
 
         for (Employee employee : employeeRowSet.getEmployees()){
-            employee.updateDates();
+//            employee.updateDates();
         }
 
         System.out.println(employeeRowSet);

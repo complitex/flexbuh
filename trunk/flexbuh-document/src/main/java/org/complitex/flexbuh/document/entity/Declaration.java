@@ -24,26 +24,8 @@ import java.util.regex.Pattern;
  */
 @XmlRootElement(name = "DECLAR")
 @XmlSeeAlso(DeclarationValue.class)
-@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class Declaration implements Serializable{
-    @XmlTransient
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
-
-    @XmlTransient
-    private final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
-
-    @XmlTransient
-    private Long id;
-
-    @XmlTransient
-    private Long sessionId;
-
-    @XmlTransient
-    private Long personProfileId;
-
-    @XmlTransient
-    private List<DeclarationValue> declarationValues = new ArrayList<>();
-
     @XmlElement(name = "DECLARHEAD")
     private DeclarationHead head = new DeclarationHead();
 
@@ -51,32 +33,23 @@ public class Declaration implements Serializable{
     @XmlAnyElement
     private List xmlValues = new ArrayList();
 
-    @XmlTransient
-    private Long parentId;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+    private final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
 
-    @XmlTransient
-    private Declaration parent;
-
-    @XmlTransient
-    private Date date;
-
-    @XmlTransient
-    private String name;
-
-    @XmlTransient
-    private Document document;
-
-    @XmlTransient
+    private Long id;
+    private Long sessionId;
+    private Long personProfileId;
     private PersonProfile personProfile;
-
-    @XmlTransient
+    private Long parentId;
+    private Declaration parent;
     private Long possibleParentId;
-
-    @XmlTransient
+    private Date date;
+    private String name;
+    private Document document;
     private boolean validated;
-
-    @XmlTransient
     private String validatorMessage;
+
+    private List<DeclarationValue> declarationValues = new ArrayList<>();
 
     public Declaration() {
         head.setDFill(DATE_FORMAT.format(DateUtil.getCurrentDate()));
@@ -152,6 +125,7 @@ public class Declaration implements Serializable{
         return getDeclarationValue(null, name);
     }
 
+    //todo use map to improve performance
     public DeclarationValue getDeclarationValue(Integer rowNum, String name){
         for (DeclarationValue declarationValue : declarationValues){
             if (name.equals(declarationValue.getName()) && (rowNum == null || rowNum.equals(declarationValue.getRowNum()))){

@@ -36,4 +36,8 @@ public class StringUtil {
 
         return underline;
     }
+
+    public static double getDouble(String s){
+        return isDecimal(s) ? Double.parseDouble(s) : 0;
+    }
 }
