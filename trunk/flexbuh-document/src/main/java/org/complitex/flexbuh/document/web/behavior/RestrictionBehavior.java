@@ -22,9 +22,10 @@ public class RestrictionBehavior extends Behavior{
     private final static List<String> NUMBER_BASE = Arrays.asList("xs:nonNegativeInteger", "xs:integer", "xs:unsignedLong");
     private final static Map<String, ResourceBundle> resourceBundleMap = new ConcurrentHashMap<>();
 
-    private final static String COLOR_ERROR = "#F5A9A9";
-    private final static String COLOR_VALIDATED = "#BCF5A9";
-    private final static String COLOR_DEFAULT = "#cccccc";
+    public final static String COLOR_ERROR = "#F5A9A9";
+    public final static String COLOR_VALIDATED = "#BCF5A9";
+    public final static String COLOR_DEFAULT = "#cccccc";
+    public final static String COLOR_AUTO_FILL = "#add8e6";
 
     private String name;
     private String documentation;
@@ -47,6 +48,7 @@ public class RestrictionBehavior extends Behavior{
     private String title;
 
     private String defaultColor;
+    private String validatedColor;
 
     public RestrictionBehavior(Element typeElement, Locale locale, String title) {
         this.typeElement = typeElement;
@@ -212,7 +214,7 @@ public class RestrictionBehavior extends Behavior{
                     attributes.put("style", "background-color: " + COLOR_ERROR);
                     attributes.put("title", errorMessage);
                 }else {
-                    attributes.put("style", "background-color: " + COLOR_VALIDATED);
+                    attributes.put("style", "background-color: " + (validatedColor != null ? validatedColor : COLOR_VALIDATED));
                     attributes.put("title", title);
                 }
             }else{
@@ -364,5 +366,13 @@ public class RestrictionBehavior extends Behavior{
 
     public void setDefaultColor(String defaultColor) {
         this.defaultColor = defaultColor;
+    }
+
+    public String getValidatedColor() {
+        return validatedColor;
+    }
+
+    public void setValidatedColor(String validatedColor) {
+        this.validatedColor = validatedColor;
     }
 }

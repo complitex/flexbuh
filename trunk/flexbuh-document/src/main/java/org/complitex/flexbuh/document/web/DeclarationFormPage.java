@@ -165,7 +165,7 @@ public class DeclarationFormPage extends TemplatePage{
                 getSession().info(getStringFormat("info_saved"));
 
                 if (!declaration.isValidated()) {
-                    getSession().info(declaration.getValidatorMessage());
+                    getSession().info(declaration.getValidateMessage());
                 }
 
                 if (personProfile != null) {
@@ -193,7 +193,7 @@ public class DeclarationFormPage extends TemplatePage{
                     getSession().info(getString("info_saved"));
 
                     if (!declaration.isValidated()) {
-                        getSession().info(declaration.getValidatorMessage());
+                        getSession().info(declaration.getValidateMessage());
                     }
 
                     PageParameters pageParameters = new PageParameters();

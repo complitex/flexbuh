@@ -5,7 +5,9 @@ import org.complitex.flexbuh.common.entity.template.TemplateFO;
 import org.complitex.flexbuh.common.entity.template.TemplateXSL;
 import org.complitex.flexbuh.common.service.TemplateBean;
 import org.complitex.flexbuh.document.entity.*;
-import org.complitex.flexbuh.document.exception.*;
+import org.complitex.flexbuh.document.exception.CreateDocumentException;
+import org.complitex.flexbuh.document.exception.DeclarationParseException;
+import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,9 @@ public class DeclarationService {
     @EJB
     private TemplateService templateService;
 
+    @EJB
+    private RuleService ruleService;
+
     public String getString(Declaration declaration, boolean validate) throws DeclarationParseException {
         try {
             sortDeclarationValues(declaration);
@@ -85,8 +90,8 @@ public class DeclarationService {
     public String getString(Declaration declaration) throws DeclarationParseException{
         return getString(declaration, false);
     }
-    
-    public void validate(Declaration declaration) throws DeclarationValidateException {
+
+    public void validate(Declaration declaration){
         try {
             Schema schema = templateService.getSchema(declaration.getTemplateName());
             Validator validator = schema.newValidator();
@@ -94,35 +99,27 @@ public class DeclarationService {
             StreamSource streamSource = new StreamSource(new StringReader(getString(declaration)));
 
             validator.validate(streamSource);
+            declaration.setValidated(true);
         } catch (Exception e) {
-            throw new DeclarationValidateException("Ошибка проверки структуры данных", e);
+            declaration.setValidated(false);
+            declaration.setValidateMessage(e.getMessage());
         }
     }
 
     public void validateAndSave(Declaration declaration){
-        try {
-            validate(declaration);
-            declaration.setValidated(true);
-        } catch (DeclarationValidateException e) {
-            declaration.setValidated(false);
-            declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
-        }
+        validate(declaration);
 
         if (declaration.getHead().getLinkedDeclarations() != null){
             for (LinkedDeclaration ld : declaration.getHead().getLinkedDeclarations()){
-                Declaration linked = ld.getDeclaration();
-
-                try {
-                    validate(linked);
-                    linked.setValidated(true);
-                } catch (DeclarationValidateException e) {
-                    linked.setValidated(false);
-                    declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
-                }
+                validate(ld.getDeclaration());
             }
         }
 
         declarationBean.save(declaration);
+    }
+
+    public void check(Declaration declaration){
+        ruleService.check(declaration);
     }
 
     public void sortDeclarationValues(Declaration declaration) {
@@ -132,7 +129,7 @@ public class DeclarationService {
             List<DeclarationValue> sortedDeclarationValues = new ArrayList<>();
 
             NodeList nodeList = document.getElementsByTagName("xs:element");
-            
+
             for (int i=0, size = nodeList.getLength(); i < size; ++i){
                 Element element = (Element) nodeList.item(i);
                 String name = element.getAttribute("name");
@@ -155,7 +152,7 @@ public class DeclarationService {
             log.error("Ошибка сортировки списка значений", e);
         }
     }
-    
+
     public String getString(Declaration declaration, TemplateXSL xsl) throws DeclarationParseException{
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -369,25 +366,6 @@ public class DeclarationService {
         } catch (Exception e) {
             log.error("Ошибка создания PDF");
         }
-    }
-
-    public Declaration parseAndSave(Long sessionId, Long personProfileId, InputStream inputStream)
-            throws DeclarationSaveException, DeclarationParseException {
-        Declaration declaration = getDeclaration(inputStream);
-        declaration.setSessionId(sessionId);
-        declaration.setPersonProfileId(personProfileId);
-
-        try {
-            validate(declaration);
-            declaration.setValidated(true);
-        } catch (DeclarationValidateException e) {
-            declaration.setValidated(false);
-            declaration.setValidatorMessage(e.getCause().getLocalizedMessage());
-        }
-
-        declarationBean.save(declaration);
-
-        return declaration;
     }
 
     public boolean hasStoredDeclaration(Declaration declaration){

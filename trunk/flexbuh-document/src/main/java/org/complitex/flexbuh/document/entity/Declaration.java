@@ -47,7 +47,9 @@ public class Declaration implements Serializable{
     private String name;
     private Document document;
     private boolean validated;
-    private String validatorMessage;
+    private String validateMessage;
+    private boolean checked;
+    private String checkMessage;
 
     private List<DeclarationValue> declarationValues = new ArrayList<>();
 
@@ -385,11 +387,27 @@ public class Declaration implements Serializable{
         this.validated = validated;
     }
 
-    public String getValidatorMessage() {
-        return validatorMessage;
+    public String getValidateMessage() {
+        return validateMessage;
     }
 
-    public void setValidatorMessage(String validatorMessage) {
-        this.validatorMessage = validatorMessage;
+    public void setValidateMessage(String validateMessage) {
+        this.validateMessage = validateMessage;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    public String getCheckMessage() {
+        return checkMessage;
+    }
+
+    public void setCheckMessage(String checkMessage) {
+        this.checkMessage = checkMessage;
     }
 }
