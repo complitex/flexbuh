@@ -44,8 +44,4 @@ public class DeclarationTextField extends CssStyleTextField<String> implements I
 
         return super.getConverter(classType);
     }
-
-    public String getMask(){
-        return getDeclarationModel().getMask();
-    }
 }

@@ -75,6 +75,8 @@ public class DeclarationList extends TemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
+
+
     private DeclarationUploadDialog declarationUploadDialog;
 
     private Map<Declaration, IModel<Boolean>> selectMap = new HashMap<>();
@@ -299,6 +301,7 @@ public class DeclarationList extends TemplatePage{
                 //Action
                 item.add(new DeclarationXmlLink("action_xml", declaration));
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
+                item.add(new DeclarationCheckLink("action_check", declaration));
 
                 //Attach
                 item.add(new Link("action_attach") {
@@ -337,6 +340,7 @@ public class DeclarationList extends TemplatePage{
 
                         linkedItem.add(new DeclarationXmlLink("action_xml", linkedDeclaration));
                         linkedItem.add(new DeclarationPdfLink("action_pdf", linkedDeclaration));
+                        linkedItem.add(new DeclarationCheckLink("action_check", linkedDeclaration));
 
                         //Detach
                         linkedItem.add(new Link("action_detach") {

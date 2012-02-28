@@ -226,10 +226,12 @@ public class DeclarationFormComponent extends Panel{
         IDeclarationStringComponent declarationStringComponent = null;
         RestrictionBehavior restrictionBehavior = null;
 
+        //Rule
+        Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
+
         //Restriction
         try {
-            Rule rule = rulesMap.get(model.isMask() ? model.getMaskName() : id);
-             restrictionBehavior = createRestrictionBehavior(schema, rule != null ? rule.getDescription() : "");
+            restrictionBehavior = createRestrictionBehavior(schema, rule != null ? rule.getDescription() : "");
         } catch (XPathExpressionException e) {
             log.error("Ошибка создания проверки данных", e);
         }
@@ -238,6 +240,16 @@ public class DeclarationFormComponent extends Panel{
             final DeclarationTextField textField = new DeclarationTextField(id, model);
             textField.setOutputMarkupId(true);
             container.add(textField);
+
+            //auto fill field
+            if (rule != null && "=".equals(rule.getSign())){
+                textField.setEnabled(false);
+
+                if (restrictionBehavior != null) {
+                    restrictionBehavior.setDefaultColor(RestrictionBehavior.COLOR_AUTO_FILL);
+                    restrictionBehavior.setValidatedColor(RestrictionBehavior.COLOR_AUTO_FILL);
+                }
+            }
 
             //restriction
             textField.add(restrictionBehavior);
@@ -449,7 +461,6 @@ public class DeclarationFormComponent extends Panel{
             if (autoFill != null && !value.equals(autoFill.getValue())) {
                 autoFill.getDeclarationModel().setObject(value);
                 target.add((Component)autoFill);
-//                target.appendJavaScript("$('#" + autoFill.getMarkupId() + "').css('background-color', '#add8e6')");
             }
         } catch (ScriptException e) {
             log.error("Ошибка автозаполнения", e);

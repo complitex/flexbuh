@@ -3,7 +3,10 @@ package org.complitex.flexbuh.document.service;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.complitex.flexbuh.common.util.ScriptUtil;
 import org.complitex.flexbuh.common.util.StringUtil;
-import org.complitex.flexbuh.document.entity.*;
+import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationValue;
+import org.complitex.flexbuh.document.entity.LinkedDeclaration;
+import org.complitex.flexbuh.document.entity.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -30,7 +33,7 @@ public class RuleService {
 
     public final static Pattern VALUE_PATTERN = Pattern.compile("\\^(\\w*\\.?\\w*)");
 
-    public final static Pattern LINKED_PATTERN = Pattern.compile("(\\w*)\\.(\\w*)");
+    public final static Pattern LINKED_PATTERN = Pattern.compile("\\^(\\w*)\\.(\\w*)");
 
     public final static Pattern SUM_PATTERN = Pattern.compile("SUM\\(\\^(\\w*)\\)");
 
@@ -61,10 +64,12 @@ public class RuleService {
         return rules;
     }
 
-    public RuleStatus check(Declaration declaration){
+    public void check(Declaration declaration){
         Map<String, Rule> rules = getRules(declaration.getTemplateName());
 
         ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
+
+        declaration.setChecked(true);
 
         for (Rule rule : rules.values()){
             String name = rule.getCDocRowC().replace("^","");
@@ -73,19 +78,22 @@ public class RuleService {
                 for (DeclarationValue declarationValue : declaration.getDeclarationValues()){
                     if (name.equals(declarationValue.getName())){
                         if (!check(declarationValue.getRowNum(), declaration, rule, scriptEngine)){
-                            //todo row
-                            return new RuleStatus(false, rule.getDescription());
+                            declaration.setChecked(false);
+                            declaration.setCheckMessage(rule.getDescription());
+
+                            return;
                         }
                     }
                 }
             }else {
-                if (!check(null, declaration, rule, scriptEngine)){
-                    return new RuleStatus(false, rule.getDescription());
+                if (check(null, declaration, rule, scriptEngine)){
+                    declaration.setChecked(false);
+                    declaration.setCheckMessage(rule.getDescription());
+
+                    return;
                 }
             }
         }
-
-        return new RuleStatus(true);
     }
 
     public boolean check(Integer rowNum, Declaration declaration, Rule rule, ScriptEngine scriptEngine){

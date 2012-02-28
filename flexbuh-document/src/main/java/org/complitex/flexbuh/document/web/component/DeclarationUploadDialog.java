@@ -54,24 +54,15 @@ public class DeclarationUploadDialog extends TemplatePanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
-
                 List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
                 for (FileUpload fileUpload : fileUploads){
                     String fileName = fileUpload.getClientFileName();
 
-                    if (fileName.length() > 15) {
-                        PersonProfile personProfile = null;
+                    PersonProfile personProfile = null;
 
-                        Integer tin;
-
-                        try {
-                            tin = Integer.valueOf(fileName.substring(4, 14));
-                        } catch (NumberFormatException e) {
-                            getSession().error(getStringFormat("error_filename", fileName));
-
-                            break;
-                        }
+                    try{
+                        Integer tin = Integer.valueOf(fileName.substring(4, 14));
 
                         for (PersonProfile pp : personProfiles){
                             if (tin.equals(pp.getTin())){
@@ -79,38 +70,49 @@ public class DeclarationUploadDialog extends TemplatePanel {
                                 break;
                             }
                         }
+                    }catch (Exception e){
+                        //no tin in file name
+                    }
 
-                        try {
-                            Declaration declaration = declarationService.parseAndSave(getSessionId(),
-                                    personProfile != null ? personProfile.getId() : null,
-                                    fileUpload.getInputStream());
+                    try {
+                        Declaration declaration = declarationService.getDeclaration(fileUpload.getInputStream());
 
-                            String info = getStringFormat("info_declaration_upload",
-                                    fileName,
-                                    getString("period_type_" + declaration.getHead().getPeriodType()),
-                                    declaration.getHead().getPeriodMonth(),
-                                    declaration.getHead().getPeriodYear(),
-                                    personProfile != null ? personProfile.getProfileName() : getString("empty_profile"));
+                        declaration.setSessionId(getSessionId());
+                        declaration.setPersonProfile(personProfile);
 
-                            if (declaration.isValidated()){
-                                info += ", " + getString("info_validation_ok");
-                            }else {
-                                info += ", " + getStringFormat("info_validation_error", declaration.getValidatorMessage());
-                            }
+                        declarationService.validate(declaration);
+                        declarationService.check(declaration);
 
-                            getSession().info(info);
-                        } catch (Exception e) {
-                            getSession().error(getStringFormat("error_upload", fileName));
+                        String info = getStringFormat("info_declaration_upload",
+                                fileName,
+                                getString("period_type_" + declaration.getHead().getPeriodType()),
+                                declaration.getHead().getPeriodMonth(),
+                                declaration.getHead().getPeriodYear(),
+                                personProfile != null ? personProfile.getProfileName() : getString("empty_profile"));
 
-                            log.error("Ошибка загрузки файла", e);
-                        }
+                        info += ", " + (declaration.isValidated()
+                                ? getString("info_validated")
+                                : getStringFormat("info_validate_error", declaration.getValidateMessage()));
+
+                        info += ", " + (declaration.isChecked()
+                                ? getString("info_checked")
+                                : getStringFormat("info_check_error", declaration.getCheckMessage()));
+
+                        getSession().info(info);
+                    } catch (NumberFormatException e) {
+                        getSession().error(getStringFormat("error_filename", fileName));
+
+                        log.error("Ошибка загрузки файла");
+                    } catch (Exception e) {
+                        getSession().error(getStringFormat("error_upload", fileName));
+
+                        log.error("Ошибка загрузки файла", e);
                     }
                 }
 
                 update.onUpdate(target);
 
                 dialog.close(target);
-
             }
 
             @Override
