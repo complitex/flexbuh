@@ -24,6 +24,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.common.entity.*;
+import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -48,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.xml.registry.infomodel.Organization;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -97,6 +97,7 @@ public class UserEdit extends FormTemplatePage {
 
     public UserEdit() {
         user = new User();
+        user.setAddress(new Address());
         init();
     }
 
@@ -111,6 +112,9 @@ public class UserEdit extends FormTemplatePage {
             user = userBean.getUser(id);
 
             if (user != null) {
+                if (user.getAddress() == null) {
+                    user.setAddress(new Address());
+                }
                 init();
             } else {
                 // user not found
@@ -119,6 +123,7 @@ public class UserEdit extends FormTemplatePage {
             }
         } else {
             user = new User();
+            user.setAddress(new Address());
             init();
         }
     }
@@ -180,24 +185,25 @@ public class UserEdit extends FormTemplatePage {
         userAddress.add(new TextField<>("phone", new PropertyModel<String>(user, "phone")));
 
         // Zip code
-        userAddress.add(new TextField<>("zipCode", new PropertyModel<String>(user, "zipCode")));
+        userAddress.add(new TextField<>("zipCode", new PropertyModel<String>(user.getAddress(), "zipCode")));
 
         // Country
-        userAddress.add(new TextField<>("country", new PropertyModel<String>(user, "country")));
+        userAddress.add(new TextField<>("country", new PropertyModel<String>(user.getAddress(), "country")));
 
         // Region
-        userAddress.add(new TextField<>("region", new PropertyModel<String>(user, "region")));
+        userAddress.add(new TextField<>("region", new PropertyModel<String>(user.getAddress(), "region")));
 
         // Area
-        userAddress.add(new TextField<>("area", new PropertyModel<String>(user, "area")));
+        userAddress.add(new TextField<>("area", new PropertyModel<String>(user.getAddress(), "area")));
 
         //form.add(new TextField<>("city", new PropertyModel<String>(user, "city")));
 
         // City
-        if (StringUtils.isNotEmpty(user.getCityType()) && StringUtils.isNotEmpty(user.getCity())) {
-            cityModel.setObject(user.getCityType() + " " + user.getCity());
-        } else if (user.getCity() != null) {
-            cityModel.setObject(user.getCity());
+        if (user.getAddress() != null && StringUtils.isNotEmpty(user.getAddress().getCityType()) &&
+                StringUtils.isNotEmpty(user.getAddress().getCity())) {
+            cityModel.setObject(user.getAddress().getCityType() + " " + user.getAddress().getCity());
+        } else if (user.getAddress() != null && user.getAddress().getCity() != null) {
+            cityModel.setObject(user.getAddress().getCity());
         }
         final AutoCompleteTextField<String> cityField = new AutoCompleteTextField<String>("city", cityModel) {
             @Override
@@ -219,10 +225,11 @@ public class UserEdit extends FormTemplatePage {
         userAddress.add(cityField);
 
         // Street
-        if (StringUtils.isNotEmpty(user.getStreetType()) && StringUtils.isNotEmpty(user.getStreet())) {
-            streetModel.setObject(user.getStreetType() + " " + user.getStreet());
-        } else if (user.getStreetType() != null) {
-            streetModel.setObject(user.getStreet());
+        if (user.getAddress() != null && StringUtils.isNotEmpty(user.getAddress().getStreetType()) &&
+                StringUtils.isNotEmpty(user.getAddress().getStreet())) {
+            streetModel.setObject(user.getAddress().getStreetType() + " " + user.getAddress().getStreet());
+        } else if (user.getAddress() != null && user.getAddress().getStreet() != null) {
+            streetModel.setObject(user.getAddress().getStreet());
         }
         final AutoCompleteTextField<String> streetField = new AutoCompleteTextField<String>("street", streetModel) {
             @Override
@@ -244,10 +251,10 @@ public class UserEdit extends FormTemplatePage {
         userAddress.add(streetField);
 
         // Building
-        userAddress.add(new TextField<>("building", new PropertyModel<String>(user, "building")));
+        userAddress.add(new TextField<>("building", new PropertyModel<String>(user.getAddress(), "building")));
 
         // Apartment
-        userAddress.add(new TextField<>("apartment", new PropertyModel<String>(user, "apartment")));
+        userAddress.add(new TextField<>("apartment", new PropertyModel<String>(user.getAddress(), "apartment")));
 
         // Show enabled user roles
         final WebMarkupContainer rolesContainer = new WebMarkupContainer("rolesContainer");
@@ -604,10 +611,10 @@ public class UserEdit extends FormTemplatePage {
             if (street != null) {
                 String[] resultSplit = street.split(" ", 2);
                 if (updateStreetType(resultSplit)) {
-                    user.setStreetType(resultSplit[0]);
-                    user.setStreet(resultSplit[1]);
+                    user.getAddress().setStreetType(resultSplit[0]);
+                    user.getAddress().setStreet(resultSplit[1]);
                 } else {
-                    user.setStreet(street);
+                    user.getAddress().setStreet(street);
                 }
             }
 
@@ -616,10 +623,10 @@ public class UserEdit extends FormTemplatePage {
             if (city != null) {
                 String[] resultSplit = city.split(" ", 2);
                 if (updateCityType(resultSplit)) {
-                    user.setCityType(resultSplit[0]);
-                    user.setCity(resultSplit[1]);
+                    user.getAddress().setCityType(resultSplit[0]);
+                    user.getAddress().setCity(resultSplit[1]);
                 } else {
-                    user.setCity(city);
+                    user.getAddress().setCity(city);
                 }
             }
 

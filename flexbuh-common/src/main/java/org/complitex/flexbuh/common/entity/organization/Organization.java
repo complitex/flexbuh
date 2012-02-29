@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.entity.organization;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.DomainObject;
 
 /**
@@ -14,27 +15,9 @@ public class Organization extends OrganizationBase {
     private String email;
     private String httpAddress;
 
-    private String physicalAddressZipCode;
-    private String physicalAddressCountry;
-    private String physicalAddressRegion;
-    private String physicalAddressArea;
-    private String physicalAddressCity;
-    private String physicalAddressCityType;
-    private String physicalAddressStreet;
-    private String physicalAddressStreetType;
-    private String physicalAddressBuilding;
-    private String physicalAddressApartment;
+    private Address physicalAddress;
 
-    private String juridicalAddressZipCode;
-    private String juridicalAddressCountry;
-    private String juridicalAddressRegion;
-    private String juridicalAddressArea;
-    private String juridicalAddressCity;
-    private String juridicalAddressCityType;
-    private String juridicalAddressStreet;
-    private String juridicalAddressStreetType;
-    private String juridicalAddressBuilding;
-    private String juridicalAddressApartment;
+    private Address juridicalAddress;
 
     public String getPhone() {
         return phone;
@@ -68,164 +51,20 @@ public class Organization extends OrganizationBase {
         this.httpAddress = httpAddress;
     }
 
-    public String getPhysicalAddressZipCode() {
-        return physicalAddressZipCode;
+    public Address getPhysicalAddress() {
+        return physicalAddress;
     }
 
-    public void setPhysicalAddressZipCode(String physicalAddressZipCode) {
-        this.physicalAddressZipCode = physicalAddressZipCode;
+    public void setPhysicalAddress(Address physicalAddress) {
+        this.physicalAddress = physicalAddress;
     }
 
-    public String getPhysicalAddressCountry() {
-        return physicalAddressCountry;
+    public Address getJuridicalAddress() {
+        return juridicalAddress;
     }
 
-    public void setPhysicalAddressCountry(String physicalAddressCountry) {
-        this.physicalAddressCountry = physicalAddressCountry;
-    }
-
-    public String getPhysicalAddressRegion() {
-        return physicalAddressRegion;
-    }
-
-    public void setPhysicalAddressRegion(String physicalAddressRegion) {
-        this.physicalAddressRegion = physicalAddressRegion;
-    }
-
-    public String getPhysicalAddressArea() {
-        return physicalAddressArea;
-    }
-
-    public void setPhysicalAddressArea(String physicalAddressArea) {
-        this.physicalAddressArea = physicalAddressArea;
-    }
-
-    public String getPhysicalAddressCity() {
-        return physicalAddressCity;
-    }
-
-    public void setPhysicalAddressCity(String physicalAddressCity) {
-        this.physicalAddressCity = physicalAddressCity;
-    }
-
-    public String getPhysicalAddressCityType() {
-        return physicalAddressCityType;
-    }
-
-    public void setPhysicalAddressCityType(String physicalAddressCityType) {
-        this.physicalAddressCityType = physicalAddressCityType;
-    }
-
-    public String getPhysicalAddressStreet() {
-        return physicalAddressStreet;
-    }
-
-    public void setPhysicalAddressStreet(String physicalAddressStreet) {
-        this.physicalAddressStreet = physicalAddressStreet;
-    }
-
-    public String getPhysicalAddressStreetType() {
-        return physicalAddressStreetType;
-    }
-
-    public void setPhysicalAddressStreetType(String physicalAddressStreetType) {
-        this.physicalAddressStreetType = physicalAddressStreetType;
-    }
-
-    public String getPhysicalAddressBuilding() {
-        return physicalAddressBuilding;
-    }
-
-    public void setPhysicalAddressBuilding(String physicalAddressBuilding) {
-        this.physicalAddressBuilding = physicalAddressBuilding;
-    }
-
-    public String getPhysicalAddressApartment() {
-        return physicalAddressApartment;
-    }
-
-    public void setPhysicalAddressApartment(String physicalAddressApartment) {
-        this.physicalAddressApartment = physicalAddressApartment;
-    }
-
-    public String getJuridicalAddressZipCode() {
-        return juridicalAddressZipCode;
-    }
-
-    public void setJuridicalAddressZipCode(String juridicalAddressZipCode) {
-        this.juridicalAddressZipCode = juridicalAddressZipCode;
-    }
-
-    public String getJuridicalAddressCountry() {
-        return juridicalAddressCountry;
-    }
-
-    public void setJuridicalAddressCountry(String juridicalAddressCountry) {
-        this.juridicalAddressCountry = juridicalAddressCountry;
-    }
-
-    public String getJuridicalAddressRegion() {
-        return juridicalAddressRegion;
-    }
-
-    public void setJuridicalAddressRegion(String juridicalAddressRegion) {
-        this.juridicalAddressRegion = juridicalAddressRegion;
-    }
-
-    public String getJuridicalAddressArea() {
-        return juridicalAddressArea;
-    }
-
-    public void setJuridicalAddressArea(String juridicalAddressArea) {
-        this.juridicalAddressArea = juridicalAddressArea;
-    }
-
-    public String getJuridicalAddressCity() {
-        return juridicalAddressCity;
-    }
-
-    public void setJuridicalAddressCity(String juridicalAddressCity) {
-        this.juridicalAddressCity = juridicalAddressCity;
-    }
-
-    public String getJuridicalAddressCityType() {
-        return juridicalAddressCityType;
-    }
-
-    public void setJuridicalAddressCityType(String juridicalAddressCityType) {
-        this.juridicalAddressCityType = juridicalAddressCityType;
-    }
-
-    public String getJuridicalAddressStreet() {
-        return juridicalAddressStreet;
-    }
-
-    public void setJuridicalAddressStreet(String juridicalAddressStreet) {
-        this.juridicalAddressStreet = juridicalAddressStreet;
-    }
-
-    public String getJuridicalAddressStreetType() {
-        return juridicalAddressStreetType;
-    }
-
-    public void setJuridicalAddressStreetType(String juridicalAddressStreetType) {
-        this.juridicalAddressStreetType = juridicalAddressStreetType;
-    }
-
-    public String getJuridicalAddressBuilding() {
-        return juridicalAddressBuilding;
-    }
-
-    public void setJuridicalAddressBuilding(String juridicalAddressBuilding) {
-        this.juridicalAddressBuilding = juridicalAddressBuilding;
-    }
-
-    public String getJuridicalAddressApartment() {
-        return juridicalAddressApartment;
-    }
-
-    public void setJuridicalAddressApartment(String juridicalAddressApartment) {
-        this.juridicalAddressApartment = juridicalAddressApartment;
+    public void setJuridicalAddress(Address juridicalAddress) {
+        this.juridicalAddress = juridicalAddress;
     }
 
     @Override

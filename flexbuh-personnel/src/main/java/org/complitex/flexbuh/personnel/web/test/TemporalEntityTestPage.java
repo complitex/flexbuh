@@ -31,16 +31,14 @@ public class TemporalEntityTestPage extends WebPage{
         Department department = new Department();
 
         department.setName("Hello Department!");
-        department.setCurrent(true);
-        department.setDateStart(new Date());
 
-        temporalEntityBean.save(department);
+        //temporalEntityBean.save(department);
     }
 
     private void load(){
-        List<Department> list = temporalEntityBean.getTemporalEntities(new TemporalEntityFilter<>(-1L, Department.class));
+        //List<Department> list = temporalEntityBean.getTemporalEntities(new TemporalEntityFilter<>(-1L, Department.class));
 
-        System.out.println(list);
+        //System.out.println(list);
     }
 
 }

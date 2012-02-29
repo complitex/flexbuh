@@ -2,18 +2,34 @@ package org.complitex.flexbuh.personnel.entity;
 
 import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
 
+import java.util.List;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.12.11 14:39
  */
 public class Position extends AbstractTemporalEntity{
+
+    // Название должности (специальности, профессии), разряда, класса (категории) квалификации
     private String name;
-    private Integer rateCount;
-    private Long rateType;
-    private Float minSalary;
-    private Float maxSalary;
-    private Long scheduleId;
+
+    // Код должности
+    private String code;
+
+    // Система оплаты труда
+    private Payment payment;
+
+    // Описание (должностные обязонности и т.п.)
     private String description;
+
+    // Департамент
+    private Department department;
+
+    // Непосредственный руководитель
+    private Position masterPosition;
+
+    // Подчиненные
+    private List<Position> childPositions;
 
     public String getName() {
         return name;
@@ -23,44 +39,20 @@ public class Position extends AbstractTemporalEntity{
         this.name = name;
     }
 
-    public Integer getRateCount() {
-        return rateCount;
+    public String getCode() {
+        return code;
     }
 
-    public void setRateCount(Integer rateCount) {
-        this.rateCount = rateCount;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public Long getRateType() {
-        return rateType;
+    public Payment getPayment() {
+        return payment;
     }
 
-    public void setRateType(Long rateType) {
-        this.rateType = rateType;
-    }
-
-    public Float getMinSalary() {
-        return minSalary;
-    }
-
-    public void setMinSalary(Float minSalary) {
-        this.minSalary = minSalary;
-    }
-
-    public Float getMaxSalary() {
-        return maxSalary;
-    }
-
-    public void setMaxSalary(Float maxSalary) {
-        this.maxSalary = maxSalary;
-    }
-
-    public Long getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(Long scheduleId) {
-        this.scheduleId = scheduleId;
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 
     public String getDescription() {
@@ -69,5 +61,29 @@ public class Position extends AbstractTemporalEntity{
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Position getMasterPosition() {
+        return masterPosition;
+    }
+
+    public void setMasterPosition(Position masterPosition) {
+        this.masterPosition = masterPosition;
+    }
+
+    public List<Position> getChildPositions() {
+        return childPositions;
+    }
+
+    public void setChildPositions(List<Position> childPositions) {
+        this.childPositions = childPositions;
     }
 }
