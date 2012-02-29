@@ -229,13 +229,14 @@ public class DeclarationCreate extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                //check version
+                //version
+                declaration.updateVersion();
+
                 if (declaration.getHead().getCDocVer() == null) {
                     error(getStringFormat("error_not_version", declaration.getShortName()));
 
                     return;
                 }
-
 
                 declaration.setSessionId(getSessionId());
 
