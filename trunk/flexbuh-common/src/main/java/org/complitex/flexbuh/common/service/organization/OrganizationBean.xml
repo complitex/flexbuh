@@ -12,28 +12,32 @@
         <result column="fax" property="fax"/>
         <result column="email" property="email"/>
         <result column="http_address" property="httpAddress"/>
+        
+        <association property="physicalAddress" javaType="org.complitex.flexbuh.common.entity.Address">
+            <result column="physical_address_zip_code" property="zipCode"/>
+            <result column="physical_address_country" property="country"/>
+            <result column="physical_address_region" property="region" />
+            <result column="physical_address_area" property="area" />
+            <result column="physical_address_city" property="city" />
+            <result column="physical_address_city_type" property="cityType" />
+            <result column="physical_address_street" property="street" />
+            <result column="physical_address_street_type" property="streetType" />
+            <result column="physical_address_building" property="building" />
+            <result column="physical_address_apartment" property="apartment" />
+        </association>
 
-        <result column="physical_address_zip_code" property="physicalAddressZipCode"/>
-        <result column="physical_address_country" property="physicalAddressCountry"/>
-        <result column="physical_address_region" property="physicalAddressRegion" />
-        <result column="physical_address_area" property="physicalAddressArea" />
-        <result column="physical_address_city" property="physicalAddressCity" />
-        <result column="physical_address_city_type" property="physicalAddressCityType" />
-        <result column="physical_address_street" property="physicalAddressStreet" />
-        <result column="physical_address_street_type" property="physicalAddressStreetType" />
-        <result column="physical_address_building" property="physicalAddressBuilding" />
-        <result column="physical_address_apartment" property="physicalAddressApartment" />
-
-        <result column="juridical_address_zip_code" property="juridicalAddressZipCode"/>
-        <result column="juridical_address_country" property="juridicalAddressCountry"/>
-        <result column="juridical_address_region" property="juridicalAddressRegion" />
-        <result column="juridical_address_area" property="juridicalAddressArea" />
-        <result column="juridical_address_city" property="juridicalAddressCity" />
-        <result column="juridical_address_city_type" property="juridicalAddressCityType" />
-        <result column="juridical_address_street" property="juridicalAddressStreet" />
-        <result column="juridical_address_street_type" property="juridicalAddressStreetType" />
-        <result column="juridical_address_building" property="juridicalAddressBuilding" />
-        <result column="juridical_address_apartment" property="juridicalAddressApartment" />
+        <association property="juridicalAddress" javaType="org.complitex.flexbuh.common.entity.Address">
+            <result column="juridical_address_zip_code" property="zipCode"/>
+            <result column="juridical_address_country" property="country"/>
+            <result column="juridical_address_region" property="region" />
+            <result column="juridical_address_area" property="area" />
+            <result column="juridical_address_city" property="city" />
+            <result column="juridical_address_city_type" property="cityType" />
+            <result column="juridical_address_street" property="street" />
+            <result column="juridical_address_street_type" property="streetType" />
+            <result column="juridical_address_building" property="building" />
+            <result column="juridical_address_apartment" property="apartment" />
+        </association>
 
     </resultMap>
 
@@ -47,28 +51,28 @@
         `juridical_address_zip_code`, `juridical_address_country`, `juridical_address_region`, `juridical_address_area`,
         `juridical_address_city`, `juridical_address_city_type`, `juridical_address_street`, `juridical_address_street_type`,
         `juridical_address_building`, `juridical_address_apartment`)
-        values (#{name}, #{type}, #{phone}, #{fax}, #{email}, #{http_address},
-         #{physicalAddressZipCode}, #{physicalAddressCountry}, #{physicalAddressRegion}, #{physicalAddressArea},
-         #{physicalAddressCity}, #{physicalAddressCityType}, #{physicalAddressStreet}, #{physicalAddressStreetType},
-         #{physicalAddressBuilding}, #{physicalAddressApartment},
-         #{juridicalAddressZipCode}, #{juridicalAddressCountry}, #{juridicalAddressRegion}, #{juridicalAddressArea},
-         #{juridicalAddressCity}, #{juridicalAddressCityType}, #{juridicalAddressStreet}, #{juridicalAddressStreetType},
-         #{juridicalAddressBuilding}, #{juridicalAddressApartment})
+        values (#{name}, #{type}, #{phone}, #{fax}, #{email}, #{httpAddress},
+         #{physicalAddress.zipCode}, #{physicalAddress.country}, #{physicalAddress.region}, #{physicalAddress.area},
+         #{physicalAddress.city}, #{physicalAddress.cityType}, #{physicalAddress.street}, #{physicalAddress.streetType},
+         #{physicalAddress.building}, #{physicalAddress.apartment},
+         #{juridicalAddress.zipCode}, #{juridicalAddress.country}, #{juridicalAddress.region}, #{juridicalAddress.area},
+         #{juridicalAddress.city}, #{juridicalAddress.cityType}, #{juridicalAddress.street}, #{juridicalAddress.streetType},
+         #{juridicalAddress.building}, #{juridicalAddress.apartment})
     </insert>
 
     <update id="updateOrganization" parameterType="org.complitex.flexbuh.common.entity.organization.Organization">
         update `organization` set `name` = #{name}, `type` = #{type},
             `phone` = #{phone}, `fax` = #{fax}, `email` = #{email}, `http_address` = #{httpAddress},
-            `physical_zip_code` = #{physicalZipCode}, `physical_country` = #{physicalCountry},
-            `physical_region` = #{physicalRegion}, `physical_city` = #{physicalCity},
-            `physical_city_type` = #{physicalCityType}, `physical_street` = #{physicalStreet},
-            `physical_street_type` = #{physicalStreetType}, `physical_building` = #{physicalBuilding},
-            `physical_apartment` = #{physicalApartment},
-            `juridical_zip_code` = #{juridicalZipCode}, `juridical_country` = #{juridicalCountry},
-            `juridical_region` = #{juridicalRegion}, `juridical_city` = #{juridicalCity},
-            `juridical_city_type` = #{juridicalCityType}, `juridical_street` = #{juridicalStreet},
-            `juridical_street_type` = #{juridicalStreetType}, `juridical_building` = #{juridicalBuilding},
-            `juridical_apartment` = #{juridicalApartment}
+            `physical_zip_code` = #{physicalAddress.zipCode}, `physical_country` = #{physicalAddress.country},
+            `physical_region` = #{physicalAddress.region}, `physical_city` = #{physicalAddress.city},
+            `physical_city_type` = #{physicalAddress.cityType}, `physical_street` = #{physicalAddress.street},
+            `physical_street_type` = #{physicalAddress.streetType}, `physical_building` = #{physicalAddress.building},
+            `physical_apartment` = #{physicalAddress.apartment},
+            `juridical_zip_code` = #{juridicalAddress.zipCode}, `juridical_country` = #{juridicalAddress.country},
+            `juridical_region` = #{juridicalAddress.region}, `juridical_city` = #{juridicalAddress.city},
+            `juridical_city_type` = #{juridicalAddress.cityType}, `juridical_street` = #{juridicalAddress.street},
+            `juridical_street_type` = #{juridicalAddress.streetType}, `juridical_building` = #{juridicalAddress.building},
+            `juridical_apartment` = #{juridicalAddress.apartment}
              where `id` = #{id}
     </update>
 

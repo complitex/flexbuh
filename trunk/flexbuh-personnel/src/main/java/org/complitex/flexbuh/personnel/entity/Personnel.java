@@ -1,29 +1,63 @@
 package org.complitex.flexbuh.personnel.entity;
 
-import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
+import org.complitex.flexbuh.common.entity.Address;
+import org.complitex.flexbuh.common.entity.DomainObject;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.12.11 14:59
  */
-public class Personnel extends AbstractTemporalEntity {
+public class Personnel extends DomainObject {
     private String lastName;
     private String firstName;
     private String middleName;
-    private String number;
+
     private Date birthday;
+
     private boolean gender;
+    private String maritalStatus;
+
+    private String email;
+    private String phone;
+
+    // Адрес прописки
+    private Address registrationAddress;
+
+    // Адрес фактического проживания
+    private String actualAddress;
+
+    // Медицинский полис
+    private String medicalPolicy;
+
+    // ИНН
     private String inn;
-    private boolean resident;
+
+    // СНИЛС
     private String snils;
-    private String address;
+
+    // Паспорт
     private String passport;
-    private Long departmentId;
-    private Long positionId;
-    private Long scheduleId;
-    private Long paymentId;
+
+    // Резидент/нерезидент
+    private boolean resident;
+
+    // Дата приема на работу
+    private Date employmentDate;
+
+    // Дата увольнения
+    private Date terminationDate;
+
+    // Должность
+    private Position position;
+
+    // График работы
+    private Schedule schedule;
+
+    // Персональные надбавки
+    private List<Allowance> personalAllowances;
 
     public String getLastName() {
         return lastName;
@@ -49,14 +83,6 @@ public class Personnel extends AbstractTemporalEntity {
         this.middleName = middleName;
     }
 
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
     public Date getBirthday() {
         return birthday;
     }
@@ -73,20 +99,60 @@ public class Personnel extends AbstractTemporalEntity {
         this.gender = gender;
     }
 
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Address getRegistrationAddress() {
+        return registrationAddress;
+    }
+
+    public void setRegistrationAddress(Address registrationAddress) {
+        this.registrationAddress = registrationAddress;
+    }
+
+    public String getActualAddress() {
+        return actualAddress;
+    }
+
+    public void setActualAddress(String actualAddress) {
+        this.actualAddress = actualAddress;
+    }
+
+    public String getMedicalPolicy() {
+        return medicalPolicy;
+    }
+
+    public void setMedicalPolicy(String medicalPolicy) {
+        this.medicalPolicy = medicalPolicy;
+    }
+
     public String getInn() {
         return inn;
     }
 
     public void setInn(String inn) {
         this.inn = inn;
-    }
-
-    public boolean isResident() {
-        return resident;
-    }
-
-    public void setResident(boolean resident) {
-        this.resident = resident;
     }
 
     public String getSnils() {
@@ -97,14 +163,6 @@ public class Personnel extends AbstractTemporalEntity {
         this.snils = snils;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getPassport() {
         return passport;
     }
@@ -113,35 +171,51 @@ public class Personnel extends AbstractTemporalEntity {
         this.passport = passport;
     }
 
-    public Long getDepartmentId() {
-        return departmentId;
+    public boolean isResident() {
+        return resident;
     }
 
-    public void setDepartmentId(Long departmentId) {
-        this.departmentId = departmentId;
+    public void setResident(boolean resident) {
+        this.resident = resident;
     }
 
-    public Long getPositionId() {
-        return positionId;
+    public Date getEmploymentDate() {
+        return employmentDate;
     }
 
-    public void setPositionId(Long positionId) {
-        this.positionId = positionId;
+    public void setEmploymentDate(Date employmentDate) {
+        this.employmentDate = employmentDate;
     }
 
-    public Long getScheduleId() {
-        return scheduleId;
+    public Date getTerminationDate() {
+        return terminationDate;
     }
 
-    public void setScheduleId(Long scheduleId) {
-        this.scheduleId = scheduleId;
+    public void setTerminationDate(Date terminationDate) {
+        this.terminationDate = terminationDate;
     }
 
-    public Long getPaymentId() {
-        return paymentId;
+    public Position getPosition() {
+        return position;
     }
 
-    public void setPaymentId(Long paymentId) {
-        this.paymentId = paymentId;
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public List<Allowance> getPersonalAllowances() {
+        return personalAllowances;
+    }
+
+    public void setPersonalAllowances(List<Allowance> personalAllowances) {
+        this.personalAllowances = personalAllowances;
     }
 }

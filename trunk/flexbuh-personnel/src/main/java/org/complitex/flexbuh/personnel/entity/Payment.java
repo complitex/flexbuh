@@ -1,19 +1,21 @@
 package org.complitex.flexbuh.personnel.entity;
 
-import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
+import org.complitex.flexbuh.common.entity.DomainObject;
+
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.12.11 14:58
  */
-public class Payment extends AbstractTemporalEntity{
-    private String name;
+public class Payment extends DomainObject {
 
-    public String getName() {
-        return name;
-    }
+    // Оклад/ставка
+    private Float salary;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    // Название валюты
+    private String currencyUnit;
+
+    // Надбавки
+    private List<Allowance> allowances;
 }

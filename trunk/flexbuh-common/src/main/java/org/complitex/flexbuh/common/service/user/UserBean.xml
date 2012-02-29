@@ -13,16 +13,19 @@
         <result column="birthday" property="birthday"/>
         <result column="email" property="email"/>
         <result column="phone" property="phone"/>
-        <result column="zip_code" property="zipCode"/>
-        <result column="country" property="country"/>
-        <result column="region" property="region" />
-        <result column="area" property="area" />
-        <result column="city" property="city" />
-        <result column="city_type" property="cityType" />
-        <result column="street" property="street" />
-        <result column="street_type" property="streetType" />
-        <result column="building" property="building" />
-        <result column="apartment" property="apartment" />
+
+        <association property="address" javaType="org.complitex.flexbuh.common.entity.Address">
+            <result column="zip_code" property="zipCode"/>
+            <result column="country" property="country"/>
+            <result column="region" property="region" />
+            <result column="area" property="area" />
+            <result column="city" property="city" />
+            <result column="city_type" property="cityType" />
+            <result column="street" property="street" />
+            <result column="street_type" property="streetType" />
+            <result column="building" property="building" />
+            <result column="apartment" property="apartment" />
+        </association>
 
         <collection property="roles" ofType="string">
             <result column="group_name"/>
@@ -61,7 +64,8 @@
         insert into `user` (`login`, `password`, `session_id`, `first_name`, `middle_name`, `last_name`, `birthday`,
         `email`, `phone`, `zip_code`, `country`, `region`, `area`, `city`, `city_type`, `street`, `street_type`, `building`, `apartment`)
         values (#{login}, #{password}, #{sessionId}, #{firstName}, #{middleName}, #{lastName}, #{birthday},
-        #{email}, #{phone}, #{zipCode}, #{country}, #{region}, #{area}, #{city}, #{cityType}, #{street}, #{streetType}, #{building}, #{apartment})
+        #{email}, #{phone}, #{address.zipCode}, #{address.country}, #{address.region}, #{address.area}, #{address.city},
+        #{address.cityType}, #{address.street}, #{address.streetType}, #{address.building}, #{address.apartment})
     </insert>
 
     <update id="updateUser" parameterType="org.complitex.flexbuh.common.entity.user.User">
@@ -70,9 +74,10 @@
             <if test="password != null"> `password` = #{password},</if>
             <if test="sessionId != null"> `session_id` = #{sessionId},</if>
             `first_name` = #{firstName}, `middle_name` = #{middleName}, `last_name` = #{lastName}, `birthday` = #{birthday},
-            `email` = #{email}, `phone` = #{phone}, `zip_code` = #{zipCode}, `country` = #{country}, `region` = #{region},
-            `city` = #{city}, `city_type` = #{cityType}, `street` = #{street}, `street_type` = #{streetType},
-            `building` = #{building}, `apartment` = #{apartment}
+            `email` = #{email}, `phone` = #{phone}, `zip_code` = #{address.zipCode}, `country` = #{address.country},
+            `region` = #{address.region}, `area` = #{address.area}, `city` = #{address.city}, `city_type` = #{address.cityType},
+            `street` = #{address.street}, `street_type` = #{address.streetType}, `building` = #{address.building},
+            `apartment` = #{address.apartment}
         </set>
         where id = #{id}
     </update>
