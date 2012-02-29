@@ -254,9 +254,14 @@ public class Declaration implements Serializable{
 
         head.setCDoc(document.getCDoc());
         head.setCDocSub(document.getCDocSub());
-        head.setCDocVer(document.getVersion(head.getPeriodYear(), head.getPeriodMonth()));
 
         name = document.getNameUk();
+
+        updateVersion();
+    }
+
+    public void updateVersion(){
+        head.setCDocVer(document.getVersion(head.getPeriodYear(), head.getPeriodMonth()));
     }
 
     public boolean hasLinkedDeclarations(){
