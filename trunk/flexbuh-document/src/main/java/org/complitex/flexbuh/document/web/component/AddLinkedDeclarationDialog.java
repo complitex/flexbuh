@@ -46,7 +46,7 @@ public class AddLinkedDeclarationDialog extends Panel {
 
         dialog = new Dialog("dialog");
         dialog.setWidth(760);
-        dialog.setTitle(getString("title"));
+
         add(dialog);
 
         container = new WebMarkupContainer("container");

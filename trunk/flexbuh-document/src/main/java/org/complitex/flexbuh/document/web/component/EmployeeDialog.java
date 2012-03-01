@@ -41,7 +41,6 @@ public class EmployeeDialog extends Panel implements IAutocompleteDialog<Employe
         dialog = new Dialog("dialog");
         add(dialog);
 
-        dialog.setTitle(getString("title"));
         dialog.setWidth(870);
 
         //Form

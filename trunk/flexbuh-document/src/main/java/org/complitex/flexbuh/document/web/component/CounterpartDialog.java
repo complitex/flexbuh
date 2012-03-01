@@ -39,7 +39,6 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
         dialog = new Dialog("dialog");
         add(dialog);
 
-        dialog.setTitle(getString("title"));
         dialog.setWidth(870);
 
         //Form
