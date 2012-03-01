@@ -72,6 +72,11 @@ public class RuleService {
         declaration.setChecked(true);
 
         for (Rule rule : rules.values()){
+            //todo implement
+            if (rule.getExpression().contains("GetPdvType")){
+                continue;
+            }
+
             String name = rule.getCDocRowC().replace("^","");
 
             if ("Y".equals(rule.getRowNum())){
