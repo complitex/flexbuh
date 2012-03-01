@@ -71,7 +71,7 @@ public class DeclarationMarkupService {
 
     private String getMarkupString(String templateName) throws CreateDocumentException {
         //Xml
-        Document template = templateService.getTemplate(templateName, new Declaration());
+        Document template = templateService.getTemplate(templateName, new Declaration(templateName));
         Document schema = templateService.getTemplateXSDDocument(templateName);
 
         //XPath

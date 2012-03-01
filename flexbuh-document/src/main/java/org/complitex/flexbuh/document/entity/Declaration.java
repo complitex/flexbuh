@@ -34,7 +34,7 @@ public class Declaration implements Serializable{
     private List xmlValues = new ArrayList();
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
-    private final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
+    private static final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("(\\w\\d{2})(\\d{3})(\\d{2})");
 
     private Long id;
     private Long sessionId;

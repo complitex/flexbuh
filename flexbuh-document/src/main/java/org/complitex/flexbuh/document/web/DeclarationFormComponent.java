@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.ComponentTag;
@@ -22,6 +23,7 @@ import org.complitex.flexbuh.common.web.component.RadioSet;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
+import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.complitex.flexbuh.document.service.DeclarationFillService;
 import org.complitex.flexbuh.document.service.DeclarationMarkupService;
 import org.complitex.flexbuh.document.service.RuleService;
@@ -65,13 +67,12 @@ public class DeclarationFormComponent extends Panel{
     @EJB
     private RuleService ruleService;
 
-    private transient Declaration declaration;
+    private Declaration declaration;
 
-    //todo check serialization    
+    //Loadable
     private transient Document commonTypes;
-
-    private transient XPath schemaXPath = XmlUtil.newSchemaXPath();
-    private transient ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
+    private transient XPath schemaXPath;
+    private transient ScriptEngine scriptEngine;
 
     private Map<String, Rule> rulesMap;
     private Map<String, IDeclarationStringComponent> simpleTextFieldMap = new HashMap<>();
@@ -88,17 +89,14 @@ public class DeclarationFormComponent extends Panel{
     public DeclarationFormComponent(String id, Declaration declaration){
         super(id);
 
+        //Declaration
+        this.declaration = declaration;
+
         templateName = declaration.getTemplateName();
 
         try {
-            //Common Types
-            commonTypes = templateService.getTemplateXSDDocument("common_types");
-
             //Rules
             rulesMap = ruleService.getRules(templateName);
-
-            //Declaration
-            this.declaration = declaration;
 
             init();
 
@@ -112,6 +110,34 @@ public class DeclarationFormComponent extends Panel{
         }
     }
 
+    public Document getCommonTypes(){
+        if (commonTypes == null){
+            try {
+                commonTypes = templateService.getTemplateXSDDocument("common_types");
+            } catch (CreateDocumentException e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
+
+        return commonTypes;
+    }
+
+    public XPath getSchemaXPath(){
+        if (schemaXPath == null){
+            schemaXPath = XmlUtil.newSchemaXPath();
+        }
+
+        return schemaXPath;
+    }
+
+    public ScriptEngine getScriptEngine(){
+        if (scriptEngine == null){
+            scriptEngine = ScriptUtil.newScriptEngine();
+        }
+
+        return scriptEngine;
+    }
+
     private void init(){
         WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -122,7 +148,9 @@ public class DeclarationFormComponent extends Panel{
         WebMarkupContainer parent = container;
         StretchTable stretchTable = null;
 
-        for (MarkupElement markupElement : getAssociatedMarkup()){
+        Markup markup = getAssociatedMarkup();
+
+        for (MarkupElement markupElement : markup){
             if (markupElement instanceof ComponentTag){
                 ComponentTag tag = (ComponentTag) markupElement;
 
@@ -409,11 +437,11 @@ public class DeclarationFormComponent extends Panel{
     }
 
     private RestrictionBehavior createRestrictionBehavior(String schemaType, String title) throws XPathExpressionException {
-        Element typeElement = XmlUtil.getElementByName(schemaType, commonTypes, schemaXPath);
+        Element typeElement = XmlUtil.getElementByName(schemaType, getCommonTypes(), getSchemaXPath());
 
         if (typeElement != null && "xs:complexType".equals(typeElement.getTagName())){
             Element extension = (Element) typeElement.getElementsByTagName("xs:extension").item(0);
-            typeElement = XmlUtil.getElementByName(extension.getAttribute("base"), commonTypes, schemaXPath);
+            typeElement = XmlUtil.getElementByName(extension.getAttribute("base"), getCommonTypes(), getSchemaXPath());
         }
 
         return new RestrictionBehavior(typeElement, getLocale(), title);
@@ -442,7 +470,7 @@ public class DeclarationFormComponent extends Panel{
     private void applyRule(Integer rowNum, Rule rule, AjaxRequestTarget target){
         try {
             //Evaluate script
-            String value = scriptEngine.eval(ruleService.getExpression(rowNum, declaration, rule)).toString();
+            String value = getScriptEngine().eval(ruleService.getExpression(rowNum, declaration, rule)).toString();
 
             String name = rule.getCDocRowC().replace("^","");
 

@@ -31,7 +31,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -134,13 +133,11 @@ public class DeclarationService {
                 Element element = (Element) nodeList.item(i);
                 String name = element.getAttribute("name");
 
-                for (Iterator<DeclarationValue> it = declaration.getDeclarationValues().iterator(); it.hasNext();){
-                    DeclarationValue declarationValue = it.next();
-
-                    if (name.equals(declarationValue.getName())){
+                for (DeclarationValue declarationValue : declaration.getDeclarationValues()) {
+                    if (name.equals(declarationValue.getName())) {
                         sortedDeclarationValues.add(declarationValue);
 
-                        if (!name.contains("XXXX")){
+                        if (!name.contains("XXXX")) {
                             break;
                         }
                     }

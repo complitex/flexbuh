@@ -75,8 +75,6 @@ public class DeclarationList extends TemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
-
-
     private DeclarationUploadDialog declarationUploadDialog;
 
     private Map<Declaration, IModel<Boolean>> selectMap = new HashMap<>();
