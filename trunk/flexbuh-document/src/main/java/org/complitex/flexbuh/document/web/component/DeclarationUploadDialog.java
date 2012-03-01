@@ -12,6 +12,7 @@ import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePanel;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -32,6 +33,9 @@ public class DeclarationUploadDialog extends TemplatePanel {
 
     @EJB
     private DeclarationService declarationService;
+
+    @EJB
+    private DeclarationBean declarationBean;
 
     private Dialog dialog;
 
@@ -82,6 +86,8 @@ public class DeclarationUploadDialog extends TemplatePanel {
 
                         declarationService.validate(declaration);
                         declarationService.check(declaration);
+
+                        declarationBean.save(declaration);
 
                         String info = getStringFormat("info_declaration_upload",
                                 fileName,
