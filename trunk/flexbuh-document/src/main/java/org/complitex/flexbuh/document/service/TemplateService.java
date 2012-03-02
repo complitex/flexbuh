@@ -70,7 +70,6 @@ public class TemplateService {
     }
 
     public Schema getSchema(String templateName) throws SAXException {
-        final TemplateXSD common = templateBean.getTemplateXSD("common_types");
         TemplateXSD xsd = templateBean.getTemplateXSD(templateName);
 
         Source xsdSource = new StreamSource(new StringReader(xsd.getData()), templateName + ".xsd");
@@ -81,6 +80,8 @@ public class TemplateService {
             @Override
             public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
                 if ("common_types.xsd".equals(systemId)){
+                    TemplateXSD common = templateBean.getTemplateXSD("common_types");
+
                     LSInputImpl lsInput = new LSInputImpl();
                     lsInput.setStringData(common.getData());
 
