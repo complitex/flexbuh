@@ -25,11 +25,12 @@ public class DeclarationCheckLink extends Link {
     @Override
     public void onClick() {
         declarationService.validate(declaration);
-        declarationService.check(declaration);
 
         getSession().info((declaration.isValidated()
                 ? getString("validated")
                 : getString("validate_error") + " -  " + declaration.getValidateMessage()));
+
+        declarationService.check(declaration);
 
         getSession().info((declaration.isChecked()
                 ? getString("checked")

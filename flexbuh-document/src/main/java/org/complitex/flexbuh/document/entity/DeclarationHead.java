@@ -8,11 +8,11 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 07.09.11 15:11
  */
-@XmlType
+@XmlType()
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DeclarationHead implements Serializable {
     @XmlElement(name = "TIN")
-    private Integer tin = 0; // код плательщика
+    private Integer tin; // код плательщика
 
     @XmlElement(name = "C_DOC")
     private String cDoc; // код документа
@@ -21,7 +21,7 @@ public class DeclarationHead implements Serializable {
     private String cDocSub; // подтип документа
 
     @XmlElement(name = "C_DOC_VER")
-    private Integer cDocVer = 0; // номер версии документа
+    private Integer cDocVer; // номер версии документа
 
     @XmlElement(name = "C_DOC_TYPE")
     private Integer cDocType = 0; // № исправительной документа (0 - основной (первого поданного))
