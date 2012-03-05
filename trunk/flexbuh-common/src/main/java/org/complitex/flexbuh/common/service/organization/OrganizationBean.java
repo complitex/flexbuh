@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.service.organization;
 
 import com.google.common.collect.Maps;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.complitex.flexbuh.common.entity.organization.Organization;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.mybatis.Transactional;
@@ -20,30 +21,22 @@ public class OrganizationBean extends AbstractBean {
     public static final String NS = OrganizationBean.class.getName();
 
     @Transactional
-    public void save(User user) {
-        if (user.getId() != null) {
-            update(user);
+    public void save(Organization organization) {
+        if (organization.getId() != null) {
+            update(organization);
         } else {
-            create(user);
+            create(organization);
         }
     }
 
     @Transactional
-    public void create(User user) {
-        sqlSession().insert(NS + ".insertOrganization", user);
-
-        //сохранение организаций пользователя
-        Map<String, String> newRole = Maps.newHashMap();
-        newRole.put("login", user.getLogin());
-        for(String role : user.getRoles()){
-            newRole.put("role", role);
-            sqlSession().insert(NS + ".insertUserRole", newRole);
-        }
+    public void create(Organization organization) {
+        sqlSession().insert(NS + ".insertOrganization", organization);
     }
 
     @Transactional
-    public void update(User user) {
-        sqlSession().update(NS + ".updateOrganization", user);
+    public void update(Organization organization) {
+        sqlSession().update(NS + ".updateOrganization", organization);
     }
 
     public Organization getOrganization(Long id) {

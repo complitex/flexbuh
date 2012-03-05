@@ -1,12 +1,12 @@
 package org.complitex.flexbuh.personnel.entity;
 
-import org.complitex.flexbuh.common.entity.DomainObject;
+import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 /**
  * @author Pavel Sknar
  *         Date: 29.02.12 12:09
  */
-public class Allowance extends DomainObject {
+public class Allowance extends TemporalDomainObject {
 
     // Значение
     private Float value;

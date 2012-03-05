@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.entity.TemporalDomainObject">
+    <resultMap id="temporalDomainObjectResultMap" type="org.complitex.flexbuh.common.entity.TemporalDomainObject">
+        <id column="id" property="id"/>
+
+        <result property="version" column="version"/>
+        <result property="deleted" column="deleted"/>
+        <result property="entryIntoForceDate" column="entry_into_force_date"/>
+        <result property="completionDate" column="completion_date"/>
+    </resultMap>
+</mapper>

@@ -30,6 +30,7 @@
         <mapper resource="org/complitex/flexbuh/common/service/PersonProfileBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/entity/LocalizedDomainObject.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/entity/TemporalDomainObject.xml"/>
         <mapper resource="org/complitex/flexbuh/common/entity/dictionary/AbstractDictionary.xml"/>
         <mapper resource="org/complitex/flexbuh/common/entity/dictionary/AbstractPeriodDictionary.xml"/>
 
@@ -46,6 +47,7 @@
         <mapper resource="org/complitex/flexbuh/common/service/user/UserBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/service/organization/OrganizationBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/personnel/service/DepartmentBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/document/service/DeclarationBean.xml"/>
         <mapper resource="org/complitex/flexbuh/document/service/CounterpartBean.xml"/>

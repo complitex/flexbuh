@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.personnel.service.DepartmentBean">
+    <resultMap id="departmentResultMap" type="org.complitex.flexbuh.personnel.entity.Department"
+            extends="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectResultMap">
+
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+
+        <association property="organization" column="organization_id"
+                     select="org.complitex.flexbuh.common.service.organization.OrganizationBean.selectOrganizationById"/>
+
+        <association property="masterDepartment" column="{id=master_id, currentDate=current_date}"
+                     select="selectCurrentDepartmentById"/>
+
+        <collection property="childDepartments" column="{masterId=master_id, currentDate=current_date}"
+                    select="selectCurrentChildDepartmentsByMasterId"/>
+
+    </resultMap>
+
+    <insert id="insertDepartment"
+            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+
+        <selectKey keyProperty="id" order="BEFORE" resultType="long">
+            SELECT IFNULL(MAX(`id`)+1, 1) FROM `department`
+        </selectKey>
+
+        insert into `department` (`id`, `version`, `entry_into_force_date`, `completion_date`, `organization_id`,
+        <if test="masterDepartment != null">`master_id`,</if>
+         `name`, `code`)
+        values (#{id}, #{version}, #{entryIntoForceDate}, #{completionDate}, #{organization.id},
+        <if test="masterDepartment != null">#{masterDepartment.id},</if>
+        #{name}, #{code})
+
+    </insert>
+
+    <update id="updateDepartmentNullCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+
+        update `department` set `completion_date` = #{entryIntoForceDate} where
+        `id` = #{id} and `version` = #{version} and `completion_date` is null;
+
+    </update>
+
+    <update id="updateDepartmentCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+
+        update `department` set `completion_date` = #{completionDate} where
+        `id` = #{id} and `version` = #{version};
+
+    </update>
+
+    <insert id="updateDepartment"
+            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+
+        <selectKey keyProperty="version" order="BEFORE" resultType="long">
+            SELECT IFNULL(MAX(`version`)+1, 1) FROM `department` WHERE id = #{id}
+        </selectKey>
+
+        insert into `department` (`id`, `version`, `entry_into_force_date`, `completion_date`, `organization_id`,
+        <if test="masterDepartment != null">`master_id`,</if>
+         `name`, `code`)
+        values (#{id}, #{version}, #{entryIntoForceDate}, #{completionDate}, #{organization.id},
+        <if test="masterDepartment != null">#{masterDepartment.id},</if>
+        #{name}, #{code})
+    </insert>
+
+    <select id="selectCurrentDepartmentById" parameterType="map" resultMap="departmentResultMap">
+        select *, #{currentDate} as `current_date` from `department` where `id` = #{id} and #{currentDate} >= `entry_into_force_date` and
+        (`completion_date` > #{currentDate} or `completion_date` is null)
+    </select>
+
+    <select id="selectCurrentDepartmentByOrganizationId" parameterType="map" resultMap="departmentResultMap">
+        select * from `department` where `organization_id` = #{organizationId} and #{currentDate} >= `entry_into_force_date` and
+        (`completion_date` > #{currentDate} or `completion_date` is null)
+    </select>
+
+    <select id="selectCurrentChildDepartmentsByMasterId" parameterType="map" resultMap="departmentResultMap">
+        select * from `department` where `master_id` = #{masterId} and #{currentDate} >= `entry_into_force_date` and
+        (`completion_date` > #{currentDate} or `completion_date` is null)
+    </select>
+
+    <select id="selectCurrentDepartments" parameterType="date" resultMap="departmentResultMap">
+        select *, #{currentDate} as `current_date` from `department` where #{currentDate} >= `entry_into_force_date` and
+        (`completion_date` > #{currentDate} or `completion_date` is null)
+    </select>
+
+</mapper>

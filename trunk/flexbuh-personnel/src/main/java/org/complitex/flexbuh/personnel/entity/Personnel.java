@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import org.complitex.flexbuh.common.entity.Address;
-import org.complitex.flexbuh.common.entity.DomainObject;
+import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.12.11 14:59
  */
-public class Personnel extends DomainObject {
+public class Personnel extends TemporalDomainObject {
     private String lastName;
     private String firstName;
     private String middleName;
