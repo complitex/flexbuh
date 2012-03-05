@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.entity;
 
-import org.complitex.flexbuh.common.entity.DomainObject;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 import org.complitex.flexbuh.common.entity.organization.Organization;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 27.02.12 10:22
  */
-public class Department extends DomainObject {
+public class Department extends TemporalDomainObject {
 
     private String name;
 
@@ -59,5 +60,10 @@ public class Department extends DomainObject {
 
     public void setChildDepartments(List<Department> childDepartments) {
         this.childDepartments = childDepartments;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

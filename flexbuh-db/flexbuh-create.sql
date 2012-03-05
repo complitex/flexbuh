@@ -118,7 +118,7 @@ CREATE TABLE  `organization` (
   `phone` VARCHAR(255) COMMENT 'Телефоны',
   `fax` VARCHAR(255) COMMENT 'Факсы',
   `email` VARCHAR(45) NOT NULL COMMENT 'E-mail',
-  `http_address` VARCHAR(255) NOT NULL COMMENT 'Официальный веб адрес организации',
+  `http_address` VARCHAR(255) COMMENT 'Официальный веб адрес организации',
 
   `physical_address_zip_code` VARCHAR(45) COMMENT 'Физический адрес : почтовый индекс',
   `physical_address_country` VARCHAR(45) COMMENT 'Физический адрес : страна',
@@ -581,18 +581,18 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `department`;
 
 CREATE TABLE `department` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `session_id` BIGINT(20) NOT NULL,
-  `object_id` BIGINT(20),
-  `parent_id` BIGINT,
-  `name` VARCHAR(64),
-  `current` BOOLEAN NOT NULL,
-  `date_start` DATE NOT NULL,
-  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
-  `comment` VARCHAR(1000),
-  PRIMARY KEY (`id`),
-  KEY `key_department__parent_id` (`parent_id`),
-  CONSTRAINT `fk_department__department` FOREIGN KEY (`parent_id`) REFERENCES `department` (`id`)
+  `id` BIGINT(20) NOT NULL,
+  `version` BIGINT(20) NOT NULL,
+  `entry_into_force_date` DATETIME NOT NULL,
+  `completion_date` DATETIME,
+  `name` VARCHAR(255) NOT NULL,
+  `code` VARCHAR(255),
+  `organization_id` BIGINT(20) NOT NULL,
+  `master_id` BIGINT(20),
+  PRIMARY KEY (`id`, `version`),
+  KEY `key_department__master_id` (`master_id`),
+  CONSTRAINT `fk_department__master_department` FOREIGN KEY (`master_id`) REFERENCES `department` (`id`),
+  CONSTRAINT `fk_department__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

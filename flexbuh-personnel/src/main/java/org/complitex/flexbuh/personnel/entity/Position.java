@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.personnel.entity;
 
-import org.complitex.flexbuh.common.entity.AbstractTemporalEntity;
+import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.12.11 14:39
  */
-public class Position extends AbstractTemporalEntity{
+public class Position extends TemporalDomainObject {
 
     // Название должности (специальности, профессии), разряда, класса (категории) квалификации
     private String name;
