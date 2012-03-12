@@ -112,7 +112,12 @@ CREATE TABLE  `usergroup` (
 DROP TABLE IF EXISTS `organization`;
 
 CREATE TABLE  `organization` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор организации',
+  `id` BIGINT(20) NOT NULL,
+  `version` BIGINT(20) NOT NULL,
+  `deleted` BOOLEAN,
+  `entry_into_force_date` DATETIME NOT NULL,
+  `completion_date` DATETIME,
+
   `name` VARCHAR(45) NOT NULL COMMENT 'Название организации',
   `type` VARCHAR(45) COMMENT 'Тип организации (ООО/ОАО/ИП/ЗАО)',
   `phone` VARCHAR(255) COMMENT 'Телефоны',
@@ -142,7 +147,7 @@ CREATE TABLE  `organization` (
   `juridical_address_building` VARCHAR(45) COMMENT 'Юридический адрес : дом',
   `juridical_address_apartment` VARCHAR(45) COMMENT 'Юридический адрес : квартира',
 
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`, `version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Организация';
 
 -- ------------------------------
@@ -159,6 +164,20 @@ CREATE TABLE  `user_organization` (
   CONSTRAINT `fk_user_organization__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`),
   CONSTRAINT `fk_user_organization__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Организации пользователей';
+
+-- --------------------------
+-- Organization type
+-- --------------------------
+
+DROP TABLE IF EXISTS `organization_type`;
+
+CREATE TABLE `organization_type` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_uk` VARCHAR(255),
+  `name_ru` VARCHAR(255),
+  PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
 -- Config
@@ -583,6 +602,7 @@ DROP TABLE IF EXISTS `department`;
 CREATE TABLE `department` (
   `id` BIGINT(20) NOT NULL,
   `version` BIGINT(20) NOT NULL,
+  `deleted` BOOLEAN,
   `entry_into_force_date` DATETIME NOT NULL,
   `completion_date` DATETIME,
   `name` VARCHAR(255) NOT NULL,

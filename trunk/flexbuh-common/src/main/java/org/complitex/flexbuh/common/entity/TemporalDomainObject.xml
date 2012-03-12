@@ -10,4 +10,29 @@
         <result property="entryIntoForceDate" column="entry_into_force_date"/>
         <result property="completionDate" column="completion_date"/>
     </resultMap>
+
+    <sql id="columns"> `id`, `version`, `deleted`, `entry_into_force_date`, `completion_date` </sql>
+
+    <sql id="properties"> #{id}, #{version}, #{deleted}, #{entryIntoForceDate}, #{completionDate} </sql>
+
+    <sql id="updateNullCompletionDate">set `completion_date` = #{entryIntoForceDate} where
+        `id` = #{id} and `version` = #{version} and `completion_date` is null
+    </sql>
+
+    <sql id="updateCompletionDate">set `completion_date` = #{completionDate} where
+        `id` = #{id} and `version` = #{version}
+    </sql>
+
+    <sql id="generateId">
+        SELECT IFNULL(MAX(`id`)+1, 1) FROM `department`
+    </sql>
+
+    <sql id="generateVersion">
+        SELECT IFNULL(MAX(`version`)+1, 1) FROM `department` WHERE id = #{id}
+    </sql>
+
+    <sql id="currentDateConstraint">
+        #{currentDate} >= `entry_into_force_date` and (`completion_date` > #{currentDate} or `completion_date` is null)
+    </sql>
+
 </mapper>

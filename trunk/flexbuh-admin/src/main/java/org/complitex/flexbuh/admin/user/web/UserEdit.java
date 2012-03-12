@@ -570,9 +570,9 @@ public class UserEdit extends FormTemplatePage {
 
     @SuppressWarnings("unchecked")
     private List<OrganizationBase> getSelectOrganizations() {
-        log.debug("All organizations: {}", organizationBean.getOrganizations());
-        log.debug("User organizations: {}", user.getOrganizations());
-        return ListUtils.removeAll(organizationBean.getOrganizations(), user.getOrganizations());
+        //log.debug("All organizations: {}", organizationBean.getOrganizations(null));
+        //log.debug("User organizations: {}", user.getOrganizations());
+        return ListUtils.removeAll(organizationBean.getOrganizations(null), user.getOrganizations());
     }
 
     private class SaveUserButton extends Button {

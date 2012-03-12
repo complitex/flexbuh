@@ -3,12 +3,13 @@ package org.complitex.flexbuh.common.entity.organization;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.DomainObject;
+import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 /**
  * @author Pavel Sknar
  *         Date: 20.02.12 10:14
  */
-public class OrganizationBase extends DomainObject implements Comparable<OrganizationBase>{
+public class OrganizationBase extends TemporalDomainObject implements Comparable<OrganizationBase>{
 
     private String name;
     private String type;
