@@ -34,10 +34,22 @@
         <collection property="organizations" column="id"
                     ofType="org.complitex.flexbuh.common.entity.organization.OrganizationBase">
             <result column="organization_id" property="id"/>
+            <result column="organization_version" property="version"/>
             <result column="organization_name" property="name"/>
             <result column="organization_type" property="type"/>
+            <result column="organization_entry_into_force_date" property="entryIntoForceDate"/>
+            <result column="organization_completion_date" property="completionDate"/>
         </collection>
     </resultMap>
+
+    <sql id="userColumns">
+        uc.*,
+        gc.`group_name` as `group_name`,
+        o.`id` as `organization_id`, o.`version` as `organization_version`,
+        o.`name` as `organization_name`, o.`type` as `organization_type`,
+        o.`entry_into_force_date` as `organization_entry_into_force_date`,
+        o.`completion_date` as `organization_completion_date`
+    </sql>
 
     <sql id="userFilter">
         from `user` u
@@ -83,9 +95,7 @@
     </update>
 
     <select id="selectUsers" resultMap="userResultMap" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
-        select uc.*,
-               gc.`group_name` as `group_name`,
-               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
+        select <include refid="userColumns"/>
         from
         (select u.*
         <include refid="userFilter"/>
@@ -102,37 +112,31 @@
     </select>
 
     <select id="selectUserBySessionId" parameterType="long" resultMap="userResultMap">
-        select u.*,
-               gc.`group_name` as `group_name`,
-               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
-        from `user` u
-        left join `usergroup` gc on u.`login` = gc.`login`
-        left join `user_organization` uo on u.`login` = uo.`login`
+        select <include refid="userColumns"/>
+        from `user` uc
+        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `user_organization` uo on uc.`login` = uo.`login`
         left join `organization` o on uo.`organization_id` = o.`id`
-        where u.`session_id` = #{sessionId}
+        where uc.`session_id` = #{sessionId}
     </select>
 
     <select id="selectUserById" parameterType="long" resultMap="userResultMap">
-        select u.*,
-               gc.`group_name` as `group_name`,
-               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
-        from `user` u
-        left join `usergroup` gc on u.`login` = gc.`login`
-        left join `user_organization` uo on u.`login` = uo.`login`
+        select <include refid="userColumns"/>
+        from `user` uc
+        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `user_organization` uo on uc.`login` = uo.`login`
         left join `organization` o on uo.`organization_id` = o.`id`
-        where u.`id` = #{id}
+        where uc.`id` = #{id}
         order by gc.`group_name`
     </select>
 
     <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
-        select u.*,
-               gc.`group_name` as `group_name`,
-               o.`id` as `organization_id`, o.`name` as `organization_name`, o.`type` as `organization_type`
-        from `user` u
-        left join `usergroup` gc on u.`login` = gc.`login`
-        left join `user_organization` uo on u.`login` = uo.`login`
+        select <include refid="userColumns"/>
+        from `user` uc
+        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `user_organization` uo on uc.`login` = uo.`login`
         left join `organization` o on uo.`organization_id` = o.`id`
-        where u.`login` = #{login}
+        where uc.`login` = #{login}
         order by gc.`group_name`
     </select>
 

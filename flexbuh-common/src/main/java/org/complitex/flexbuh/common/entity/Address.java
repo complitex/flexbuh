@@ -1,8 +1,12 @@
 package org.complitex.flexbuh.common.entity;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.util.StringUtil;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -98,6 +102,24 @@ public class Address implements Serializable {
 
     public void setApartment(String apartment) {
         this.apartment = apartment;
+    }
+
+    public String toWebView() {
+
+        return addField(", ", zipCode, country, region, area, addField(" ", cityType, city),
+                addField(" ", streetType, street), building, apartment);
+    }
+
+    private String addField(String delimiter, String... args) {
+        List<String> fields = Lists.newArrayList();
+
+        for (String arg : args) {
+            if (StringUtils.isNotEmpty(arg)) {
+                fields.add(arg);
+            }
+        }
+
+        return StringUtils.join(fields, delimiter);
     }
 
     @Override

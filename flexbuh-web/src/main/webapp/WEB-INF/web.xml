@@ -33,6 +33,9 @@
 		<role-name>LOG_VIEW</role-name>
 	</security-role>
     <security-role>
+		<role-name>PERSONAL_MANAGER</role-name>
+	</security-role>
+    <security-role>
         <role-name>CHILD_ORGANIZATION_VIEW</role-name>
     </security-role>
 

@@ -8,8 +8,8 @@
         <result column="name" property="name"/>
         <result column="code" property="code"/>
 
-        <association property="organization" column="organization_id"
-                     select="org.complitex.flexbuh.common.service.organization.OrganizationBean.selectOrganizationById"/>
+        <association property="organization" column="{id=organization_id, currentDate=current_date}"
+                     select="org.complitex.flexbuh.common.service.organization.OrganizationBean.selectCurrentOrganizationById"/>
 
         <association property="masterDepartment" column="{id=master_id, currentDate=current_date}"
                      select="selectCurrentDepartmentById"/>
@@ -72,12 +72,12 @@
     </select>
 
     <select id="selectCurrentDepartmentByOrganizationId" parameterType="map" resultMap="departmentResultMap">
-        select * from `department` where `organization_id` = #{organizationId} and #{currentDate} >= `entry_into_force_date` and
+        select *, #{currentDate} as `current_date` from `department` where `organization_id` = #{organizationId} and #{currentDate} >= `entry_into_force_date` and
         (`completion_date` > #{currentDate} or `completion_date` is null)
     </select>
 
     <select id="selectCurrentChildDepartmentsByMasterId" parameterType="map" resultMap="departmentResultMap">
-        select * from `department` where `master_id` = #{masterId} and #{currentDate} >= `entry_into_force_date` and
+        select *, #{currentDate} as `current_date` from `department` where `master_id` = #{masterId} and #{currentDate} >= `entry_into_force_date` and
         (`completion_date` > #{currentDate} or `completion_date` is null)
     </select>
 

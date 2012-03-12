@@ -47,6 +47,7 @@
         <mapper resource="org/complitex/flexbuh/common/service/user/UserBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/service/organization/OrganizationBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/service/organization/OrganizationTypeBean.xml"/>
         <mapper resource="org/complitex/flexbuh/personnel/service/DepartmentBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/document/service/DeclarationBean.xml"/>
