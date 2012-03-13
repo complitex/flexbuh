@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.organization.OrganizationTypeBean">
+    
+    <resultMap id="organizationTypeResultMap" type="org.complitex.flexbuh.common.entity.organization.OrganizationType"
+            extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
+    </resultMap>
+    
+    <insert id="insertOrganizationType" parameterType="org.complitex.flexbuh.common.entity.organization.OrganizationType" keyProperty="id" useGeneratedKeys="true">
+        insert into `organization_type` (`name_ru`, `name_uk`)
+        	values (#{nameRu}, #{nameUk})
+    </insert>
+
+    <sql id="selectOrganizationTypesWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like concat(#{startName}, '%')</when>
+                <otherwise>`name_uk` like concat(#{startName}, '%')</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="selectOrganizationTypes" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultMap="organizationTypeResultMap">
+        select * from `organization_type` <include refid="selectOrganizationTypesWhere"/>
+        order by
+        <choose><when test="locale.getLanguage().equals('ru')">`name_ru`</when><otherwise>`name_uk`</otherwise></choose>
+        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        limit #{first}, #{count}
+    </select>
+
+    <sql id="selectOrganizationTypeWhere">
+        <where>
+            <choose>
+                <when test="locale.getLanguage().equals('ru')">`name_ru` like #{startName}</when>
+                <otherwise>`name_uk` like #{startName}</otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="isOrganizationTypeExist" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultType="boolean">
+        select count(*) > 0 from `organization_type` <include refid="selectOrganizationTypeWhere"/>
+    </select>
+    
+</mapper>
