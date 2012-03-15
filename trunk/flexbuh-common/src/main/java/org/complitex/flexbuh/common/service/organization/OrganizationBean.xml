@@ -66,16 +66,16 @@
     <sql id="physicalAddress">
         concat_ws(', ',
         `physical_address_zip_code`, `physical_address_country`, `physical_address_region`, `physical_address_area`,
-        concat_ws(' ', `physical_address_city_type`, `physical_address_city`),
-        concat_ws(' ', `physical_address_street_type`, `physical_address_street`),
+        nullif(concat_ws(' ', `physical_address_city_type`, `physical_address_city`), ''),
+        nullif(concat_ws(' ', `physical_address_street_type`, `physical_address_street`), ''),
         `physical_address_building`, `physical_address_apartment`)
     </sql>
 
     <sql id="juridicalAddress">
         concat_ws(', ',
         `juridical_address_zip_code`, `juridical_address_country`, `juridical_address_region`, `juridical_address_area`,
-        concat_ws(' ', `juridical_address_city_type`, `juridical_address_city`),
-        concat_ws(' ', `juridical_address_street_type`, `juridical_address_street`),
+        nullif(concat_ws(' ', `juridical_address_city_type`, `juridical_address_city`), ''),
+        nullif(concat_ws(' ', `juridical_address_street_type`, `juridical_address_street`), ''),
         `juridical_address_building`, `juridical_address_apartment`)
     </sql>
 
@@ -104,12 +104,13 @@
             <if test="filter.phone != null"> and `phone` like concat('%', #{filter.phone}, '%')</if>
             <if test="filter.email != null"> and `email` like concat('%', #{filter.email}, '%')</if>
             <if test="filter.physicalAddress != null">
-                and `physical_address` like concat('%', #{filter.physicalAddress}, '%')
+                and <include refid="physicalAddress"/> like concat('%', #{filter.physicalAddress}, '%')
             </if>
             <if test="filter.juridicalAddress != null">
-                and `juridical_address` like concat('%', #{filter.juridicalAddress}, '%')
+                and <include refid="juridicalAddress"/> like concat('%', #{filter.juridicalAddress}, '%')
             </if>
             order by ${filter.sortProperty}
+            <choose><when test="filter.ascending">asc</when><otherwise>desc</otherwise></choose>
             limit #{filter.first}, #{filter.count}
         </if>
     </sql>
@@ -119,7 +120,8 @@
             keyProperty="id" useGeneratedKeys="true">
 
         <selectKey keyProperty="id" order="BEFORE" resultType="long">
-            <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+              FROM `organization`
         </selectKey>
 
         insert into `organization` (
@@ -133,7 +135,8 @@
     <insert id="updateOrganization" parameterType="org.complitex.flexbuh.common.entity.organization.Organization">
 
         <selectKey keyProperty="version" order="BEFORE" resultType="long">
-            <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+              FROM `organization` WHERE id = #{id}
         </selectKey>
 
         insert into `organization` (
@@ -147,14 +150,21 @@
     <update id="updateOrganizationNullCompletionDate"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
-        update `department` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
+        update `organization` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
 
     </update>
 
     <update id="updateOrganizationCompletionDate"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
-        update `department` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
+        update `organization` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
+
+    </update>
+
+    <update id="deleteOrganization"
+            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+
+        update `organization` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
 
     </update>
 

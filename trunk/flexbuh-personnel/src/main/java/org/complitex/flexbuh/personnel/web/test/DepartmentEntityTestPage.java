@@ -3,6 +3,7 @@ package org.complitex.flexbuh.personnel.web.test;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.complitex.flexbuh.common.entity.organization.Organization;
+import org.complitex.flexbuh.common.entity.organization.OrganizationFilter;
 import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.personnel.entity.Department;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
@@ -39,7 +40,8 @@ public class DepartmentEntityTestPage extends WebPage {
         Organization organization = new Organization();
         organization.setName("test organization");
         organization.setEmail("test@test.ru");
-        organizationBean.create(organization);
+        organization.setEntryIntoForceDate(new Date());
+        organizationBean.create(organization, getLocale());
 
         Department department = new Department();
         department.setOrganization(organization);
@@ -61,6 +63,10 @@ public class DepartmentEntityTestPage extends WebPage {
 
         log.debug("Select department by id: {}", departmentBean.getDepartment(department.getId()));
         log.debug("Select all departments: {}", departmentBean.getDepartments());
+
+        OrganizationFilter filter = new OrganizationFilter();
+        filter.setPhysicalAddress("Kharkov");
+        log.debug("Select organizations: {}", organizationBean.getOrganizations(filter));
     }
 
 }
