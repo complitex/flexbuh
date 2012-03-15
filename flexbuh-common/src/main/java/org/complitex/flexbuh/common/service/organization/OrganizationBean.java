@@ -10,9 +10,11 @@ import org.complitex.flexbuh.common.service.AbstractBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -26,23 +28,28 @@ public class OrganizationBean extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationBean.class);
 
+    @EJB
+    private OrganizationTypeBean organizationTypeBean;
+
     @Transactional
-    public void save(Organization organization) {
+    public void save(Organization organization, Locale locale) {
         if (organization.getId() != null) {
-            update(organization);
+            update(organization, locale);
         } else {
-            create(organization);
+            create(organization, locale);
         }
     }
 
     @Transactional
-    public void create(Organization organization) {
+    public void create(Organization organization, Locale locale) {
         organization.setVersion(1L);
+        organizationTypeBean.create(organization.getType(), locale);
         sqlSession().insert(NS + ".insertOrganization", organization);
     }
 
     @Transactional
-    public void update(Organization organization) {
+    public void update(Organization organization, Locale locale) {
+        organizationTypeBean.create(organization.getType(), locale);
         sqlSession().update(NS + ".updateOrganizationNullCompletionDate", organization);
         sqlSession().update(NS + ".updateOrganization", organization);
     }
@@ -50,6 +57,15 @@ public class OrganizationBean extends AbstractBean {
     @Transactional
     public void updateCompletionDate(Organization organization) {
         sqlSession().update(NS + ".updateOrganizationCompletionDate", organization);
+    }
+
+    @Transactional
+    public void deleteOrganization(Organization organization) {
+        organization.setDeleted(true);
+        if (organization.getCompletionDate() == null) {
+            organization.setCompletionDate(new Date());
+        }
+        sqlSession().update(NS + ".deleteOrganization", organization);
     }
 
     public Organization getOrganization(Long id) {

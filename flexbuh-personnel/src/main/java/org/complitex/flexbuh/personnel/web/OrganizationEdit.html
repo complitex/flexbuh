@@ -1,0 +1,76 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h1>
+        <span wicket:id="header"></span>
+    </h1>
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="form">
+        <table class="tbForm">
+            <tr>
+                <th><wicket:message key="type"/> </th>
+                <td><input type="text" wicket:id="type"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="name"/> </th>
+                <td><input type="text" maxlength="45" wicket:id="name" style="width: 277px"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="phone"/> </th>
+                <td><input type="text" maxlength="255" wicket:id="phone" style="width: 277px"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="fax"/> </th>
+                <td><input type="text" maxlength="255" wicket:id="fax" style="width: 277px"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="email"/> </th>
+                <td><input type="text" maxlength="45" wicket:id="email" style="width: 277px"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="httpAddress"/> </th>
+                <td><input type="text" maxlength="255" wicket:id="httpAddress" style="width: 277px"/></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="entryIntoForceDate"/></th>
+                <td><input type="text" wicket:id="entryIntoForceDate" style="width: 80px"/></td>
+            </tr>
+        </table>
+
+        <div wicket:id="physical_address">
+
+            <h3><a href="#" wicket:id="physical_address_title" /></h3>
+
+            <div>
+            <table class="tbForm">
+                <div wicket:id="physical_address_fields"/>
+            </table>
+            </div>
+        </div>
+
+        <div wicket:id="juridical_address">
+
+            <h3><a href="#" wicket:id="juridical_address_title" /></h3>
+
+            <div>
+            <table class="tbForm">
+                <div wicket:id="juridical_address_fields"/>
+            </table>
+            </div>
+        </div>
+
+        <br/>
+
+        <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+        <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+    </form>
+</wicket:extend>
+</body>
+</html>

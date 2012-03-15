@@ -1,14 +1,14 @@
 package org.complitex.flexbuh.personnel.web;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -30,6 +30,9 @@ import org.complitex.flexbuh.common.service.organization.OrganizationTypeBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.service.user.UserFilter;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.AddOrganizationButton;
+import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.OrganizationTypeAutoCompleteTextField;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
@@ -38,7 +41,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -57,6 +62,8 @@ public class OrganizationList extends TemplatePage {
 
     @EJB
     private UserBean userBean;
+
+    private Map<Long, IModel<Boolean>> selectMap = Maps.newHashMap();
 
     public OrganizationList() {
         add(new Label("title", new ResourceModel("title")));
@@ -120,6 +127,18 @@ public class OrganizationList extends TemplatePage {
             protected void populateItem(Item<Organization> item) {
                 Organization organization = item.getModelObject();
 
+                IModel<Boolean> selectModel = new Model<>(false);
+
+                selectMap.put(organization.getId(), selectModel);
+
+                item.add(new CheckBox("select", selectModel)
+                    .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            //update
+                        }
+                    }));
+
                 item.add(new Label("type", organization.getType()));
                 item.add(new Label("name", organization.getName()));
                 item.add(new Label("phone", organization.getPhone()));
@@ -160,5 +179,30 @@ public class OrganizationList extends TemplatePage {
             organizationIds.add(organizationBase.getId());
         }
         filter.setOrganizationIds(organizationIds);
+    }
+
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        List<ToolbarButton> list = Lists.newArrayList();
+
+        list.add(new AddOrganizationButton(id){
+            @Override
+            protected void onClick() {
+                setResponsePage(OrganizationCreate.class);
+            }
+        });
+
+        list.add(new DeleteItemButton(id){
+            @Override
+            protected void onClick() {
+                for (Long id : selectMap.keySet()){
+                    Organization organization = new Organization();
+                    organization.setId(id);
+                    organizationBean.deleteOrganization(organization);
+                }
+            }
+        });
+
+        return list;
     }
 }
