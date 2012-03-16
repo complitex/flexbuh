@@ -447,7 +447,9 @@ public class UserEdit extends FormTemplatePage {
                 };
                 item.add(selectedOrganization);
                 item.add(new Label("organizationName", getStringOrKey(organization.getFullName())));
-
+                if (organization.isDeleted()) {
+                    item.setVisible(false);
+                }
             }
         };
         organizationsContainer.add(organizations);

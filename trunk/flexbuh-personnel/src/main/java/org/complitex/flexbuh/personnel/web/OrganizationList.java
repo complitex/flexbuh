@@ -24,6 +24,10 @@ import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.entity.organization.OrganizationFilter;
 import org.complitex.flexbuh.common.entity.organization.OrganizationType;
 import org.complitex.flexbuh.common.entity.user.User;
+import org.complitex.flexbuh.common.logging.EventCategory;
+import org.complitex.flexbuh.common.logging.EventModel;
+import org.complitex.flexbuh.common.logging.EventObjectFactory;
+import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.common.service.organization.OrganizationTypeBean;
@@ -62,6 +66,9 @@ public class OrganizationList extends TemplatePage {
 
     @EJB
     private UserBean userBean;
+
+    @EJB
+	private EventObjectFactory eventObjectFactory;
 
     private Map<Long, IModel<Boolean>> selectMap = Maps.newHashMap();
 
@@ -185,23 +192,27 @@ public class OrganizationList extends TemplatePage {
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = Lists.newArrayList();
 
-        list.add(new AddOrganizationButton(id){
-            @Override
-            protected void onClick() {
-                setResponsePage(OrganizationCreate.class);
-            }
-        });
-
-        list.add(new DeleteItemButton(id){
-            @Override
-            protected void onClick() {
-                for (Long id : selectMap.keySet()){
-                    Organization organization = new Organization();
-                    organization.setId(id);
-                    organizationBean.deleteOrganization(organization);
+        if (getTemplateWebApplication().hasAnyRole(SecurityRole.ADMIN_MODULE_EDIT)) {
+            list.add(new AddOrganizationButton(id) {
+                @Override
+                protected void onClick() {
+                    setResponsePage(OrganizationCreate.class);
                 }
-            }
-        });
+            });
+
+            list.add(new DeleteItemButton(id){
+                @Override
+                protected void onClick() {
+                    for (Long id : selectMap.keySet()) {
+                        Organization organization = organizationBean.getOrganization(id);
+                        organizationBean.deleteOrganization(organization);
+                        log.info("Delete organization '{}'", new Object[]{organization, EventCategory.REMOVE,
+                                new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
+                                eventObjectFactory.getEventOldObject(organization)});
+                    }
+                }
+            });
+        }
 
         return list;
     }

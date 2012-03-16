@@ -37,6 +37,7 @@
             <result column="organization_version" property="version"/>
             <result column="organization_name" property="name"/>
             <result column="organization_type" property="type"/>
+            <result column="organization_deleted" property="deleted"/>
             <result column="organization_entry_into_force_date" property="entryIntoForceDate"/>
             <result column="organization_completion_date" property="completionDate"/>
         </collection>
@@ -47,6 +48,7 @@
         gc.`group_name` as `group_name`,
         o.`id` as `organization_id`, o.`version` as `organization_version`,
         o.`name` as `organization_name`, o.`type` as `organization_type`,
+        o.`deleted` as `organization_deleted`,
         o.`entry_into_force_date` as `organization_entry_into_force_date`,
         o.`completion_date` as `organization_completion_date`
     </sql>

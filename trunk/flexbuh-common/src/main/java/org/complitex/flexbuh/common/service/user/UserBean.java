@@ -36,8 +36,8 @@ public class UserBean extends AbstractBean {
             AUTHORIZED,
             ADMIN_MODULE_EDIT,
             LOG_VIEW,
-            PERSONAL_MANAGER
             */
+            PERSONAL_MANAGER
             );
 
     private static final Map<String, List<String>> GROUPS = Maps.newHashMap();
