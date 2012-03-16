@@ -39,8 +39,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.ejb.EJB;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
@@ -72,7 +70,6 @@ public class DeclarationFormComponent extends Panel{
     //Loadable
     private transient Document commonTypes;
     private transient XPath schemaXPath;
-    private transient ScriptEngine scriptEngine;
 
     private Map<String, Rule> rulesMap;
     private Map<String, IDeclarationStringComponent> simpleTextFieldMap = new HashMap<>();
@@ -128,14 +125,6 @@ public class DeclarationFormComponent extends Panel{
         }
 
         return schemaXPath;
-    }
-
-    public ScriptEngine getScriptEngine(){
-        if (scriptEngine == null){
-            scriptEngine = ScriptUtil.newScriptEngine();
-        }
-
-        return scriptEngine;
     }
 
     private void init(){
@@ -470,7 +459,7 @@ public class DeclarationFormComponent extends Panel{
     private void applyRule(Integer rowNum, Rule rule, AjaxRequestTarget target){
         try {
             //Evaluate script
-            String value = getScriptEngine().eval(ruleService.getExpression(rowNum, declaration, rule)).toString();
+            String value = ScriptUtil.evaluate(ruleService.getExpression(rowNum, declaration, rule)).toString();
 
             String name = rule.getCDocRowC().replace("^","");
 
@@ -490,7 +479,7 @@ public class DeclarationFormComponent extends Panel{
                 autoFill.getDeclarationModel().setObject(value);
                 target.add((Component)autoFill);
             }
-        } catch (ScriptException e) {
+        } catch (Exception e) {
             log.error("Ошибка автозаполнения", e);
         }
     }
