@@ -18,7 +18,6 @@ import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.CityType;
 import org.complitex.flexbuh.common.entity.StreetType;
 import org.complitex.flexbuh.common.entity.organization.Organization;
-import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventModel;
 import org.complitex.flexbuh.common.logging.EventObjectFactory;
@@ -238,15 +237,14 @@ public class OrganizationEdit extends FormTemplatePage {
                 oldOrganization = organizationBean.getOrganization(organization.getId());
                 createOrganization = false;
             }
-            log.debug("Locale: {}", getLocale());
             organizationBean.save(organization, getLocale());
             if (createOrganization) {
-                log.info("Create user '{}'", new Object[]{organization, EventCategory.CREATE,
-                            new EventObjectId(organization.getId()), new EventModel(User.class.getName()),
+                log.info("Create organization '{}'", new Object[]{organization, EventCategory.CREATE,
+                            new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
                             eventObjectFactory.getEventNewObject(organization)});
             } else {
-                log.info("Edit user '{}'", new Object[]{organization, EventCategory.EDIT,
-                            new EventObjectId(organization.getId()), new EventModel(User.class.getName()),
+                log.info("Edit organization '{}'", new Object[]{organization, EventCategory.EDIT,
+                            new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
                             eventObjectFactory.getEventNewObject(organization),
                             eventObjectFactory.getEventOldObject(oldOrganization)});
             }
