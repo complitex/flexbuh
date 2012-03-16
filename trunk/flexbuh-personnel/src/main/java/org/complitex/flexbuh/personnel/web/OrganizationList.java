@@ -203,12 +203,15 @@ public class OrganizationList extends TemplatePage {
             list.add(new DeleteItemButton(id){
                 @Override
                 protected void onClick() {
-                    for (Long id : selectMap.keySet()) {
-                        Organization organization = organizationBean.getOrganization(id);
-                        organizationBean.deleteOrganization(organization);
-                        log.info("Delete organization '{}'", new Object[]{organization, EventCategory.REMOVE,
-                                new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
-                                eventObjectFactory.getEventOldObject(organization)});
+                    for (Map.Entry<Long, IModel<Boolean>> select : selectMap.entrySet()) {
+                        if (select.getValue().getObject()) {
+                            Long id = select.getKey();
+                            Organization organization = organizationBean.getOrganization(id);
+                            organizationBean.deleteOrganization(organization);
+                            log.info("Delete organization '{}'", new Object[]{organization, EventCategory.REMOVE,
+                                    new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
+                                    eventObjectFactory.getEventOldObject(organization)});
+                        }
                     }
                 }
             });

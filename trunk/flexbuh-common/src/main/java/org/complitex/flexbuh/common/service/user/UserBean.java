@@ -36,8 +36,8 @@ public class UserBean extends AbstractBean {
             AUTHORIZED,
             ADMIN_MODULE_EDIT,
             LOG_VIEW,
-            */
             PERSONAL_MANAGER
+            */
             );
 
     private static final Map<String, List<String>> GROUPS = Maps.newHashMap();
@@ -45,6 +45,7 @@ public class UserBean extends AbstractBean {
     static {
         GROUPS.put("ADMINISTRATORS", Lists.<String>newArrayList(AUTHORIZED, ADMIN_MODULE_EDIT, LOG_VIEW, PERSONAL_MANAGER));
         GROUPS.put("EMPLOYEES", Lists.<String>newArrayList(AUTHORIZED));
+        GROUPS.put("PERSONAL_MANAGER", Lists.<String>newArrayList(AUTHORIZED, PERSONAL_MANAGER));
 
         ALL_ROLES.addAll(GROUPS.keySet());
     }
