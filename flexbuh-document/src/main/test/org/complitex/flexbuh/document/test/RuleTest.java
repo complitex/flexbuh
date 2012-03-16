@@ -5,6 +5,7 @@ import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
 import org.complitex.flexbuh.document.service.RuleService;
+import sun.org.mozilla.javascript.internal.Context;
 
 import javax.script.ScriptException;
 import java.util.regex.Matcher;
@@ -15,6 +16,17 @@ import java.util.regex.Matcher;
  */
 public class RuleTest {
     public static void main(String... args) throws ScriptException {
+        Context context = Context.enter();
+        try {
+            Object o = context.evaluateString(context.initStandardObjects(), "1+1", "js", 0, null);
+
+            System.out.println(o);
+        } finally {
+            Context.exit();
+        }
+    }
+
+    public static void simple() throws ScriptException {
         Object o = ScriptUtil.newScriptEngine().eval("1+1==2");
 
         System.out.println(o.toString());

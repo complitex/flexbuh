@@ -1,12 +1,12 @@
 package org.complitex.flexbuh.document.service;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.complitex.flexbuh.common.util.ScriptUtil;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.entity.Rule;
+import org.mozilla.javascript.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -14,8 +14,6 @@ import org.w3c.dom.NodeList;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.util.LinkedHashMap;
@@ -67,49 +65,61 @@ public class RuleService {
     public void check(Declaration declaration){
         Map<String, Rule> rules = getRules(declaration.getTemplateName());
 
-        ScriptEngine scriptEngine = ScriptUtil.newScriptEngine();
-
         declaration.setChecked(true);
 
-        for (Rule rule : rules.values()){
-            //todo implement
-            if (rule.getExpression().contains("GetPdvType")){
-                continue;
-            }
+        Context context = Context.enter();
 
-            String name = rule.getCDocRowC().replace("^","");
+        try {
+            for (Rule rule : rules.values()){
+                //todo implement
+                if (rule.getExpression().contains("GetPdvType")){
+                    continue;
+                }
 
-            if ("Y".equals(rule.getRowNum())){
-                for (DeclarationValue declarationValue : declaration.getDeclarationValues()){
-                    if (name.equals(declarationValue.getName())){
-                        if (!check(declarationValue.getRowNum(), declaration, rule, scriptEngine)){
-                            declaration.setChecked(false);
-                            declaration.setCheckMessage(rule.getDescription());
+                String name = rule.getCDocRowC().replace("^","");
 
-                            return;
+                if ("Y".equals(rule.getRowNum())){
+                    for (DeclarationValue declarationValue : declaration.getDeclarationValues()){
+                        if (name.equals(declarationValue.getName())){
+                            if (!check(declarationValue.getRowNum(), declaration, rule, context)){
+                                declaration.setChecked(false);
+                                declaration.setCheckMessage(rule.getDescription());
+
+                                return;
+                            }
                         }
                     }
-                }
-            }else {
-                if (check(null, declaration, rule, scriptEngine)){
-                    declaration.setChecked(false);
-                    declaration.setCheckMessage(rule.getDescription());
+                }else {
+                    if (check(null, declaration, rule, context)){
+                        declaration.setChecked(false);
+                        declaration.setCheckMessage(rule.getDescription());
 
-                    return;
+                        return;
+                    }
                 }
             }
+        } finally {
+            Context.exit();
         }
     }
 
-    public boolean check(Integer rowNum, Declaration declaration, Rule rule, ScriptEngine scriptEngine){
-        String expr = declaration.getDeclarationValue(rowNum, rule.getCDocRowC().replace("^", "")).getValue()
-                + rule.getSign().replace("=", "==")
-                + getExpression(rowNum, declaration, rule);
+    public boolean check(Integer rowNum, Declaration declaration, Rule rule, Context context){
+        String name = rule.getCDocRowC().replace("^", "");
 
-        try {
-            return !(Boolean)scriptEngine.eval(expr);
-        } catch (ScriptException e) {
-            log.error("Ошибка выполнения скрипта", e);
+        DeclarationValue value = declaration.getDeclarationValue(rowNum, name);
+
+        if (value != null){
+            String expr = value.getValue()
+                    + rule.getSign().replace("=", "==")
+                    + getExpression(rowNum, declaration, rule);
+
+            try {
+                return !(Boolean)context.evaluateString(context.initStandardObjects(), expr, "js", 0, null);
+            } catch (Exception e) {
+                log.error("Ошибка выполнения скрипта", e);
+            }
+        }else{
+            log.error("Значение {} не найдено для документа {}", name, declaration.getTemplateName());
         }
 
         return false;
