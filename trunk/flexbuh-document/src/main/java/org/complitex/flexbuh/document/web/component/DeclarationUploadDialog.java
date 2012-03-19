@@ -82,6 +82,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
                         Declaration declaration = declarationService.getDeclaration(fileUpload.getInputStream());
 
                         declaration.setSessionId(getSessionId());
+                        declaration.setPersonProfileId(personProfile.getId());
                         declaration.setPersonProfile(personProfile);
 
                         declarationService.validate(declaration);
