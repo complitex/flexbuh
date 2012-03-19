@@ -106,6 +106,13 @@
             </exclusions>
         </dependency>
 
+        <!--rhino-->
+
+        <dependency>
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+        </dependency>
+
         <!--Debug-->
         <dependency>
             <groupId>org.apache.wicket</groupId>
