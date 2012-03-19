@@ -1,6 +1,8 @@
 package org.complitex.flexbuh.common.util;
 
-import sun.org.mozilla.javascript.internal.Context;
+
+
+import org.mozilla.javascript.Context;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
