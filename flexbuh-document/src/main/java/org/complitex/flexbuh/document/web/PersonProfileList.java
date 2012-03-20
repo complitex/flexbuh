@@ -27,7 +27,6 @@ import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.service.ConfigBean;
-import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -181,29 +180,24 @@ public class PersonProfileList extends TemplatePage {
                         if (fileUpload != null) {
                             try {
 
-                                final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
-                                canceled.set(false);
+                                final ThreadLocal<Boolean> error = new ThreadLocal<>();
+                                error.set(false);
 
                                 final AtomicInteger count = new AtomicInteger(0);
 
-                                importUserProfileXMLService.process(getSessionId(), new AbstractImportListener() {
+                                importUserProfileXMLService.process(getSessionId(), new AbstractImportListener<PersonProfile>() {
                                     @Override
-                                    public void cancel() {
-                                        canceled.set(true);
+                                    public void processed(PersonProfile object) {
+                                        count.incrementAndGet();
                                     }
 
                                     @Override
-                                    public ImportListener getChildImportListener(Object o) {
-                                        return new AbstractImportListener() {
-                                            @Override
-                                            public void completed() {
-                                                count.incrementAndGet();
-                                            }
-                                        };
+                                    public void error() {
+                                        error.set(true);
                                     }
                                 }, fileUpload.getClientFileName(), fileUpload.getInputStream(), new Locale(fileLocaleModel.getObject()), null, null);
 
-                                if (canceled.get()) {
+                                if (error.get()) {
                                     log.error("Failed import");
                                     getSession().error(getString("error_failed_import"));
                                 } else {

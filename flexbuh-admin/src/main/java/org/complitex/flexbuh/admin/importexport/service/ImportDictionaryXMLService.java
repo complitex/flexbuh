@@ -63,7 +63,7 @@ public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> e
 			listener.completed();
 		} catch (Throwable th) {
 			log.warn("Cancel import dictionary: " + name, th);
-			listener.cancel();
+			listener.error();
 		}
 	}
 

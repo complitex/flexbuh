@@ -45,7 +45,7 @@ public class ImportTemplateFileService implements ImportFileService {
             userTransaction.commit();
             listener.completed();
         } catch (Throwable th) {
-            listener.cancel();
+            listener.error();
             try {
                 userTransaction.rollback();
             } catch (SystemException e) {

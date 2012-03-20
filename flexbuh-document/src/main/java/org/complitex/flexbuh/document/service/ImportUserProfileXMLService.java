@@ -36,7 +36,7 @@ import java.util.Locale;
 @Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ImportUserProfileXMLService extends ImportXMLService {
+public class ImportUserProfileXMLService extends ImportXMLService<PersonProfile> {
     private final static Logger log = LoggerFactory.getLogger(ImportUserProfileXMLService.class);
 
     @Resource
@@ -45,25 +45,26 @@ public class ImportUserProfileXMLService extends ImportXMLService {
     @EJB
     private PersonProfileBean personProfileBean;
 
-	@EJB
-	private EventObjectFactory eventObjectFactory;
+    @EJB
+    private EventObjectFactory eventObjectFactory;
 
     @EJB
     private ConfigBean configBean;
 
-    public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
-        if (listener != null) {
-            listener.begin();
-        }
+    public void process(Long sessionId, ImportListener<PersonProfile> listener, String name, InputStream inputStream,
+                        Locale locale, Date beginDate, Date endDate) {
+        listener.begin();
 
         Date importDate = new Date();
         List<PersonProfile> docDictionaries = Lists.newArrayList();
+
         try {
             org.w3c.dom.Document document = getDocument(inputStream);
             processDocument(sessionId, "ROW", beginDate, endDate, importDate, docDictionaries, document);
             processDocument(sessionId, "row", beginDate, endDate, importDate, docDictionaries, document);
 
             userTransaction.begin();
+
             try{
                 for (PersonProfile personProfile : docDictionaries) {
                     personProfile.setSessionId(sessionId);
@@ -78,9 +79,7 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 
                     personProfileBean.save(personProfile, locale != null? locale: getSystemLocale());
 
-                    if (listener != null) {
-                        listener.getChildImportListener(personProfile).completed();
-                    }
+                    listener.processed(personProfile);
 
                     log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
                             new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
@@ -93,14 +92,10 @@ public class ImportUserProfileXMLService extends ImportXMLService {
             }
             userTransaction.commit();
 
-            if (listener != null) {
-                listener.completed();
-            }
+            listener.completed();
         } catch (Throwable th) {
             log.warn("Cancel import user profile: " + name, th);
-            if (listener != null) {
-                listener.cancel();
-            }
+            listener.error();
         }
     }
 
