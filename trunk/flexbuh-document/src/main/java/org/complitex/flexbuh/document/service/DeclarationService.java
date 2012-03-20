@@ -1,9 +1,11 @@
 package org.complitex.flexbuh.document.service;
 
 import org.apache.fop.apps.Driver;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.template.TemplateFO;
 import org.complitex.flexbuh.common.entity.template.TemplateXSL;
 import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.util.ZipUtil;
 import org.complitex.flexbuh.document.entity.*;
 import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.complitex.flexbuh.document.exception.DeclarationParseException;
@@ -43,9 +45,10 @@ import java.util.zip.ZipOutputStream;
 public class DeclarationService {
     private final static Logger log = LoggerFactory.getLogger(DeclarationService.class);
 
-    private final static int[] BEST_BUF = {0x0E8, 0x0D5, 1, 3, 0x0C3, 0x0C1, 0x83, 0x3D, 0x0B7, 0x0F0, 0x41, 5, 7, 0x72, 0x10, 0x0E8};
+    private final static int[] BEST_BUF = {0x0E8, 0x0D5, 1, 3, 0x0C3, 0x0C1, 0x83, 0x3D, 0x0B7, 0x0F0, 0x41, 5, 7, 0x72,
+            0x10, 0x0E8};
 
-    static final int BUFFER = 2048;
+    private final static int BUFFER = 8192;
 
     @EJB
     private DeclarationBean declarationBean;
@@ -285,30 +288,24 @@ public class DeclarationService {
     }
 
     public void writeXmlZip(List<Declaration> declarations, OutputStream outputStream) throws DeclarationZipException {
-        try {
-            ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(outputStream));
-
-            byte data[] = new byte[BUFFER];
-
-            for (Declaration declaration : declarations){
-                String xml = getString(declaration);
-
-                BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(xml.getBytes("UTF-8")), BUFFER);
-
-                ZipEntry zipEntry = new ZipEntry(declaration.getFileName());
-
-                zipOutputStream.putNextEntry(zipEntry);
-                int count;
-                while((count = inputStream.read(data, 0, BUFFER)) != -1) {
-                    zipOutputStream.write(data, 0, count);
-                }
-                inputStream.close();
-            }
-
-            zipOutputStream.close();
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(outputStream))){
+            writeXmlZip(declarations, zipOutputStream, null);
         } catch (Exception e) {
             throw new DeclarationZipException("Ошибка создания архива XML документов", e);
         }
+    }
+
+    public void writeXmlZip(List<Declaration> declarations, ZipOutputStream zipOutputStream, String dir)
+            throws DeclarationParseException, IOException {
+        for (Declaration declaration : declarations){
+            ZipUtil.writeZip(new ByteArrayInputStream(getString(declaration).getBytes("UTF-8")), zipOutputStream, dir,
+                    declaration.getFileName());
+        }
+    }
+
+    public void writeXmlZip(Long sessionId, ZipOutputStream zipOutputStream, String dir)
+            throws IOException, DeclarationParseException {
+        writeXmlZip(declarationBean.getAllDeclarations(sessionId), zipOutputStream, dir);
     }
 
     public void writePdfZip(List<Declaration> declarations, OutputStream outputStream) throws DeclarationZipException {
@@ -321,7 +318,8 @@ public class DeclarationService {
                 ByteArrayOutputStream pdf = new ByteArrayOutputStream();
                 writePdf(declaration, pdf);
 
-                BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(pdf.toByteArray()), BUFFER);
+                BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(pdf.toByteArray()),
+                        BUFFER);
 
                 ZipEntry zipEntry = new ZipEntry(declaration.getFileName().replace(".xml",".pdf"));
 
@@ -377,5 +375,32 @@ public class DeclarationService {
         filter.setPersonProfileId(declaration.getPersonProfileId());
 
         return declarationBean.getDeclarationsCount(filter) > 0;
+    }
+
+    public Declaration save(Long sessionId, List<PersonProfile> personProfiles, String fileName, InputStream inputStream) throws DeclarationParseException {
+
+        Declaration declaration = getDeclaration(inputStream);
+
+        declaration.setSessionId(sessionId);
+
+        //Person profile by file name
+        try{
+            Integer tin = Integer.valueOf(fileName.substring(4, 14));
+
+            for (PersonProfile pp : personProfiles){
+                if (tin.equals(pp.getTin())){
+                    declaration.setPersonProfile(pp);
+                    declaration.setPersonProfileId(pp.getId());
+                    break;
+                }
+            }
+        }catch (Exception e){
+            //no tin in file name
+        }
+
+        validate(declaration);
+        check(declaration);
+
+        return declaration;
     }
 }

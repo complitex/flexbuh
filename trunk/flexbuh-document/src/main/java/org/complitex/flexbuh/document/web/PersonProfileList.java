@@ -24,7 +24,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.common.entity.ApplicationConfig;
 import org.complitex.flexbuh.common.entity.PersonProfile;
-import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.service.ConfigBean;
@@ -34,6 +33,7 @@ import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.StringUtil;
+import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -185,7 +183,7 @@ public class PersonProfileList extends TemplatePage {
 
                                 final ThreadLocal<Boolean> canceled = new ThreadLocal<Boolean>();
                                 canceled.set(false);
-                                
+
                                 final AtomicInteger count = new AtomicInteger(0);
 
                                 importUserProfileXMLService.process(getSessionId(), new AbstractImportListener() {
@@ -264,27 +262,14 @@ public class PersonProfileList extends TemplatePage {
                         new AbstractResourceStreamWriter() {
                             @Override
                             public void write(Response output) {
-                                List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
+                                try {
+                                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
-                                for(PersonProfile pp : personProfiles){
-                                    if (PersonType.PHYSICAL_PERSON.equals(pp.getPersonType())){
-                                        pp.mergePhysicalNames();
-                                    }
-                                }
+                                    OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
-                                if (!personProfiles.isEmpty()) {
-                                    try {
-                                        OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
-
-                                        JAXBContext context = JAXBContext.newInstance(Settings.class);
-                                        Marshaller marshaller = context.createMarshaller();
-                                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-                                        marshaller.marshal(new Settings(personProfiles), os);
-                                    } catch (Exception e) {
-                                        log.error("Cannot export person profile to xml: {}",
-                                                new Object[]{e, EventCategory.EXPORT});
-                                    }
+                                    XmlUtil.writeXml(Settings.class, new Settings(personProfiles), os);
+                                } catch (Exception e) {
+                                    log.error("Cannot export person profile to xml: {}", new Object[]{e, EventCategory.EXPORT});
                                 }
                             }
 

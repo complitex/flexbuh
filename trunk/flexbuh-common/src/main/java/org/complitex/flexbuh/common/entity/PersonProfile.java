@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.common.service.FIOBean;
+import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -71,15 +71,15 @@ public class PersonProfile extends SessionObject {
     private boolean selected;
 
     private Long taxInspectionId;
-    
+
     public void parsePhysicalNames(){
-        lastName = FIOBean.getLastName(name);
-        firstName = FIOBean.getFirstName(name);
-        middleName = FIOBean.getMiddleName(name);
+        lastName = FIOUtil.getLastName(name);
+        firstName = FIOUtil.getFirstName(name);
+        middleName = FIOUtil.getMiddleName(name);
     }
-    
+
     public void mergePhysicalNames(){
-        name = FIOBean.getFIO(lastName, firstName, middleName);
+        name = FIOUtil.getFIO(lastName, firstName, middleName);
     }
 
     @XmlJavaTypeAdapter(PersonTypeAdapter.class)
@@ -155,7 +155,7 @@ public class PersonProfile extends SessionObject {
         this.lastName = lastName;
     }
 
-    @XmlTransient
+    @XmlElement(name = "FB_PROFILE_NAME")
     public String getProfileName() {
         return profileName;
     }
@@ -274,13 +274,13 @@ public class PersonProfile extends SessionObject {
 
     @XmlElement(name = "DFIO")
     public String getDFio() {
-        return FIOBean.getFIO(dLastName, dFirstName, dMiddleName);
+        return FIOUtil.getFIO(dLastName, dFirstName, dMiddleName);
     }
 
     public void setDFio(String dFio) {
-        dLastName = FIOBean.getLastName(dFio);
-        dFirstName = FIOBean.getFirstName(dFio);
-        dMiddleName = FIOBean.getMiddleName(dFio);
+        dLastName = FIOUtil.getLastName(dFio);
+        dFirstName = FIOUtil.getFirstName(dFio);
+        dMiddleName = FIOUtil.getMiddleName(dFio);
     }
 
     @XmlTransient
@@ -321,13 +321,13 @@ public class PersonProfile extends SessionObject {
 
     @XmlElement(name = "BFIO")
     public String getBFio() {
-        return FIOBean.getFIO(bLastName, bFirstName, bMiddleName);
+        return FIOUtil.getFIO(bLastName, bFirstName, bMiddleName);
     }
 
     public void setBFio(String bFio) {
-        bLastName = FIOBean.getLastName(bFio);
-        bFirstName = FIOBean.getFirstName(bFio);
-        bMiddleName = FIOBean.getMiddleName(bFio);
+        bLastName = FIOUtil.getLastName(bFio);
+        bFirstName = FIOUtil.getFirstName(bFio);
+        bMiddleName = FIOUtil.getMiddleName(bFio);
     }
 
     @XmlTransient

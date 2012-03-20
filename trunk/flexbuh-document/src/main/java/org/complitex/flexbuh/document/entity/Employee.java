@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.SessionObject;
-import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.util.DateUtil;
+import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
 import java.util.Date;
@@ -57,13 +57,13 @@ public class Employee extends SessionObject{
 
     @XmlElement(name = "HNAME")
     public String getHname() {
-        return FIOBean.getFIO(lastName, firstName, middleName);
+        return FIOUtil.getFIO(lastName, firstName, middleName);
     }
 
     public void setHname(String hname) {
-        lastName = FIOBean.getLastName(hname);
-        firstName = FIOBean.getFirstName(hname);
-        middleName = FIOBean.getMiddleName(hname);
+        lastName = FIOUtil.getLastName(hname);
+        firstName = FIOUtil.getFirstName(hname);
+        middleName = FIOUtil.getMiddleName(hname);
     }
 
     @XmlTransient

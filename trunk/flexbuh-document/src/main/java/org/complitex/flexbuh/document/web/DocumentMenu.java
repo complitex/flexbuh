@@ -12,5 +12,6 @@ public class DocumentMenu extends ResourceTemplateMenu{
         add("declaration_list", DeclarationList.class);
         add("counterpart_list", CounterpartList.class);
         add("employee_list", EmployeeList.class);
+        add("account", AccountPage.class);
     }
 }

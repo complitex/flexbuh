@@ -48,6 +48,11 @@
         <include refid="selectEmployeesWhere"/>
     </select>
 
+    <select id="selectAllEmployees" parameterType="long" resultMap="employeeResultMap">
+        select e.*, concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) as `hname`
+          from `employee` e where e.`session_id` = #{sessionId}
+    </select>
+
     <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
         insert into `employee` (`session_id`, `person_profile_id`, `htin`, `last_name`, `first_name`, `middle_name`,
          `hbirthday`, `hdate_in`, `hdate_out`)

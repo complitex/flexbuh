@@ -7,6 +7,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -17,6 +20,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -137,5 +141,13 @@ public class XmlUtil {
         }
 
         return parent;
+    }
+
+    public static <T> void writeXml(Class<T> _class, T jaxbElement, OutputStream outputStream) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(_class);
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        marshaller.marshal(jaxbElement, outputStream);
     }
 }

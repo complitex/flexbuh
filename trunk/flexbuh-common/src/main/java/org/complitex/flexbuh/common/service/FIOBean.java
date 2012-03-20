@@ -1,15 +1,9 @@
 package org.complitex.flexbuh.common.service;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.complitex.flexbuh.common.entity.*;
 import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Locale;
 
@@ -82,28 +76,5 @@ public class FIOBean extends AbstractBean {
             return;
         }
         ldo.setNameUk(name);
-    }
-
-    public static String getFIO(String lastName, String firstName, String middleName) {
-        return (lastName != null? lastName: "")
-                + " " +
-               (firstName != null? firstName: "")
-                + " " +
-               (middleName != null? middleName: "");
-    }
-
-    public static String getLastName(String fio) {
-        String[] resultSplit = fio.split(" ", 2);
-        return resultSplit.length > 0 && StringUtils.isNotEmpty(resultSplit[0])? resultSplit[0]: null;
-    }
-
-    public static String getFirstName(String fio) {
-        String[] resultSplit = fio.split(" ", 3);
-        return resultSplit.length > 1 && StringUtils.isNotEmpty(resultSplit[1])? resultSplit[1]: null;
-    }
-
-    public static String getMiddleName(String fio) {
-        String[] resultSplit = fio.split(" ", 3);
-        return resultSplit.length > 2 && StringUtils.isNotEmpty(resultSplit[2])? resultSplit[2]: null;
     }
 }

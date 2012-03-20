@@ -15,6 +15,8 @@ import java.util.List;
 @XmlRootElement(name = "ROWSET")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class Settings {
+    public final static String FILE_NAME = "SETTINGS.XML";
+
     @XmlElement(name = "ROW")
     private List<PersonProfile> personProfiles;
 

@@ -44,6 +44,11 @@ public class EmployeeBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectEmployeesCount", filter);
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Employee> getAllEmployees(Long sessionId){
+        return sqlSession().selectList("selectAllEmployees", sessionId);
+    }
+
     public void save(Employee employee, Locale locale){
         fioBean.createFIO(employee.getFirstName(), employee.getMiddleName(), employee.getLastName(), locale);
 

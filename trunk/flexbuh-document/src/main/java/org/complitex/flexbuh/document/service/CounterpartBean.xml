@@ -42,6 +42,11 @@
         <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
+    <select id="selectAllCounterparts" parameterType="long" resultMap="counterpartResultMap">
+        select c.*, concat_ws(' ', c.`last_name`, c.`first_name`, c.`middle_name`) as `hname`
+          from `counterpart` c where c.`session_id` = #{sessionId}
+    </select>
+
     <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
             resultType="int">
         select count(*) from `counterpart` c left join `person_profile` pp on (c.`person_profile_id` = pp.`id`)

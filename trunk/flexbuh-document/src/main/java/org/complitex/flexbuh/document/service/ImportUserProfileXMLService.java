@@ -52,7 +52,9 @@ public class ImportUserProfileXMLService extends ImportXMLService {
     private ConfigBean configBean;
 
     public void process(Long sessionId, ImportListener listener, String name, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
-        listener.begin();
+        if (listener != null) {
+            listener.begin();
+        }
 
         Date importDate = new Date();
         List<PersonProfile> docDictionaries = Lists.newArrayList();
@@ -65,7 +67,10 @@ public class ImportUserProfileXMLService extends ImportXMLService {
             try{
                 for (PersonProfile personProfile : docDictionaries) {
                     personProfile.setSessionId(sessionId);
-                    personProfile.setProfileName(personProfile.getName());
+
+                    if (personProfile.getProfileName() == null) {
+                        personProfile.setProfileName(personProfile.getName());
+                    }
 
                     if (PersonType.PHYSICAL_PERSON.equals(personProfile.getPersonType())){
                         personProfile.parsePhysicalNames();
@@ -73,9 +78,11 @@ public class ImportUserProfileXMLService extends ImportXMLService {
 
                     personProfileBean.save(personProfile, locale != null? locale: getSystemLocale());
 
-                    listener.getChildImportListener(personProfile).completed();
+                    if (listener != null) {
+                        listener.getChildImportListener(personProfile).completed();
+                    }
 
-					log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
+                    log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
                             new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
                             eventObjectFactory.getEventNewObject(personProfile)});
                 }
@@ -86,10 +93,14 @@ public class ImportUserProfileXMLService extends ImportXMLService {
             }
             userTransaction.commit();
 
-            listener.completed();
+            if (listener != null) {
+                listener.completed();
+            }
         } catch (Throwable th) {
             log.warn("Cancel import user profile: " + name, th);
-            listener.cancel();
+            if (listener != null) {
+                listener.cancel();
+            }
         }
     }
 
@@ -180,6 +191,9 @@ public class ImportUserProfileXMLService extends ImportXMLService {
                     break;
                 case "NUMPDVSVD":
                     personProfile.setNumPdvSvd(value);
+                    break;
+                case "FB_PROFILE_NAME":
+                    personProfile.setProfileName(value);
                     break;
             }
 

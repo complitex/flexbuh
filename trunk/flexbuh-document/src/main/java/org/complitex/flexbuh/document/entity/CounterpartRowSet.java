@@ -13,8 +13,17 @@ import java.util.List;
 @XmlRootElement(name = "rowset")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class CounterpartRowSet {
+    public final static String FILE_NAME = "spr_contragents.xml";
+
     @XmlElement(name = "row")
     private List<Counterpart> counterparts;
+
+    public CounterpartRowSet() {
+    }
+
+    public CounterpartRowSet(List<Counterpart> counterparts) {
+        this.counterparts = counterparts;
+    }
 
     public List<Counterpart> getCounterparts() {
         return counterparts;

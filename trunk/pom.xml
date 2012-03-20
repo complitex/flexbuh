@@ -22,7 +22,7 @@
 
     <properties>
         <!-- wicket version -->
-        <wicket.version>1.5.4</wicket.version>
+        <wicket.version>1.5.5</wicket.version>
 
         <!-- source encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -147,12 +147,12 @@
             <dependency>
                 <groupId>org.odlabs.wiquery</groupId>
                 <artifactId>wiquery-core</artifactId>
-                <version>1.5.3</version>
+                <version>1.5.4</version>
             </dependency>
             <dependency>
                 <groupId>org.odlabs.wiquery</groupId>
                 <artifactId>wiquery-jquery-ui</artifactId>
-                <version>1.5.3</version>
+                <version>1.5.4</version>
             </dependency>
 
             <!-- Java EE API -->
