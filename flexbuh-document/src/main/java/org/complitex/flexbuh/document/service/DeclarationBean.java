@@ -82,6 +82,11 @@ public class DeclarationBean extends AbstractBean{
         return sqlSession().selectList(NS + ".selectDeclarations", filter);
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Declaration> getAllDeclarations(Long sessionId){
+        return sqlSession().selectList(NS + ".selectAllDeclarations", sessionId);
+    }
+
     public Integer getDeclarationsCount(DeclarationFilter filter){
         return (Integer) sqlSession().selectOne(NS + ".selectDeclarationsCount", filter);
     }

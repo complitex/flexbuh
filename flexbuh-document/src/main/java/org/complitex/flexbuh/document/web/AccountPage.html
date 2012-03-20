@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h1><wicket:message key="title"/></h1>
+
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="form">
+        <table>
+            <tr>
+                <td>
+                    <input type="file" wicket:id="upload_field"/>
+                </td>
+                <td>
+                    <input wicket:id="upload" wicket:message="value:upload" type="submit" class="btnBig"/>
+                </td>
+            </tr>
+        </table>
+
+        <br/>
+
+        <input wicket:id="download" wicket:message="value:download" type="submit" class="btnBig"/>
+    </form>
+</wicket:extend>
+</body>
+</html>

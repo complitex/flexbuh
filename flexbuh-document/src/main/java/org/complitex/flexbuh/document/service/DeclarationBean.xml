@@ -120,6 +120,12 @@
         select count(*) <include refid = "selectDeclarationsFromWhere"/>
     </select>
 
+    <select id="selectAllDeclarations" resultMap="declarationResultMap" parameterType="long">
+        select de.*, do.`name_uk` as `name` from `declaration` de
+            left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+        where de.`session_id` = #{sessionId}
+    </select>
+
     <delete id="deleteDeclaration" parameterType="long">
         delete from `declaration` where `id` = #{id}
     </delete>

@@ -44,6 +44,11 @@ public class CounterpartBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectCounterpartCount", filter);
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Counterpart> getAllCounterparts(Long sessionId){
+        return sqlSession().selectList("selectAllCounterparts", sessionId);
+    }
+
     public void save(Counterpart counterpart, Locale locale) {
         fioBean.createFIO(counterpart.getFirstName(), counterpart.getMiddleName(), counterpart.getLastName(), locale);
 

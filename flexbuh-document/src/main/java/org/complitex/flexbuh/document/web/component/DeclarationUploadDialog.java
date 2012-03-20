@@ -63,32 +63,11 @@ public class DeclarationUploadDialog extends TemplatePanel {
                 for (FileUpload fileUpload : fileUploads){
                     String fileName = fileUpload.getClientFileName();
 
-                    PersonProfile personProfile = null;
-
-                    try{
-                        Integer tin = Integer.valueOf(fileName.substring(4, 14));
-
-                        for (PersonProfile pp : personProfiles){
-                            if (tin.equals(pp.getTin())){
-                                personProfile = pp;
-                                break;
-                            }
-                        }
-                    }catch (Exception e){
-                        //no tin in file name
-                    }
-
                     try {
-                        Declaration declaration = declarationService.getDeclaration(fileUpload.getInputStream());
+                        Declaration declaration = declarationService.save(getSessionId(), personProfiles, fileName,
+                                fileUpload.getInputStream());
 
-                        declaration.setSessionId(getSessionId());
-                        declaration.setPersonProfileId(personProfile.getId());
-                        declaration.setPersonProfile(personProfile);
-
-                        declarationService.validate(declaration);
-                        declarationService.check(declaration);
-
-                        declarationBean.save(declaration);
+                        PersonProfile personProfile = declaration.getPersonProfile();
 
                         String info = getStringFormat("info_declaration_upload",
                                 fileName,

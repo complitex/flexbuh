@@ -13,6 +13,15 @@ import java.util.List;
 @XmlRootElement(name = "rowset")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class EmployeeRowSet {
+    public final static String FILE_NAME = "spr_works.xml";
+
+    public EmployeeRowSet() {
+    }
+
+    public EmployeeRowSet(List<Employee> employees) {
+        this.employees = employees;
+    }
+
     @XmlElement(name = "row")
     private List<Employee> employees;
 
