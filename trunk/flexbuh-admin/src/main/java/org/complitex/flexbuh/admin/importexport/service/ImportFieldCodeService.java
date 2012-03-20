@@ -36,7 +36,8 @@ public class ImportFieldCodeService extends ImportXMLService {
     private UserTransaction userTransaction;
 
     @Override
-    public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Locale locale, Date beginDate, Date endDate) {
+    public void process(Long sessionId, ImportListener listener, String fileName, InputStream inputStream, Locale locale,
+                        Date beginDate, Date endDate) {
         try {
             listener.begin();
 
@@ -55,7 +56,7 @@ public class ImportFieldCodeService extends ImportXMLService {
             listener.completed();
         } catch (Exception e) {
             log.warn("Ошибка импорта справочника Поля ввода", e);
-            listener.cancel();
+            listener.error();
         }
     }
 }

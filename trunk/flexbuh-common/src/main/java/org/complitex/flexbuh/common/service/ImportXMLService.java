@@ -13,11 +13,9 @@ import java.io.InputStream;
  * @author Pavel Sknar
  *         Date: 15.08.11 12:01
  */
-public abstract class ImportXMLService implements ImportFileService {
-
+public abstract class ImportXMLService<T> implements ImportFileService<T> {
 	protected Document getDocument(InputStream inputStream) throws IOException, SAXException, ParserConfigurationException {
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		return documentBuilder.parse(inputStream);
     }
-
 }
