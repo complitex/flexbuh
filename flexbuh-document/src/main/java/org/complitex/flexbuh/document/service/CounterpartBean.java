@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -49,8 +48,8 @@ public class CounterpartBean extends AbstractBean{
         return sqlSession().selectList("selectAllCounterparts", sessionId);
     }
 
-    public void save(Counterpart counterpart, Locale locale) {
-        fioBean.createFIO(counterpart.getFirstName(), counterpart.getMiddleName(), counterpart.getLastName(), locale);
+    public void save(Counterpart counterpart) {
+        fioBean.createFIO(counterpart.getFirstName(), counterpart.getMiddleName(), counterpart.getLastName());
 
         if (counterpart.getId() == null){
             sqlSession().insert("insertCounterpart", counterpart);
@@ -63,7 +62,7 @@ public class CounterpartBean extends AbstractBean{
         sqlSession().delete("deleteCounterpart", id);
     }
 
-    public int save(Long sessionId, InputStream inputStream, Locale locale) {
+    public int save(Long sessionId, InputStream inputStream) {
         try {
             CounterpartRowSet counterpartRowSet = (CounterpartRowSet) JAXBContext
                     .newInstance(CounterpartRowSet.class)
@@ -77,7 +76,7 @@ public class CounterpartBean extends AbstractBean{
                     counterpart.setSessionId(sessionId);
                     counterpart.setPersonProfileId(personalProfileId);
 
-                    save(counterpart, locale);
+                    save(counterpart);
                 }
 
                 return counterpartRowSet.getCounterparts().size();

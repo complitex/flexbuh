@@ -270,7 +270,7 @@ public class PersonProfileEdit extends FormTemplatePage {
                 }
 
                 personProfile.setSessionId(getSessionId());
-                personProfileBean.save(personProfile, getLocale());
+                personProfileBean.save(personProfile);
 
                 info(getString("profile_saved"));
 

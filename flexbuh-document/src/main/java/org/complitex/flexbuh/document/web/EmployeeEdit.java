@@ -8,7 +8,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -69,7 +68,7 @@ public class EmployeeEdit extends FormTemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                employeeBean.save(form.getModelObject(), getLocale());
+                employeeBean.save(form.getModelObject());
 
                 setResponsePage(EmployeeList.class);
 

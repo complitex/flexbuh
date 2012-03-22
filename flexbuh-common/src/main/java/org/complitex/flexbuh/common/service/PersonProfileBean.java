@@ -2,14 +2,12 @@ package org.complitex.flexbuh.common.service;
 
 import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.PersonProfile;
-import org.complitex.flexbuh.common.service.user.UserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -42,11 +40,10 @@ public class PersonProfileBean extends AbstractBean {
         return (Integer) sqlSession().selectOne(NS + ".selectPersonProfilesCount", sessionId);
     }
 
-    public void save(PersonProfile personProfile, Locale locale){
-
-        fioBean.createFIO(personProfile.getFirstName(), personProfile.getMiddleName(), personProfile.getLastName(), locale);
-        fioBean.createFIO(personProfile.getBFirstName(), personProfile.getBMiddleName(), personProfile.getBLastName(), locale);
-        fioBean.createFIO(personProfile.getDFirstName(), personProfile.getDMiddleName(), personProfile.getDLastName(), locale);
+    public void save(PersonProfile personProfile){
+        fioBean.createFIO(personProfile.getFirstName(), personProfile.getMiddleName(), personProfile.getLastName());
+        fioBean.createFIO(personProfile.getBFirstName(), personProfile.getBMiddleName(), personProfile.getBLastName());
+        fioBean.createFIO(personProfile.getDFirstName(), personProfile.getDMiddleName(), personProfile.getDLastName());
 
         if (personProfile.getId() == null) {
             sqlSession().insert(NS + ".insertPersonProfile", personProfile);

@@ -1,8 +1,5 @@
 package org.complitex.flexbuh.document.service;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
-import org.complitex.flexbuh.common.entity.ApplicationConfig;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -13,18 +10,17 @@ import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.ImportXMLService;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.document.entity.Settings;
+import org.complitex.flexbuh.document.exception.ImportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.*;
+import javax.transaction.UserTransaction;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -55,13 +51,8 @@ public class ImportUserProfileXMLService extends ImportXMLService<PersonProfile>
                         Locale locale, Date beginDate, Date endDate) {
         listener.begin();
 
-        Date importDate = new Date();
-        List<PersonProfile> docDictionaries = Lists.newArrayList();
-
         try {
-            org.w3c.dom.Document document = getDocument(inputStream);
-            processDocument(sessionId, "ROW", beginDate, endDate, importDate, docDictionaries, document);
-            processDocument(sessionId, "row", beginDate, endDate, importDate, docDictionaries, document);
+            List<PersonProfile> docDictionaries = getPersonProfiles(inputStream);
 
             userTransaction.begin();
 
@@ -77,7 +68,7 @@ public class ImportUserProfileXMLService extends ImportXMLService<PersonProfile>
                         personProfile.parsePhysicalNames();
                     }
 
-                    personProfileBean.save(personProfile, locale != null? locale: getSystemLocale());
+                    personProfileBean.save(personProfile);
 
                     listener.processed(personProfile);
 
@@ -99,105 +90,17 @@ public class ImportUserProfileXMLService extends ImportXMLService<PersonProfile>
         }
     }
 
-    private void processDocument(Long sessionId, String tagName, Date beginDate, Date endDate, Date importDate,
-                                 List<PersonProfile> docDictionaries, Document document)
-            throws ParseException, SystemException, NotSupportedException, RollbackException, HeuristicRollbackException,
-            HeuristicMixedException {
-        NodeList nodeRows = document.getElementsByTagName(tagName);
-        for (int i = 0; i < nodeRows.getLength(); i++) {
-            docDictionaries.add(processDictionaryNode(nodeRows.item(i), importDate, beginDate, endDate));
-        }
-    }
+    public List<PersonProfile> getPersonProfiles(InputStream inputStream) throws ImportException {
+        try {
+            Settings settings = (Settings) JAXBContext.newInstance(Settings.class)
+                    .createUnmarshaller()
+                    .unmarshal(inputStream);
 
-    private PersonProfile processDictionaryNode(Node contentNode, Date importDate, Date beginDate, Date endDate) throws ParseException {
-        PersonProfile personProfile = new PersonProfile();
-
-        NamedNodeMap attributes = contentNode.getAttributes();
-        for (int i = 0; i < attributes.getLength(); i++) {
-            Node currentAttribute = attributes.item(i);
-            if (StringUtils.equalsIgnoreCase(currentAttribute.getNodeName(), "selected")) {
-                personProfile.setSelected(Boolean.parseBoolean(currentAttribute.getTextContent()));
-            }
+            return settings.getPersonProfiles();
+        } catch (JAXBException e) {
+            log.error("Ошибка обработки файла профилей", e);
         }
 
-        NodeList contentNodeRow = contentNode.getChildNodes();
-        for (int j = 0; j < contentNodeRow.getLength(); j++) {
-            Node currentNode = contentNodeRow.item(j);
-
-            String value = currentNode.getTextContent();
-
-            switch (currentNode.getNodeName().toUpperCase()){
-                case "NAME":
-                    personProfile.setName(value);
-                    break;
-                case "TIN":
-                    personProfile.setTin(Integer.valueOf(value));
-                    break;
-                case "C_STI":
-                    personProfile.setCSti(Integer.parseInt(value));
-                    break;
-                case "C_STI_TIN":
-                    personProfile.setCStiTin(Integer.valueOf(value));
-                    break;
-                case "KVED":
-                    personProfile.setKved(value);
-                    break;
-                case "KOATUU":
-                    personProfile.setKoatuu(value);
-                    break;
-                case "PERSON_TYPE":
-                    personProfile.setPersonType(PersonType.get(Integer.parseInt(value)));
-                    break;
-                case "CONTRACT_DATE":
-                    //todo
-                    break;
-                case "CONTRACT_NUMBER":
-                    //todo
-                    break;
-                case "ZIPCODE":
-                    personProfile.setZipCode(value);
-                    break;
-                case "ADRESS":
-                    personProfile.setAddress(value);
-                    break;
-                case "PHONE":
-                    personProfile.setPhone(value);
-                    break;
-                case "FAX":
-                    personProfile.setFax(value);
-                    break;
-                case "EMAIL":
-                    personProfile.setEmail(value);
-                    break;
-                case "DFIO":
-                    personProfile.setDFio(value);
-                    break;
-                case "BFIO":
-                    personProfile.setBFio(value);
-                    break;
-                case "DINN":
-                    personProfile.setDInn(value);
-                    break;
-                case "BINN":
-                    personProfile.setBInn(value);
-                    break;
-                case "IPN":
-                    personProfile.setIpn(value);
-                    break;
-                case "NUMPDVSVD":
-                    personProfile.setNumPdvSvd(value);
-                    break;
-                case "FB_PROFILE_NAME":
-                    personProfile.setProfileName(value);
-                    break;
-            }
-
-        }
-
-        return personProfile;
-    }
-
-    private Locale getSystemLocale() {
-        return new Locale(configBean.getString(ApplicationConfig.SYSTEM_LOCALE, true));
+        return null;
     }
 }

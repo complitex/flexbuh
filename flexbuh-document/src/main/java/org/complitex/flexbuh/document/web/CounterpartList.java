@@ -6,7 +6,10 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -152,7 +155,6 @@ public class CounterpartList extends TemplatePage{
         add(uploadDialog);
 
         final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
-        final IModel<String> fileLocaleModel = new Model<>(getIsoCodeSystemLocale());
 
         Form fileUploadForm = new Form("upload_form");
 
@@ -166,7 +168,7 @@ public class CounterpartList extends TemplatePage{
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        count += counterpartBean.save(getSessionId(), fileUpload.getInputStream(), new Locale(fileLocaleModel.getObject()));
+                        count += counterpartBean.save(getSessionId(), fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);
@@ -189,12 +191,6 @@ public class CounterpartList extends TemplatePage{
         uploadDialog.add(fileUploadForm);
 
         fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
-        fileUploadForm.add(new DropDownChoice<String>("file_locale", fileLocaleModel, ApplicationConfig.SYSTEM_LOCALE.getAllowedValues()) {
-            @Override
-            protected boolean localizeDisplayValues() {
-                return true;
-            }
-        });
     }
 
     @Override
