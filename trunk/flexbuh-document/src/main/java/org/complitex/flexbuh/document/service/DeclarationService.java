@@ -401,6 +401,8 @@ public class DeclarationService {
         validate(declaration);
         check(declaration);
 
+        declarationBean.save(declaration);
+
         return declaration;
     }
 }

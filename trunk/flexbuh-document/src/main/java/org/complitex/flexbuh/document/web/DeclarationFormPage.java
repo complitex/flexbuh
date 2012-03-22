@@ -51,7 +51,7 @@ public class DeclarationFormPage extends TemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
-    private final Declaration declaration;
+    private Declaration declaration;
     
     private AddLinkedDeclarationDialog addLinkedDeclarationDialog;
 

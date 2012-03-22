@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -49,8 +48,8 @@ public class EmployeeBean extends AbstractBean{
         return sqlSession().selectList("selectAllEmployees", sessionId);
     }
 
-    public void save(Employee employee, Locale locale){
-        fioBean.createFIO(employee.getFirstName(), employee.getMiddleName(), employee.getLastName(), locale);
+    public void save(Employee employee){
+        fioBean.createFIO(employee.getFirstName(), employee.getMiddleName(), employee.getLastName());
 
         if (employee.getId() == null){
             sqlSession().insert("insertEmployee", employee);
@@ -63,7 +62,7 @@ public class EmployeeBean extends AbstractBean{
         sqlSession().delete("deleteEmployee", id);
     }
 
-    public int save(Long sessionId, InputStream inputStream, Locale locale) {
+    public int save(Long sessionId, InputStream inputStream) {
         try {
             EmployeeRowSet employeeRowSet = (EmployeeRowSet) JAXBContext
                     .newInstance(EmployeeRowSet.class)
@@ -77,7 +76,7 @@ public class EmployeeBean extends AbstractBean{
                     employee.setSessionId(sessionId);
                     employee.setPersonProfileId(personalProfileId);
 
-                    save(employee, locale);
+                    save(employee);
                 }
 
                 return employeeRowSet.getEmployees().size();

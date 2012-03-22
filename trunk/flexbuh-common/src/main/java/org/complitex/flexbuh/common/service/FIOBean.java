@@ -14,10 +14,15 @@ import java.util.Locale;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class FIOBean extends AbstractBean {
+    public static final Locale DEFAULT_LOCALE = new Locale("ru");
 
     public static final String NS = FIOBean.class.getName();
 
     public static final int SIZE = 10;
+
+    public void createFIO(String firstName, String middleName, String lastName) {
+        createFIO(firstName, middleName, lastName, DEFAULT_LOCALE);
+    }
 
     @Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

@@ -17,41 +17,23 @@ public class PersonProfile extends SessionObject {
     private PersonType personType = PersonType.JURIDICAL_PERSON; // тип плательщика
 
     private Integer cSti; // код ДПІ
-
     private Integer cStiTin; //Код ЄДРПОУ ДПІ
-
     private Integer tin; // код ЕДРПОУ (Единый государственный реестр предприятий и организаций Украины)
-
     private String name;
-
     private String firstName;
-
     private String middleName;
-
     private String lastName;
-
     private String profileName;
-
     private String numPdvSvd; // номер свидетельства ПДВ
-
     private String ipn; // индивидуальный налоговый номер
-
     private String kved; // код основного вида экономической деятельности(за КВЕД)
-
     private String koatuu; // КОАТУУ
-
     private Date contractDate; // договор об общей (совместной) деятельности (дата)
-
     private String contractNumber; // договор об общей (совместной) деятельности (номер)
-
     private String zipCode; // почтовый индекс
-
     private String address; // адрес
-
     private String phone; // телефон
-
     private String fax; // факс
-
     private String email; // e-mail
 
     private String dInn; // Код ДРФО директора
