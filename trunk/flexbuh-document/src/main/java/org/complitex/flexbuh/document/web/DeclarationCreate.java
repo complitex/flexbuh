@@ -241,9 +241,11 @@ public class DeclarationCreate extends FormTemplatePage{
                 declaration.setSessionId(getSessionId());
 
                 //Person profile
-                if (declaration.getPersonProfile() != null) {
+                PersonProfile pp = declaration.getPersonProfile();
+
+                if (pp != null) {
                     declaration.setPersonProfileId(declaration.getPersonProfile().getId());
-                    declaration.getHead().setTin(declaration.getPersonProfile().getTin());
+                    declaration.getHead().setTin(pp.getTin() != null ? pp.getTin() : 0);
                 }
 
                 //check duplicate

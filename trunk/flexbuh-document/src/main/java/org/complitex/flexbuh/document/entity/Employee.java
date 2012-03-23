@@ -37,7 +37,7 @@ public class Employee extends SessionObject{
         super(sessionId);
     }
 
-    @XmlTransient
+    @XmlElement(name = "FB_PERSON_PROFILE_ID")
     public Long getPersonProfileId() {
         return personProfileId;
     }
@@ -94,16 +94,28 @@ public class Employee extends SessionObject{
     }
 
     @XmlElement(name = "HBIRTHDAY")
+    public String getHbirthdayString(){
+        return DateUtil.getString(hbirthday);
+    }
+
     public void setHbirthdayString(String hbirthdayString) {
         hbirthday = DateUtil.getDate(hbirthdayString);
     }
 
     @XmlElement(name = "HDATE_IN")
+    public String getHdateInString(){
+        return DateUtil.getString(hdateIn);
+    }
+
     public void setHdateInString(String hdateInString) {
         hdateIn = DateUtil.getDate(hdateInString);
     }
 
     @XmlElement(name = "HDATE_OUT")
+    public String getHdateOutString(){
+        return DateUtil.getString(hdateOut);
+    }
+
     public void setHdateOutString(String hdateOutString) {
         hdateOut = DateUtil.getDate(hdateOutString);
     }

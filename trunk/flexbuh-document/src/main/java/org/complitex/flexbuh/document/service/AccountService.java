@@ -1,25 +1,23 @@
 package org.complitex.flexbuh.document.service;
 
 import com.google.common.io.ByteStreams;
-import org.complitex.flexbuh.common.entity.ApplicationConfig;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
-import org.complitex.flexbuh.common.service.ConfigBean;
+import org.complitex.flexbuh.common.io.NoClosableInputStream;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.util.ZipUtil;
-import org.complitex.flexbuh.document.entity.CounterpartRowSet;
-import org.complitex.flexbuh.document.entity.EmployeeRowSet;
-import org.complitex.flexbuh.document.entity.Settings;
+import org.complitex.flexbuh.document.entity.*;
 import org.complitex.flexbuh.document.exception.ImportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -43,9 +41,6 @@ public class AccountService {
     private DeclarationBean declarationBean;
 
     @EJB
-    private ImportUserProfileXMLService importUserProfileXMLService;
-
-    @EJB
     private PersonProfileBean personProfileBean;
 
     @EJB
@@ -53,9 +48,6 @@ public class AccountService {
 
     @EJB
     private EmployeeBean employeeBean;
-
-    @EJB
-    private ConfigBean configBean;
 
     public void writeAccountZip(Long sessionId, OutputStream outputStream){
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(outputStream))){
@@ -85,77 +77,119 @@ public class AccountService {
         }
     }
 
-    public void readAccountZip(Long sessionId, InputStream inputStream){
-        List<PersonProfile> allPersonProfiles = personProfileBean.getAllPersonProfiles(sessionId);
-
-        Locale locale = new Locale(configBean.getString(ApplicationConfig.SYSTEM_LOCALE, true));
-
+    public void readAccountZip(Long sessionId, InputStream inputStream) throws ImportException {
         try (BufferedInputStream buf = new BufferedInputStream(inputStream)) {
             byte[] data = ByteStreams.toByteArray(buf);
 
-            //PersonProfile
-            List<PersonProfile> personProfiles = null;
+            Map<Long, Long> personProfileIdMap = new HashMap<>();
 
+            //Person Profile
+            readPersonProfile(sessionId, data, personProfileIdMap);
+
+            //Counterpart, Employee, Declaration
             try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data))){
                 ZipEntry entry;
 
                 while((entry = zipInputStream.getNextEntry()) != null) {
-                    if (entry.getName().endsWith(Settings.FILE_NAME)){
-                        personProfiles = importUserProfileXMLService.getPersonProfiles(zipInputStream);
-                        break;
+                    String name = entry.getName();
+
+                    if (name.startsWith(XML_DIR)){
+                        readDeclaration(sessionId, zipInputStream, personProfileIdMap);
+                    } else if (name.contains(CounterpartRowSet.FILE_NAME)){
+                        readCounterpart(sessionId, zipInputStream, personProfileIdMap);
+                    } else if (name.contains(EmployeeRowSet.FILE_NAME)){
+                        readEmployee(sessionId, zipInputStream, personProfileIdMap);
                     }
                 }
             }
+        } catch (Exception e) {
+            throw new ImportException(e);
+        }
+    }
 
-            Map<Long, Long> personProfileLink = new HashMap<>();
+    private void readDeclaration(Long sessionId, InputStream inputStream, Map<Long, Long> personProfileIdMap) throws JAXBException {
+        Declaration declaration = (Declaration) JAXBContext
+                .newInstance(Declaration.class, DeclarationValue.class)
+                .createUnmarshaller()
+                .unmarshal(new NoClosableInputStream(inputStream));
 
-            if (personProfiles != null){
-                for (PersonProfile personProfile : personProfiles){
-                    PersonProfile db = personProfileBean.getPersonProfile(personProfile.getId());
+        if (declaration.getPersonProfileId() == null || personProfileIdMap.containsKey(declaration.getPersonProfileId())){
+            declaration.setId(null);
+            declaration.setSessionId(sessionId);
+            declaration.setPersonProfileId(personProfileIdMap.get(declaration.getPersonProfileId()));
 
-                    if (db == null || !sessionId.equals(db.getSessionId())){
+            declaration.fillValuesFromXml();
+
+            declarationBean.save(declaration);
+        }
+    }
+
+    private void readEmployee(Long sessionId, InputStream inputStream, Map<Long, Long> personProfileIdMap) throws JAXBException {
+        EmployeeRowSet employeeRowSet = (EmployeeRowSet) JAXBContext
+                .newInstance(EmployeeRowSet.class)
+                .createUnmarshaller()
+                .unmarshal(new NoClosableInputStream(inputStream));
+
+        List<Employee> employees = employeeRowSet.getEmployees();
+
+        for (Employee employee : employees){
+            if (personProfileIdMap.containsKey(employee.getPersonProfileId())){
+                employee.setId(null);
+                employee.setSessionId(sessionId);
+                employee.setPersonProfileId(personProfileIdMap.get(employee.getPersonProfileId()));
+
+                employeeBean.save(employee);
+            }
+        }
+    }
+
+    private void readCounterpart(Long sessionId, InputStream inputStream, Map<Long, Long> personProfileIdMap) throws JAXBException {
+        CounterpartRowSet counterpartRowSet = (CounterpartRowSet) JAXBContext
+                .newInstance(CounterpartRowSet.class)
+                .createUnmarshaller()
+                .unmarshal(new NoClosableInputStream(inputStream));
+
+        List<Counterpart> counterparts = counterpartRowSet.getCounterparts();
+
+        for (Counterpart counterpart : counterparts){
+            if (personProfileIdMap.containsKey(counterpart.getPersonProfileId())){
+                counterpart.setId(null);
+                counterpart.setSessionId(sessionId);
+                counterpart.setPersonProfileId(personProfileIdMap.get(counterpart.getPersonProfileId()));
+
+                counterpartBean.save(counterpart);
+            }
+        }
+    }
+
+    private void readPersonProfile(Long sessionId, byte[] data, Map<Long, Long> personProfileIdMap) throws IOException, JAXBException {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data))){
+            ZipEntry entry;
+
+            while((entry = zipInputStream.getNextEntry()) != null) {
+                String fileName = entry.getName();
+
+                if (fileName.endsWith(Settings.FILE_NAME)){
+                    Settings settings = (Settings) JAXBContext.newInstance(Settings.class)
+                            .createUnmarshaller()
+                            .unmarshal(zipInputStream);
+
+                    List<PersonProfile> personProfiles = settings.getPersonProfiles();
+
+                    for (PersonProfile personProfile : personProfiles){
+                        Long oldId = personProfile.getId();
+
                         personProfile.setId(null);
                         personProfile.setSessionId(sessionId);
 
                         personProfileBean.save(personProfile);
 
+                        personProfileIdMap.put(oldId, personProfile.getId());
                     }
 
-
-
-                }
-            }
-        } catch (IOException e) {
-            log.error("Ошибка чтения потока архива учетной записи", e);
-        } catch (ImportException e) {
-            log.error("Ошибка импорта профилей", e);
-        }
-
-//        if (name.contains(".xml")){
-//            if (name.startsWith("xml/")){
-//                declarationService.save(sessionId, allPersonProfiles, name, zipInputStream);
-//            }else if (name.startsWith("spr/")){
-//                if (name.contains(Settings.FILE_NAME.toLowerCase())){
-//                    importUserProfileXMLService.process(sessionId, null, name,
-//                            new NoCloseInputStream(zipInputStream), locale, null, null);
-//                }else if (name.contains(CounterpartRowSet.FILE_NAME.toLowerCase())){
-//                    counterpartBean.save(sessionId, new NoCloseInputStream(zipInputStream), locale);
-//                }else if (name.contains(EmployeeRowSet.FILE_NAME.toLowerCase())){
-//                    employeeBean.save(sessionId, new NoCloseInputStream(zipInputStream), locale);
-//                }
-//            }
-//        }
-    }
-
-    private PersonProfile findProfile(List<PersonProfile> personProfiles, Long personProfileId){
-        if (personProfiles != null && personProfileId != null){
-            for (PersonProfile personProfile : personProfiles){
-                if (personProfileId.equals(personProfile.getId())){
-                    return personProfile;
+                    break;
                 }
             }
         }
-
-        return null;
     }
 }

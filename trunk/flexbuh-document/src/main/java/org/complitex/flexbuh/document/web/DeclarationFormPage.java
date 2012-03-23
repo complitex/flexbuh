@@ -158,7 +158,8 @@ public class DeclarationFormPage extends TemplatePage{
                 PersonProfile personProfile = profileChoice.getModelObject();
 
                 declaration.setPersonProfileId(personProfile != null ? personProfile.getId() : null);
-                declaration.getHead().setTin(personProfile != null ? personProfile.getTin() : 0);
+                declaration.getHead().setTin(personProfile != null && personProfile.getTin() != null
+                        ? personProfile.getTin() : 0);
 
                 declarationService.validateAndSave(declaration);
 

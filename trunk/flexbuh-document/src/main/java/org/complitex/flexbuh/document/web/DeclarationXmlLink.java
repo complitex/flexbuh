@@ -41,7 +41,7 @@ public class DeclarationXmlLink extends NoCacheLink {
             stringResourceStream.setLastModified(Time.now());
 
             getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
-                    stringResourceStream, declaration.getFileName()));
+                    stringResourceStream, declaration.getFileName() + ".xml"));
         } catch (DeclarationParseException e) {
             log.error("Ошибка генерации xml документа");
             

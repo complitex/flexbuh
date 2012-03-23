@@ -38,7 +38,10 @@ public class Declaration implements Serializable{
 
     private Long id;
     private Long sessionId;
+
+    @XmlElement(name = "FB_PERSON_PROFILE_ID") //todo use only for account zip
     private Long personProfileId;
+
     private PersonProfile personProfile;
     private Long parentId;
     private Declaration parent;
@@ -80,7 +83,7 @@ public class Declaration implements Serializable{
 
     @SuppressWarnings("MalformedFormatString")
     public String getFileName(){
-        return String.format("%02d%02d%010d%s%s%02d%s%02d%07d%d%02d%d%04d.xml", //todo check format
+        return String.format("%02d%02d%010d%s%s%02d%s%02d%07d%d%02d%d%04d",
                 head.getCReg(), head.getCRaj(), head.getTin(), head.getCDoc(), head.getCDocSub(), head.getCDocVer(),
                 head.getCDocStan(), head.getCDocType(), head.getCDocCnt(), head.getPeriodType(), head.getPeriodMonth(),
                 head.getPeriodYear(), head.getCStiOrig());

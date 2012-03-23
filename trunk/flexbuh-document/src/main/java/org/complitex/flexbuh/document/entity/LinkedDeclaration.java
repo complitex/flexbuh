@@ -149,7 +149,7 @@ public class LinkedDeclaration implements Serializable{
      */
     @XmlElement(name = "FILENAME")
     public String getFilename() {
-        return declaration.getFileName();
+        return declaration.getFileName() + ".xml";
     }
 
     /**

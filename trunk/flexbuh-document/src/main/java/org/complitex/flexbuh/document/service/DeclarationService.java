@@ -299,7 +299,7 @@ public class DeclarationService {
             throws DeclarationParseException, IOException {
         for (Declaration declaration : declarations){
             ZipUtil.writeZip(new ByteArrayInputStream(getString(declaration).getBytes("UTF-8")), zipOutputStream, dir,
-                    declaration.getFileName());
+                    declaration.getFileName() + "_" + declaration.getId() + ".xml");
         }
     }
 
@@ -321,7 +321,7 @@ public class DeclarationService {
                 BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(pdf.toByteArray()),
                         BUFFER);
 
-                ZipEntry zipEntry = new ZipEntry(declaration.getFileName().replace(".xml",".pdf"));
+                ZipEntry zipEntry = new ZipEntry(declaration.getFileName() + ".pdf");
 
                 zipOutputStream.putNextEntry(zipEntry);
                 int count;

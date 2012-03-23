@@ -7,10 +7,10 @@ import java.io.InputStream;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 20.03.12 11:59
  */
-public class NoCloseInputStream extends InputStream {
+public class NoClosableInputStream extends InputStream {
     private InputStream inputStream;
 
-    public NoCloseInputStream(InputStream inputStream) {
+    public NoClosableInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
