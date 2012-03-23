@@ -11,13 +11,13 @@ import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -45,9 +45,9 @@ public class AccountPage extends FormTemplatePage{
                 try {
                     accountService.readAccountZip(getSessionId(), fileUploadField.getFileUpload().getInputStream());
                     info(getString("info_uploaded"));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     log.error("Ошибка чтения архива", e);
-                    error(getString("error_upload"));
+                    error(getStringFormat("error_upload", e.getCause().getMessage()));
                 }
             }
         });
@@ -81,7 +81,7 @@ public class AccountPage extends FormTemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "flexbuh_" + getSessionId() + ".zip"));
+                        }, "flexbuh_" + getSessionId() + "_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".","") + ".zip"));
 
             }
         });

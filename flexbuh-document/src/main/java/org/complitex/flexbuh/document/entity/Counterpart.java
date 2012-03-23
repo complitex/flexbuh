@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.*;
 @XmlType(name = "row")
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class Counterpart extends SessionObject {
-    @XmlTransient
     private Long personProfileId;
 
     private String hk;
@@ -36,6 +35,7 @@ public class Counterpart extends SessionObject {
         super(sessionId);
     }
 
+    @XmlElement(name = "FB_PERSON_PROFILE_ID")
     public Long getPersonProfileId() {
         return personProfileId;
     }

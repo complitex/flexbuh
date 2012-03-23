@@ -20,25 +20,30 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
-import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
-import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
-import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
-import org.complitex.flexbuh.common.template.toolbar.UploadButton;
+import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.StringUtil;
+import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeFilter;
+import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.complitex.flexbuh.document.service.EmployeeBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -164,7 +169,7 @@ public class EmployeeList extends TemplatePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
-                
+
                 int count = 0;
 
                 try {
@@ -209,6 +214,32 @@ public class EmployeeList extends TemplatePage{
             @Override
             public boolean isVisible() {
                 return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+            }
+        });
+
+        list.add(new SaveButton(id, "export", false) {
+            @Override
+            protected void onClick() {
+                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                        new AbstractResourceStreamWriter() {
+                            @Override
+                            public void write(Response output) {
+                                try {
+                                    List<Employee> employees = employeeBean.getAllEmployees(getSessionId());
+
+                                    OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
+
+                                    XmlUtil.writeXml(EmployeeRowSet.class, new EmployeeRowSet(employees), os);
+                                } catch (Exception e) {
+                                    log.error("Cannot export employee to xml: {}", new Object[]{e, EventCategory.EXPORT});
+                                }
+                            }
+
+                            @Override
+                            public String getContentType() {
+                                return "application/xml";
+                            }
+                        }, EmployeeRowSet.FILE_NAME));
             }
         });
 

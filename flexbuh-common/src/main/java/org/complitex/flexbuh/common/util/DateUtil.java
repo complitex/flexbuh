@@ -170,4 +170,8 @@ public class DateUtil {
 
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
+
+    public static String getString(Date date){
+        return date != null ? DATE_FORMAT_FULL.format(date) : "";
+    }
 }
