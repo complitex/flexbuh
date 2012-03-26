@@ -272,7 +272,7 @@ public class PersonProfileEdit extends FormTemplatePage {
                 personProfile.setSessionId(getSessionId());
                 personProfileBean.save(personProfile);
 
-                info(getString("profile_saved"));
+                getSession().info(getString("profile_saved"));
 
                 setResponsePage(PersonProfileList.class);
             }

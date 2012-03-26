@@ -14,20 +14,14 @@
 
     <div wicket:id="messages"></div>
 
-    <form action="#" wicket:id="form">
-        <table>
-            <tr>
-                <td>
-                    <input type="file" wicket:id="upload_field"/>
-                </td>
-                <td>
-                    <input wicket:id="upload" wicket:message="value:upload" type="submit" class="btnBig"/>
-                </td>
-            </tr>
-        </table>
+    <form action="#" wicket:id="form_upload">
+        <input type="file" wicket:id="upload_field"/>
+        <input wicket:id="upload" wicket:message="value:upload" type="submit" class="btnBig"/>
+    </form>
 
-        <br/>
+    <br/>
 
+    <form action="#" wicket:id="form_download">
         <input wicket:id="download" wicket:message="value:download" type="submit" class="btnBig"/>
     </form>
 </wicket:extend>

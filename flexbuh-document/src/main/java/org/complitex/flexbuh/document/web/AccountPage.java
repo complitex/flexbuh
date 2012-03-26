@@ -1,10 +1,13 @@
 package org.complitex.flexbuh.document.web;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.lang.Bytes;
@@ -33,26 +36,40 @@ public class AccountPage extends FormTemplatePage{
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        Form form = new Form<>("form");
-        add(form);
+        Form upload = new Form<>("form_upload");
+        add(upload);
 
-        final FileUploadField fileUploadField = new FileUploadField("upload_field");
-        form.add(fileUploadField);
+        final FileUploadField fileUploadField = new FileUploadField("upload_field", new ListModel<FileUpload>());
+        upload.add(fileUploadField);
 
-        form.add(new Button("upload"){
+        upload.add(new Button("upload") {
             @Override
             public void onSubmit() {
                 try {
                     accountService.readAccountZip(getSessionId(), fileUploadField.getFileUpload().getInputStream());
-                    info(getString("info_uploaded"));
+                    getSession().info(getString("info_uploaded"));
                 } catch (Exception e) {
                     log.error("Ошибка чтения архива", e);
                     error(getStringFormat("error_upload", e.getCause().getMessage()));
                 }
             }
+
+//            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                onSubmit();
+                setResponsePage(AccountPage.class);
+            }
+
+//            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //hello glassfish 3.1.2
+            }
         });
 
-        form.add(new Button("download"){
+        Form download = new Form<>("form_download");
+        add(download);
+
+        download.add(new Button("download") {
             @Override
             public void onSubmit() {
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -81,7 +98,7 @@ public class AccountPage extends FormTemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "flexbuh_" + getSessionId() + "_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".","") + ".zip"));
+                        }, "flexbuh_" + getSessionId() + "_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
 
             }
         });
