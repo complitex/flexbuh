@@ -298,8 +298,10 @@ public class DeclarationService {
     public void writeXmlZip(List<Declaration> declarations, ZipOutputStream zipOutputStream, String dir)
             throws DeclarationParseException, IOException {
         for (Declaration declaration : declarations){
+            declaration.getHead().setCDocCnt(declaration.getId().intValue());
+
             ZipUtil.writeZip(new ByteArrayInputStream(getString(declaration).getBytes("UTF-8")), zipOutputStream, dir,
-                    declaration.getFileName() + "_" + declaration.getId() + ".xml");
+                    declaration.getFileName() + ".xml");
         }
     }
 

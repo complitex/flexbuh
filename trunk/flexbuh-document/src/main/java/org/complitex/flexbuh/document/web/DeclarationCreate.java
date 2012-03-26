@@ -249,11 +249,11 @@ public class DeclarationCreate extends FormTemplatePage{
                 }
 
                 //check duplicate
-                if (declarationService.hasStoredDeclaration(declaration)){
-                    error(getStringFormat("error_same_period", declaration.getShortName()));
-
-                    return;
-                }
+//                if (declarationService.hasStoredDeclaration(declaration)){
+//                    error(getStringFormat("error_same_period", declaration.getShortName()));
+//
+//                    return;
+//                }
 
                 setResponsePage(new DeclarationFormPage(declaration));
             }

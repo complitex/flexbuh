@@ -103,6 +103,7 @@ public class AccountService {
                 }
             }
         } catch (Exception e) {
+            log.error("Ошибка чтения архива учетной записи", e);
             throw new ImportException(e);
         }
     }

@@ -451,7 +451,7 @@ CREATE TABLE `declaration` (
   `date` DATETIME,
   `validated` BOOLEAN,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `key_unique` (`person_profile_id`, `c_doc`, `c_doc_sub`, `period_type`, `period_month`, `period_year`),
+  -- UNIQUE KEY `key_unique` (`person_profile_id`, `c_doc`, `c_doc_sub`, `period_type`, `period_month`, `period_year`),
   KEY `key_declaration__parent_id` (`parent_id`),
   KEY `key_declaration__session_id` (`session_id`),
   KEY `key_declaration__person_profile_id` (`person_profile_id`),
