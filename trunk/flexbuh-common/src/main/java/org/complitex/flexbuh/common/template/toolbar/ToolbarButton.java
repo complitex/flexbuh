@@ -3,13 +3,11 @@ package org.complitex.flexbuh.common.template.toolbar;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
 
 import java.util.Random;
 
@@ -18,33 +16,28 @@ import java.util.Random;
  * @author Artem
  */
 public abstract class ToolbarButton extends Panel {
-
     private String tagId;
     private static final String LINK_MARKUP_ID = "link";
     private boolean useAjax;
 
-    public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey) {
-       this(id, imageSrc, titleKey, false);
+    public ToolbarButton(String id, String path, String titleKey) {
+       this(id, path, titleKey, false);
     }
 
-    public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey, boolean useAjax) {
+    public ToolbarButton(String id, String path, String titleKey, boolean useAjax) {
         super(id);
 
         this.useAjax = useAjax;
 
         AbstractLink link = addLink();
-        Image image = addImage(imageSrc, new ResourceModel(titleKey).wrapOnAssignment(this));
-        link.add(image);
         add(link);
+
+        link.add(addImage(path, new ResourceModel(titleKey).wrapOnAssignment(this).getObject()));
     }
 
-    public ToolbarButton(String id, PackageResourceReference imageSrc, String titleKey, String tagId) {
-        this(id, imageSrc, titleKey, false);
+    public ToolbarButton(String id, String path, String titleKey, String tagId) {
+        this(id, path, titleKey, false);
         this.tagId = tagId;
-    }
-    
-    public ToolbarButton(String id, String imageSrc, String titleKey, boolean useAjax) {
-        this(id, new PackageResourceReference(imageSrc), titleKey, useAjax);
     }
 
     protected void onClick(){
@@ -85,13 +78,13 @@ public abstract class ToolbarButton extends Panel {
         }
     }
 
-    protected Image addImage(PackageResourceReference imageSrc, final IModel<String> title) {
-        return new Image("image", imageSrc) {
+    protected ContextImage addImage(String path, final String title) {
+        return new ContextImage("image", path) {
 
             @Override
             protected void onComponentTag(ComponentTag tag) {
                 super.onComponentTag(tag);
-                tag.put("title", title.getObject());
+                tag.put("title", title);
 
                 if (tagId != null) {
                     tag.setId(tagId);

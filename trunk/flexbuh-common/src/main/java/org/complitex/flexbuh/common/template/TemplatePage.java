@@ -126,11 +126,12 @@ public abstract class TemplatePage extends WebPage {
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
+        response.renderJavaScriptReference(WebCommonResourceInitializer.JS_COMMON);
         response.renderJavaScriptReference(CoreJavaScriptResourceReference.get());
         response.renderJavaScriptReference(new PackageResourceReference(TemplatePage.class, "TemplatePage.js"));
 
-        response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
+        response.renderCSSReference(WebCommonResourceInitializer.CSS_STYLE);
+        response.renderCSSReference(WebCommonResourceInitializer.CSS_FLEXBUH);
         response.renderCSSReference(new ThemeResourceReference());
     }
 

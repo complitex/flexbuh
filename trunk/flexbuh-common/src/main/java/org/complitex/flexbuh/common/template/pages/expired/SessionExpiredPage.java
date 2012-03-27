@@ -5,8 +5,8 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.ResourceModel;
-import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
 import org.complitex.flexbuh.common.template.TemplateWebApplication;
+import org.complitex.flexbuh.resources.WebCommonResourceInitializer;
 
 /**
  *
@@ -31,8 +31,8 @@ public final class SessionExpiredPage extends WebPage {
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
-        response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
+        response.renderJavaScriptReference(WebCommonResourceInitializer.JS_COMMON);
+        response.renderCSSReference(WebCommonResourceInitializer.CSS_STYLE);
     }
 
     /**
