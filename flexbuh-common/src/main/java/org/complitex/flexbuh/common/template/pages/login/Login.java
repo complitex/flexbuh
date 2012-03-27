@@ -41,9 +41,9 @@ public final class Login extends WebPage {
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        response.renderJavaScriptReference(WebCommonResourceInitializer.COMMON_JS);
+        response.renderJavaScriptReference(WebCommonResourceInitializer.JS_COMMON);
         response.renderJavaScriptReference(new PackageResourceReference(getClass(), "Login.js"));
-        response.renderCSSReference(WebCommonResourceInitializer.STYLE_CSS);
+        response.renderCSSReference(WebCommonResourceInitializer.CSS_STYLE);
     }
 
     private void closePreviousSession() {

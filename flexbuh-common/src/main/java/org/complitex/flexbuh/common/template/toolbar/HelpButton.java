@@ -1,7 +1,5 @@
 package org.complitex.flexbuh.common.template.toolbar;
 
-import org.apache.wicket.request.resource.PackageResourceReference;
-
 /**
  *
  * @author Artem
@@ -12,7 +10,7 @@ public class HelpButton extends ToolbarButton {
     private static final String TITLE_KEY = "image.title.help";
 
     public HelpButton(String id) {
-        super(id, new PackageResourceReference(IMAGE_SRC), TITLE_KEY);
+        super(id, IMAGE_SRC, TITLE_KEY);
     }
 
     @Override
