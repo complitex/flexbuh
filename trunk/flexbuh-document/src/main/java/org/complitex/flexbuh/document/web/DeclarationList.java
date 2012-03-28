@@ -105,7 +105,7 @@ public class DeclarationList extends TemplatePage{
         declarationFilter = new DeclarationFilter(sessionId);
 
         //Default period
-        declarationFilter.getPeriods().add(new Period(DateUtil.getCurrentMonth(), 1, DateUtil.getCurrentYear()));
+        declarationFilter.getPeriods().add(new Period(DateUtil.getCurrentMonth()+1, 1, DateUtil.getCurrentYear()));
 
         //Таблица
         final WebMarkupContainer tableContainer = new WebMarkupContainer("table_container");
