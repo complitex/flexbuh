@@ -1,6 +1,9 @@
 package org.complitex.flexbuh.personnel.web;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.markup.html.basic.Label;
@@ -29,6 +32,8 @@ import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
 import org.complitex.flexbuh.common.web.component.OrganizationTypeAutoCompleteTextField;
+import org.complitex.flexbuh.personnel.entity.Department;
+import org.complitex.flexbuh.personnel.web.component.DepartmentTreePanel;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -50,7 +55,9 @@ public class OrganizationEdit extends FormTemplatePage {
 
     private Logger log = LoggerFactory.getLogger(OrganizationEdit.class);
 
-    private final static String FORM_DATE_FORMAT = "dd.mm.yy";
+    private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
+
+    public final static String PARAM_ORGANIZATION_ID = "organization_id";
 
     @EJB
 	private EventObjectFactory eventObjectFactory;
@@ -158,8 +165,15 @@ public class OrganizationEdit extends FormTemplatePage {
 				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
 			}
         };
-        birthdayPicker.setDateFormat(FORM_DATE_FORMAT);
+        birthdayPicker.setDateFormat("dd.mm.yy");
 		form.add(birthdayPicker);
+
+        // Departments
+        final DepartmentTreePanel panel = new DepartmentTreePanel("departments", organization);
+        if (organization.getId() == null) {
+            panel.setVisible(false);
+        }
+        form.add(panel);
 
         // Organization physical address
         Accordion physicalAddress = new Accordion("physical_address");
