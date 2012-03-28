@@ -13,7 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -24,7 +24,6 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,16 +84,16 @@ public class PagingNavigator extends Panel {
 
         // Add additional page links
         pageBar.add(newPagingNavigationLink("first", dataView, 0).
-                add(new Image("firstImage", new PackageResourceReference("images/pageNavStart.gif"))).
+                add(new ContextImage("firstImage", "images/pageNavStart.gif")).
                 add(new TitleResourceAppender("PagingNavigator.first")));
         pageBar.add(newPagingNavigationIncrementLink("prev", dataView, -1).
-                add(new Image("prevImage", new PackageResourceReference("images/pageNavPrev.gif"))).
-                add(new TitleResourceAppender("PagingNavigator.previous")));
+                add(new ContextImage("prevImage", "images/pageNavPrev.gif"))).
+                add(new TitleResourceAppender("PagingNavigator.previous"));
         pageBar.add(newPagingNavigationIncrementLink("next", dataView, 1).
-                add(new Image("nextImage", new PackageResourceReference("images/pageNavNext.gif"))).
-                add(new TitleResourceAppender("PagingNavigator.next")));
+                add(new ContextImage("nextImage", "images/pageNavNext.gif"))).
+                add(new TitleResourceAppender("PagingNavigator.next"));
         pageBar.add(newPagingNavigationLink("last", dataView, -1).
-                add(new Image("lastImage", new PackageResourceReference("images/pageNavEnd.gif"))).
+                add(new ContextImage("lastImage", "images/pageNavEnd.gif")).
                 add(new TitleResourceAppender("PagingNavigator.last")));
 
         //navigation before

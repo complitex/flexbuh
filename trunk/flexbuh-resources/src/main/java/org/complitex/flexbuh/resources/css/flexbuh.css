@@ -1,0 +1,25 @@
+/*Declaration List*/
+.year_period_block{
+    float: left;
+    margin-right: 1px
+}
+
+.year_block{
+    border: 1px solid #CCC;
+    margin-bottom: 1px;
+    vertical-align: middle;
+    background-color: #CBD2D8;
+    float:left;
+    padding: 1px 12px 1px 12px;
+    font-weight: bold;
+}
+
+.period_block{
+    margin: 0 0 1px 1px;
+    padding: 2px 5px 2px 5px;
+    float: left;
+}
+
+.period_selected{
+    background-color: #CBD2D8;
+}

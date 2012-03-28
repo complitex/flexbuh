@@ -2,7 +2,9 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.AbstractFilter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,6 +20,8 @@ public class DeclarationFilter extends AbstractFilter{
     private Integer periodMonth;
     private Integer periodYear;
     private Date date;
+
+    private List<Period> periods = new ArrayList<>();
 
     public DeclarationFilter() {
     }
@@ -106,5 +110,13 @@ public class DeclarationFilter extends AbstractFilter{
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public List<Period> getPeriods() {
+        return periods;
+    }
+
+    public void setPeriods(List<Period> periods) {
+        this.periods = periods;
     }
 }

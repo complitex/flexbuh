@@ -26,98 +26,89 @@
 
     <div wicket:id="upload_dialog"></div>
 
-    <div wicket:id="year_container">
-        <!--todo move style to class-->
+    <div wicket:id="period_year_container">
         <div wicket:id="year_list">
-            <div style="height: 30px; border: 1px solid #CCC; margin-bottom: 1px; vertical-align: middle; background-color: #CBD2D8;">
-                <h2 style="margin: 1px 2px 2px 5px;">
+            <div class="year_period_block">
+                <div class="year_block">
+                    <span wicket:id="year_header"></span>
+                </div>
+
+                <div class="period_block" wicket:id="period_list">
                     <a href="#" wicket:id="action_select">
-                        <span wicket:id="year_header" style="position: absolute; width: 100%"></span>
+                        <span wicket:id="period_header"></span>
                     </a>
-                </h2>
-            </div>
-
-            <div wicket:id="period_container">
-                <div wicket:id="period_list">
-                    <div style="height: 25px; border: 1px solid #CCC; margin-bottom: 1px; vertical-align: middle;">
-                        <h4 style="margin: 4px 2px 2px 20px;">
-                            <a href="#" wicket:id="action_select">
-                                <span wicket:id="period_header" style="position: absolute; width: 100%"></span>
-                            </a>
-                        </h4>
-                    </div>
-
-                    <div wicket:id="filter_container">
-                        <form action="#" wicket:id="filter_form">
-                            <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
-                                <thead>
-                                <tr>
-                                    <th width="20px"><!--<input type="checkbox" onclick="selectAll(this)"/>--></th>
-                                    <th></th>
-                                    <th>
-                                        <span wicket:id="header.name"><wicket:message key="name"/></span>
-                                    </th>
-                                    <th>
-                                        <span wicket:id="header.date"><wicket:message key="date"/></span>
-                                    </th>
-                                    <th class="center">
-                                        <input class="btnSmall" wicket:id="reset" type="submit" wicket:message="value:reset"/>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th><input type="text" wicket:id="name"/></th>
-                                    <th><input wicket:id="date" size="10"/></th>
-
-                                    <th class="center">
-                                        <input class="btnSmall default" type="submit" tabindex="0" wicket:message="value:filter"/>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <wicket:container wicket:id="declarations">
-                                    <tr>
-                                        <td><input type="checkbox" wicket:id="select"/></td>
-                                        <td><a href="#" wicket:id="expand">[<span wicket:id="label"></span>]</a></td>
-                                        <td><span wicket:id="name"></span></td>
-                                        <td><span wicket:id="date"></span></td>
-                                        <td>
-                                            <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
-                                            <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
-                                            <a href="#" wicket:id="action_attach"><wicket:message key="action_attach"/></a>
-                                            <a href="#" wicket:id="action_check"><wicket:message key="action_check"/></a>
-                                        </td>
-                                    </tr>
-                                    <tbody wicket:id="linked_container">
-                                    <tr wicket:id="linked_declarations">
-                                        <td></td>
-                                        <td></td>
-                                        <td style="padding-left: 40px;"><span wicket:id="name"></span></td>
-                                        <td><span wicket:id="date"></span></td>
-                                        <td>
-                                            <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
-                                            <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
-                                            <a href="#" wicket:id="action_detach"><wicket:message key="action_detach"/></a>
-                                            <a href="#" wicket:id="action_check"><wicket:message key="action_check"/></a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </wicket:container>
-                            </table>
-
-                            <div style="margin-top: 8px">
-                                <input type="submit" wicket:id="download_xml_zip" wicket:message="value:download_xml_zip" class="btnBig"/>
-                                <input type="submit" wicket:id="download_pdf_zip" wicket:message="value:download_pdf_zip" class="btnBig"/>
-                            </div>
-
-                            <div>
-                                <span wicket:id="paging"></span>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div wicket:id="table_container">
+        <form action="#" wicket:id="filter_form">
+            <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                <thead>
+                <tr>
+                    <th width="20px"><!--<input type="checkbox" onclick="selectAll(this)"/>--></th>
+                    <th></th>
+                    <th>
+                        <span wicket:id="header.name"><wicket:message key="name"/></span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.date"><wicket:message key="date"/></span>
+                    </th>
+                    <th class="center">
+                        <input class="btnSmall" wicket:id="reset" type="submit" wicket:message="value:reset"/>
+                    </th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th><input type="text" wicket:id="name"/></th>
+                    <th><input wicket:id="date" size="10"/></th>
+
+                    <th class="center">
+                        <input class="btnSmall default" type="submit" tabindex="0" wicket:message="value:filter"/>
+                    </th>
+                </tr>
+                </thead>
+                <wicket:container wicket:id="declarations">
+                    <tr>
+                        <td><input type="checkbox" wicket:id="select"/></td>
+                        <td><a href="#" wicket:id="expand">[<span wicket:id="label"></span>]</a></td>
+                        <td><span wicket:id="name"></span></td>
+                        <td><span wicket:id="date"></span></td>
+                        <td>
+                            <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
+                            <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
+                            <a href="#" wicket:id="action_attach"><wicket:message key="action_attach"/></a>
+                            <a href="#" wicket:id="action_check"><wicket:message key="action_check"/></a>
+                        </td>
+                    </tr>
+                    <tbody wicket:id="linked_container">
+                    <tr wicket:id="linked_declarations">
+                        <td></td>
+                        <td></td>
+                        <td style="padding-left: 40px;"><span wicket:id="name"></span></td>
+                        <td><span wicket:id="date"></span></td>
+                        <td>
+                            <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
+                            <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
+                            <a href="#" wicket:id="action_detach"><wicket:message key="action_detach"/></a>
+                            <a href="#" wicket:id="action_check"><wicket:message key="action_check"/></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </wicket:container>
+            </table>
+
+            <div style="margin-top: 8px">
+                <input type="submit" wicket:id="download_xml_zip" wicket:message="value:download_xml_zip" class="btnBig"/>
+                <input type="submit" wicket:id="download_pdf_zip" wicket:message="value:download_pdf_zip" class="btnBig"/>
+            </div>
+
+            <div>
+                <span wicket:id="paging"></span>
+            </div>
+        </form>
     </div>
 </wicket:extend>
 </body>

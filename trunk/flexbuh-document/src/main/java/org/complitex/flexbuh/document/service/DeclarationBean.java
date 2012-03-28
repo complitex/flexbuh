@@ -5,8 +5,7 @@ import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.entity.*;
 
 import javax.ejb.Stateless;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -110,11 +109,36 @@ public class DeclarationBean extends AbstractBean{
     }
 
     @SuppressWarnings("unchecked")
-    public List<Period> getPeriods(final Long sessionId, final int year){
+    public List<Period> getPeriods(final Long sessionId, final Integer year){
         return sqlSession().selectList(NS + ".selectDeclarationPeriods", new HashMap<String, Object>(){{
             put("sessionId", sessionId);
             put("year", year);
         }});
+    }
+
+    public Map<Integer, List<Period>> getPeriodMap(Long sessionId){
+        Map<Integer, List<Period>> periodMap = new HashMap<>();
+
+        List<Period> allPeriods = getPeriods(sessionId, null);
+
+        for (Period period : allPeriods){
+            List<Period> list = periodMap.get(period.getYear());
+
+            if (list == null){
+                list = new ArrayList<>();
+
+                periodMap.put(period.getYear(), list);
+            }
+
+            list.add(period);
+        }
+
+        //Sort
+        for (List<Period> periods : periodMap.values()){
+            Collections.sort(periods);
+        }
+
+        return periodMap;
     }
 
     public Declaration getPossibleDeclarationParent(Long childId){
