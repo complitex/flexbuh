@@ -1,12 +1,16 @@
 package org.complitex.flexbuh.document.web;
 
+import com.google.common.collect.Ordering;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -16,7 +20,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -54,7 +57,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.io.ByteArrayOutputStream;
-import java.text.DateFormatSymbols;
 import java.util.*;
 
 /**
@@ -63,8 +65,6 @@ import java.util.*;
  */
 public class DeclarationList extends TemplatePage{
     private final static Logger log = LoggerFactory.getLogger(DeclarationList.class);
-
-    private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
 
     @EJB
     private DeclarationBean declarationBean;
@@ -81,22 +81,6 @@ public class DeclarationList extends TemplatePage{
 
     private DeclarationFilter declarationFilter;
 
-    final String[] MONTH = dateFormatSymbols.getMonths();
-    final List<Period> PERIODS = Arrays.asList(
-            new Period(1, 0, MONTH[0]), new Period(1, 1, MONTH[1]), new Period(1, 2, MONTH[2]),
-            new Period(2, 2, "1 " + getString("period_type_2")),
-            new Period(1, 3, MONTH[3]), new Period(1, 4, MONTH[4]), new Period(1, 5, MONTH[5]),
-            new Period(2, 5, "2 " + getString("period_type_2")),
-            new Period(3, 5, "1 " + getString("period_type_3")),
-            new Period(1, 6, MONTH[6]), new Period(1, 7, MONTH[7]), new Period(1, 8, MONTH[8]),
-            new Period(2, 8, "3 " + getString("period_type_2")),
-            new Period(1, 9, MONTH[9]), new Period(1, 10, MONTH[10]), new Period(1, 11, MONTH[11]),
-            new Period(2, 11, "4 " + getString("period_type_2")),
-            new Period(3, 11, "1 " + getString("period_type_3")),
-            new Period(4, 8, getString("period_type_4")),
-            new Period(5, 11, getString("period_type_5"))
-    );
-
     public DeclarationList(PageParameters parameters) {
         this();
 
@@ -111,121 +95,83 @@ public class DeclarationList extends TemplatePage{
         feedbackPanel.setOutputMarkupId(true);
         add(feedbackPanel);
 
-        final WebMarkupContainer yearContainer = new WebMarkupContainer("year_container");
-        yearContainer.setOutputMarkupId(true);
-
-        add(yearContainer);
+        final WebMarkupContainer periodYearContainer = new WebMarkupContainer("period_year_container");
+        periodYearContainer.setOutputMarkupId(true);
+        add(periodYearContainer);
 
         final Long sessionId = getSessionId();
 
         //Фильтр
         declarationFilter = new DeclarationFilter(sessionId);
-        declarationFilter.setPeriodYear(DateUtil.getCurrentYear());
-        declarationFilter.setPeriodType(1);
-        declarationFilter.setPeriodMonth(DateUtil.getCurrentMonth() + 1);
+
+        //Default period
+        declarationFilter.getPeriods().add(new Period(DateUtil.getCurrentMonth(), 1, DateUtil.getCurrentYear()));
 
         //Таблица
-        final WebMarkupContainer filterContainer = new WebMarkupContainer("filter_container");
-        filterContainer.setOutputMarkupId(true);
+        final WebMarkupContainer tableContainer = new WebMarkupContainer("table_container");
+        tableContainer.setOutputMarkupId(true);
+        add(tableContainer);
 
         //Форма
         Form filterForm = new Form("filter_form");
-        filterContainer.add(filterForm);
+        tableContainer.add(filterForm);
 
-        IModel<List<? extends Integer>> yearModel = new LoadableDetachableModel<List<? extends Integer>>() {
-            @Override
-            protected List<? extends Integer> load() {
-                return declarationBean.getYears(sessionId);
-            }
-        };
+        //Periods
+        final Map<Integer, List<Period>> periodMap = declarationBean.getPeriodMap(sessionId);
 
         //Дерево - годы
-        ListView yearList = new ListView<Integer>("year_list", yearModel) {
+        ListView yearList = new ListView<Integer>("year_list", Ordering.natural().sortedCopy(periodMap.keySet())) {
             @Override
             protected void populateItem(final ListItem<Integer> item) {
                 final Integer year = item.getModelObject();
-                final boolean selectedYear = year.equals(declarationFilter.getPeriodYear());
-                item.setRenderBodyOnly(true);
 
-                AjaxLink action = new AjaxLink("action_select") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        declarationFilter.setPeriodYear(year);
-
-                        target.add(yearContainer);
-                    }
-
-                    @Override
-                    public boolean isEnabled() {
-                        return !selectedYear;
-                    }
-                };
-                item.add(action);
-
-                action.add((new Label("year_header", year + "")));
-
-                final WebMarkupContainer periodContainer = new WebMarkupContainer("period_container");
-                periodContainer.setOutputMarkupId(true);
-                item.add(periodContainer);
-
-                //Load periods for year and set labels
-                List<Period> periods = declarationBean.getPeriods(sessionId, year);
-                for (Period p : periods){
-                    for (Period label : PERIODS){
-                        if (p.getMonth().equals(label.getMonth()) && p.getType().equals(label.getType())){
-                            p.setLabel(label.getLabel());
-                        }
-                    }
-                }
+                item.add((new Label("year_header", year + "")));
 
                 //Дерево - периоды
-                if (selectedYear) {
-                    ListView periodList = new ListView<Period>("period_list", periods) {
-                        @Override
-                        protected void populateItem(ListItem<Period> periodItem) {
-                            periodItem.setRenderBodyOnly(true);
+                ListView periodList = new ListView<Period>("period_list", periodMap.get(year)) {
+                    @Override
+                    protected void populateItem(final ListItem<Period> periodItem) {
+                        periodItem.setOutputMarkupId(true);
 
-                            final Period period = periodItem.getModelObject();
+                        final Period period = periodItem.getModelObject();
 
-                            final boolean selectedPeriod = period.getMonth().equals(declarationFilter.getPeriodMonth() - 1)
-                                    && period.getType().equals(declarationFilter.getPeriodType());
-
-                            if (selectedPeriod){
-                                periodItem.add(filterContainer);
-                            }else {
-                                WebMarkupContainer emptyDiv = new WebMarkupContainer("filter_container");
-                                emptyDiv.add(new Form("filter_form").setVisible(false));
-
-                                periodItem.add(emptyDiv);
+                        periodItem.add(new Behavior() {
+                            @Override
+                            public void onComponentTag(Component component, ComponentTag tag) {
+                                if (declarationFilter.getPeriods().contains(period)){
+                                    tag.getAttributes().put("class", "period_block period_selected");
+                                }else {
+                                    tag.getAttributes().put("class", "period_block");
+                                }
                             }
+                        });
 
-                            AjaxLink action = new AjaxLink("action_select") {
-                                @Override
-                                public void onClick(AjaxRequestTarget target) {
-                                    declarationFilter.setPeriodYear(year);
-                                    declarationFilter.setPeriodType(period.getType());
-                                    declarationFilter.setPeriodMonth(period.getMonth() + 1);
+                        AjaxLink action = new AjaxLink("action_select") {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                List<Period> filterPeriods = declarationFilter.getPeriods();
 
-                                    target.add(yearContainer);
+                                if (filterPeriods.contains(period)){
+                                    filterPeriods.remove(period);
+                                }else{
+                                    filterPeriods.add(period);
                                 }
 
-                                @Override
-                                public boolean isEnabled() {
-                                    return !selectedPeriod;
-                                }
-                            };
-                            periodItem.add(action);
+                                target.add(periodItem);
+                                target.add(tableContainer);
+                            }
+                        };
+                        periodItem.add(action);
 
-                            action.add(new Label("period_header", period.getLabel()));
-                        }
-                    };
-                    periodContainer.add(periodList);
-                }else {
-                    periodContainer.add(new EmptyPanel("period_list").setVisible(false));
-                }
+                        String periodString = getString("period_" + period.getType() + "_" + period.getMonth());
+
+                        action.add(new Label("period_header", periodString));
+                    }
+                };
+                item.add(periodList);
             }
         };
-        yearContainer.add(yearList);
+        periodYearContainer.add(yearList);
 
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));
@@ -480,7 +426,7 @@ public class DeclarationList extends TemplatePage{
             @Override
             public void onUpdate(AjaxRequestTarget target) {
                 target.add(feedbackPanel);
-                target.add(yearContainer);
+                target.add(periodYearContainer);
             }
         };
 

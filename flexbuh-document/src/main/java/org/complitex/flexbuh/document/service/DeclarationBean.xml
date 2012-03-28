@@ -43,25 +43,25 @@
 
         <association property="declaration" resultMap="declarationResultMap"/>
     </resultMap>
-    
+
     <resultMap id="declarationValueResultMap" type="org.complitex.flexbuh.document.entity.DeclarationValue">
         <id column="id" property="id"/>
         <result column="declaration_id" property="declarationId"/>
         <result column="row_num" property="rowNum"/>
         <result column="name" property="name"/>
-        <result column="value" property="value"/>            
+        <result column="value" property="value"/>
     </resultMap>
 
     <select id="selectDeclaration" resultMap="declarationResultMap" parameterType="long">
         select de.*, do.`name_uk` as `name` from `declaration` de
-          left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-        where de.`id` = #{id}
+                left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+            where de.`id` = #{id}
     </select>
 
     <select id="selectLinkedDeclaration" resultMap="linkedDeclarationResultMap" parameterType="long">
         select de.*, do.`name_uk` as `name` from `declaration` de
-          left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-        where `parent_id` = #{parentId}
+                left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+            where `parent_id` = #{parentId}
     </select>
 
     <select id="selectDeclarationValues" resultMap="declarationValueResultMap" parameterType="long">
@@ -71,37 +71,38 @@
     <insert id="insertDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration"
             keyProperty="id" useGeneratedKeys="true">
         insert into `declaration` (`parent_id`, `session_id`, `person_profile_id`, `tin`, `c_doc`, `c_doc_sub`,
-          `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`, `period_month`, `period_type`, `period_year`,
-          `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`, `date`, `validated`)
-        values (#{parentId}, #{sessionId}, #{personProfileId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub},
-          #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg}, #{head.cRaj}, #{head.periodMonth},
-          #{head.periodType}, #{head.periodYear}, #{head.cStiOrig}, #{head.cDocStan}, #{head.dFill}, #{head.software},
-          #{date}, #{validated})
+                `c_doc_ver`, `c_doc_type`, `c_doc_cnt`, `c_reg`, `c_raj`, `period_month`, `period_type`, `period_year`,
+                `c_sti_orig`, `c_doc_stan`, `d_fill`, `software`, `date`, `validated`)
+                values (#{parentId}, #{sessionId}, #{personProfileId}, #{head.tin}, #{head.cDoc}, #{head.cDocSub},
+                        #{head.cDocVer}, #{head.cDocType}, #{head.cDocCnt}, #{head.cReg}, #{head.cRaj}, #{head.periodMonth},
+                        #{head.periodType}, #{head.periodYear}, #{head.cStiOrig}, #{head.cDocStan}, #{head.dFill}, #{head.software},
+                        #{date}, #{validated})
     </insert>
 
     <insert id="insertDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
         insert into `declaration_value` (`declaration_id`, `row_num`, `name`, `value`)
-          values (#{declarationId}, #{rowNum}, #{name}, #{value})
+                values (#{declarationId}, #{rowNum}, #{name}, #{value})
     </insert>
 
     <sql id="selectDeclarationsFromWhere">
         from `declaration` de
-             left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-             left join `person_profile` pp on (de.`person_profile_id` = pp.`id`)
-         <where>
-             <if test="name != null">do.`name_uk` like  concat('%', #{name}, '%')</if>
-             <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
-             <if test="periodType != null">and `period_type` = #{periodType}</if>
-             <if test="periodYear != null">and `period_year` = #{periodYear}</if>
-             <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
-             <if test="parentId != null">and `parent_id` = #{parentId}</if>
-             <if test="parentId == null">and `parent_id` is null</if>
-             <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
-             <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
-             and de.`session_id` = #{sessionId}
-             and (pp.`selected` = true or (de.`person_profile_id` is null
-                    and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
-         </where>
+        left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+        left join `person_profile` pp on (de.`person_profile_id` = pp.`id`)
+        <where>
+            <if test="name != null">do.`name_uk` like  concat('%', #{name}, '%')</if>
+            <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
+            <if test="parentId != null">and `parent_id` = #{parentId}</if>
+            <if test="parentId == null">and `parent_id` is null</if>
+            <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
+            <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
+            and de.`session_id` = #{sessionId}
+            and (pp.`selected` = true or (de.`person_profile_id` is null
+            and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
+
+            <foreach collection="periods" item="p" separator="or" open="and (" close=")">
+                (#{p.month} = `period_month` and #{p.type} = `period_type` and #{p.year} = `period_year`)
+            </foreach>
+        </where>
         <!-- todo performance select-->
     </sql>
 
@@ -122,8 +123,8 @@
 
     <select id="selectAllDeclarations" resultMap="declarationResultMap" parameterType="long">
         select de.*, do.`name_uk` as `name` from `declaration` de
-            left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-        where de.`session_id` = #{sessionId}
+                left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
+            where de.`session_id` = #{sessionId}
     </select>
 
     <delete id="deleteDeclaration" parameterType="long">
@@ -136,13 +137,13 @@
 
     <update id="updateDeclaration" parameterType="org.complitex.flexbuh.document.entity.Declaration">
         update `declaration` set `session_id` = #{sessionId}, `parent_id` = #{parentId},
-          `person_profile_id` = #{personProfileId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc},
-          `c_doc_sub` = #{head.cDocSub}, `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType},
-          `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg}, `c_raj` = #{head.cRaj},
-          `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
-          `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill},
-          `software` = #{head.software}, `date` = #{date}, `validated` = #{validated}
-        where `id` = #{id}
+                `person_profile_id` = #{personProfileId}, `tin` = #{head.tin}, `c_doc` = #{head.cDoc},
+                `c_doc_sub` = #{head.cDocSub}, `c_doc_ver` = #{head.cDocVer}, `c_doc_type` = #{head.cDocType},
+                `c_doc_cnt` = #{head.cDocCnt}, `c_reg` = #{head.cReg}, `c_raj` = #{head.cRaj},
+                `period_month` = #{head.periodMonth}, `period_type` = #{head.periodType}, `period_year` = #{head.periodYear},
+                `c_sti_orig` = #{head.cStiOrig}, `c_doc_stan` = #{head.cDocStan}, `d_fill` = #{head.dFill},
+                `software` = #{head.software}, `date` = #{date}, `validated` = #{validated}
+            where `id` = #{id}
     </update>
 
     <update id="updateDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
@@ -151,13 +152,13 @@
 
     <select id="selectDeclarationsByIds" parameterType="list" resultMap="declarationResultMap">
         select * from `declaration`
-          where `id` in (<foreach collection="list" separator="," item="item">#{item}</foreach>)
+        where `id` in (<foreach collection="list" separator="," item="item">#{item}</foreach>)
     </select>
 
     <sql id="fromDeclarationWhereProfile">
         from `declaration` d left join `person_profile` pp on (d.`person_profile_id` = pp.`id`)
-          where d.`session_id` = #{sessionId} and (pp.`selected` = true or (d.`person_profile_id` is null
-            and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
+        where d.`session_id` = #{sessionId} and (pp.`selected` = true or (d.`person_profile_id` is null
+        and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
     </sql>
 
     <select id="selectDeclarationYears" parameterType="long" resultType="int">
@@ -165,39 +166,40 @@
     </select>
 
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
-        select `period_type` as type, `period_month` - 1 as month <include refid="fromDeclarationWhereProfile"/>
-          and `period_year` = #{year} group by `period_type`, `period_month`
+        select `period_type` as type, `period_month` as month, `period_year` as year
+          <include refid="fromDeclarationWhereProfile"/> <if test="year != null">and `period_year` = #{year}</if>
+          group by `period_type`, `period_month`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">
         select
-           distinct parent.`id`
-        from
-           `declaration` child
-            left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
-            left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
-            left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
-        where
-            (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
-            and child.`period_type` = parent.`period_type`
-            and child.`period_month` = parent.`period_month`
-            and child.`period_year` = parent.`period_year`
-            and child.`id` = #{id}
+        distinct parent.`id`
+            from
+                `declaration` child
+                        left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
+                        left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
+                        left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
+            where
+                (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
+                        and child.`period_type` = parent.`period_type`
+                        and child.`period_month` = parent.`period_month`
+                        and child.`period_year` = parent.`period_year`
+                        and child.`id` = #{id}
     </select>
 
     <select id="selectPossibleDeclarationParent" parameterType="long" resultMap="declarationResultMap">
         select
-           distinct parent.*, parent_doc.`name_uk` as `name`
-        from
-           `declaration` child
-            left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
-            left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
-            left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
-        where
-            (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
-            and child.`period_type` = parent.`period_type`
-            and child.`period_month` = parent.`period_month`
-            and child.`period_year` = parent.`period_year`
-            and child.`id` = #{id}
-        </select>
+        distinct parent.*, parent_doc.`name_uk` as `name`
+            from
+                `declaration` child
+                        left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
+                        left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
+                        left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
+            where
+                (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
+                        and child.`period_type` = parent.`period_type`
+                        and child.`period_month` = parent.`period_month`
+                        and child.`period_year` = parent.`period_year`
+                        and child.`id` = #{id}
+    </select>
 </mapper>
