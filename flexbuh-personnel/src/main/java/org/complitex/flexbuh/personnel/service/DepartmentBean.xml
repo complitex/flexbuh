@@ -14,76 +14,118 @@
         <association property="masterDepartment" column="{id=master_id, currentDate=current_date}"
                      select="selectCurrentDepartmentById"/>
 
-        <collection property="childDepartments" column="{masterId=master_id, currentDate=current_date}"
+        <collection property="childDepartments" column="{masterId=id, currentDate=current_date}"
                     select="selectCurrentChildDepartmentsByMasterId"/>
 
     </resultMap>
+
+    <sql id="columns">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
+        `name`, `code`, `organization_id`<if test="masterDepartment != null">, `master_id`</if>
+    </sql>
+
+    <sql id="properties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        #{name}, #{code}, #{organization.id}<if test="masterDepartment != null">, #{masterDepartment.id}</if>
+    </sql>
+
+    <sql id="filter">
+        <if test="filter != null">
+            <if test="filter.name != null"> and `name` like concat('%', #{filter.name}, '%')</if>
+            <if test="filter.code != null"> and `type` like #{filter.code}</if>
+            <if test="filter.organizationId != null"> and `organization_id` = #{filter.organizationId}</if>
+            <if test="filter.organizationId != null and filter.masterId == null"> and `master_id` is null</if>
+            <if test="filter.masterId != null"> and `master_id` = #{filter.masterId}</if>
+        </if>
+    </sql>
+
+    <sql id="filter_order_limit">
+        <if test="filter != null">
+            <if test="filter.name != null"> and `name` like concat('%', #{filter.name}, '%')</if>
+            <if test="filter.code != null"> and `type` like #{filter.code}</if>
+            <if test="filter.organizationId != null"> and `organization_id` = #{filter.organizationId}</if>
+            <if test="filter.organizationId != null and filter.masterId == null"> and `master_id` is null</if>
+            <if test="filter.masterId != null"> and `master_id` = #{filter.masterId}</if>
+            order by ${filter.sortProperty}
+            <choose><when test="filter.ascending">asc</when><otherwise>desc</otherwise></choose>
+            limit #{filter.first}, #{filter.count}
+        </if>
+    </sql>
 
     <insert id="insertDepartment"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
         <selectKey keyProperty="id" order="BEFORE" resultType="long">
-            SELECT IFNULL(MAX(`id`)+1, 1) FROM `department`
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+            FROM `department`
         </selectKey>
 
-        insert into `department` (`id`, `version`, `entry_into_force_date`, `completion_date`, `organization_id`,
-        <if test="masterDepartment != null">`master_id`,</if>
-         `name`, `code`)
-        values (#{id}, #{version}, #{entryIntoForceDate}, #{completionDate}, #{organization.id},
-        <if test="masterDepartment != null">#{masterDepartment.id},</if>
-        #{name}, #{code})
+        insert into `department` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
 
+    </insert>
+
+    <insert id="updateDepartment"
+            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+
+        <selectKey keyProperty="version" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            FROM `department` WHERE id = #{id}
+        </selectKey>
+
+        insert into `department` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
     </insert>
 
     <update id="updateDepartmentNullCompletionDate"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
-        update `department` set `completion_date` = #{entryIntoForceDate} where
-        `id` = #{id} and `version` = #{version} and `completion_date` is null;
+        update `department` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
 
     </update>
 
     <update id="updateDepartmentCompletionDate"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
-        update `department` set `completion_date` = #{completionDate} where
-        `id` = #{id} and `version` = #{version};
+        update `department` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
 
     </update>
 
-    <insert id="updateDepartment"
+    <update id="deleteDepartment"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
-        <selectKey keyProperty="version" order="BEFORE" resultType="long">
-            SELECT IFNULL(MAX(`version`)+1, 1) FROM `department` WHERE id = #{id}
-        </selectKey>
+        update `department` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
 
-        insert into `department` (`id`, `version`, `entry_into_force_date`, `completion_date`, `organization_id`,
-        <if test="masterDepartment != null">`master_id`,</if>
-         `name`, `code`)
-        values (#{id}, #{version}, #{entryIntoForceDate}, #{completionDate}, #{organization.id},
-        <if test="masterDepartment != null">#{masterDepartment.id},</if>
-        #{name}, #{code})
-    </insert>
+    </update>
 
     <select id="selectCurrentDepartmentById" parameterType="map" resultMap="departmentResultMap">
-        select *, #{currentDate} as `current_date` from `department` where `id` = #{id} and #{currentDate} >= `entry_into_force_date` and
-        (`completion_date` > #{currentDate} or `completion_date` is null)
-    </select>
-
-    <select id="selectCurrentDepartmentByOrganizationId" parameterType="map" resultMap="departmentResultMap">
-        select *, #{currentDate} as `current_date` from `department` where `organization_id` = #{organizationId} and #{currentDate} >= `entry_into_force_date` and
-        (`completion_date` > #{currentDate} or `completion_date` is null)
+        select *, #{currentDate} as `current_date` from `department` where `id` = #{id} and
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
     </select>
 
     <select id="selectCurrentChildDepartmentsByMasterId" parameterType="map" resultMap="departmentResultMap">
-        select *, #{currentDate} as `current_date` from `department` where `master_id` = #{masterId} and #{currentDate} >= `entry_into_force_date` and
-        (`completion_date` > #{currentDate} or `completion_date` is null)
+        select *, #{currentDate} as `current_date` from `department` where `master_id` = #{masterId} and
+         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
     </select>
 
-    <select id="selectCurrentDepartments" parameterType="date" resultMap="departmentResultMap">
-        select *, #{currentDate} as `current_date` from `department` where #{currentDate} >= `entry_into_force_date` and
-        (`completion_date` > #{currentDate} or `completion_date` is null)
+    <select id="selectCurrentDepartments" parameterType="map" resultMap="departmentResultMap">
+        select *, #{currentDate} as `current_date` from `department` where
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="filter_order_limit"/>
+    </select>
+
+    <select id="selectCurrentDepartmentsCount" parameterType="map" resultMap="departmentResultMap">
+        select *, #{currentDate} as `current_date` from `department` where
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="filter"/>
     </select>
 
 </mapper>

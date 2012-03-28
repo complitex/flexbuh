@@ -148,21 +148,21 @@
     </insert>
 
     <update id="updateOrganizationNullCompletionDate"
-            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+            parameterType="org.complitex.flexbuh.common.entity.organization.Organization">
 
         update `organization` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
 
     </update>
 
     <update id="updateOrganizationCompletionDate"
-            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+            parameterType="org.complitex.flexbuh.common.entity.organization.Organization">
 
         update `organization` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
 
     </update>
 
     <update id="deleteOrganization"
-            parameterType="org.complitex.flexbuh.personnel.entity.Department">
+            parameterType="org.complitex.flexbuh.common.entity.organization.Organization">
 
         update `organization` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
 

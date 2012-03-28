@@ -91,9 +91,7 @@ public class OrganizationBean extends AbstractBean {
         params.put("filter", filter);
         params.put("currentDate", new Date());
 
-        Integer result = (Integer)sqlSession().selectOne(NS + ".selectCurrentOrganizationsCount", params);
-        log.debug("getOrganizationsCount={}", result);
-        return  result;
+        return (Integer)sqlSession().selectOne(NS + ".selectCurrentOrganizationsCount", params);
     }
 
 }

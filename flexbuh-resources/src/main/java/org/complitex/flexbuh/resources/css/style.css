@@ -31,6 +31,13 @@ img {
     text-decoration: none;
 }
 
+ul.tree {
+	width: 480px;
+	height: 240px;
+	overflow: auto;
+	border: 1px solid #DDDDDD;
+}
+
 #Header {
     height: 85px;
     vertical-align: top;

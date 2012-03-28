@@ -1,13 +1,16 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
+import org.complitex.flexbuh.common.entity.organization.Organization;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.personnel.entity.Department;
+import org.complitex.flexbuh.personnel.entity.DepartmentFilter;
 
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -18,6 +21,15 @@ import java.util.Map;
 public class DepartmentBean extends AbstractBean {
 
     public static final String NS = DepartmentBean.class.getName();
+
+    @Transactional
+    public void save(Department department) {
+        if (department.getId() != null) {
+            update(department);
+        } else {
+            create(department);
+        }
+    }
 
     @Transactional
     public void create(Department department) {
@@ -36,6 +48,22 @@ public class DepartmentBean extends AbstractBean {
         sqlSession().update(NS + ".updateDepartmentCompletionDate", department);
     }
 
+    @Transactional
+    public void deleteDepartment(Department department) {
+        department.setDeleted(true);
+        if (department.getCompletionDate() == null) {
+            department.setCompletionDate(new Date());
+        }
+        sqlSession().update(NS + ".deleteDepartment", department);
+        if (department.getChildDepartments() != null) {
+            for (Department childDepartment : department.getChildDepartments()) {
+                childDepartment.setEntryIntoForceDate(department.getCompletionDate());
+                childDepartment.setMasterDepartment(department.getMasterDepartment());
+                update(childDepartment);
+            }
+        }
+    }
+
     public Department getDepartment(Long id) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("id", id);
@@ -45,7 +73,20 @@ public class DepartmentBean extends AbstractBean {
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<Department> getDepartments() {
-        return sqlSession().selectList(NS + ".selectCurrentDepartments", new Date());
+    public List<Department> getDepartments(DepartmentFilter filter) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("filter", filter);
+        params.put("currentDate", new Date());
+
+        return sqlSession().selectList(NS + ".selectCurrentDepartments", params);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public int getDepartmentsCount(DepartmentFilter filter) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("filter", filter);
+        params.put("currentDate", new Date());
+
+        return (Integer)sqlSession().selectOne(NS + ".selectCurrentDepartmentsCount", params);
     }
 }
