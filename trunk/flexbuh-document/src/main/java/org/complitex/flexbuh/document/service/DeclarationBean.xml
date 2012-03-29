@@ -98,12 +98,13 @@
             and de.`session_id` = #{sessionId}
             and (pp.`selected` = true or (de.`person_profile_id` is null
             and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
+            <!-- todo performance select-->
 
             <foreach collection="periods" item="p" separator="or" open="and (" close=")">
                 (#{p.month} = `period_month` and #{p.type} = `period_type` and #{p.year} = `period_year`)
             </foreach>
         </where>
-        <!-- todo performance select-->
+
     </sql>
 
     <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
