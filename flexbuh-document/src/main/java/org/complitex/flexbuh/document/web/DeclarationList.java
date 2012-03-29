@@ -151,7 +151,7 @@ public class DeclarationList extends TemplatePage{
                             public void onClick(AjaxRequestTarget target) {
                                 List<Period> filterPeriods = declarationFilter.getPeriods();
 
-                                if (filterPeriods.contains(period) && filterPeriods.size() > 1){
+                                if (filterPeriods.contains(period)){
                                     filterPeriods.remove(period);
                                 }else{
                                     filterPeriods.add(period);

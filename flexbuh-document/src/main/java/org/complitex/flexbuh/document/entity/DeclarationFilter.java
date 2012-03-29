@@ -28,6 +28,9 @@ public class DeclarationFilter extends AbstractFilter{
 
     public DeclarationFilter(Long sessionId) {
         super(sessionId);
+
+        //add period for sql empty select
+        periods.add(new Period(0,0,0));
     }
 
     public DeclarationFilter(Long sessionId, Long parentId) {
