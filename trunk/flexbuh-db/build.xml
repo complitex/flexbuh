@@ -1,23 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="flexbuh database" default="create" basedir=".">
+<project name="flexbuh database" default="create-db" basedir=".">
     <property file="database.properties"/>
 
-    <target name="create">
+    <taskdef name="groovy"
+			 classname="org.codehaus.groovy.ant.Groovy" classpath="groovy-all-1.8.6.jar" />
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="ant-contrib-1.0b3.jar" />
+
+    <target name="create-db">
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="${jdbc}"/>
             </classpath>
 
-            <transaction src="flexbuh-create.sql"/>
+            <transaction src="flexbuh-common-create.sql"/>
+            <transaction src="flexbuh-common-insert.sql"/>
+            <transaction src="flexbuh-document-create.sql"/>
+            <transaction src="flexbuh-document-insert.sql"/>
+            <transaction src="flexbuh-personel-create.sql"/>
+            <transaction src="flexbuh-personel-insert.sql"/>
+            <transaction src="flexbuh-logging-create.sql"/>
+            <transaction src="flexbuh-logging-insert.sql"/>
             <transaction src="logback-create.sql"/>
+            <transaction src="flexbuh-admin-create.sql"/>
+            <transaction src="flexbuh-admin-insert.sql"/>
         </sql>
+    </target>
 
+    <target name="update-db">
+        <groovy src="genUpdatesList.groovy">
+            <arg value="${version}"/>
+        </groovy>
+        <foreach  list="${result}" delimiter=":" target="sql.run"
+				  param="sql.script" inheritall="true" />
+    </target>
+
+    <target name="sql.run">
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="${jdbc}"/>
             </classpath>
 
-            <transaction src="flexbuh-insert.sql"/>
+            <transaction src="${sql.script}"/>
         </sql>
     </target>
 
@@ -32,7 +56,7 @@
     </target>
 
     <target name="create_with_test">
-        <antcall target="create"/>
+        <antcall target="create-db"/>
         <antcall target="populate_test_data"/>
     </target>
 
