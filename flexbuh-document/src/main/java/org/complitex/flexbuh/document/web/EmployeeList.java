@@ -229,7 +229,7 @@ public class EmployeeList extends TemplatePage{
 
                                     OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
-                                    XmlUtil.writeXml(EmployeeRowSet.class, new EmployeeRowSet(employees), os);
+                                    XmlUtil.writeXml(EmployeeRowSet.class, new EmployeeRowSet(employees, true), os, "windows-1251");
                                 } catch (Exception e) {
                                     log.error("Cannot export employee to xml: {}", new Object[]{e, EventCategory.EXPORT});
                                 }

@@ -255,7 +255,7 @@ public class PersonProfileList extends TemplatePage {
 
                                     OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
-                                    XmlUtil.writeXml(Settings.class, new Settings(personProfiles), os);
+                                    XmlUtil.writeXml(Settings.class, new Settings(personProfiles), os, "windows-1251");
                                 } catch (Exception e) {
                                     log.error("Cannot export person profile to xml: {}", new Object[]{e, EventCategory.EXPORT});
                                 }

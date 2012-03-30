@@ -15,15 +15,42 @@ import java.util.List;
 public class EmployeeRowSet {
     public final static String FILE_NAME = "spr_works.xml";
 
-    public EmployeeRowSet() {
-    }
-
-    public EmployeeRowSet(List<Employee> employees) {
-        this.employees = employees;
-    }
+    @XmlElement(name = "header")
+    private RowSetHeader header;
 
     @XmlElement(name = "row")
     private List<Employee> employees;
+
+    public EmployeeRowSet() {
+        header = new RowSetHeader("spr_works", "Довідник працючих");
+
+        header.addColumn("HTIN", "Ідентифікаційний код", "right");
+        header.addColumn("HNAME", "Прізвище, ім'я, по-батькові", "left");
+        header.addColumn("HBIRTHDAY", "Дата народження", "left");
+        header.addColumn("HDATE_IN", "Дата прийняття на роботу", "left");
+        header.addColumn("HDATE_OUT", "Дата звільнення", "left");
+    }
+
+    public EmployeeRowSet(List<Employee> employees, boolean clearLocalId) {
+        this();
+
+        this.employees = employees;
+
+        for (int i = 0, size = employees.size(); i < size; i++){
+            Employee employee = employees.get(i);
+
+            employee.setNum(i + 1);
+
+            if (clearLocalId){
+                employee.setId(null);
+                employee.setPersonProfileId(null);
+            }
+        }
+    }
+
+    public EmployeeRowSet(List<Employee> employees) {
+        this(employees, false);
+    }
 
     public List<Employee> getEmployees() {
         return employees;

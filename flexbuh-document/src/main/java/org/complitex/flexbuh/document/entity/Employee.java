@@ -15,19 +15,13 @@ import java.util.Date;
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class Employee extends SessionObject{
     private Long personProfileId;
-
+    private Integer num;
     private Integer htin;
-
     private String lastName;
-
     private String firstName;
-
     private String middleName;
-
     private Date hbirthday;
-
     private Date hdateIn;
-
     private Date hdateOut;
 
     public Employee() {
@@ -46,9 +40,18 @@ public class Employee extends SessionObject{
         this.personProfileId = personProfileId;
     }
 
+    @XmlAttribute(name = "num")
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
     @XmlElement(name = "HTIN")
     public Integer getHtin() {
-        return htin;
+        return htin != null ? htin : 0;
     }
 
     public void setHtin(Integer htin) {
