@@ -16,6 +16,10 @@ public class StringUtil {
         return object != null ? object.toString() : "";
     }
 
+    public static String notNull(String s){
+        return s != null ? s : "";
+    }
+
     public static String replace(String s, CharSequence target, CharSequence replacement) {
         return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
                 s).replaceFirst(Matcher.quoteReplacement(replacement.toString()));

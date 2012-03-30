@@ -229,7 +229,7 @@ public class CounterpartList extends TemplatePage{
 
                                     OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
-                                    XmlUtil.writeXml(CounterpartRowSet.class, new CounterpartRowSet(counterparts), os);
+                                    XmlUtil.writeXml(CounterpartRowSet.class, new CounterpartRowSet(counterparts, true), os, "windows-1251");
                                 } catch (Exception e) {
                                     log.error("Cannot export counterpart to xml: {}", new Object[]{e, EventCategory.EXPORT});
                                 }

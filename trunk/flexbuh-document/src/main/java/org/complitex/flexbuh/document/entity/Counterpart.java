@@ -5,6 +5,8 @@ import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
 
+import static org.complitex.flexbuh.common.util.StringUtil.notNull;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 16.11.11 14:45
@@ -14,18 +16,13 @@ import javax.xml.bind.annotation.*;
 public class Counterpart extends SessionObject {
     private Long personProfileId;
 
+    private Integer num;
     private String hk;
-
     private String lastName;
-
     private String firstName;
-
     private String middleName;
-
     private String hloc;
-
     private String htel;
-
     private String hnspdv;
 
     public Counterpart() {
@@ -44,9 +41,18 @@ public class Counterpart extends SessionObject {
         this.personProfileId = personProfileId;
     }
 
+    @XmlAttribute(name = "num")
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
     @XmlElement(name = "HK")
     public String getHk() {
-        return hk;
+        return notNull(hk);
     }
 
     public void setHk(String hk) {
@@ -66,7 +72,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HLOC")
     public String getHloc() {
-        return hloc;
+        return notNull(hloc);
     }
 
     public void setHloc(String hloc) {
@@ -75,7 +81,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HTEL")
     public String getHtel() {
-        return htel;
+        return notNull(htel);
     }
 
     public void setHtel(String htel) {
@@ -84,7 +90,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HNSPDV")
     public String getHnspdv() {
-        return hnspdv;
+        return notNull(hnspdv);
     }
 
     public void setHnspdv(String hnspdv) {

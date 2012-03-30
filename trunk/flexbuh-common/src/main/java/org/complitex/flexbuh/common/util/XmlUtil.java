@@ -143,11 +143,16 @@ public class XmlUtil {
         return parent;
     }
 
-    public static <T> void writeXml(Class<T> _class, T jaxbElement, OutputStream outputStream) throws JAXBException {
+    public static <T> void writeXml(Class<T> _class, T jaxbElement, OutputStream outputStream, String encoding) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(_class);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, encoding);
 
         marshaller.marshal(jaxbElement, outputStream);
+    }
+
+    public static <T> void writeXml(Class<T> _class, T jaxbElement, OutputStream outputStream) throws JAXBException {
+        writeXml(_class, jaxbElement, outputStream, "UTF-8");
     }
 }
