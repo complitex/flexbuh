@@ -26,7 +26,7 @@
 
     <div wicket:id="upload_dialog"></div>
 
-    <div wicket:id="period_year_container" style="overflow: hidden;">
+    <div wicket:id="period_year_container" class="period_year_container">
         <div wicket:id="year_list">
             <div class="year_period_block">
                 <div class="year_block">
@@ -101,7 +101,7 @@
                 </wicket:container>
             </table>
 
-            <div style="margin-top: 8px">
+            <div style="margin-top: 20px">
                 <input type="submit" wicket:id="download_xml_zip" wicket:message="value:download_xml_zip" class="btnBig"/>
                 <input type="submit" wicket:id="download_pdf_zip" wicket:message="value:download_pdf_zip" class="btnBig"/>
             </div>
@@ -110,6 +110,15 @@
                 <span wicket:id="paging"></span>
             </div>
         </form>
+
+        <div wicket:id="empty_declaration_list_container" class="empty_declaration_list_container">
+            <h4 class="empty_declaration_list_span">
+                <wicket:message key="select_period"/>
+                <a href="#" wicket:id="add_declaration">
+                    <wicket:message key="add_declaration"/>
+                </a>
+            </h4>
+        </div>
     </div>
 </wicket:extend>
 </body>
