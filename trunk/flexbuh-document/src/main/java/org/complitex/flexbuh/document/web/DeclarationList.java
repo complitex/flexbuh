@@ -27,6 +27,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -84,9 +85,11 @@ public class DeclarationList extends TemplatePage{
     public DeclarationList(PageParameters parameters) {
         this();
 
-        declarationFilter.setPeriodType(parameters.get("period_type").toInt(1));
-        declarationFilter.setPeriodMonth(parameters.get("period_month").toInt(1));
-        declarationFilter.setPeriodYear(parameters.get("period_year").toInt(1));
+        declarationFilter.getPeriods().add(
+                new Period(
+                        parameters.get("period_month").toInt(1),
+                        parameters.get("period_type").toInt(1),
+                        parameters.get("period_year").toInt(1)));
     }
 
     public DeclarationList() {
@@ -117,10 +120,25 @@ public class DeclarationList extends TemplatePage{
         tableContainer.add(filterForm);
 
         //Periods
-        final Map<Integer, List<Period>> periodMap = declarationBean.getPeriodMap(sessionId);
+        final IModel<Map<Integer, List<Period>>> periodMapModel = new LoadableDetachableModel<Map<Integer, List<Period>>>() {
+            @Override
+            protected Map<Integer, List<Period>> load() {
+                return declarationBean.getPeriodMap(sessionId);
+            }
+        };
 
         //Дерево - годы
-        ListView yearList = new ListView<Integer>("year_list", Ordering.natural().sortedCopy(periodMap.keySet())) {
+        ListView yearList = new ListView<Integer>("year_list", new ListModel<Integer>() {
+            @Override
+            public List<Integer> getObject() {
+                return Ordering.natural().sortedCopy(periodMapModel.getObject().keySet());
+            }
+
+            @Override
+            public void detach() {
+                periodMapModel.detach();
+            }
+        }) {
             @Override
             protected void populateItem(final ListItem<Integer> item) {
                 final Integer year = item.getModelObject();
@@ -128,7 +146,7 @@ public class DeclarationList extends TemplatePage{
                 item.add((new Label("year_header", year + "")));
 
                 //Дерево - периоды
-                ListView periodList = new ListView<Period>("period_list", periodMap.get(year)) {
+                ListView periodList = new ListView<Period>("period_list", periodMapModel.getObject().get(year)) {
                     @Override
                     protected void populateItem(final ListItem<Period> periodItem) {
                         periodItem.setOutputMarkupId(true);

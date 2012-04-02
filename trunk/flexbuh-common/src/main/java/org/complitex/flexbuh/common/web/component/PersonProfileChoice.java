@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.common.util.StringUtil;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -43,7 +44,7 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
         setChoiceRenderer(new IChoiceRenderer<PersonProfile>() {
             @Override
             public Object getDisplayValue(PersonProfile object) {
-                return object.getProfileName();
+                return StringUtil.getString(object.getTin()) + " " +object.getProfileName();
             }
 
             @Override

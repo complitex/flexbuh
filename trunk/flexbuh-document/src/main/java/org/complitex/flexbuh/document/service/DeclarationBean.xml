@@ -163,13 +163,15 @@
     </sql>
 
     <select id="selectDeclarationYears" parameterType="long" resultType="int">
-        select `period_year` <include refid="fromDeclarationWhereProfile"/> group by `period_year`
+        select `period_year` <include refid="fromDeclarationWhereProfile"/>
+        group by `period_year`
+        order by `period_year` asc
     </select>
 
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
         select `period_type` as type, `period_month` as month, `period_year` as year
           <include refid="fromDeclarationWhereProfile"/> <if test="year != null">and `period_year` = #{year}</if>
-          group by `period_type`, `period_month`
+          group by `period_type`, `period_month`, `year`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">
