@@ -115,10 +115,6 @@ public class DeclarationList extends TemplatePage{
         tableContainer.setOutputMarkupId(true);
         add(tableContainer);
 
-        //Форма
-        Form filterForm = new Form("filter_form");
-        tableContainer.add(filterForm);
-
         //Periods
         final IModel<Map<Integer, List<Period>>> periodMapModel = new LoadableDetachableModel<Map<Integer, List<Period>>>() {
             @Override
@@ -191,6 +187,10 @@ public class DeclarationList extends TemplatePage{
         };
         periodYearContainer.add(yearList);
 
+        //Форма
+        Form filterForm = new Form("filter_form");
+        tableContainer.add(filterForm);
+
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));
 
@@ -232,7 +232,7 @@ public class DeclarationList extends TemplatePage{
         dataProvider.setSort("date", SortOrder.DESCENDING);
 
         //Таблица
-        DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
+        final DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
             @Override
             protected void populateItem(Item<Declaration> item) {
                 final Declaration declaration = item.getModelObject();
@@ -451,6 +451,32 @@ public class DeclarationList extends TemplatePage{
         //Загрузка файлов
         declarationUploadDialog = new DeclarationUploadDialog("upload_dialog", update);
         add(declarationUploadDialog);
+
+        //Отображение пустого списка
+        filterForm.add(new Behavior() {
+            @Override
+            public void onConfigure(Component component) {
+                component.setVisible(dataView.getItemCount() > 0);
+            }
+        });
+
+        WebMarkupContainer emptyDeclarationListContainer = new WebMarkupContainer("empty_declaration_list_container");
+        emptyDeclarationListContainer.setOutputMarkupId(true);
+        tableContainer.add(emptyDeclarationListContainer);
+
+        emptyDeclarationListContainer.add(new Behavior() {
+            @Override
+            public void onConfigure(Component component) {
+                component.setVisible(dataView.getItemCount() == 0);
+            }
+        });
+
+        emptyDeclarationListContainer.add(new Link("add_declaration") {
+            @Override
+            public void onClick() {
+                setResponsePage(DeclarationCreate.class);
+            }
+        });
     }
 
     private List<Declaration> getSelectedDeclaration() {
