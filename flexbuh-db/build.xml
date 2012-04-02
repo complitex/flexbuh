@@ -19,11 +19,7 @@
             <transaction src="flexbuh-document-insert.sql"/>
             <transaction src="flexbuh-personel-create.sql"/>
             <transaction src="flexbuh-personel-insert.sql"/>
-            <transaction src="flexbuh-logging-create.sql"/>
-            <transaction src="flexbuh-logging-insert.sql"/>
             <transaction src="logback-create.sql"/>
-            <transaction src="flexbuh-admin-create.sql"/>
-            <transaction src="flexbuh-admin-insert.sql"/>
         </sql>
     </target>
 
