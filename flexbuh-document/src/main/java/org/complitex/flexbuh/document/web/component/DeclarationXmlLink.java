@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.document.web;
+package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;

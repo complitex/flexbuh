@@ -19,15 +19,12 @@ import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.util.DateUtil;
-import org.complitex.flexbuh.common.web.component.declaration.PeriodTypeChoice;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationService;
+import org.complitex.flexbuh.document.web.component.DeclarationPeriodPanel;
 
 import javax.ejb.EJB;
-import java.text.DateFormatSymbols;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,11 +40,6 @@ public class DeclarationCreate extends FormTemplatePage{
 
     @EJB
     private DeclarationService declarationService;
-
-    private final DateFormatSymbols dateFormatSymbols = DateFormatSymbols.getInstance(getLocale());
-
-    private final static int MIN_YEAR = DateUtil.getCurrentYear() - 4;
-    private final static int MAX_YEAR = DateUtil.getCurrentYear() + 1;
 
     public DeclarationCreate() {
         add(new Label("title", getString("title")));
@@ -177,54 +169,8 @@ public class DeclarationCreate extends FormTemplatePage{
             }
         });
 
-        //Месяц (для 1,2,3,4 кварталов это 3,6,9,12 месяц соответственно, для года - 12)
-        final DropDownChoice periodMonthChoice = new DropDownChoice<>("period_month",
-                new PropertyModel<Integer>(declaration, "head.periodMonth"),
-                new LoadableDetachableModel<List<Integer>>() {
-                    @Override
-                    protected List<Integer> load() {
-                        switch (declaration.getHead().getPeriodType()){
-                            case 1: return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                            case 2: return Arrays.asList(3, 6, 9, 12);
-                            case 3: return Arrays.asList(6);
-                            case 4: return Arrays.asList(9);
-                            case 5: return Arrays.asList(12);
-                        }
-
-                        return Collections.emptyList();
-                    }
-                }, new IChoiceRenderer<Integer>() {
-            @Override
-            public Object getDisplayValue(Integer object) {
-                return dateFormatSymbols.getMonths()[object - 1];
-            }
-
-            @Override
-            public String getIdValue(Integer object, int index) {
-                return object.toString();
-            }
-        });
-        periodMonthChoice.setOutputMarkupId(true);
-        form.add(periodMonthChoice);
-
-        //Период (1-месяц, 2-квартал, 3-полугодие, 4-9 месяцев, 5-год)
-        PeriodTypeChoice periodTypeChoice = new PeriodTypeChoice("period_type", new PropertyModel<Integer>(declaration, "head.periodType"));
-        periodTypeChoice.setRequired(true);
-        periodTypeChoice.setOutputMarkupId(true);
-        form.add(periodTypeChoice);
-        periodTypeChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(periodMonthChoice);
-            }
-        });
-
-        //Год
-        List<Integer> years = new ArrayList<>();
-        for (int i = MIN_YEAR; i <= MAX_YEAR; ++i){
-            years.add(i);
-        }
-        form.add(new DropDownChoice<>("period_year", new PropertyModel<Integer>(declaration, "head.periodYear"), years).setRequired(true));
+        //Period
+        form.add(new DeclarationPeriodPanel("period_panel", declaration));
 
         form.add(new Button("submit"){
             @Override

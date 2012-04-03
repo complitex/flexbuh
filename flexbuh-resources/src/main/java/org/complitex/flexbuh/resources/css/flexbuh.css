@@ -41,3 +41,7 @@
 .empty_declaration_list_span{
     margin-top: 30px;
 }
+
+.period_panel td{
+    padding-right: 20px;
+}

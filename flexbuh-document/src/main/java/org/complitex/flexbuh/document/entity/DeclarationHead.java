@@ -27,7 +27,7 @@ public class DeclarationHead implements Serializable {
     private Integer cDocType = 0; // № исправительной документа (0 - основной (первого поданного))
 
     @XmlElement(name = "C_DOC_CNT")
-    private Integer cDocCnt = 0; // № однотипных документов в периоде
+    private Integer cDocCnt = 1; // № однотипных документов в периоде
 
     @XmlElement(name = "C_REG")
     private Integer cReg = 0; // код области
@@ -48,7 +48,7 @@ public class DeclarationHead implements Serializable {
     private Integer cStiOrig = 0; // Код ГНИ, в которую подается оригинал документа
 
     @XmlElement(name = "C_DOC_STAN")
-    private Integer cDocStan = 0; // законодательство
+    private Integer cDocStan = 1; // законодательство
 
     @XmlElementWrapper(name = "LINKED_DOCS")
     @XmlElement(name = "DOC")
