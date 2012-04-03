@@ -13,6 +13,7 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -23,8 +24,9 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.flexbuh.common.entity.*;
 import org.complitex.flexbuh.common.entity.Address;
+import org.complitex.flexbuh.common.entity.CityType;
+import org.complitex.flexbuh.common.entity.StreetType;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -51,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -89,8 +90,6 @@ public class UserEdit extends FormTemplatePage {
     private User user;
     private IModel<String> streetModel = new Model<String>();
     private IModel<String> cityModel = new Model<String>();
-
-    private Form form;
 
     private Dialog addRolesDialog;
 
@@ -134,7 +133,7 @@ public class UserEdit extends FormTemplatePage {
 
         add(new FeedbackPanel("messages"));
 
-        form = new Form("form");
+        Form form = new Form("form");
         add(form);
 
         // Login
@@ -148,6 +147,14 @@ public class UserEdit extends FormTemplatePage {
         PasswordTextField password = new PasswordTextField("password", new PropertyModel<String>(user, "password"));
         password.setRequired(false);
         form.add(password);
+
+        // Password2
+        final PasswordTextField password2 = new PasswordTextField("password2", new Model<>(""));
+        password2.setRequired(false);
+        form.add(password2);
+
+        //Password validator
+        form.add(new EqualPasswordInputValidator(password, password2));
 
         // First name
         form.add(new FirstNameAutoCompleteTextField("first_name", new PropertyModel<String>(user, "firstName")));
@@ -286,8 +293,7 @@ public class UserEdit extends FormTemplatePage {
         rolesContainer.add(roles);
 
         // Button update/create user
-        AtomicReference<Button> updateOrCreate = new AtomicReference<Button>(new SaveUserButton("submit"));
-        form.add(updateOrCreate.get());
+        form.add(new SaveUserButton("submit"));
 
         // Button cancel changes and return to "Users list" page
         form.add(new Link("cancel") {
@@ -345,6 +351,7 @@ public class UserEdit extends FormTemplatePage {
                 return selectRoles.size() > 0;
             }
         };
+        addRoles.setDefaultFormProcessing(false);
         form.add(addRoles);
 
         // Button remove roles on form
@@ -387,6 +394,7 @@ public class UserEdit extends FormTemplatePage {
                 return user.getRoles().size() > 0;
             }
         };
+        remove.setDefaultFormProcessing(false);
         form.add(remove);
 
         // Button add roles on dialog

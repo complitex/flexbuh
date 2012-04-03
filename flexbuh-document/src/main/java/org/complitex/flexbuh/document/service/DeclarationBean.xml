@@ -171,7 +171,8 @@
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
         select `period_type` as type, `period_month` as month, `period_year` as year
           <include refid="fromDeclarationWhereProfile"/> <if test="year != null">and `period_year` = #{year}</if>
-          group by `period_type`, `period_month`, `year`
+         and `parent_id` is null
+         group by `period_type`, `period_month`, `year`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">
