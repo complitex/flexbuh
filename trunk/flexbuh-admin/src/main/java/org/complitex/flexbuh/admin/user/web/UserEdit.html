@@ -61,6 +61,10 @@
                 <td><input type="password" wicket:id="password" maxlength="45" size="40"/></td>
             </tr>
             <tr>
+                <th><wicket:message key="password2"/> </th>
+                <td><input type="password" wicket:id="password2" maxlength="45" size="40"/></td>
+            </tr>
+            <tr>
                 <th><wicket:message key="last_name"/></th>
                 <td><input wicket:id="last_name"/></td>
             </tr>
@@ -97,8 +101,8 @@
                             </tr>
                         </table>
                         <div>
-                            <input type="button" wicket:id="addRoles" wicket:message="value:add" class="btnMiddle"/>
-                            <input type="button" wicket:id="removeRoles" wicket:message="value:remove" class="btnMiddle"/>
+                            <input type="button" wicket:id="addRoles" wicket:message="value:add" class="btnSmall"/>
+                            <input type="button" wicket:id="removeRoles" wicket:message="value:remove" class="btnSmall"/>
                         </div>
                     </fieldset>
                 </td>
