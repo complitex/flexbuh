@@ -27,14 +27,26 @@
     <form action="#" wicket:id="form">
         <div wicket:id="declaration"></div>
 
-        <div wicket:id="accordion">
+        <fieldset style="margin-top: 10px">
+            <legend><wicket:message key="period_panel"/></legend>
+            <div wicket:id="period_panel"></div>
+        </fieldset>
+
+        <div wicket:id="accordion" style="margin-top: 20px;">
             <div wicket:id="declarations">
                 <h3><a href="#"><span wicket:id="label"></span></a></h3>
-                <div wicket:id="linked_declaration"></div>
+                <div>
+                    <div wicket:id="linked_declaration"></div>
+
+                    <fieldset style="margin-top: 20px">
+                        <legend><wicket:message key="period_panel"/></legend>
+                        <div wicket:id="period_panel"></div>
+                    </fieldset>
+                </div>
             </div>
         </div>
 
-        <div style="margin-top: 20px">
+        <div style="margin-top: 30px">
             <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
             <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
         </div>

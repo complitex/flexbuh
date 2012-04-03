@@ -26,6 +26,7 @@ import org.complitex.flexbuh.document.entity.LinkedDeclaration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.document.web.component.AddLinkedDeclarationDialog;
+import org.complitex.flexbuh.document.web.component.DeclarationPeriodPanel;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -103,6 +104,8 @@ public class DeclarationFormPage extends TemplatePage{
         //Declaration
         form.add(new DeclarationFormComponent("declaration", declaration));
 
+        form.add(new DeclarationPeriodPanel("period_panel", declaration));
+
         //Linked declaration
         final Accordion accordion = new Accordion("accordion");
         accordion.setCollapsible(true);
@@ -129,6 +132,8 @@ public class DeclarationFormPage extends TemplatePage{
                 item.add(new Label("label", declaration.getTemplateName() + " " + declaration.getName()));
 
                 item.add(new DeclarationFormComponent("linked_declaration", declaration));
+
+                item.add(new DeclarationPeriodPanel("period_panel", declaration));
 
                 item.setRenderBodyOnly(true);
             }

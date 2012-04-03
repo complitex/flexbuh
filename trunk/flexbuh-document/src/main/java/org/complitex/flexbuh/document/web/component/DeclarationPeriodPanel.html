@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+
+<body>
+<wicket:panel>
+    <div>
+        <table class="period_panel">
+            <tr>
+                <th><wicket:message key="period_type"/></th>
+                <td><select wicket:id="period_type"></select></td>
+
+                <th><wicket:message key="period_month"/></th>
+                <td><select wicket:id="period_month"></select></td>
+
+                <th><wicket:message key="period_year"/></th>
+                <td><select wicket:id="period_year"></select></td>
+            </tr>
+
+            <tr>
+                <th><wicket:message key="c_doc_type"/></th>
+                <td><input type="text" size="3" wicket:id="c_doc_type"/></td>
+
+                <th><wicket:message key="c_doc_cnt"/></th>
+                <td><input type="text" size="3" wicket:id="c_doc_cnt"/></td>
+
+                <th><wicket:message key="c_doc_stan"/></th>
+                <td><select wicket:id="c_doc_stan"></select></td>
+            </tr>
+        </table>
+    </div>
+</wicket:panel>
+</body>
+</html>

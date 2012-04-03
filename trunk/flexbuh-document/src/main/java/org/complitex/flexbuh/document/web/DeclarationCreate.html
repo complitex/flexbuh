@@ -28,22 +28,14 @@
                 <th><wicket:message key="document"/> </th>
                 <td><select wicket:id="document" size="7" style="width: 100%"></select></td>
             </tr>
-            <tr>
-                <th><wicket:message key="period_type"/> </th>
-                <td><select wicket:id="period_type"></select></td>
-            </tr>
-            <tr>
-                <th><wicket:message key="period_month"/></th>
-                <td><select wicket:id="period_month"></select></td>
-            </tr>
-            <tr>
-                <th><wicket:message key="period_year"/></th>
-                <td><select wicket:id="period_year"></select></td>
-            </tr>
         </table>
 
-        <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
-        <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        <div wicket:id="period_panel"></div>
+
+        <div style="margin-top: 30px">
+            <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+            <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
     </form>
 </wicket:extend>
 </body>
