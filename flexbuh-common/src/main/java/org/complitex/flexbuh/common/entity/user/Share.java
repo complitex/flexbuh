@@ -8,14 +8,14 @@ import org.complitex.flexbuh.common.entity.DomainObject;
  */
 public class Share extends DomainObject{
     private Long sessionId;
-    private Long sharedSessionId;
+    private Long sharedToSessionId;
 
     public Share() {
     }
 
-    public Share(Long sessionId, Long sharedSessionId) {
+    public Share(Long sessionId, Long sharedToSessionId) {
         this.sessionId = sessionId;
-        this.sharedSessionId = sharedSessionId;
+        this.sharedToSessionId = sharedToSessionId;
     }
 
     public Long getSessionId() {
@@ -26,11 +26,11 @@ public class Share extends DomainObject{
         this.sessionId = sessionId;
     }
 
-    public Long getSharedSessionId() {
-        return sharedSessionId;
+    public Long getSharedToSessionId() {
+        return sharedToSessionId;
     }
 
-    public void setSharedSessionId(Long sharedSessionId) {
-        this.sharedSessionId = sharedSessionId;
+    public void setSharedToSessionId(Long sharedToSessionId) {
+        this.sharedToSessionId = sharedToSessionId;
     }
 }

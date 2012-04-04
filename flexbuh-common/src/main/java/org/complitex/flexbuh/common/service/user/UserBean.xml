@@ -169,7 +169,7 @@
             left join `usergroup` gc on uc.`login` = gc.`login`
             left join `user_organization` uo on uc.`login` = uo.`login`
             left join `organization` o on uo.`organization_id` = o.`id`
-            left join `share` s on (s.`shared_session_id` = uc.`session_id`)
+            left join `share` s on (s.`shared_to_session_id` = uc.`session_id`)
         where s.`session_id` = #{sessionId}
     </select>
 

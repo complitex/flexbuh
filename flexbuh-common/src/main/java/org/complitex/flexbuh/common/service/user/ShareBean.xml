@@ -5,18 +5,18 @@
     <resultMap id="shareResultMap" type="org.complitex.flexbuh.common.entity.user.Share">
         <id column="id" property="id"/>
         <result column="session_id" property="sessionId"/>
-        <result column="shared_session_id" property="sharedSessionId"/>
+        <result column="shared_to_session_id" property="sharedToSessionId"/>
     </resultMap>
 
     <insert id="insertShare" parameterType="org.complitex.flexbuh.common.entity.user.Share">
-        insert into `share` (`session_id`, `shared_session_id`) values (#{sessionId}, #{sharedSessionId})
+        insert into `share` (`session_id`, `shared_to_session_id`) values (#{sessionId}, #{sharedToSessionId})
     </insert>
 
     <delete id="deleteShare" parameterType="org.complitex.flexbuh.common.entity.user.Share">
-        delete from `share` where `session_id` = #{sessionId} and `shared_session_id` = #{sharedSessionId}
+        delete from `share` where `session_id` = #{sessionId} and `shared_to_session_id` = #{sharedToSessionId}
     </delete>
 
     <select id="isShareExist" parameterType="org.complitex.flexbuh.common.entity.user.Share" resultType="boolean">
-        select count(*) > 0 from `share` where `session_id` = #{sessionId} and `shared_session_id` = #{sharedSessionId}
+        select count(*) > 0 from `share` where `session_id` = #{sessionId} and `shared_to_session_id` = #{sharedToSessionId}
     </select>
 </mapper>
