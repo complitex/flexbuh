@@ -45,6 +45,7 @@
 
         <mapper resource="org/complitex/flexbuh/common/service/user/SessionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/user/UserBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/service/user/ShareBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/service/organization/OrganizationBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/organization/OrganizationTypeBean.xml"/>

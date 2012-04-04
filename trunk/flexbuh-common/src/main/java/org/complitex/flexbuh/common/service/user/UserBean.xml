@@ -164,4 +164,21 @@
         delete from `user_organization` where `login` = #{login} and `organization_id` = #{organizationId}
     </delete>
 
+    <select id="selectSharedUsers" parameterType="long" resultMap="userResultMap">
+        select <include refid="userColumns"/> from `user` uc
+            left join `usergroup` gc on uc.`login` = gc.`login`
+            left join `user_organization` uo on uc.`login` = uo.`login`
+            left join `organization` o on uo.`organization_id` = o.`id`
+            left join `share` s on (s.`shared_session_id` = uc.`session_id`)
+        where s.`session_id` = #{sessionId}
+    </select>
+
+    <select id="findUserByLoginOrEmail" parameterType="string" resultMap="userResultMap">
+        select <include refid="userColumns"/> from `user` uc
+            left join `usergroup` gc on uc.`login` = gc.`login`
+            left join `user_organization` uo on uc.`login` = uo.`login`
+            left join `organization` o on uo.`organization_id` = o.`id`
+        where uc.`login` = #{s} or uc.`email` = #{s}
+    </select>
+
 </mapper>

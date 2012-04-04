@@ -14,16 +14,43 @@
 
     <div wicket:id="messages"></div>
 
-    <form action="#" wicket:id="form_upload">
-        <input type="file" wicket:id="upload_field"/>
-        <input wicket:id="upload" wicket:message="value:upload" type="submit" class="btnBig"/>
-    </form>
+    <fieldset>
+        <legend><wicket:message key="share"/></legend>
+        <form action="#" wicket:id="form_share">
+            <table>
+                <tr wicket:id="shared_users">
+                    <td wicket:id="user_name"></td>
+                    <td wicket:id="user_email"></td>
+                    <td>[<a href="#" wicket:id="share_delete">x</a>]</td>
+                </tr>
+            </table>
 
-    <br/>
+            <div style="margin-top: 10px">
+                <input type="text" wicket:id="share_search"/>
+                <input type="submit" wicket:id="add_share" wicket:message="value:add_share" class="btnSmall"/>
+            </div>
+        </form>
+    </fieldset>
 
-    <form action="#" wicket:id="form_download">
-        <input wicket:id="download" wicket:message="value:download" type="submit" class="btnBig"/>
-    </form>
+    <fieldset style="margin-top: 20px">
+        <legend><wicket:message key="backup"/></legend>
+        <table>
+            <tr>
+                <td>
+                    <form action="#" wicket:id="form_upload">
+                        <input type="file" wicket:id="upload_field"/>
+                        <input wicket:id="upload" wicket:message="value:upload" type="submit" class="btnSmall"/>
+                    </form>
+                </td>
+                <td>
+                    <form action="#" wicket:id="form_download">
+                        <input wicket:id="download" wicket:message="value:download" type="submit" class="btnSmall"/>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
 </wicket:extend>
 </body>
 </html>

@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import java.security.Principal;
 import java.util.Collections;
@@ -257,5 +256,14 @@ public class UserBean extends AbstractBean {
      */
     public boolean isAnonymous(User user) {
         return user == null || ANONYMOUS_USER_LOGIN_NAME.equals(user.getLogin());
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<User> getSharedUsers(Long sessionId){
+        return sqlSession().selectList(NS + ".selectSharedUsers", sessionId);
+    }
+
+    public User findUserByLoginOrEmail(String s){
+        return (User) sqlSession().selectOne(NS + ".findUserByLoginOrEmail", s);
     }
 }

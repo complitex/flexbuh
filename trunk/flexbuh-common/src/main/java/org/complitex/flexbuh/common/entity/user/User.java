@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.DomainObject;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
+import org.complitex.flexbuh.common.util.FIOUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,10 @@ public class User extends DomainObject {
 
     private List<String> roles = Lists.newArrayList();
     private List<OrganizationBase> organizations = Lists.newArrayList();
+
+    public String getFullName(){
+        return FIOUtil.getFIO(lastName, firstName, middleName);
+    }
 
 	public String getLogin() {
 		return login;
