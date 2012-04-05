@@ -28,6 +28,7 @@
         <mapper resource="org/complitex/flexbuh/common/service/FeedbackBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/TemporalEntityBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/PersonProfileBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/service/PreferenceBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/entity/LocalizedDomainObject.xml"/>
         <mapper resource="org/complitex/flexbuh/common/entity/TemporalDomainObject.xml"/>

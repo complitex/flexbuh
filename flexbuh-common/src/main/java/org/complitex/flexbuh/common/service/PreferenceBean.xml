@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.PreferenceBean">
+    <resultMap id="preferenceResultMap" type="org.complitex.flexbuh.common.entity.Preference">
+        <id column="id" property="id"/>
+        <result column="session_id" property="sessionId"/>
+        <result column="key" property="key"/>
+        <result column="value" property="value"/>
+    </resultMap>
+
+    <select id="selectPreference" resultMap="preferenceResultMap" parameterType="org.complitex.flexbuh.common.entity.Preference">
+        select * from `preference` where `session_id` = #{sessionId} and `key` = #{key}
+    </select>
+
+    <select id="selectPreferences" resultMap="preferenceResultMap" parameterType="long">
+        select * from `preference` where `session_id` = #{sessionId}
+    </select>
+
+    <insert id="insertPreference" parameterType="org.complitex.flexbuh.common.entity.Preference" keyProperty="id"
+            useGeneratedKeys="true">
+        insert into `preference` (`session_id`, `key`, `value`) value (#{sessionId}, #{key}, #{value})
+    </insert>
+
+    <update id="updatePreference" parameterType="org.complitex.flexbuh.common.entity.Preference">
+        update `preference` set `key` = #{key}, `value` = #{value} where `id` = #{id}
+    </update>
+
+    <delete id="deletePreference" parameterType="long">
+        delete from `preference` where `id` = #{id}
+    </delete>
+</mapper>

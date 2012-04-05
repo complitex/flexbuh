@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `share`;
+-- DROP TABLE IF EXISTS `share`;
 
 CREATE TABLE `share` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',

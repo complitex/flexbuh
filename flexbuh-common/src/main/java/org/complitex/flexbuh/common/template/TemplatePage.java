@@ -19,7 +19,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.flexbuh.common.security.CookieWebSession;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ResourceService;
 import org.complitex.flexbuh.common.service.UserSessionService;
@@ -51,9 +50,9 @@ public abstract class TemplatePage extends WebPage {
 
     private Set<String> resourceBundle = new HashSet<String>();
 
-	@EJB
-	private SessionBean sessionBean;
-    
+    @EJB
+    private SessionBean sessionBean;
+
     @EJB
     private ResourceService resourceService;
 
@@ -105,7 +104,7 @@ public abstract class TemplatePage extends WebPage {
                 item.add(new TemplateMenu("menu_placeholder", "menu", this, item.getModelObject()));
             }
         });
-        
+
         //Feedback
 //        add(new FeedbackCreate("feedback"));
 
@@ -252,7 +251,7 @@ public abstract class TemplatePage extends WebPage {
             return key;
         }
     }
-    
+
     protected String getString(Class _class, String key){
         try {
             return resourceService.getString(_class, key);
@@ -274,11 +273,11 @@ public abstract class TemplatePage extends WebPage {
         return getTemplateWebApplication().hasAnyRole(SecurityRole.AUTHORIZED);
     }
 
-    protected CookieWebSession getCookieWebSession(){
-        return (CookieWebSession) getSession();
+    protected PreferenceWebSession getPreferenceWebSession(){
+        return (PreferenceWebSession) getSession();
     }
 
     protected Long getSessionId(){
-        return getCookieWebSession().getSessionId();
+        return getPreferenceWebSession().getSessionId();
     }
 }

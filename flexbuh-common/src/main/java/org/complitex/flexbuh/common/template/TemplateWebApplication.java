@@ -1,8 +1,11 @@
 package org.complitex.flexbuh.common.template;
 
+import org.apache.wicket.Session;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 import org.complitex.flexbuh.common.inject.JavaEE6ModuleNamingStrategy;
-import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.complitex.flexbuh.common.security.ServletAuthWebApplication;
+import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wicketstuff.javaee.injection.JavaEEComponentInjector;
@@ -68,5 +71,10 @@ public abstract class TemplateWebApplication extends ServletAuthWebApplication{
 
     public List<Class<ITemplateMenu>> getMenuClasses() {
         return menuClasses;
+    }
+
+    @Override
+    public Session newSession(Request request, Response response) {
+        return new PreferenceWebSession(request, getLogin());
     }
 }
