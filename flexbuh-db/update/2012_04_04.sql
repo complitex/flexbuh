@@ -12,4 +12,4 @@ CREATE TABLE `share` (
   CONSTRAINT `fk_share_shared__session` FOREIGN KEY (`shared_to_session_id`) REFERENCES `session` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Общие данные';
 
-update `update` set `date`='2012-04-04', `date_version`=0;
+INSERT INTO `update` (`date`, `date_version`) VALUES ('2012-04-04', 0);
