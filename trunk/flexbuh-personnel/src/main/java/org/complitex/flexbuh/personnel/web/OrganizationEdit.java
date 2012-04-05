@@ -1,9 +1,6 @@
 package org.complitex.flexbuh.personnel.web;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.markup.html.basic.Label;
@@ -32,7 +29,6 @@ import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
 import org.complitex.flexbuh.common.web.component.OrganizationTypeAutoCompleteTextField;
-import org.complitex.flexbuh.personnel.entity.Department;
 import org.complitex.flexbuh.personnel.web.component.DepartmentTreePanel;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
@@ -44,7 +40,6 @@ import javax.ejb.EJB;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Pavel Sknar
@@ -200,8 +195,7 @@ public class OrganizationEdit extends FormTemplatePage {
                 organization.getJuridicalAddress(), juridicalCityModel, juridicalStreetModel));
 
         // Button update/create organization
-        AtomicReference<Button> updateOrCreate = new AtomicReference<Button>(new SaveOrganizationButton("submit"));
-        form.add(updateOrCreate.get());
+        form.add(new SaveOrganizationButton("submit"));
 
         // Button cancel changes and return to "Organizations list" page
         form.add(new Link("cancel") {

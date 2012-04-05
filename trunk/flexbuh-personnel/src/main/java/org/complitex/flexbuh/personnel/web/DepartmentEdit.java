@@ -149,7 +149,7 @@ public class DepartmentEdit extends FormTemplatePage {
         add(form);
 
         // Название отдела
-        form.add(new TextField<>("name", new PropertyModel<String>(department, "name")));
+        form.add(new TextField<>("name", new PropertyModel<String>(department, "name")).setRequired(true));
         form.add(new TextField<>("code", new PropertyModel<String>(department, "code")));
 
         // Дата создания организации
@@ -167,13 +167,12 @@ public class DepartmentEdit extends FormTemplatePage {
         // Departments
         panel = new DepartmentTreePanel("departments", department);
         if (department.getId() == null) {
-            panel.setVisible(false);
+            panel.setEnabled(false);
         }
         form.add(panel);
 
         // Button update/create department
-        AtomicReference<Button> updateOrCreate = new AtomicReference<Button>(new SaveDepartmentButton("submit"));
-        form.add(updateOrCreate.get());
+        form.add(new SaveDepartmentButton("submit"));
 
         // Button cancel changes and return to "Organizations list" page
         form.add(new Link("cancel") {
@@ -181,8 +180,8 @@ public class DepartmentEdit extends FormTemplatePage {
             @Override
             public void onClick() {
                 PageParameters parameters = new PageParameters();
-                if (department != null && department.getMasterDepartment() != null) {
-                    parameters.set(PARAM_DEPARTMENT_ID, department.getMasterDepartment().getId());
+                if (panel.getMasterDepartment() != null) {
+                    parameters.set(PARAM_DEPARTMENT_ID, panel.getMasterDepartment().getId());
                     setResponsePage(DepartmentEdit.class, parameters);
                     return;
                 }

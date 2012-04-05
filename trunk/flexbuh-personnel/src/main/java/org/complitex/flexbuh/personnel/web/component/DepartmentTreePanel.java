@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import wickettree.NestedTree;
 import wickettree.content.CheckedFolder;
 import wickettree.theme.HumanTheme;
+import wickettree.util.InverseSet;
 import wickettree.util.ProviderSubset;
 
 import javax.ejb.EJB;
@@ -59,7 +60,9 @@ public class DepartmentTreePanel extends Panel {
 
     private DepartmentFilter filter = new DepartmentFilter();
 
-    private Set<Department> state = new ProviderSubset<>(provider);
+    private Set<Department> state = new InverseSet<>(new ProviderSubset<>(provider));
+
+    private Department department;
 
     @EJB
     private DepartmentBean departmentBean;
@@ -75,9 +78,9 @@ public class DepartmentTreePanel extends Panel {
     public DepartmentTreePanel(String id, Department department) {
         super(id);
         filter.setOrganizationId(department.getOrganization().getId());
-        filter.setMasterId(department.getId());
         filter.setSortProperty("name");
         filter.setCount(Integer.MAX_VALUE);
+        this.department = department;
         init();
     }
 
@@ -99,6 +102,10 @@ public class DepartmentTreePanel extends Panel {
                     @Override
                     protected IModel<Boolean> newCheckBoxModel(final IModel<Department> model) {
                         IModel<Boolean> selectModel = new Model<>(false);
+                        if (department != null && department.getId() == null
+                                && model.getObject().equals(department.getMasterDepartment())) {
+                            selectModel.setObject(true);
+                        }
                         selectedMap.put(model.getObject().getId(), selectModel);
                         return selectModel;
                     }
@@ -132,9 +139,6 @@ public class DepartmentTreePanel extends Panel {
                         };
                     }
 
-                    /**
-                     * Always clickable.
-                     */
                     @Override
                     protected boolean isClickable() {
                         return true;
@@ -146,8 +150,14 @@ public class DepartmentTreePanel extends Panel {
                     }
 
                     @Override
+                    public boolean isEnabled() {
+                        return department == null || !getModelObject().getId().equals(department.getId());
+                    }
+
+                    @Override
                     protected boolean isSelected() {
                         return false;
+                        //return getModelObject().equals(department);
                         /*
                         Department department = getModelObject();
 
@@ -194,8 +204,8 @@ public class DepartmentTreePanel extends Panel {
             @Override
             public void onClick() {
                 PageParameters parameters = new PageParameters();
-                if (filter.getMasterId() != null) {
-                    parameters.set(DepartmentEdit.PARAM_MASTER_DEPARTMENT_ID, filter.getMasterId());
+                if (department != null) {
+                    parameters.set(DepartmentEdit.PARAM_MASTER_DEPARTMENT_ID, department.getId());
                 } else if (filter.getOrganizationId() != null) {
                     parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, filter.getOrganizationId());
                 }
@@ -214,11 +224,19 @@ public class DepartmentTreePanel extends Panel {
                         try {
                             departmentBean.deleteDepartment(getDepartmentById(entry.getKey()));
                         } catch (ObjectNotFoundException e) {
-                            log.error("Can not deleted department " + entry.getKey(), e);
+                            log.error("Could not delete department " + entry.getKey(), e);
                         }
                     }
                 }
                 for (Long id : deleted) {
+                    if (department != null && department.getMasterDepartment() != null &&
+                            id.equals(department.getMasterDepartment().getId())) {
+                        try {
+                            department = getDepartmentById(department.getId());
+                        } catch (ObjectNotFoundException e) {
+                            log.error("Could not update department " + id, e);
+                        }
+                    }
                     selectedMap.remove(id);
                 }
                 provider.setRoots(new DepartmentIterator(departmentBean.getDepartments(filter)));
@@ -244,8 +262,7 @@ public class DepartmentTreePanel extends Panel {
 		return new AbstractReadOnlyModel<Set<Department>>()
 		{
 			@Override
-			public Set<Department> getObject()
-			{
+			public Set<Department> getObject() {
 				return state;
 			}
 
@@ -253,10 +270,13 @@ public class DepartmentTreePanel extends Panel {
 			 * Super class doesn't detach - would be nice though.
 			 */
 			@Override
-			public void detach()
-			{
+			public void detach() {
 				((IDetachable)state).detach();
 			}
 		};
 	}
+
+    public Department getMasterDepartment() {
+        return department != null? department.getMasterDepartment(): null;
+    }
 }
