@@ -17,4 +17,4 @@ CREATE TABLE `update` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Обновление базы данных';
 
-INSERT INTO `update` (`date`, `date_version`) VALUES ('2012-03-30', 0);
+INSERT INTO `update` (`date`, `date_version`) VALUES ('2012-04-04', 0);
