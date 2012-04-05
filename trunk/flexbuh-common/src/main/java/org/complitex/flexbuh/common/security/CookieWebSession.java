@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.Cookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.util.Date;
 
 /**
@@ -33,9 +32,9 @@ public class CookieWebSession extends WebSession {
     private Session session;
     private String login;
 
-    public CookieWebSession(Request request, Principal principal) {
+    public CookieWebSession(Request request, String login) {
         super(request);
-        this.login = principal != null ? principal.getName(): null;
+        this.login = login;
     }
 
     public Long getSessionId() {

@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -80,10 +81,13 @@ public abstract class ServletAuthWebApplication extends WebApplication
 
     @Override
     public Session newSession(Request request, Response response) {
-        WebRequest servletWebRequest = (WebRequest) RequestCycle.get().getRequest();
-        //todo test
-        HttpServletRequest servletRequest = (HttpServletRequest) servletWebRequest.getContainerRequest();
+        return new CookieWebSession(request, getLogin());
+    }
 
-        return new CookieWebSession(request, servletRequest.getUserPrincipal());
+    protected String getLogin(){
+        WebRequest servletWebRequest = (WebRequest) RequestCycle.get().getRequest();
+
+        Principal principal = ((HttpServletRequest) servletWebRequest.getContainerRequest()).getUserPrincipal();
+        return principal != null ? principal.getName(): null;
     }
 }
