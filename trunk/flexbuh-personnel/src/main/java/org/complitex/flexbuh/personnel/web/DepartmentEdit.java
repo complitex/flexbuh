@@ -149,7 +149,7 @@ public class DepartmentEdit extends FormTemplatePage {
         add(form);
 
         // Название отдела
-        form.add(new TextField<>("name", new PropertyModel<String>(department, "name")).setRequired(true));
+        form.add(new TextField<>("name", new PropertyModel<String>(department, "name")));
         form.add(new TextField<>("code", new PropertyModel<String>(department, "code")));
 
         // Дата создания организации
