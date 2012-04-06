@@ -21,7 +21,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ResourceService;
-import org.complitex.flexbuh.common.service.UserSessionService;
+import org.complitex.flexbuh.common.service.TemplateSession;
 import org.complitex.flexbuh.common.service.user.SessionBean;
 import org.complitex.flexbuh.common.template.pages.login.Login;
 import org.complitex.flexbuh.common.template.toolbar.HelpButton;
@@ -55,9 +55,6 @@ public abstract class TemplatePage extends WebPage {
 
     @EJB
     private ResourceService resourceService;
-
-    @EJB
-    private UserSessionService userSessionBean;
 
     protected TemplatePage(PageParameters parameters) {
         this();
@@ -111,7 +108,7 @@ public abstract class TemplatePage extends WebPage {
 //        todo empty panel
         add(new Label("current_user_fullname", "id: " + getSessionId()));
         add(new EmptyPanel("current_user_department"));
-        add(new PersonProfileChoice("profile", getSessionId()));
+        add(new PersonProfileChoice("profile"));
 
         add(new BookmarkablePageLink<>("login", Login.class).setVisible(!isUserAuthorized()));
         add(new Form("exit") {
@@ -273,11 +270,25 @@ public abstract class TemplatePage extends WebPage {
         return getTemplateWebApplication().hasAnyRole(SecurityRole.AUTHORIZED);
     }
 
-    protected PreferenceWebSession getPreferenceWebSession(){
-        return (PreferenceWebSession) getSession();
-    }
+    //Delegate TemplateSession
 
     protected Long getSessionId(){
-        return getPreferenceWebSession().getSessionId();
+        return TemplateSession.getSessionId();
+    }
+
+    protected String getPreferenceString(String key){
+        return TemplateSession.getPreferenceString(key);
+    }
+
+    protected Long getPreferenceLong(String key){
+        return TemplateSession.getPreferenceLong(key);
+    }
+
+    protected void putPreference(String key, String value){
+        TemplateSession.putPreference(key, value);
+    }
+
+    protected void removePreference(String key){
+        TemplateSession.removePreference(key);
     }
 }

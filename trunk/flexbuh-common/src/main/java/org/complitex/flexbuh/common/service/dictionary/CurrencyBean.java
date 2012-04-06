@@ -34,7 +34,7 @@ public class CurrencyBean extends AbstractBean {
 
     @SuppressWarnings("unchecked")
     public List<Currency> getCurrencies(CurrencyFilter filter) {
-        return (List<Currency>)sqlSession().selectList(NS + ".selectCurrencies", filter);
+        return sqlSession().selectList(NS + ".selectCurrencies", filter);
     }
 
     public Integer getCurrenciesCount(CurrencyFilter filter){

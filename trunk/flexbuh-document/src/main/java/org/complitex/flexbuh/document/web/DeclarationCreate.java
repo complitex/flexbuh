@@ -58,11 +58,15 @@ public class DeclarationCreate extends FormTemplatePage{
         add(form);
 
         //Выбранный профиль
-        final PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(getSessionId());
+        Long selectedPersonProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+        final PersonProfile selectedPersonProfile = selectedPersonProfileId != null
+                ? personProfileBean.getPersonProfile(selectedPersonProfileId)
+                : null;
 
         //Тип лица
         IModel<PersonType> personModel = new Model<>(selectedPersonProfile != null
-                ? selectedPersonProfile.getPersonType() : PersonType.JURIDICAL_PERSON);
+                ? selectedPersonProfile.getPersonType()
+                : PersonType.JURIDICAL_PERSON);
 
         final DropDownChoice<PersonType> person = new DropDownChoice<>("person", personModel,
                 Arrays.asList(PersonType.JURIDICAL_PERSON, PersonType.PHYSICAL_PERSON),

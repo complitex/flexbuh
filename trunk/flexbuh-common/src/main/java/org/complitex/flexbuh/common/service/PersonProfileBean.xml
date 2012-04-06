@@ -81,16 +81,4 @@
     <delete id="deletePersonProfile" parameterType="long">
         delete from `person_profile` where `id` = #{id}
     </delete>
-
-    <update id="deselectAllPersonProfile" parameterType="long">
-        update `person_profile` set `selected` = false where `session_id` = #{sessionId}
-    </update>
-
-    <select id="selectSelectedPersonProfile" parameterType="long" resultMap="personProfileResultMap">
-        select * from `person_profile` where `selected` = true and `session_id` = #{sessionId} limit 1
-    </select>
-
-    <select id="selectSelectedPersonProfileId" parameterType="long" resultType="long">
-        select `id` from `person_profile` where `selected` = true and `session_id` = #{sessionId} limit 1
-    </select>
 </mapper>

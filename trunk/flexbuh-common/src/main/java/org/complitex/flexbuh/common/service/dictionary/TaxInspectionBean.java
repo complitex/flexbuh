@@ -44,12 +44,12 @@ public class TaxInspectionBean extends AbstractBean {
 
 	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspections() {
-		return (List<TaxInspection>)sqlSession().selectList(NS + ".selectAllTaxInspections");
+		return sqlSession().selectList(NS + ".selectAllTaxInspections");
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspectionsUniqueCodeWithName() {
-		return (List<TaxInspection>)sqlSession().selectList(NS + ".selectAllTaxInspectionsCodeWithName");
+		return sqlSession().selectList(NS + ".selectAllTaxInspectionsCodeWithName");
 	}
 
 	@SuppressWarnings("unchecked")

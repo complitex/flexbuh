@@ -26,7 +26,7 @@ public class DocumentBean extends AbstractBean {
 
 	@SuppressWarnings("unchecked")
 	public List<Document> getDocuments(DocumentFilter filter) {
-		return (List<Document>)sqlSession().selectList(NS + ".selectDocuments", filter);
+		return sqlSession().selectList(NS + ".selectDocuments", filter);
 	}
 
     public Integer getDocumentsCount(DocumentFilter filter){

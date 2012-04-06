@@ -104,22 +104,17 @@ public class DeclarationBean extends AbstractBean{
     }
 
     @SuppressWarnings("unchecked")
-    public List<Integer> getYears(Long sessionId){
-        return sqlSession().selectList(NS + ".selectDeclarationYears", sessionId);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Period> getPeriods(final Long sessionId, final Integer year){
+    public List<Period> getPeriods(final Long sessionId, final Long personProfileId){
         return sqlSession().selectList(NS + ".selectDeclarationPeriods", new HashMap<String, Object>(){{
             put("sessionId", sessionId);
-            put("year", year);
+            put("personProfileId", personProfileId);
         }});
     }
 
-    public Map<Integer, List<Period>> getPeriodMap(Long sessionId){
+    public Map<Integer, List<Period>> getPeriodMap(Long sessionId, Long personProfileId){
         Map<Integer, List<Period>> periodMap = new HashMap<>();
 
-        List<Period> allPeriods = getPeriods(sessionId, null);
+        List<Period> allPeriods = getPeriods(sessionId, personProfileId);
 
         for (Period period : allPeriods){
             List<Period> list = periodMap.get(period.getYear());

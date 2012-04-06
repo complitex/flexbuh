@@ -21,25 +21,25 @@
 
     <sql id="selectCounterpartsWhere">
         <where>
-            <if test="hk != null">c.`hk` like concat('%', #{hk}, '%')</if>
-            <if test="hname != null">and concat_ws(' ',c.`last_name`, c.`first_name`, c.`middle_name`) like concat('%', #{hname}, '%')</if>
-            <if test="hloc != null">and c.`hloc` like concat('%', #{hloc}, '%')</if>
-            <if test="htel != null">and c.`htel` like concat('%', #{htel}, '%')</if>
-            <if test="hnspdv != null">and c.`hnspdv` like concat('%', #{hnspdv}, '%')</if>
-            and c.`session_id` = #{sessionId}
-            and pp.`selected` = true
+           <!-- <if test="object.hk != null">c.`hk` like concat('%', #{object.hk}, '%')</if>
+            <if test="object.hname != null">
+                and concat_ws(' ',c.`last_name`, c.`first_name`, c.`middle_name`) like concat('%', #{object.hname}, '%')
+            </if>
+            <if test="object.hloc != null">and c.`hloc` like concat('%', #{object.hloc}, '%')</if>
+            <if test="object.htel != null">and c.`htel` like concat('%', #{object.htel}, '%')</if>
+            <if test="object.hnspdv != null">and c.`hnspdv` like concat('%', #{object.hnspdv}, '%')</if>-->
+            and c.`session_id` = #{object.sessionId}
+            and c.`person_profile_id` = #{object.personProfileId}
         </where>
     </sql>
 
-    <select id="selectCounterparts" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
+    <select id="selectCounterparts" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="counterpartResultMap">
-        select c.*, concat_ws(' ', c.`last_name`, c.`first_name`, c.`middle_name`) as `hname`
-        from `counterpart` c left join `person_profile` pp on (c.`person_profile_id` = pp.`id`)
-
-        <include refid="selectCounterpartsWhere"/>
-        order by ${sortProperty}
-        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
+        select c.*, concat_ws(' ', c.`last_name`, c.`first_name`, c.`middle_name`) as `hname` from `counterpart` c
+            <include refid="selectCounterpartsWhere"/>
+            order by ${sortProperty}
+            <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+            <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
     <select id="selectAllCounterparts" parameterType="long" resultMap="counterpartResultMap">
@@ -47,9 +47,9 @@
           from `counterpart` c where c.`session_id` = #{sessionId}
     </select>
 
-    <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.document.entity.CounterpartFilter"
+    <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultType="int">
-        select count(*) from `counterpart` c left join `person_profile` pp on (c.`person_profile_id` = pp.`id`)
+        select count(*) from `counterpart` c
         <include refid="selectCounterpartsWhere"/>
     </select>
 

@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Stateless
 public class FeedbackBean extends AbstractBean{
-    @SuppressWarnings("unchecked")
+
     public List<Feedback> getFeedbacks(int first, int count){
         return sqlSession().selectList("selectFeedbacks", new AbstractFilter(first, count));        
     }

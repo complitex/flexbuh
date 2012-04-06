@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.common.service.TemplateSession;
 import org.complitex.flexbuh.common.util.StringUtil;
 
 import javax.ejb.EJB;
@@ -17,22 +18,19 @@ import java.util.List;
 public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
     @EJB
     private PersonProfileBean personProfileBean;
-    
-    private Long sessionId;
-    
-    public PersonProfileChoice(String id, Long sessionId) {
-        super(id);
-        
-        this.sessionId = sessionId;
 
-        List<PersonProfile> profiles = personProfileBean.getAllPersonProfiles(sessionId);
-        PersonProfile selectedPersonProfile = personProfileBean.getSelectedPersonProfile(sessionId);
-        
+    public PersonProfileChoice(String id) {
+        super(id);
+
+        List<PersonProfile> profiles = personProfileBean.getAllPersonProfiles(TemplateSession.getSessionId());
+
+        Long selectedPersonProfileId = TemplateSession.getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+
         setModel(new Model<PersonProfile>());
 
-        if (selectedPersonProfile != null) {
+        if (selectedPersonProfileId != null) {
             for (PersonProfile pp : profiles){
-                if (pp.getId().equals(selectedPersonProfile.getId())){
+                if (pp.getId().equals(selectedPersonProfileId)){
                     setModelObject(pp);
                     break;
                 }
@@ -58,10 +56,10 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
 
     @Override
     protected void onSelectionChanged(PersonProfile newSelection) {
-        personProfileBean.deselectAllPersonProfile(sessionId);
-
         if (newSelection != null){
-            personProfileBean.setSelectedPersonProfile(newSelection);
+            TemplateSession.putPreference(PersonProfile.SELECTED_PERSON_PROFILE_ID, newSelection.getId().toString());
+        }else{
+            TemplateSession.removePreference(PersonProfile.SELECTED_PERSON_PROFILE_ID);
         }
     }
 

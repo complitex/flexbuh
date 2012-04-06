@@ -11,10 +11,10 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
 import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Counterpart;
-import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
@@ -68,7 +68,7 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
         final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Counterpart> list = counterpartBean.getCounterparts(new CounterpartFilter(sessionId));
+        List<Counterpart> list = counterpartBean.getCounterparts(new FilterWrapper<>(new Counterpart(sessionId)));
 
         ListView listView = new ListView<Counterpart>("counterparts", list) {
             @Override

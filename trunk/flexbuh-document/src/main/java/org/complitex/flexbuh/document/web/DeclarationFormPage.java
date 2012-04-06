@@ -149,7 +149,7 @@ public class DeclarationFormPage extends TemplatePage{
         Form profileForm = new Form("profile_form");
         profileDialog.add(profileForm);
 
-        final PersonProfileChoice profileChoice = new PersonProfileChoice("profile_choice", declaration.getSessionId()){
+        final PersonProfileChoice profileChoice = new PersonProfileChoice("profile_choice"){
             @Override
             protected boolean wantOnSelectionChangedNotifications() {
                 return false;
@@ -175,7 +175,7 @@ public class DeclarationFormPage extends TemplatePage{
                 }
 
                 if (personProfile != null) {
-                    personProfileBean.setSelectedPersonProfile(personProfile);
+                    putPreference(PersonProfile.SELECTED_PERSON_PROFILE_ID, personProfile.getId().toString());
                 }
 
                 PageParameters pageParameters = new PageParameters();
@@ -191,7 +191,7 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                Long selected = personProfileBean.getSelectedPersonProfileId(declaration.getSessionId());
+                Long selected = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
                 if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
                     declarationService.validateAndSave(declaration);

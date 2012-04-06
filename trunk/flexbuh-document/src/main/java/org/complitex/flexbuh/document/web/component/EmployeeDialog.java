@@ -12,11 +12,11 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
 import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Employee;
-import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
@@ -69,7 +69,7 @@ public class EmployeeDialog extends Panel implements IAutocompleteDialog<Employe
         final RadioGroup<Employee> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Employee> list = employeeBean.getEmployees(new EmployeeFilter(sessionId));
+        List<Employee> list = employeeBean.getEmployees(new FilterWrapper<>(new Employee(sessionId)));
 
         ListView listView = new ListView<Employee>("employees", list) {
             @Override

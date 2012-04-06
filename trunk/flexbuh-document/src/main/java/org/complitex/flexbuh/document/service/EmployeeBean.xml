@@ -21,31 +21,30 @@
 
     <sql id="selectEmployeesWhere">
         <where>
-            <if test="htin != null">and e.`htin` like concat('%', #{htin}, '%')</if>
-            <if test="hname != null">and concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) like concat('%', #{hname}, '%')</if>
-            <if test="hbirthday != null">and e.`hbirthday` = DATE(#{hbirthday})</if>
-            <if test="hdateIn != null">and e.`hdate_in` = DATE(#{hdateIn})</if>
-            <if test="hdateOut != null">and e.`hdate_out` = DATE(#{hdateOut})</if>
-            and e.`session_id` = #{sessionId}
-            and pp.`selected` = true
+           <!-- <if test="object.htin != null">and e.`htin` like concat('%', #{object.htin}, '%')</if>
+            <if test="object.hname != null">
+                and concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) like concat('%', #{object.hname}, '%')
+            </if>
+            <if test="object.hbirthday != null">and e.`hbirthday` = DATE(#{object.hbirthday})</if>
+            <if test="object.hdateIn != null">and e.`hdate_in` = DATE(#{object.hdateIn})</if>
+            <if test="object.hdateOut != null">and e.`hdate_out` = DATE(#{object.hdateOut})</if>-->
+            and e.`session_id` = #{object.sessionId}
+            and e.`person_profile_id` = #{object.personProfileId}
         </where>
     </sql>
 
-    <select id="selectEmployees" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
+    <select id="selectEmployees" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="employeeResultMap">
-        select e.*, concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) as `hname`
-        from `employee` e left join `person_profile` pp on (e.`person_profile_id` = pp.`id`)
-
-        <include refid="selectEmployeesWhere"/>
-        order by ${sortProperty}
-        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
+        select e.*, concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) as `hname` from `employee` e
+            <include refid="selectEmployeesWhere"/>
+            order by ${sortProperty}
+            <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+            <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
-    <select id="selectEmployeesCount" parameterType="org.complitex.flexbuh.document.entity.EmployeeFilter"
+    <select id="selectEmployeesCount" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultType="int">
-        select count(*) from `employee` e left join `person_profile` pp on (e.`person_profile_id` = pp.`id`)
-        <include refid="selectEmployeesWhere"/>
+        select count(*) from `employee` e <include refid="selectEmployeesWhere"/>
     </select>
 
     <select id="selectAllEmployees" parameterType="long" resultMap="employeeResultMap">

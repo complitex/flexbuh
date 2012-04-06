@@ -34,6 +34,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
@@ -121,7 +122,9 @@ public class DeclarationList extends TemplatePage{
         final IModel<Map<Integer, List<Period>>> periodMapModel = new LoadableDetachableModel<Map<Integer, List<Period>>>() {
             @Override
             protected Map<Integer, List<Period>> load() {
-                return declarationBean.getPeriodMap(sessionId);
+                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+
+                return declarationBean.getPeriodMap(sessionId, personProfileId);
             }
         };
 
@@ -223,6 +226,9 @@ public class DeclarationList extends TemplatePage{
 
             @Override
             public int size() {
+                //предполагается что size() вызывается до iterator()
+                declarationFilter.setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+
                 return declarationBean.getDeclarationsCount(declarationFilter);
             }
 

@@ -1,10 +1,10 @@
 package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Counterpart;
-import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.entity.CounterpartRowSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +35,11 @@ public class CounterpartBean extends AbstractBean{
     }
 
     @SuppressWarnings("unchecked")
-    public List<Counterpart>  getCounterparts(CounterpartFilter filter){
+    public List<Counterpart>  getCounterparts(FilterWrapper<Counterpart> filter){
         return sqlSession().selectList("selectCounterparts", filter);
     }
 
-    public Integer getCounterpartCount(CounterpartFilter filter){
+    public Integer getCounterpartCount(FilterWrapper<Counterpart> filter){
         return (Integer) sqlSession().selectOne("selectCounterpartCount", filter);
     }
 
@@ -62,19 +62,17 @@ public class CounterpartBean extends AbstractBean{
         sqlSession().delete("deleteCounterpart", id);
     }
 
-    public int save(Long sessionId, InputStream inputStream) {
+    public int save(Long sessionId, Long personProfileId, InputStream inputStream) {
         try {
             CounterpartRowSet counterpartRowSet = (CounterpartRowSet) JAXBContext
                     .newInstance(CounterpartRowSet.class)
                     .createUnmarshaller()
                     .unmarshal(inputStream);
-            
-            Long personalProfileId = personProfileBean.getSelectedPersonProfileId(sessionId);
 
             if (counterpartRowSet != null && counterpartRowSet.getCounterparts() != null) {
                 for (Counterpart counterpart : counterpartRowSet.getCounterparts()){
                     counterpart.setSessionId(sessionId);
-                    counterpart.setPersonProfileId(personalProfileId);
+                    counterpart.setPersonProfileId(personProfileId);
 
                     save(counterpart);
                 }
