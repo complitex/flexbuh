@@ -1,3 +1,5 @@
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+
 -- --------------------------
 -- Declaration
 -- --------------------------
@@ -107,4 +109,6 @@ CREATE TABLE `employee` (
   CONSTRAINT `fk_employee__person_profile` FOREIGN KEY (`person_profile_id`) REFERENCES `person_profile` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 
