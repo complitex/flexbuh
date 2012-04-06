@@ -1,10 +1,10 @@
 package org.complitex.flexbuh.document.service;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Employee;
-import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +35,11 @@ public class EmployeeBean extends AbstractBean{
     }
 
     @SuppressWarnings("unchecked")
-    public List<Employee> getEmployees(EmployeeFilter filter){
+    public List<Employee> getEmployees(FilterWrapper<Employee> filter){
         return sqlSession().selectList("selectEmployees", filter);
     }
 
-    public Integer getEmployeesCount(EmployeeFilter filter){
+    public Integer getEmployeesCount(FilterWrapper<Employee> filter){
         return (Integer) sqlSession().selectOne("selectEmployeesCount", filter);
     }
 
@@ -62,19 +62,17 @@ public class EmployeeBean extends AbstractBean{
         sqlSession().delete("deleteEmployee", id);
     }
 
-    public int save(Long sessionId, InputStream inputStream) {
+    public int save(Long sessionId, Long personProfileId, InputStream inputStream) {
         try {
             EmployeeRowSet employeeRowSet = (EmployeeRowSet) JAXBContext
                     .newInstance(EmployeeRowSet.class)
                     .createUnmarshaller()
                     .unmarshal(inputStream);
-            
-            Long personalProfileId = personProfileBean.getSelectedPersonProfileId(sessionId);
 
             if (employeeRowSet != null && employeeRowSet.getEmployees() != null) {
                 for (Employee employee : employeeRowSet.getEmployees()){
                     employee.setSessionId(sessionId);
-                    employee.setPersonProfileId(personalProfileId);
+                    employee.setPersonProfileId(personProfileId);
 
                     save(employee);
                 }

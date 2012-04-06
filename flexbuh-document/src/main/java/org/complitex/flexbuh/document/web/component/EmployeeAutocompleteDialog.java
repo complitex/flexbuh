@@ -1,12 +1,12 @@
 package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
 import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Employee;
-import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.service.EmployeeBean;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 
@@ -56,17 +56,17 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
     @Override
     protected List<Employee> getValues(String tern) {
         try {
-            EmployeeFilter filter = new EmployeeFilter(sessionId);
+            FilterWrapper<Employee> filter = new FilterWrapper<>(new Employee(sessionId));
 
             switch (getAlias()){
                 case "HTIN":
-                    filter.setHtin(Integer.parseInt(tern));
+                    filter.getObject().setHtin(Integer.parseInt(tern));
                     break;
                 case "HDATE_IN":
-                    filter.setHdateIn(DATE_FORMAT.parse(tern));
+                    filter.getObject().setHdateIn(DATE_FORMAT.parse(tern));
                     break;
                 case "HDATE_OUT":
-                    filter.setHdateIn(DATE_FORMAT.parse(tern));
+                    filter.getObject().setHdateIn(DATE_FORMAT.parse(tern));
                     break;
             }
 

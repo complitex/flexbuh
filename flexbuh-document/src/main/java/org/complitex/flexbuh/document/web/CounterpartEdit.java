@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -52,7 +53,7 @@ public class CounterpartEdit extends FormTemplatePage{
         }
         
         //Профиль
-        counterpart.setPersonProfileId(personProfileBean.getSelectedPersonProfileId(getSessionId()));
+        counterpart.setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
         
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));

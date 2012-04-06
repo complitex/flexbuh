@@ -29,7 +29,6 @@ public class DocumentVersionBean extends AbstractBean {
         return (DocumentVersion) sqlSession().selectOne(NS + ".selectDocumentVersion", id);
     }
 
-	@SuppressWarnings("unchecked")
 	public List<DocumentVersion> getDocumentVersionsByDocument(String cDoc, String cDocSub) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("cDoc", cDoc);
@@ -37,9 +36,8 @@ public class DocumentVersionBean extends AbstractBean {
 		return sqlSession().selectList(NS + ".selectDocumentVersionsByDocument");
 	}
 
-    @SuppressWarnings("unchecked")
     public List<DocumentVersion> getDocumentVersions(DocumentVersionFilter filter) {
-        return (List<DocumentVersion>)sqlSession().selectList(NS + ".selectDocumentVersions", filter);
+        return sqlSession().selectList(NS + ".selectDocumentVersions", filter);
     }
 
     public Integer getDocumentVersionsCount(DocumentVersionFilter filter){

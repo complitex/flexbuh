@@ -136,20 +136,23 @@ public class PersonProfileList extends TemplatePage {
 
                 item.add(new Label("tin", StringUtil.getString(profile.getTin())));
 
+                //Selected
+                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+                final boolean selected = profile.getId().equals(personProfileId);
+
                 Link select = new Link("action_select") {
                     @Override
                     public void onClick() {
-                        if (!profile.isSelected()) {
-                            personProfileBean.setSelectedPersonProfile(profile);
-                        }else{
-                            personProfileBean.deselectAllPersonProfile(sessionId);
+                        if (!selected){
+                            putPreference(PersonProfile.SELECTED_PERSON_PROFILE_ID, profile.getId().toString());
+                        }else {
+                            removePreference(PersonProfile.SELECTED_PERSON_PROFILE_ID);
                         }
                     }
                 };
                 item.add(select);
 
-                select.add(new Label("action_select_label", getString(!profile.isSelected() ? "action_select"
-                        : "action_deselect")));
+                select.add(new Label("action_select_label", getString(!selected ? "action_select" : "action_deselect")));
             }
         };
         filterForm.add(dataView);
@@ -253,6 +256,25 @@ public class PersonProfileList extends TemplatePage {
                                 try {
                                     List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
+                                    Long selectedPersonProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+
+                                    //Selected
+                                    boolean selectedSet = false;
+
+                                    for (PersonProfile personProfile : personProfiles){
+                                        if (personProfile.getId().equals(selectedPersonProfileId)){
+                                            personProfile.setSelected(true);
+                                            selectedSet = true;
+                                        }else {
+                                            personProfile.setSelected(false);
+                                        }
+                                    }
+
+                                    if (!selectedSet && !personProfiles.isEmpty()){
+                                        personProfiles.get(0).setSelected(true);
+                                    }
+
+                                    //Write xml
                                     OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
                                     XmlUtil.writeXml(Settings.class, new Settings(personProfiles), os, "windows-1251");

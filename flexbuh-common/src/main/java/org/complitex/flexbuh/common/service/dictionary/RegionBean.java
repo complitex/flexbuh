@@ -34,7 +34,7 @@ public class RegionBean extends AbstractBean {
 
     @SuppressWarnings("unchecked")
     public List<Region> getRegions(RegionFilter filter) {
-        return (List<Region>)sqlSession().selectList(NS + ".selectRegions", filter);
+        return sqlSession().selectList(NS + ".selectRegions", filter);
     }
 
     public Integer getRegionsCount(RegionFilter filter){

@@ -15,15 +15,17 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.common.entity.ApplicationConfig;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
@@ -33,7 +35,6 @@ import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Counterpart;
-import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.entity.CounterpartRowSet;
 import org.complitex.flexbuh.document.service.CounterpartBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -69,22 +70,22 @@ public class CounterpartList extends TemplatePage{
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        CounterpartFilter filter = new CounterpartFilter(getSessionId());
+        final FilterWrapper<Counterpart> filter = new FilterWrapper<>(new Counterpart(getSessionId()));
 
-        final Form<CounterpartFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
+        final Form<FilterWrapper> filterForm = new Form<>("filter_form");
         add(filterForm);
 
-        filterForm.add(new TextField<>("hk")); //ИНН
-        filterForm.add(new TextField<>("hname")); //Название
-        filterForm.add(new TextField<>("hloc")); //Адрес
-        filterForm.add(new TextField<>("htel")); //Телефон
-        filterForm.add(new TextField<>("hnspdv")); //Страховой номер
+        filterForm.add(new TextField<>("hk", new PropertyModel<>(filter, "object.hk"))); //ИНН
+        filterForm.add(new TextField<>("hname", new PropertyModel<>(filter, "object.hname"))); //Название
+        filterForm.add(new TextField<>("hloc", new PropertyModel<>(filter, "object.hloc"))); //Адрес
+        filterForm.add(new TextField<>("htel", new PropertyModel<>(filter, "object.htel"))); //Телефон
+        filterForm.add(new TextField<>("hnspdv", new PropertyModel<>(filter, "object.hnspdv"))); //Страховой номер
 
         //Все
         filterForm.add(new Button("reset"){
             @Override
             public void onSubmit() {
-                filterForm.getModelObject().clear();
+                filter.setObject(new Counterpart(getSessionId()));
             }
         });
 
@@ -94,19 +95,19 @@ public class CounterpartList extends TemplatePage{
             public Iterator<? extends Counterpart> iterator(int first, int count) {
                 selectMap.clear();
 
-                CounterpartFilter counterpartFilter = filterForm.getModelObject();
+                filter.setFirst(first);
+                filter.setCount(count);
+                filter.setSortProperty(getSort().getProperty());
+                filter.setAscending(getSort().isAscending());
 
-                counterpartFilter.setFirst(first);
-                counterpartFilter.setCount(count);
-                counterpartFilter.setSortProperty(getSort().getProperty());
-                counterpartFilter.setAscending(getSort().isAscending());
-
-                return counterpartBean.getCounterparts(counterpartFilter).iterator();
+                return counterpartBean.getCounterparts(filter).iterator();
             }
 
             @Override
             public int size() {
-                return counterpartBean.getCounterpartCount(filterForm.getModelObject());
+                filter.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+
+                return counterpartBean.getCounterpartCount(filter);
             }
 
             @Override
@@ -169,11 +170,13 @@ public class CounterpartList extends TemplatePage{
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
+                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+
                 int count = 0;
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        count += counterpartBean.save(getSessionId(), fileUpload.getInputStream());
+                        count += counterpartBean.save(getSessionId(), personProfileId, fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);
@@ -212,8 +215,7 @@ public class CounterpartList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                //todo cache selected profile id
-                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
@@ -251,7 +253,7 @@ public class CounterpartList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
@@ -267,7 +269,7 @@ public class CounterpartList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 

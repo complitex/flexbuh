@@ -1,13 +1,13 @@
 package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.service.dictionary.FieldCodeBean;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
 import org.complitex.flexbuh.common.web.component.IAutocompleteDialog;
 import org.complitex.flexbuh.document.entity.Counterpart;
-import org.complitex.flexbuh.document.entity.CounterpartFilter;
 import org.complitex.flexbuh.document.service.CounterpartBean;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 
@@ -59,23 +59,23 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
     @Override
     protected List<Counterpart> getValues(String tern) {
         try {
-            CounterpartFilter filter = new CounterpartFilter(sessionId);
+            FilterWrapper<Counterpart> filter = new FilterWrapper<>(new Counterpart(sessionId));
 
             switch (getAlias()){
                 case "HK":
-                    filter.setHk(tern);
+                    filter.getObject().setHk(tern);
                     break;
                 case "HNAME":
-                    filter.setHname(tern);
+                    filter.getObject().setHname(tern);
                     break;
                 case "HLOC":
-                    filter.setHloc(tern);
+                    filter.getObject().setHloc(tern);
                     break;
                 case "HTEL":
-                    filter.setHtel(tern);
+                    filter.getObject().setHtel(tern);
                     break;
                 case "HNSPDV":
-                    filter.setHnspdv(tern);
+                    filter.getObject().setHnspdv(tern);
                     break;
             }
 

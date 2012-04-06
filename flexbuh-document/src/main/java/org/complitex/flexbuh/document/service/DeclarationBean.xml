@@ -87,7 +87,6 @@
     <sql id="selectDeclarationsFromWhere">
         from `declaration` de
         left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
-        left join `person_profile` pp on (de.`person_profile_id` = pp.`id`)
         <where>
             <if test="name != null">do.`name_uk` like  concat('%', #{name}, '%')</if>
             <if test="date != null">and DATE(`date`) = DATE(#{date})</if>
@@ -96,10 +95,7 @@
             <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
             <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
             and de.`session_id` = #{sessionId}
-            and (pp.`selected` = true or (de.`person_profile_id` is null
-            and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
-            <!-- todo performance select-->
-
+            and de.`person_profile_id` = #{personProfileId}
             <foreach collection="periods" item="p" separator="or" open="and (" close=")">
                 (#{p.month} = `period_month` and #{p.type} = `period_type` and #{p.year} = `period_year`)
             </foreach>
@@ -156,23 +152,10 @@
         where `id` in (<foreach collection="list" separator="," item="item">#{item}</foreach>)
     </select>
 
-    <sql id="fromDeclarationWhereProfile">
-        from `declaration` d left join `person_profile` pp on (d.`person_profile_id` = pp.`id`)
-        where d.`session_id` = #{sessionId} and (pp.`selected` = true or (d.`person_profile_id` is null
-        and (select count(*) = 0 from `person_profile` where `session_id` = #{sessionId} and `selected` = true)))
-    </sql>
-
-    <select id="selectDeclarationYears" parameterType="long" resultType="int">
-        select `period_year` <include refid="fromDeclarationWhereProfile"/>
-        group by `period_year`
-        order by `period_year` asc
-    </select>
-
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
-        select `period_type` as type, `period_month` as month, `period_year` as year
-          <include refid="fromDeclarationWhereProfile"/> <if test="year != null">and `period_year` = #{year}</if>
-         and `parent_id` is null
-         group by `period_type`, `period_month`, `year`
+        select `period_type` as type, `period_month` as month, `period_year` as year from `declaration` d
+          where d.`session_id` = #{sessionId} and d.`person_profile_id` = #{personProfileId} and `parent_id` is null
+            group by `period_type`, `period_month`, `year`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">

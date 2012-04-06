@@ -16,14 +16,16 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
+import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
@@ -34,7 +36,6 @@ import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
-import org.complitex.flexbuh.document.entity.EmployeeFilter;
 import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.complitex.flexbuh.document.service.EmployeeBean;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -70,22 +71,22 @@ public class EmployeeList extends TemplatePage{
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        EmployeeFilter filter = new EmployeeFilter(getSessionId());
+        final FilterWrapper<Employee> filter = new FilterWrapper<>(new Employee(getSessionId()));
 
-        final Form<EmployeeFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
+        final Form filterForm = new Form("filter_form");
         add(filterForm);
 
-        filterForm.add(new TextField<>("htin")); //Идентификационный номер
-        filterForm.add(new TextField<>("hname")); //ФИО
-        filterForm.add(new TextField<>("hbirthday")); //Дата рождения
-        filterForm.add(new TextField<>("hdateIn")); //Дата принятия на работу
-        filterForm.add(new TextField<>("hdateOut")); //Дата увольнения
+        filterForm.add(new TextField<>("htin", new PropertyModel<>(filter, "object.htin"))); //Идентификационный номер
+        filterForm.add(new TextField<>("hname", new PropertyModel<>(filter, "object.hname"))); //ФИО
+        filterForm.add(new TextField<>("hbirthday", new PropertyModel<>(filter, "object.hbirthday"))); //Дата рождения
+        filterForm.add(new TextField<>("hdateIn", new PropertyModel<>(filter, "object.hdateIn"))); //Дата принятия на работу
+        filterForm.add(new TextField<>("hdateOut", new PropertyModel<>(filter, "object.hdateOut"))); //Дата увольнения
 
         //Все
         filterForm.add(new Button("reset"){
             @Override
             public void onSubmit() {
-                filterForm.getModelObject().clear();
+                filter.setObject(new Employee(getSessionId()));
             }
         });
 
@@ -94,8 +95,6 @@ public class EmployeeList extends TemplatePage{
             @Override
             public Iterator<? extends Employee> iterator(int first, int count) {
                 selectMap.clear();
-
-                EmployeeFilter filter = filterForm.getModelObject();
 
                 filter.setFirst(first);
                 filter.setCount(count);
@@ -107,7 +106,9 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public int size() {
-                return employeeBean.getEmployeesCount(filterForm.getModelObject());
+                filter.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+
+                return employeeBean.getEmployeesCount(filter);
             }
 
             @Override
@@ -170,11 +171,13 @@ public class EmployeeList extends TemplatePage{
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
+                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+
                 int count = 0;
 
                 try {
                     for (FileUpload fileUpload : fileUploads){
-                        count += employeeBean.save(getSessionId(), fileUpload.getInputStream());
+                        count += employeeBean.save(getSessionId(), personProfileId, fileUpload.getInputStream());
                     }
 
                     uploadDialog.close(target);
@@ -213,7 +216,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
@@ -251,7 +254,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
@@ -267,7 +270,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return personProfileBean.getSelectedPersonProfileId(sessionId) != null;
+                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 

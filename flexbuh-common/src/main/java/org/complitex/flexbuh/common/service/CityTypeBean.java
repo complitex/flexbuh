@@ -14,7 +14,6 @@ import java.util.Locale;
 @Stateless
 public class CityTypeBean extends AbstractBean {
 
-    @SuppressWarnings("unchecked")
     public List<CityType> getCityTypes(String start, Locale locale) {
         return sqlSession().selectList("selectCityTypes", new CityTypeFilter(0, 10, locale, start));
     }

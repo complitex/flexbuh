@@ -55,24 +55,4 @@ public class PersonProfileBean extends AbstractBean {
     public void delete(Long personProfileId){
         sqlSession().delete("deletePersonProfile", personProfileId);
     }
-    
-    public PersonProfile getSelectedPersonProfile(Long sessionId){
-        return (PersonProfile) sqlSession().selectOne("selectSelectedPersonProfile", sessionId);
-    }
-
-    public Long getSelectedPersonProfileId(Long sessionId){
-        return (Long) sqlSession().selectOne("selectSelectedPersonProfileId", sessionId);
-    }
-    
-    public void deselectAllPersonProfile(Long sessionId){
-        sqlSession().update("deselectAllPersonProfile", sessionId);
-    } 
-
-    public void setSelectedPersonProfile(PersonProfile personProfile){
-        deselectAllPersonProfile(personProfile.getSessionId());
-
-        personProfile.setSelected(true);
-
-        sqlSession().insert(NS + ".updatePersonProfile", personProfile);
-    }
 }

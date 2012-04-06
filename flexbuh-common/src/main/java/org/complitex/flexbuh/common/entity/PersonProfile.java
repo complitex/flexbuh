@@ -14,6 +14,8 @@ import java.util.Date;
 @XmlType
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class PersonProfile extends SessionObject {
+    public final static String SELECTED_PERSON_PROFILE_ID = "selected_person_profile_id";
+
     private PersonType personType = PersonType.JURIDICAL_PERSON; // тип плательщика
 
     private Integer cSti; // код ДПІ
@@ -339,6 +341,11 @@ public class PersonProfile extends SessionObject {
         this.bMiddleName = bMiddleName;
     }
 
+    /**
+     * selected используется в OPZ, выбранный профиль в Flexbuh можно получить через предпочтения
+     * <code>TemplateSession.getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID)</code>
+     * @return активный профиль в OPZ
+     */
     @XmlAttribute(name = "SELECTED")
     public boolean isSelected() {
         return selected;
