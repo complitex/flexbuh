@@ -1,7 +1,6 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
-import org.complitex.flexbuh.common.entity.organization.Organization;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.personnel.entity.Department;
@@ -10,7 +9,6 @@ import org.complitex.flexbuh.personnel.entity.DepartmentFilter;
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -72,7 +70,6 @@ public class DepartmentBean extends AbstractBean {
         return (Department) sqlSession().selectOne(NS + ".selectCurrentDepartmentById", params);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Department> getDepartments(DepartmentFilter filter) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("filter", filter);
@@ -81,7 +78,6 @@ public class DepartmentBean extends AbstractBean {
         return sqlSession().selectList(NS + ".selectCurrentDepartments", params);
     }
 
-    @SuppressWarnings({"unchecked"})
     public int getDepartmentsCount(DepartmentFilter filter) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("filter", filter);

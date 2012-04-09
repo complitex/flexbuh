@@ -20,7 +20,6 @@ public class FieldCodeBean extends AbstractBean{
         return (FieldCode) sqlSession().selectOne("selectFieldCode", id);
     }
 
-    @SuppressWarnings("unchecked")
     public List<FieldCode> getFieldCodes(FieldCodeFilter filter){
         return sqlSession().selectList("selectFieldCodes", filter);
     }
@@ -55,7 +54,6 @@ public class FieldCodeBean extends AbstractBean{
         return (Field) sqlSession().selectOne("selectField", new FieldCodeFilter(code, name, sprName));
     }
 
-    @SuppressWarnings("unchecked")
     public List<Field> getFields(String code){
         return sqlSession().selectList("selectFields", code);
     }

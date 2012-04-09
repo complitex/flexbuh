@@ -79,8 +79,6 @@ public class RegionList extends TemplatePage {
 
 		//Модель
         final DataProvider<Region> dataProvider = new DataProvider<Region>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Region> getData(int first, int count) {
 				RegionFilter filter = filterModel.getObject();

@@ -29,12 +29,10 @@ public class TaxInspectionBean extends AbstractBean {
 		return (TaxInspection)sqlSession().selectOne(NS + ".selectTaxInspection", id);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspectionByCode(Integer cSti) {
 		return sqlSession().selectList(NS + ".selectTaxInspectionByCode", cSti);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspectionByDistrict(Integer cSti, Integer cRaj) {
 		Map<String, Integer> params = Maps.newHashMap();
 		params.put("cSti", cSti);
@@ -42,17 +40,14 @@ public class TaxInspectionBean extends AbstractBean {
 		return sqlSession().selectList(NS + ".selectTaxInspectionsByDistrict", params);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspections() {
 		return sqlSession().selectList(NS + ".selectAllTaxInspections");
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspectionsUniqueCodeWithName() {
 		return sqlSession().selectList(NS + ".selectAllTaxInspectionsCodeWithName");
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TaxInspection> getTaxInspections(TaxInspectionFilter filter) {
 		return sqlSession().selectList(NS + ".selectTaxInspections", filter);
 	}
@@ -61,12 +56,10 @@ public class TaxInspectionBean extends AbstractBean {
         return (Integer) sqlSession().selectOne(NS + ".selectTaxInspectionsCount", filter);
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getTaxInspectionDistrictNames(){
         return sqlSession().selectList(NS + ".selectTaxInspectionDistrictNames");
     }
 
-    @SuppressWarnings("unchecked")
     public List<TaxInspection> getTaxInspectionsByDistrictName(String districtName){
         return sqlSession().selectList(NS + ".selectTaxInspectionsByDistrictName", districtName);
     }

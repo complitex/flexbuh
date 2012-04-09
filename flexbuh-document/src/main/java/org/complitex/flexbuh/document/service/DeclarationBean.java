@@ -76,12 +76,10 @@ public class DeclarationBean extends AbstractBean{
         return (Declaration) sqlSession().selectOne(NS + ".selectDeclaration", id);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Declaration> getDeclarations(DeclarationFilter filter){
         return sqlSession().selectList(NS + ".selectDeclarations", filter);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Declaration> getAllDeclarations(Long sessionId){
         return sqlSession().selectList(NS + ".selectAllDeclarations", sessionId);
     }
@@ -98,12 +96,10 @@ public class DeclarationBean extends AbstractBean{
         sqlSession().delete(NS + ".deleteDeclarationValue", id);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Declaration> getDeclarations(List<Long> ids){
         return sqlSession().selectList(NS + ".selectDeclarationsByIds", ids);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Period> getPeriods(final Long sessionId, final Long personProfileId){
         return sqlSession().selectList(NS + ".selectDeclarationPeriods", new HashMap<String, Object>(){{
             put("sessionId", sessionId);

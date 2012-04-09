@@ -106,8 +106,6 @@ public class DocumentList extends TemplatePage {
 
 		//Модель
         final DataProvider<Document> dataProvider = new DataProvider<Document>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Document> getData(int first, int count) {
 				DocumentFilter filter = filterModel.getObject();

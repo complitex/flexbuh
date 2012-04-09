@@ -16,7 +16,6 @@ public class TemporalEntityBean extends AbstractBean{
         sqlSession().insert("insertTemporalEntity", entity);
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends AbstractTemporalEntity> List<T> getTemporalEntities(TemporalEntityFilter<T> filter){
         return sqlSession().selectList("selectTemporalEntities", filter);
     }
@@ -24,5 +23,4 @@ public class TemporalEntityBean extends AbstractBean{
     public <T extends AbstractTemporalEntity> Integer getTemporalEntitiesCount(TemporalEntityFilter<T> filter){
         return (Integer) sqlSession().selectOne("selectTemporalEntitiesCount", filter);
     }
-    
 }

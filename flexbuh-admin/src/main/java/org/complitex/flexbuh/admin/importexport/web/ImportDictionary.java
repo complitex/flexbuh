@@ -37,8 +37,6 @@ import java.util.List;
 public class ImportDictionary extends TemplatePage {
     private final static Logger log = LoggerFactory.getLogger(ImportDictionary.class);
 
-    private final static String FORM_DATE_FORMAT = "MM/dd/yyyy";
-
     @EJB
     private DictionaryTypeBean dictionaryTypeService;
 
@@ -47,7 +45,6 @@ public class ImportDictionary extends TemplatePage {
 
     private IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
 
-    @SuppressWarnings("unchecked")
     public ImportDictionary() {
 
         final WebMarkupContainer container = new WebMarkupContainer("container");
@@ -78,12 +75,12 @@ public class ImportDictionary extends TemplatePage {
 
         //Begin Date
         final IModel<Date> beginDateModel = new Model<>();
-        final DatePicker<Date> beginDatePicker = new DatePicker<Date>("beginDate", beginDateModel, Date.class);
+        final DatePicker<Date> beginDatePicker = new DatePicker<>("beginDate", beginDateModel, Date.class);
         form.add(beginDatePicker);
 
         //End Date
         final IModel<Date> endDateModel = new Model<>();
-        final DatePicker<Date> endDatePicker = new DatePicker<Date>("endDate", endDateModel, Date.class);
+        final DatePicker<Date> endDatePicker = new DatePicker<>("endDate", endDateModel, Date.class);
         form.add(endDatePicker);
 
         //Кнопка импортировать

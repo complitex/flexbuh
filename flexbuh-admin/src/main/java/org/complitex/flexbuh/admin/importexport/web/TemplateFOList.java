@@ -40,8 +40,6 @@ public class TemplateFOList extends TemplatePage {
 
 		//Модель
         final DataProvider<TemplateFO> dataProvider = new DataProvider<TemplateFO>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TemplateFO> getData(int first, int count) {
                 return templateBean.getTemplateFO(first, count);

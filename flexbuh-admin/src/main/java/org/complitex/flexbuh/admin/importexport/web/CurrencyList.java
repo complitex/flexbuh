@@ -85,8 +85,6 @@ public class CurrencyList extends TemplatePage {
 
 		//Модель
         final DataProvider<Currency> dataProvider = new DataProvider<Currency>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends Currency> getData(int first, int count) {
 				CurrencyFilter filter = filterModel.getObject();

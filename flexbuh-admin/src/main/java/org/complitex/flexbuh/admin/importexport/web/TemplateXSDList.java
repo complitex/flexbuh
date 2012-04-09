@@ -40,8 +40,6 @@ public class TemplateXSDList extends TemplatePage {
 
 		//Модель
         final DataProvider<TemplateXSD> dataProvider = new DataProvider<TemplateXSD>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TemplateXSD> getData(int first, int count) {
                 return templateBean.getTemplateXSD(first, count);

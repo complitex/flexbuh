@@ -1,7 +1,6 @@
 package org.complitex.flexbuh.admin.user.web;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -88,8 +87,8 @@ public class UserEdit extends FormTemplatePage {
     private OrganizationBean organizationBean;
 
     private User user;
-    private IModel<String> streetModel = new Model<String>();
-    private IModel<String> cityModel = new Model<String>();
+    private IModel<String> streetModel = new Model<>();
+    private IModel<String> cityModel = new Model<>();
 
     private Dialog addRolesDialog;
 
@@ -473,7 +472,7 @@ public class UserEdit extends FormTemplatePage {
         final ArrayList<OrganizationBase> selectedNewOrganizations = Lists.newArrayList();
         final List<OrganizationBase> selectOrganizations = getSelectOrganizations();
         final ListMultipleChoice<OrganizationBase> selectOrganizationsChoice = new ListMultipleChoice<OrganizationBase>("select_organizations",
-                new Model<ArrayList<OrganizationBase>>(selectedNewOrganizations), selectOrganizations,
+                new Model<>(selectedNewOrganizations), selectOrganizations,
                 new IChoiceRenderer<OrganizationBase>() {
 
                     @Override
@@ -529,7 +528,7 @@ public class UserEdit extends FormTemplatePage {
                 }
                 selectedOrganizationsMap.clear();
                 for (OrganizationBase organization : user.getOrganizations()) {
-                    selectedOrganizationsMap.put(organization, new Model<Boolean>(false));
+                    selectedOrganizationsMap.put(organization, new Model<>(false));
                 }
 
                 target.add(selectOrganizationsChoice);
@@ -553,7 +552,7 @@ public class UserEdit extends FormTemplatePage {
                 selectOrganizations.removeAll(selectedNewOrganizations);
                 user.getOrganizations().addAll(selectedNewOrganizations);
                 for (OrganizationBase newOrganization : selectedNewOrganizations) {
-                    selectedOrganizationsMap.put(newOrganization, new Model<Boolean>(false));
+                    selectedOrganizationsMap.put(newOrganization, new Model<>(false));
                 }
 
                 target.add(selectOrganizationsChoice);
@@ -573,16 +572,21 @@ public class UserEdit extends FormTemplatePage {
         addOrganizationsDialog.add(selectOrganizationsForm);
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getSelectRoles() {
-        return ListUtils.removeAll(userBean.getAllRoles(), user.getRoles());
+        List<String> list = new ArrayList<>(userBean.getAllRoles());
+
+        list.removeAll(user.getRoles());
+
+        return list;
     }
 
     @SuppressWarnings("unchecked")
     private List<OrganizationBase> getSelectOrganizations() {
-        //log.debug("All organizations: {}", organizationBean.getOrganizations(null));
-        //log.debug("User organizations: {}", user.getOrganizations());
-        return ListUtils.removeAll(organizationBean.getOrganizations(null), user.getOrganizations());
+        List<OrganizationBase> list = new ArrayList<OrganizationBase>(organizationBean.getOrganizations(null));
+
+        list.removeAll(user.getOrganizations());
+
+        return list;
     }
 
     private class SaveUserButton extends Button {

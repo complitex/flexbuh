@@ -91,8 +91,6 @@ public class TaxInspectionList extends TemplatePage {
 
 		//Модель
         final DataProvider<TaxInspection> dataProvider = new DataProvider<TaxInspection>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TaxInspection> getData(int first, int count) {
 				TaxInspectionFilter filter = filterModel.getObject();

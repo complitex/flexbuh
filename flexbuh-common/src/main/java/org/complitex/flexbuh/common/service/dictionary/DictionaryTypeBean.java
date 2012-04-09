@@ -14,7 +14,6 @@ import java.util.List;
 public class DictionaryTypeBean extends AbstractBean {
 	public static final String NS = DictionaryTypeBean.class.getName();
 
-	@SuppressWarnings("unchecked")
 	public List<DictionaryType> getDictionaryTypes() {
 		return sqlSession().selectList(NS + ".selectAllDictionaryTypes");
 	}

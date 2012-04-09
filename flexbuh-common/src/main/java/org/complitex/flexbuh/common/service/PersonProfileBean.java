@@ -26,12 +26,10 @@ public class PersonProfileBean extends AbstractBean {
         return (PersonProfile) sqlSession().selectOne(NS + ".selectPersonProfile", id);
     }
 
-    @SuppressWarnings("unchecked")
     public List<PersonProfile> getAllPersonProfiles(Long sessionId){
         return sqlSession().selectList(NS + ".selectAllPersonProfiles", sessionId);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<PersonProfile> getPersonProfiles(Long sessionId, int first, int count){
         return sqlSession().selectList(NS + ".selectPersonProfiles", new AbstractFilter(sessionId, first, count));
     }

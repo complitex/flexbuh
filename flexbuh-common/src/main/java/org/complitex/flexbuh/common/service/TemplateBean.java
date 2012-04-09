@@ -54,17 +54,14 @@ public class TemplateBean extends AbstractBean {
 	 *
 	 * @return xsl templates
 	 */
-	@SuppressWarnings("unchecked")
 	public List<TemplateXSL> getTemplateXSLs(){
         return sqlSession().selectList(NS + ".selectAllTemplateXSLs");
     }
 
-	@SuppressWarnings("unchecked")
 	public List<TemplateXSL> getTemplateXSL(int first, int count){
         return sqlSession().selectList(NS + ".selectTemplateXSLs", new AbstractFilter(first, count));
     }
 
-	@SuppressWarnings("unchecked")
 	public int getTemplateXSLsCount() {
 		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateXSLsCount");
 	}
@@ -74,17 +71,14 @@ public class TemplateBean extends AbstractBean {
 	 *
 	 * @return xsd templates
 	 */
-	@SuppressWarnings("unchecked")
     public List<TemplateXSD> getTemplateXSDs(){
         return sqlSession().selectList(NS + ".selectAllTemplateXSDs");
     }
 
-	@SuppressWarnings("unchecked")
 	public List<TemplateXSD> getTemplateXSD(int first, int count){
         return sqlSession().selectList(NS + ".selectTemplateXSDs", new AbstractFilter(first, count));
     }
 
-	@SuppressWarnings("unchecked")
 	public int getTemplateXSDsCount() {
 		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateXSDsCount");
 	}
@@ -94,17 +88,14 @@ public class TemplateBean extends AbstractBean {
 	 *
 	 * @return control templates
 	 */
-	@SuppressWarnings("unchecked")
     public List<TemplateControl> getTemplateControls(){
         return  sqlSession().selectList(NS + ".selectAllTemplateControl");
     }
 
-	@SuppressWarnings("unchecked")
 	public List<TemplateControl> getTemplateControl(int first, int count){
         return sqlSession().selectList(NS + ".selectTemplateControls", new AbstractFilter(first, count));
     }
 
-	@SuppressWarnings("unchecked")
 	public int getTotalCountTemplateControl() {
 		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateControlsCount");
 	}
@@ -114,22 +105,18 @@ public class TemplateBean extends AbstractBean {
 	 *
 	 * @return fo templates
 	 */
-	@SuppressWarnings("unchecked")
     public List<TemplateFO> getAllTemplateFO(){
         return  sqlSession().selectList(NS + ".selectAllTemplateFOs");
     }
 
-	@SuppressWarnings("unchecked")
 	public List<TemplateFO> getTemplateFO(int first, int count){
         return sqlSession().selectList(NS + ".selectTemplateFOs", new AbstractFilter(first, count));
     }
 
-	@SuppressWarnings("unchecked")
 	public int getTemplateFOsCount() {
 		return (Integer)sqlSession().selectOne(NS + ".selectAllTemplateFOsCount");
 	}
 
-    @SuppressWarnings({"unchecked"})
     public List<String> getTemplateXSLNames(){
         return sqlSession().selectList(NS + ".selectTemplateXSLNames");
     }
