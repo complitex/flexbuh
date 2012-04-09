@@ -230,6 +230,13 @@ public class EmployeeList extends TemplatePage{
                                 try {
                                     List<Employee> employees = employeeBean.getAllEmployees(getSessionId());
 
+                                    //jaxb preprocess, set not null values
+                                    for (Employee employee : employees){
+                                        if (employee.getHtin() == null){
+                                            employee.setHtin(0);
+                                        }
+                                    }
+
                                     OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
                                     XmlUtil.writeXml(EmployeeRowSet.class, new EmployeeRowSet(employees, true), os, "windows-1251");
