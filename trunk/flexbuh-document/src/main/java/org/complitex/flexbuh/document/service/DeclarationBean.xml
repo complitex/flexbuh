@@ -95,7 +95,10 @@
             <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
             <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
             and de.`session_id` = #{sessionId}
-            and de.`person_profile_id` = #{personProfileId}
+
+            <if test="personProfileId != null">and de.`person_profile_id` = #{personProfileId}</if>
+            <if test="personProfileId == null">and de.`person_profile_id` is null</if>
+
             <foreach collection="periods" item="p" separator="or" open="and (" close=")">
                 (#{p.month} = `period_month` and #{p.type} = `period_type` and #{p.year} = `period_year`)
             </foreach>
@@ -154,8 +157,10 @@
 
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
         select `period_type` as type, `period_month` as month, `period_year` as year from `declaration` d
-          where d.`session_id` = #{sessionId} and d.`person_profile_id` = #{personProfileId} and `parent_id` is null
-            group by `period_type`, `period_month`, `year`
+            where d.`session_id` = #{sessionId}  and `parent_id` is null
+                <if test="personProfileId != null">and d.`person_profile_id` = #{personProfileId}</if>
+                <if test="personProfileId == null">and d.`person_profile_id` is null</if>
+                group by `period_type`, `period_month`, `year`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">
