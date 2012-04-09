@@ -168,10 +168,10 @@ public class DeclarationFormPage extends TemplatePage{
 
                 declarationService.validateAndSave(declaration);
 
-                getSession().info(getStringFormat("info_saved"));
+                getSession().info(getStringFormat("info_saved", declaration.getFullName()));
 
                 if (!declaration.isValidated()) {
-                    getSession().info(declaration.getValidateMessage());
+                    getSession().info(getStringFormat("info_validated", declaration.getValidateMessage()));
                 }
 
                 if (personProfile != null) {

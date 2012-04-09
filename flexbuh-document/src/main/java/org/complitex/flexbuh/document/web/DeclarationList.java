@@ -266,7 +266,8 @@ public class DeclarationList extends TemplatePage{
                         DeclarationFormPage.class, pageParameters, !declaration.isValidated() ? "color:indianRed" : null));
 
                 //Date
-                item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()), "dd.MM.yyyy HH:mm"));
+                item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()),
+                        DateUtil.isCurrentDay(declaration.getDate()) ? "HH:mm" : "dd.MM.yyyy HH:mm"));
 
                 //Action
                 item.add(new DeclarationXmlLink("action_xml", declaration));
@@ -306,7 +307,8 @@ public class DeclarationList extends TemplatePage{
                                 + " " + linkedDeclaration.getName(), DeclarationFormPage.class, pageParameters,
                                 !linkedDeclaration.isValidated() ? "color:indianRed" : null));
 
-                        linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()), "dd.MM.yyyy HH:mm"));
+                        linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()),
+                                DateUtil.isCurrentDay(linkedDeclaration.getDate()) ? "HH:mm" : "dd.MM.yyyy HH:mm"));
 
                         linkedItem.add(new DeclarationXmlLink("action_xml", linkedDeclaration));
                         linkedItem.add(new DeclarationPdfLink("action_pdf", linkedDeclaration));
