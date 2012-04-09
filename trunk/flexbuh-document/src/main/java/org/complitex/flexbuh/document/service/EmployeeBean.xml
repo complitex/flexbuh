@@ -21,13 +21,13 @@
 
     <sql id="selectEmployeesWhere">
         <where>
-           <!-- <if test="object.htin != null">and e.`htin` like concat('%', #{object.htin}, '%')</if>
-            <if test="object.hname != null">
+           <if test="object.htin != null">and e.`htin` like concat('%', #{object.htin}, '%')</if>
+            <if test="object.hname != null and !object.hname.empty">
                 and concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) like concat('%', #{object.hname}, '%')
             </if>
             <if test="object.hbirthday != null">and e.`hbirthday` = DATE(#{object.hbirthday})</if>
             <if test="object.hdateIn != null">and e.`hdate_in` = DATE(#{object.hdateIn})</if>
-            <if test="object.hdateOut != null">and e.`hdate_out` = DATE(#{object.hdateOut})</if>-->
+            <if test="object.hdateOut != null">and e.`hdate_out` = DATE(#{object.hdateOut})</if>
             and e.`session_id` = #{object.sessionId}
             and e.`person_profile_id` = #{object.personProfileId}
         </where>

@@ -21,13 +21,21 @@
 
     <sql id="selectCounterpartsWhere">
         <where>
-           <!-- <if test="object.hk != null">c.`hk` like concat('%', #{object.hk}, '%')</if>
-            <if test="object.hname != null">
+            <if test="object.hk != null and !object.hk.empty">
+                c.`hk` like concat('%', #{object.hk}, '%')
+            </if>
+            <if test="object.hname != null and !object.hname.empty">
                 and concat_ws(' ',c.`last_name`, c.`first_name`, c.`middle_name`) like concat('%', #{object.hname}, '%')
             </if>
-            <if test="object.hloc != null">and c.`hloc` like concat('%', #{object.hloc}, '%')</if>
-            <if test="object.htel != null">and c.`htel` like concat('%', #{object.htel}, '%')</if>
-            <if test="object.hnspdv != null">and c.`hnspdv` like concat('%', #{object.hnspdv}, '%')</if>-->
+            <if test="object.hloc != null and !object.hloc.empty">
+                and c.`hloc` like concat('%', #{object.hloc}, '%')
+            </if>
+            <if test="object.htel != null and !object.htel.empty">
+                and c.`htel` like concat('%', #{object.htel}, '%')
+            </if>
+            <if test="object.hnspdv != null and !object.hnspdv.empty">
+                and c.`hnspdv` like concat('%', #{object.hnspdv}, '%')
+            </if>
             and c.`session_id` = #{object.sessionId}
             and c.`person_profile_id` = #{object.personProfileId}
         </where>

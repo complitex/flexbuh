@@ -51,7 +51,7 @@ public class Employee extends SessionObject{
 
     @XmlElement(name = "HTIN")
     public Integer getHtin() {
-        return htin != null ? htin : 0;
+        return htin;
     }
 
     public void setHtin(Integer htin) {
