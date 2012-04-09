@@ -27,12 +27,10 @@ public class CurrencyBean extends AbstractBean {
         return (Currency)sqlSession().selectOne(NS + ".selectCurrency", id);
     }
 
-	@SuppressWarnings("unchecked")
     public List<Currency> getCurrencyByCodeNumber(Integer codeNumber) {
         return sqlSession().selectList(NS + ".selectCurrenciesByCodeNumber", codeNumber);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Currency> getCurrencies(CurrencyFilter filter) {
         return sqlSession().selectList(NS + ".selectCurrencies", filter);
     }

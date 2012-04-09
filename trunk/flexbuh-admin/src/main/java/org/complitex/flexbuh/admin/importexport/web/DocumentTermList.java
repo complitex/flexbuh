@@ -121,8 +121,6 @@ public class DocumentTermList extends TemplatePage {
 
 		//Модель
         final DataProvider<DocumentTerm> dataProvider = new DataProvider<DocumentTerm>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends DocumentTerm> getData(int first, int count) {
                 DocumentTermFilter filter = filterModel.getObject();

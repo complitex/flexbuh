@@ -17,7 +17,6 @@ public class PreferenceBean extends AbstractBean{
         return (Preference) sqlSession().selectOne(NS + ".selectPreference", new Preference(sessionId, key));
     }
 
-    @SuppressWarnings("unchecked")
     public List<Preference> getPreferences(Long sessionId){
         return sqlSession().selectList(NS + ".selectPreferences", sessionId);
     }

@@ -40,8 +40,6 @@ public class TemplateControlList extends TemplatePage {
 
 		//Модель
         final DataProvider<TemplateControl> dataProvider = new DataProvider<TemplateControl>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TemplateControl> getData(int first, int count) {
                 return templateBean.getTemplateControl(first, count);

@@ -211,7 +211,6 @@ public class UserBean extends AbstractBean {
         return (User)sqlSession().selectOne(NS + ".selectUserBySessionId", sessionId);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<User> getUsers(UserFilter filter) {
         appendRoleGroup(filter);
         return sqlSession().selectList(NS + ".selectUsers", filter);
@@ -258,7 +257,6 @@ public class UserBean extends AbstractBean {
         return user == null || ANONYMOUS_USER_LOGIN_NAME.equals(user.getLogin());
     }
 
-    @SuppressWarnings("unchecked")
     public List<User> getSharedUsers(Long sessionId){
         return sqlSession().selectList(NS + ".selectSharedUsers", sessionId);
     }

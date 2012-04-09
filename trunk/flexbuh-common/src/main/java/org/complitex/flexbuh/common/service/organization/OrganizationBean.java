@@ -1,10 +1,8 @@
 package org.complitex.flexbuh.common.service.organization;
 
 import com.google.common.collect.Maps;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.complitex.flexbuh.common.entity.organization.Organization;
 import org.complitex.flexbuh.common.entity.organization.OrganizationFilter;
-import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.slf4j.Logger;
@@ -76,7 +74,6 @@ public class OrganizationBean extends AbstractBean {
         return (Organization) sqlSession().selectOne(NS + ".selectCurrentOrganizationById", params);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Organization> getOrganizations(OrganizationFilter filter) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("filter", filter);
@@ -85,7 +82,6 @@ public class OrganizationBean extends AbstractBean {
         return sqlSession().selectList(NS + ".selectCurrentOrganizations", params);
     }
 
-    @SuppressWarnings({"unchecked"})
     public int getOrganizationsCount(OrganizationFilter filter) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("filter", filter);

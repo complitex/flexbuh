@@ -24,7 +24,6 @@ public class DocumentBean extends AbstractBean {
 		return (Document)sqlSession().selectOne(NS + ".selectDocument", id);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Document> getDocuments(DocumentFilter filter) {
 		return sqlSession().selectList(NS + ".selectDocuments", filter);
 	}
@@ -33,19 +32,16 @@ public class DocumentBean extends AbstractBean {
         return (Integer)sqlSession().selectOne(NS + ".selectDocumentsCount", filter);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Document> getLinkedDocuments(String cDoc, String cDocSub, Integer periodYear, Integer periodMonth){
         DocumentFilter filter = new DocumentFilter(cDoc, cDocSub, DateUtil.getFirstDayOfMonth(periodYear, periodMonth-1));
 
         return sqlSession().selectList(NS + ".selectLinkedDocuments", filter);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Document> getJuridicalDocuments(){
         return sqlSession().selectList(NS + ".selectJuridicalDocuments");
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Document> getPhysicalDocuments(){
         return sqlSession().selectList(NS + ".selectPhysicalDocuments");
     }

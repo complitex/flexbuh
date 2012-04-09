@@ -27,12 +27,10 @@ public class RegionBean extends AbstractBean {
         return (Region)sqlSession().selectOne(NS + ".selectRegion", id);
     }
 
-	@SuppressWarnings("unchecked")
 	public List<Region> getRegionByCode(Integer code) {
 		return sqlSession().selectList(NS + ".selectRegionByCode", code);
 	}
 
-    @SuppressWarnings("unchecked")
     public List<Region> getRegions(RegionFilter filter) {
         return sqlSession().selectList(NS + ".selectRegions", filter);
     }

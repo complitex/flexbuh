@@ -34,7 +34,6 @@ public class CounterpartBean extends AbstractBean{
         return (Counterpart) sqlSession().selectOne("selectCounterpart", id);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Counterpart>  getCounterparts(FilterWrapper<Counterpart> filter){
         return sqlSession().selectList("selectCounterparts", filter);
     }
@@ -43,7 +42,6 @@ public class CounterpartBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectCounterpartCount", filter);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Counterpart> getAllCounterparts(Long sessionId){
         return sqlSession().selectList("selectAllCounterparts", sessionId);
     }

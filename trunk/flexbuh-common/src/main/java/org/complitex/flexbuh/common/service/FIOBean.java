@@ -53,7 +53,6 @@ public class FIOBean extends AbstractBean {
         return sqlSession().selectList(NS + ".selectMiddleNames", new NameFilter(0, SIZE, locale, start));
     }
 
-    @SuppressWarnings("unchecked")
     public List<LastName> getLastNames(String start, Locale locale) {
         return sqlSession().selectList(NS + ".selectLastNames", new NameFilter(0, SIZE, locale, start));
     }

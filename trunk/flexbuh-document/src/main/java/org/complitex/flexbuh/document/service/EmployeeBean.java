@@ -34,7 +34,6 @@ public class EmployeeBean extends AbstractBean{
         return (Employee) sqlSession().selectOne("selectEmployee", id);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Employee> getEmployees(FilterWrapper<Employee> filter){
         return sqlSession().selectList("selectEmployees", filter);
     }
@@ -43,7 +42,6 @@ public class EmployeeBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectEmployeesCount", filter);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Employee> getAllEmployees(Long sessionId){
         return sqlSession().selectList("selectAllEmployees", sessionId);
     }

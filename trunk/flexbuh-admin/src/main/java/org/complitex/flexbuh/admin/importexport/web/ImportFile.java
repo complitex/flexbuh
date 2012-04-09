@@ -51,7 +51,6 @@ public class ImportFile extends TemplatePage {
 
     private IModel<List<DataFile>> dataFileModel = new ListModel<>();
 
-    @SuppressWarnings("unchecked")
     public ImportFile() {
 
         final WebMarkupContainer container = new WebMarkupContainer("container");

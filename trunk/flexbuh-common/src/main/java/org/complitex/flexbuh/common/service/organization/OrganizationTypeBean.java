@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.common.service.organization;
 
-import com.google.common.collect.Maps;
 import org.complitex.flexbuh.common.entity.LocalizedDomainObject;
 import org.complitex.flexbuh.common.entity.organization.OrganizationType;
 import org.complitex.flexbuh.common.entity.organization.OrganizationTypeFilter;
@@ -10,7 +9,6 @@ import org.complitex.flexbuh.common.service.AbstractBean;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -32,7 +30,6 @@ public class OrganizationTypeBean extends AbstractBean {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<OrganizationType> getOrganizationTypes(String start, Locale locale) {
         return sqlSession().selectList(NS + ".selectOrganizationTypes", new OrganizationTypeFilter(0, SIZE, locale, start));
     }

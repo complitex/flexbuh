@@ -23,7 +23,6 @@ public class DocumentTermBean extends AbstractBean {
         return (DocumentTerm)sqlSession().selectOne(NS + ".selectDocumentTerm", id);
     }
 
-	@SuppressWarnings("unchecked")
     public List<DocumentTerm> getDocumentTerms(DocumentTermFilter filter) {
         return sqlSession().selectList(NS + ".selectDocumentTerms", filter);
     }
@@ -32,12 +31,10 @@ public class DocumentTermBean extends AbstractBean {
         return (Integer)sqlSession().selectOne(NS + ".selectDocumentTermsCount", filter);
     }
 
-	@SuppressWarnings("unchecked")
 	public List<Integer> getPeriodTypes() {
 		return sqlSession().selectList(NS + ".selectPeriodTypes");
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Integer> getPeriodMonths() {
 		return sqlSession().selectList(NS + ".selectPeriodMonths");
 	}

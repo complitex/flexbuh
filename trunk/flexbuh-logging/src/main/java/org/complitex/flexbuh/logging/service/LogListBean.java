@@ -26,19 +26,16 @@ public class LogListBean extends AbstractBean {
         return (Integer) sqlSession().selectOne(STATEMENT_PREFIX + ".selectLogsCount", filter);
     }
 
-    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<String> getModules(){
         return sqlSession().selectList(STATEMENT_PREFIX + ".selectModules");
     }
 
-    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<String> getControllers(){
         return sqlSession().selectList(STATEMENT_PREFIX + ".selectControllers");
     }
 
-    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<String> getModels(){
         return sqlSession().selectList(STATEMENT_PREFIX + ".selectModels");

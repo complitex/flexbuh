@@ -85,8 +85,6 @@ public class DocumentVersionList extends TemplatePage {
 
 		//Модель
         final DataProvider<DocumentVersion> dataProvider = new DataProvider<DocumentVersion>() {
-
-			@SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends DocumentVersion> getData(int first, int count) {
                 DocumentVersionFilter filter = filterModel.getObject();

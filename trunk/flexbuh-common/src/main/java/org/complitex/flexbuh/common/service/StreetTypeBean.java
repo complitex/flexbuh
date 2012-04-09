@@ -14,7 +14,6 @@ import java.util.Locale;
 @Stateless
 public class StreetTypeBean extends AbstractBean {
 
-    @SuppressWarnings("unchecked")
     public List<StreetType> getStreetTypes(String start, Locale locale) {
         return sqlSession().selectList("selectStreetTypes", new StreetTypeFilter(0, 10, locale, start));
     }
