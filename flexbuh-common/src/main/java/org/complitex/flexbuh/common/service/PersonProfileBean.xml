@@ -35,7 +35,9 @@
         <result column="b_last_name" property="bLastName"/>
         <result column="tax_inspection_id" property="taxInspectionId"/>
         <result column="selected" property="selected"/>
+
         <result column="user_name" property="userName"/>
+        <result column="tax_inspection_name" property="taxInspectionName"/>
     </resultMap>
 
     <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
@@ -71,12 +73,14 @@
         from `person_profile` p
           left join `share` s on (p.`session_id` = s.`session_id`)
           left join `user` u on (p.`session_id` = u.`session_id`)
+          left join `tax_inspection` t on (t.`id` = p.`tax_inspection_id`)
           where p.`session_id` = #{sessionId} or s.`shared_to_session_id` = #{sessionId}
     </sql>
 
     <select id="selectPersonProfiles" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter"
             resultMap="personProfileResultMap">
-        select *, concat(u.`last_name`,' ', substring(u.`first_name`, 1, 1)) as user_name
+        select *, concat(u.`last_name`,' ', substring(u.`first_name`, 1, 1)) as user_name,
+          t.`name_uk` as tax_inspection_name
           <include refid="selectPersonProfilesFromWhere"/> limit #{first}, #{count}
     </select>
 
