@@ -265,7 +265,7 @@ public class UserBean extends AbstractBean {
         return sqlSession().selectList(NS + ".selectSharedUsers", sessionId);
     }
 
-    public User findUserByLoginOrEmail(String s){
-        return (User) sqlSession().selectOne(NS + ".findUserByLoginOrEmail", s);
+    public User findUser(String s){
+        return (User) sqlSession().selectOne(NS + ".findUser", s);
     }
 }
