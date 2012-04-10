@@ -135,8 +135,8 @@ public class PersonProfileList extends TemplatePage {
 
                 item.add(new Label("tin", StringUtil.getString(profile.getTin())));
 
-                item.add(new Label("tax_inspection_name", profile.getCSti() + " " +
-                        StringUtil.getString(profile.getTaxInspectionName())));
+                item.add(new Label("tax_inspection_name", StringUtil.getString(profile.getCSti()) + " " +
+                        StringUtil.emptyOnNull(profile.getTaxInspectionName())));
             }
         };
         filterForm.add(dataView);

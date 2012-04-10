@@ -43,7 +43,7 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
             public Object getDisplayValue(PersonProfile personProfile) {
                 String s = !personProfile.getSessionId().equals(TemplateSession.getSessionId())
                         ? "(" + personProfile.getUserName()  + ") " : "";
-                s += personProfile.getTin() != null ? personProfile.getTin() + " " : "";
+                //s += personProfile.getTin() != null ? personProfile.getTin() + " " : "";
                 s += personProfile.getProfileName();
 
                 return s;
