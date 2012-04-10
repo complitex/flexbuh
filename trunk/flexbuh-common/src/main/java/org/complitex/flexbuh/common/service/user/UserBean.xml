@@ -173,12 +173,13 @@
         where s.`session_id` = #{sessionId}
     </select>
 
-    <select id="findUserByLoginOrEmail" parameterType="string" resultMap="userResultMap">
+    <select id="findUser" parameterType="string" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
             left join `usergroup` gc on uc.`login` = gc.`login`
             left join `user_organization` uo on uc.`login` = uo.`login`
             left join `organization` o on uo.`organization_id` = o.`id`
-        where uc.`login` = #{s} or uc.`email` = #{s}
+        where  upper(uc.`login`) = upper(#{s}) or  upper(uc.`email`) = upper(#{s})
+          or upper(concat_ws(' ', uc.last_name, uc.first_name, uc.middle_name)) = upper(#{s})
     </select>
 
 </mapper>

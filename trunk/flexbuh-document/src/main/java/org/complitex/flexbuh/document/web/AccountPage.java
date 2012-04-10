@@ -98,7 +98,7 @@ public class AccountPage extends FormTemplatePage{
         shareForm.add(new AjaxButton("add_share") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                User user = userBean.findUserByLoginOrEmail(shareSearchModel.getObject());
+                User user = userBean.findUser(shareSearchModel.getObject());
 
                 if (user != null && user.getSessionId() != null && !getSessionId().equals(user.getSessionId())) {
                     Share share = new Share(getSessionId(), user.getSessionId());
