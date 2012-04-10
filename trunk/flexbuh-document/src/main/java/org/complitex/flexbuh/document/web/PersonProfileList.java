@@ -9,7 +9,6 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -94,8 +93,6 @@ public class PersonProfileList extends TemplatePage {
 
         //Модель
         final DataProvider<PersonProfile> dataProvider = new DataProvider<PersonProfile>() {
-
-            @SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends PersonProfile> getData(int first, int count) {
                 return personProfileBean.getPersonProfiles(sessionId, first, count);
@@ -132,27 +129,11 @@ public class PersonProfileList extends TemplatePage {
                 item.add(new BookmarkablePageLinkPanel<PersonProfile>("profile_name", profile.getProfileName(),
                         PersonProfileEdit.class, pageParameters));
 
-                item.add(new Label("name", profile.getName()));
+                String userName = !profile.getSessionId().equals(getSessionId()) ? "(" + profile.getUserName()  + ") " : "";
+
+                item.add(new Label("name", userName + StringUtil.emptyOnNull(profile.getName())));
 
                 item.add(new Label("tin", StringUtil.getString(profile.getTin())));
-
-                //Selected
-                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
-                final boolean selected = profile.getId().equals(personProfileId);
-
-                Link select = new Link("action_select") {
-                    @Override
-                    public void onClick() {
-                        if (!selected){
-                            putPreference(PersonProfile.SELECTED_PERSON_PROFILE_ID, profile.getId().toString());
-                        }else {
-                            removePreference(PersonProfile.SELECTED_PERSON_PROFILE_ID);
-                        }
-                    }
-                };
-                item.add(select);
-
-                select.add(new Label("action_select_label", getString(!selected ? "action_select" : "action_deselect")));
             }
         };
         filterForm.add(dataView);

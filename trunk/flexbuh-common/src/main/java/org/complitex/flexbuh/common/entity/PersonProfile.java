@@ -56,6 +56,8 @@ public class PersonProfile extends SessionObject {
 
     private Long taxInspectionId;
 
+    private String userName;
+
     public void parsePhysicalNames(){
         lastName = FIOUtil.getLastName(name);
         firstName = FIOUtil.getFirstName(name);
@@ -362,6 +364,14 @@ public class PersonProfile extends SessionObject {
 
     public void setTaxInspectionId(Long taxInspectionId) {
         this.taxInspectionId = taxInspectionId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     @Override

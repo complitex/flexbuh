@@ -86,6 +86,7 @@
 
     <sql id="selectDeclarationsFromWhere">
         from `declaration` de
+        left join `share` s on (s.`session_id` = de.`session_id`)
         left join `document` do on (de.`c_doc` = do.`c_doc` and de.`c_doc_sub` = do.`c_doc_sub`)
         <where>
             <if test="name != null">do.`name_uk` like  concat('%', #{name}, '%')</if>
@@ -94,7 +95,7 @@
             <if test="parentId == null">and `parent_id` is null</if>
             <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
             <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
-            and de.`session_id` = #{sessionId}
+            and (de.`session_id` = #{sessionId} or s.`shared_to_session_id` = #{sessionId})
 
             <if test="personProfileId != null">and de.`person_profile_id` = #{personProfileId}</if>
             <if test="personProfileId == null">and de.`person_profile_id` is null</if>
@@ -103,7 +104,6 @@
                 (#{p.month} = `period_month` and #{p.type} = `period_type` and #{p.year} = `period_year`)
             </foreach>
         </where>
-
     </sql>
 
     <select id="selectDeclarations" resultMap="declarationResultMap" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
@@ -156,11 +156,15 @@
     </select>
 
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
-        select `period_type` as type, `period_month` as month, `period_year` as year from `declaration` d
-            where d.`session_id` = #{sessionId}  and `parent_id` is null
-                <if test="personProfileId != null">and d.`person_profile_id` = #{personProfileId}</if>
-                <if test="personProfileId == null">and d.`person_profile_id` is null</if>
-                group by `period_type`, `period_month`, `year`
+        select
+          `period_type` as type, `period_month` as month, `period_year` as year
+        from
+          `declaration` d left join `share` s on (d.`session_id` = s.`session_id`)
+        where
+          (d.`session_id` = #{sessionId} or s.shared_to_session_id = #{sessionId}) and `parent_id` is null
+          <if test="personProfileId != null">and d.`person_profile_id` = #{personProfileId}</if>
+          <if test="personProfileId == null">and d.`person_profile_id` is null</if>
+          group by `period_type`, `period_month`, `year`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">

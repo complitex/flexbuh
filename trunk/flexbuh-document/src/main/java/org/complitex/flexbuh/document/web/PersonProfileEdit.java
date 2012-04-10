@@ -8,18 +8,17 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
+import org.complitex.flexbuh.common.entity.user.Share;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.service.user.SessionBean;
+import org.complitex.flexbuh.common.service.user.ShareBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.*;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -45,6 +44,9 @@ public class PersonProfileEdit extends FormTemplatePage {
     @EJB
     private SessionBean sessionBean;
 
+    @EJB
+    private ShareBean shareBean;
+
     private PersonProfile personProfile;
 
     public PersonProfileEdit() {
@@ -62,15 +64,17 @@ public class PersonProfileEdit extends FormTemplatePage {
             Long id = pageParameters.get("id").toLongObject();
             personProfile = personProfileBean.getPersonProfile(id);
 
-            if (personProfile != null && !personProfile.getSessionId().equals(getSessionId())){
+            if (personProfile != null && !personProfile.getSessionId().equals(getSessionId())
+                    && !shareBean.isExist(new Share(personProfile.getSessionId(), getSessionId()))){
                 // person profile not found
-                error(getString("error_person_profile_failed_session"));
+                //todo fix display warning message
+                error(new ResourceModel("error_person_profile_failed_session"));
                 setResponsePage(PersonProfileList.class);
             } if (personProfile != null) {
                 init();
             } else {
                 // person profile not found
-                error(getString("error_person_profile_not_found"));
+                error(new ResourceModel("error_person_profile_not_found"));
                 setResponsePage(PersonProfileList.class);
             }
         } else {

@@ -188,14 +188,15 @@ public class DeclarationCreate extends FormTemplatePage{
                     return;
                 }
 
-                declaration.setSessionId(getSessionId());
-
                 //Person profile
                 PersonProfile pp = declaration.getPersonProfile();
 
                 if (pp != null) {
                     declaration.setPersonProfileId(declaration.getPersonProfile().getId());
                     declaration.getHead().setTin(pp.getTin() != null ? pp.getTin() : 0);
+                    declaration.setSessionId(pp.getSessionId());
+                }else {
+                    declaration.setSessionId(getSessionId());
                 }
 
                 //check duplicate

@@ -5,7 +5,7 @@ import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
 
-import static org.complitex.flexbuh.common.util.StringUtil.notNull;
+import static org.complitex.flexbuh.common.util.StringUtil.emptyOnNull;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -52,7 +52,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HK")
     public String getHk() {
-        return notNull(hk);
+        return emptyOnNull(hk);
     }
 
     public void setHk(String hk) {
@@ -72,7 +72,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HLOC")
     public String getHloc() {
-        return notNull(hloc);
+        return emptyOnNull(hloc);
     }
 
     public void setHloc(String hloc) {
@@ -81,7 +81,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HTEL")
     public String getHtel() {
-        return notNull(htel);
+        return emptyOnNull(htel);
     }
 
     public void setHtel(String htel) {
@@ -90,7 +90,7 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HNSPDV")
     public String getHnspdv() {
-        return notNull(hnspdv);
+        return emptyOnNull(hnspdv);
     }
 
     public void setHnspdv(String hnspdv) {

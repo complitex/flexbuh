@@ -10,8 +10,10 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.user.Share;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.common.service.user.ShareBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
 import org.complitex.flexbuh.common.web.component.LastNameAutoCompleteTextField;
@@ -34,6 +36,9 @@ public class CounterpartEdit extends FormTemplatePage{
 
     @EJB
     private FIOBean fioBean;
+
+    @EJB
+    private ShareBean shareBean;
     
     public CounterpartEdit() {
         init(null);
@@ -45,15 +50,21 @@ public class CounterpartEdit extends FormTemplatePage{
     
     private void init(Long id){
         Counterpart counterpart = id != null ? counterpartBean.getCounterpart(id) : new Counterpart(getSessionId());
+
+        PersonProfile personProfile = personProfileBean.getPersonProfile(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+
+        //Профиль
+        if (id == null && personProfile != null){
+            counterpart.setPersonProfileId(personProfile.getId());
+            counterpart.setSessionId(personProfile.getSessionId());
+        }
         
         if (counterpart == null){
             throw new WicketRuntimeException("Кажись нет записи по такому id в базе");
-        }else if (!counterpart.getSessionId().equals(getSessionId())){
+        }else if (!counterpart.getSessionId().equals(getSessionId())
+                && !shareBean.isExist(new Share(counterpart.getSessionId(), getSessionId()))){
             throw new UnauthorizedInstantiationException(CounterpartEdit.class);
         }
-        
-        //Профиль
-        counterpart.setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
         
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));

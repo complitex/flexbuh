@@ -14,15 +14,16 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.ResourceService;
 import org.complitex.flexbuh.common.service.TemplateSession;
 import org.complitex.flexbuh.common.service.user.SessionBean;
+import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.pages.login.Login;
 import org.complitex.flexbuh.common.template.toolbar.HelpButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
@@ -55,6 +56,9 @@ public abstract class TemplatePage extends WebPage {
 
     @EJB
     private ResourceService resourceService;
+
+    @EJB
+    private UserBean userBean;
 
     protected TemplatePage(PageParameters parameters) {
         this();
@@ -104,10 +108,11 @@ public abstract class TemplatePage extends WebPage {
 
         //Feedback
 //        add(new FeedbackCreate("feedback"));
+        User user = userBean.getCurrentUser();
 
-//        todo empty panel
-        add(new Label("current_user_fullname", "id: " + getSessionId()));
-        add(new EmptyPanel("current_user_department"));
+        add(new Label("current_user_fullname", !userBean.isAnonymous(user) ? user.getFullName() : ""));
+        add(new Label("current_user_id", "id: " + getSessionId() +
+                (!userBean.isAnonymous(user) ? (" " + user.getLogin()) : "")));
         add(new PersonProfileChoice("profile"));
 
         add(new BookmarkablePageLink<>("login", Login.class).setVisible(!isUserAuthorized()));

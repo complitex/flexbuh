@@ -10,7 +10,9 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.user.Share;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.common.service.user.ShareBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
 import org.complitex.flexbuh.common.web.component.LastNameAutoCompleteTextField;
@@ -32,6 +34,9 @@ public class EmployeeEdit extends FormTemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
+    @EJB
+    private ShareBean shareBean;
+
     public EmployeeEdit() {
         init(null);
     }
@@ -41,16 +46,22 @@ public class EmployeeEdit extends FormTemplatePage{
     }
 
     private void init(Long id){
+        PersonProfile personProfile = personProfileBean.getPersonProfile(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+
         Employee employee = id != null ? employeeBean.getEmployee(id) : new Employee(getSessionId());
+
+        //Профиль
+        if (id == null && personProfile != null){
+            employee.setPersonProfileId(personProfile.getId());
+            employee.setSessionId(personProfile.getSessionId());
+        }
 
         if (employee == null){
             throw new WicketRuntimeException("Похоже в базе нет записи по такому id");
-        }else if (!employee.getSessionId().equals(getSessionId())){
+        }else if (!employee.getSessionId().equals(getSessionId())
+                && !shareBean.isExist(new Share(employee.getSessionId(), getSessionId()))){
             throw new UnauthorizedInstantiationException(CounterpartEdit.class);
         }
-        
-        //Профиль
-        employee.setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
         
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));

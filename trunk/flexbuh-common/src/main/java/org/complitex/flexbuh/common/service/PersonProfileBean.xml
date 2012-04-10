@@ -35,6 +35,7 @@
         <result column="b_last_name" property="bLastName"/>
         <result column="tax_inspection_id" property="taxInspectionId"/>
         <result column="selected" property="selected"/>
+        <result column="user_name" property="userName"/>
     </resultMap>
 
     <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
@@ -66,16 +67,26 @@
         select * from `person_profile` where `id` = #{id}
     </select>
 
-    <select id="selectPersonProfiles" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter" resultMap="personProfileResultMap">
-        select * from `person_profile` where `session_id` = #{sessionId} limit #{first}, #{count}
+    <sql id="selectPersonProfilesFromWhere">
+        from `person_profile` p
+          left join `share` s on (p.`session_id` = s.`session_id`)
+          left join `user` u on (p.`session_id` = u.`session_id`)
+          where p.`session_id` = #{sessionId} or s.`shared_to_session_id` = #{sessionId}
+    </sql>
+
+    <select id="selectPersonProfiles" parameterType="org.complitex.flexbuh.common.entity.AbstractFilter"
+            resultMap="personProfileResultMap">
+        select *, concat(u.`last_name`,' ', substring(u.`first_name`, 1, 1)) as user_name
+          <include refid="selectPersonProfilesFromWhere"/> limit #{first}, #{count}
     </select>
 
     <select id="selectPersonProfilesCount" parameterType="long" resultType="int">
-        select count(*) from `person_profile` where `session_id` = #{sessionId}
+        select count(*) <include refid="selectPersonProfilesFromWhere"/>
     </select>
 
     <select id="selectAllPersonProfiles" parameterType="long" resultMap="personProfileResultMap">
-        select * from `person_profile` where `session_id` = #{sessionId}
+        select *, concat(u.`last_name`,' ', substring(u.`first_name`, 1, 1)) as user_name
+          <include refid="selectPersonProfilesFromWhere"/>
     </select>
 
     <delete id="deletePersonProfile" parameterType="long">
