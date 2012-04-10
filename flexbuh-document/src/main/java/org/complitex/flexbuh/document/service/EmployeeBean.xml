@@ -19,7 +19,9 @@
         select * from `employee` where `id` = #{id}
     </select>
 
-    <sql id="selectEmployeesWhere">
+    <sql id="selectEmployeesFromWhere">
+        from `employee` e
+        left join `share` s on (e.`session_id` = s.`session_id`)
         <where>
            <if test="object.htin != null">and e.`htin` like concat('%', #{object.htin}, '%')</if>
             <if test="object.hname != null and !object.hname.empty">
@@ -28,14 +30,15 @@
             <if test="object.hbirthday != null">and e.`hbirthday` = DATE(#{object.hbirthday})</if>
             <if test="object.hdateIn != null">and e.`hdate_in` = DATE(#{object.hdateIn})</if>
             <if test="object.hdateOut != null">and e.`hdate_out` = DATE(#{object.hdateOut})</if>
+            and (e.`session_id` = #{object.sessionId} or s.`shared_to_session_id` = #{object.sessionId})
             and e.`person_profile_id` = #{object.personProfileId}
         </where>
     </sql>
 
     <select id="selectEmployees" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="employeeResultMap">
-        select e.*, concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) as `hname` from `employee` e
-            <include refid="selectEmployeesWhere"/>
+        select e.*, concat_ws(' ',e.`last_name`, e.`first_name`, e.`middle_name`) as `hname`
+            <include refid="selectEmployeesFromWhere"/>
             order by ${sortProperty}
             <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
             <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
@@ -43,7 +46,7 @@
 
     <select id="selectEmployeesCount" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultType="int">
-        select count(*) from `employee` e <include refid="selectEmployeesWhere"/>
+        select count(*) <include refid="selectEmployeesFromWhere"/>
     </select>
 
     <select id="selectAllEmployees" parameterType="long" resultMap="employeeResultMap">

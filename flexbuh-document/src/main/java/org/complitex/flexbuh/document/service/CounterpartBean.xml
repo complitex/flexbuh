@@ -37,6 +37,7 @@
             <if test="object.hnspdv != null and !object.hnspdv.empty">
                 and c.`hnspdv` like concat('%', #{object.hnspdv}, '%')
             </if>
+            and (c.`session_id` = #{object.sessionId} or s.`shared_to_session_id` = #{object.sessionId})
             and c.`person_profile_id` = #{object.personProfileId}
         </where>
     </sql>
