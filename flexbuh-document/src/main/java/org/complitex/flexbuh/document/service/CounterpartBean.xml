@@ -19,7 +19,8 @@
         select * from `counterpart` where `id` = #{id}
     </select>
 
-    <sql id="selectCounterpartsWhere">
+    <sql id="selectCounterpartsFromWhere">
+        from `counterpart` c left join `share` s on (c.`session_id` = s.`session_id`)
         <where>
             <if test="object.hk != null and !object.hk.empty">
                 c.`hk` like concat('%', #{object.hk}, '%')
@@ -36,15 +37,14 @@
             <if test="object.hnspdv != null and !object.hnspdv.empty">
                 and c.`hnspdv` like concat('%', #{object.hnspdv}, '%')
             </if>
-            and c.`session_id` = #{object.sessionId}
             and c.`person_profile_id` = #{object.personProfileId}
         </where>
     </sql>
 
     <select id="selectCounterparts" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="counterpartResultMap">
-        select c.*, concat_ws(' ', c.`last_name`, c.`first_name`, c.`middle_name`) as `hname` from `counterpart` c
-            <include refid="selectCounterpartsWhere"/>
+        select c.*, concat_ws(' ', c.`last_name`, c.`first_name`, c.`middle_name`) as `hname`
+            <include refid="selectCounterpartsFromWhere"/>
             order by ${sortProperty}
             <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
             <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
@@ -57,8 +57,7 @@
 
     <select id="selectCounterpartCount" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultType="int">
-        select count(*) from `counterpart` c
-        <include refid="selectCounterpartsWhere"/>
+        select count(*) <include refid="selectCounterpartsFromWhere"/>
     </select>
 
     <insert id="insertCounterpart">

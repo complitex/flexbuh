@@ -257,6 +257,10 @@ public class UserBean extends AbstractBean {
         return user == null || ANONYMOUS_USER_LOGIN_NAME.equals(user.getLogin());
     }
 
+    public boolean isAnonymous(){
+        return isAnonymous(getCurrentUser());
+    }
+
     public List<User> getSharedUsers(Long sessionId){
         return sqlSession().selectList(NS + ".selectSharedUsers", sessionId);
     }

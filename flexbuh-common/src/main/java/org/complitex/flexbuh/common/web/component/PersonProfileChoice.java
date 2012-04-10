@@ -6,7 +6,6 @@ import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.TemplateSession;
-import org.complitex.flexbuh.common.util.StringUtil;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -41,8 +40,13 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
         
         setChoiceRenderer(new IChoiceRenderer<PersonProfile>() {
             @Override
-            public Object getDisplayValue(PersonProfile object) {
-                return StringUtil.getString(object.getTin()) + " " +object.getProfileName();
+            public Object getDisplayValue(PersonProfile personProfile) {
+                String s = !personProfile.getSessionId().equals(TemplateSession.getSessionId())
+                        ? "(" + personProfile.getUserName()  + ") " : "";
+                s += personProfile.getTin() != null ? personProfile.getTin() + " " : "";
+                s += personProfile.getProfileName();
+
+                return s;
             }
 
             @Override

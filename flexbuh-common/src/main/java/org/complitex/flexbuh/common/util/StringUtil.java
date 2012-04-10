@@ -16,7 +16,7 @@ public class StringUtil {
         return object != null ? object.toString() : "";
     }
 
-    public static String notNull(String s){
+    public static String emptyOnNull(String s){
         return s != null ? s : "";
     }
 

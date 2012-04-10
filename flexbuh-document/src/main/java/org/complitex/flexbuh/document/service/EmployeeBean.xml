@@ -28,7 +28,6 @@
             <if test="object.hbirthday != null">and e.`hbirthday` = DATE(#{object.hbirthday})</if>
             <if test="object.hdateIn != null">and e.`hdate_in` = DATE(#{object.hdateIn})</if>
             <if test="object.hdateOut != null">and e.`hdate_out` = DATE(#{object.hdateOut})</if>
-            and e.`session_id` = #{object.sessionId}
             and e.`person_profile_id` = #{object.personProfileId}
         </where>
     </sql>

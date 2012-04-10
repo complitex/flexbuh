@@ -14,8 +14,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
+import org.complitex.flexbuh.common.entity.user.Share;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
+import org.complitex.flexbuh.common.service.user.ShareBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
@@ -52,6 +54,9 @@ public class DeclarationFormPage extends TemplatePage{
     @EJB
     private PersonProfileBean personProfileBean;
 
+    @EJB
+    private ShareBean shareBean;
+
     private Declaration declaration;
     
     private AddLinkedDeclarationDialog addLinkedDeclarationDialog;
@@ -87,7 +92,7 @@ public class DeclarationFormPage extends TemplatePage{
         final Long sessionId = declaration.getSessionId();
 
         //security check
-        if (sessionId != null && !sessionId.equals(getSessionId())){
+        if (sessionId != null && !sessionId.equals(getSessionId()) && !shareBean.isExist(new Share(sessionId, getSessionId()))){
             throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
         }
 
@@ -193,13 +198,14 @@ public class DeclarationFormPage extends TemplatePage{
             public void onSubmit() {
                 Long selected = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
+                //todo extract method
                 if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
                     declarationService.validateAndSave(declaration);
 
-                    getSession().info(getString("info_saved"));
+                    getSession().info(getStringFormat("info_saved", declaration.getFullName()));
 
                     if (!declaration.isValidated()) {
-                        getSession().info(declaration.getValidateMessage());
+                        getSession().info(getStringFormat("info_validated", declaration.getValidateMessage()));
                     }
 
                     PageParameters pageParameters = new PageParameters();

@@ -42,6 +42,10 @@ public class EmployeeBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectEmployeesCount", filter);
     }
 
+    /**
+     * @param sessionId Идентификатор сессии
+     * @return Список всех сотрудников в данной сессии
+     */
     public List<Employee> getAllEmployees(Long sessionId){
         return sqlSession().selectList("selectAllEmployees", sessionId);
     }

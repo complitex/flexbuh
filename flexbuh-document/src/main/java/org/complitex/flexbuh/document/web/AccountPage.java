@@ -3,6 +3,7 @@ package org.complitex.flexbuh.document.web;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -59,9 +60,13 @@ public class AccountPage extends FormTemplatePage{
         add(messages);
 
         //Share
+        WebMarkupContainer shareContainer = new WebMarkupContainer("share_container");
+        shareContainer.setVisible(!userBean.isAnonymous());
+        add(shareContainer);
+
         final Form shareForm = new Form<>("form_share");
         shareForm.setOutputMarkupId(true);
-        add(shareForm);
+        shareContainer.add(shareForm);
 
         shareForm.add(new ListView<User>("shared_users", new LoadableDetachableModel<List<? extends User>>() {
             @Override

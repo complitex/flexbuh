@@ -42,6 +42,10 @@ public class CounterpartBean extends AbstractBean{
         return (Integer) sqlSession().selectOne("selectCounterpartCount", filter);
     }
 
+    /**
+     * @param sessionId Идентификатор сессии
+     * @return Список всех контрагентов в данной сессии
+     */
     public List<Counterpart> getAllCounterparts(Long sessionId){
         return sqlSession().selectList("selectAllCounterparts", sessionId);
     }
