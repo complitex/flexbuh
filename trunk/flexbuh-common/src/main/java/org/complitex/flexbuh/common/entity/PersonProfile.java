@@ -56,6 +56,8 @@ public class PersonProfile extends SessionObject {
 
     private Long taxInspectionId;
 
+    private String taxInspectionName;
+
     private String userName;
 
     public void parsePhysicalNames(){
@@ -366,12 +368,22 @@ public class PersonProfile extends SessionObject {
         this.taxInspectionId = taxInspectionId;
     }
 
+    @XmlTransient
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    @XmlTransient
+    public String getTaxInspectionName() {
+        return taxInspectionName;
+    }
+
+    public void setTaxInspectionName(String taxInspectionName) {
+        this.taxInspectionName = taxInspectionName;
     }
 
     @Override

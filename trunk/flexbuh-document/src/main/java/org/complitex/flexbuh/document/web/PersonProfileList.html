@@ -44,17 +44,19 @@
             <thead>
             <tr>
                 <th><!--<input type="checkbox" onclick="selectAll(this)"/>--><!--todo fix ajax onchange--></th>
+                <th><wicket:message key="tin"/></th>
                 <th><wicket:message key="profile_name"/></th>
                 <th><wicket:message key="name"/></th>
-                <th><wicket:message key="tin"/></th>
+                <th><wicket:message key="tax_inspection_name"/></th>
             </tr>
             </thead>
             <tbody>
             <tr wicket:id="companyProfiles">
                 <td><input type="checkbox" wicket:id="select"/></td>
+                <td><span wicket:id="tin"></span></td>
                 <td><span wicket:id="profile_name"></span></td>
                 <td><span wicket:id="name"></span></td>
-                <td><span wicket:id="tin"></span></td>
+                <td><span wicket:id="tax_inspection_name"></span></td>
             </tr>
             </tbody>
         </table>

@@ -134,6 +134,9 @@ public class PersonProfileList extends TemplatePage {
                 item.add(new Label("name", userName + StringUtil.emptyOnNull(profile.getName())));
 
                 item.add(new Label("tin", StringUtil.getString(profile.getTin())));
+
+                item.add(new Label("tax_inspection_name", profile.getCSti() + " " +
+                        StringUtil.getString(profile.getTaxInspectionName())));
             }
         };
         filterForm.add(dataView);
