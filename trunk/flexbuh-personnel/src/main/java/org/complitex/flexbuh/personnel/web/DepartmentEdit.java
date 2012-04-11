@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.web;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.PatternDateConverter;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.text.MessageFormat;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Pavel Sknar
@@ -166,33 +166,33 @@ public class DepartmentEdit extends FormTemplatePage {
 
         // Departments
         panel = new DepartmentTreePanel("departments", department);
-        if (department.getId() == null) {
+        /*if (department.getId() == null) {
             panel.setEnabled(false);
-        }
+        }*/
         form.add(panel);
 
         // Button update/create department
         form.add(new SaveDepartmentButton("submit"));
 
-        // Button cancel changes and return to "Organizations list" page
-        form.add(new Link("cancel") {
+        // Button cancel changes and return to organization page or parent department page
+        form.add(new Link<String>("cancel") {
 
             @Override
             public void onClick() {
                 PageParameters parameters = new PageParameters();
-                if (panel.getMasterDepartment() != null) {
+                if (department.getId() == null && panel.getMasterDepartment() != null) {
                     parameters.set(PARAM_DEPARTMENT_ID, panel.getMasterDepartment().getId());
                     setResponsePage(DepartmentEdit.class, parameters);
                     return;
                 }
-                if (department != null && department.getOrganization() != null) {
+                if (department.getOrganization() != null) {
                     parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, department.getOrganization().getId());
                     setResponsePage(OrganizationEdit.class, parameters);
                     return;
                 }
                 setResponsePage(OrganizationList.class);
             }
-        });
+        }.add(new AttributeModifier("value", department.getId() == null ? getString("cancel") : getString("go_to_organization"))));
     }
 
     private class SaveDepartmentButton extends Button {
