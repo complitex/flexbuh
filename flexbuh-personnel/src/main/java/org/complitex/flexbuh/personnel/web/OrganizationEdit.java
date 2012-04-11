@@ -1,10 +1,11 @@
 package org.complitex.flexbuh.personnel.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -28,8 +29,10 @@ import org.complitex.flexbuh.common.service.StreetTypeBean;
 import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
+import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.common.web.component.OrganizationTypeAutoCompleteTextField;
 import org.complitex.flexbuh.personnel.web.component.DepartmentTreePanel;
+import org.complitex.flexbuh.personnel.web.component.TemporalObjectEditDialog;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -73,6 +76,8 @@ public class OrganizationEdit extends FormTemplatePage {
 
     private IModel<String> juridicalStreetModel = new Model<String>();
     private IModel<String> juridicalCityModel = new Model<String>();
+
+    private TemporalObjectEditDialog dialog;
 
     protected OrganizationEdit() {
         organization = new Organization();
@@ -205,72 +210,54 @@ public class OrganizationEdit extends FormTemplatePage {
                 setResponsePage(OrganizationList.class);
             }
         });
+
+        IAjaxUpdate update =  new IAjaxUpdate() {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                save();
+                setResponsePage(OrganizationList.class);
+            }
+        };
+
+        dialog = new TemporalObjectEditDialog("template_object_edit_dialog", organization, update);
+        add(dialog);
     }
 
-    private class SaveOrganizationButton extends Button {
-        public SaveOrganizationButton(String id) {
-            super(id);
+    private void save() {
+        // Street of physical address
+        setStreet(organization.getPhysicalAddress(), physicalStreetModel.getObject());
+
+        // City of physical address
+        setCity(organization.getPhysicalAddress(), physicalStreetModel.getObject());
+
+        // Street of juridical address
+        setStreet(organization.getJuridicalAddress(), juridicalStreetModel.getObject());
+
+        // City of juridical address
+        setCity(organization.getJuridicalAddress(), juridicalCityModel.getObject());
+
+        boolean createOrganization = true;
+        Organization oldOrganization = null;
+        if (organization.getId() != null) {
+            oldOrganization = organizationBean.getOrganization(organization.getId());
+            createOrganization = false;
+        }
+        organizationBean.save(organization, getLocale());
+        if (createOrganization) {
+            log.info("Create organization '{}'", new Object[]{organization, EventCategory.CREATE,
+                        new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
+                        eventObjectFactory.getEventNewObject(organization)});
+        } else {
+            log.info("Edit organization '{}'", new Object[]{organization, EventCategory.EDIT,
+                        new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
+                        eventObjectFactory.getEventNewObject(organization),
+                        eventObjectFactory.getEventOldObject(oldOrganization)});
         }
 
-        @Override
-        public void onSubmit() {
+        info(getString("organization_saved"));
+    }
 
-            boolean emptyRequiredField = !checkRequiredField(organization.getName(), "name");
-            if (!checkRequiredField(organization.getEmail(), "email")) {
-                emptyRequiredField = true;
-            }
-            if (!checkRequiredField(organization.getEntryIntoForceDate(), "entryIntoForceDate")) {
-                emptyRequiredField = true;
-            }
-
-            if (emptyRequiredField) {
-                return;
-            }
-
-            // Street of physical address
-            setStreet(organization.getPhysicalAddress(), physicalStreetModel.getObject());
-
-            // City of physical address
-            setCity(organization.getPhysicalAddress(), physicalStreetModel.getObject());
-
-            // Street of juridical address
-            setStreet(organization.getJuridicalAddress(), juridicalStreetModel.getObject());
-
-            // City of juridical address
-            setCity(organization.getJuridicalAddress(), juridicalCityModel.getObject());
-
-            boolean createOrganization = true;
-            Organization oldOrganization = null;
-            if (organization.getId() != null) {
-                oldOrganization = organizationBean.getOrganization(organization.getId());
-                createOrganization = false;
-            }
-            organizationBean.save(organization, getLocale());
-            if (createOrganization) {
-                log.info("Create organization '{}'", new Object[]{organization, EventCategory.CREATE,
-                            new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
-                            eventObjectFactory.getEventNewObject(organization)});
-            } else {
-                log.info("Edit organization '{}'", new Object[]{organization, EventCategory.EDIT,
-                            new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
-                            eventObjectFactory.getEventNewObject(organization),
-                            eventObjectFactory.getEventOldObject(oldOrganization)});
-            }
-
-            info(getString("organization_saved"));
-
-            setResponsePage(OrganizationList.class);
-        }
-
-        private boolean checkRequiredField(Object value, String fieldName) {
-            if (value == null) {
-                error(MessageFormat.format(getString("required_field"), getString(fieldName)));
-                return false;
-            }
-            return true;
-        }
-
-        private boolean updateStreetType(String[] resultSplit) {
+    private boolean updateStreetType(String[] resultSplit) {
 
             if (resultSplit.length == 2) {
                 List<StreetType> streetTypes = streetTypeBean.getStreetTypes(resultSplit[0], getLocale());
@@ -315,6 +302,42 @@ public class OrganizationEdit extends FormTemplatePage {
             } else {
                 address.setCity(city);
             }
+        }
+
+    private class SaveOrganizationButton extends AjaxButton {
+        public SaveOrganizationButton(String id) {
+            super(id);
+        }
+
+        @Override
+        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+
+            boolean emptyRequiredField = !checkRequiredField(organization.getName(), "name");
+            if (!checkRequiredField(organization.getEmail(), "email")) {
+                emptyRequiredField = true;
+            }
+            if (!checkRequiredField(organization.getEntryIntoForceDate(), "entryIntoForceDate")) {
+                emptyRequiredField = true;
+            }
+
+            if (emptyRequiredField) {
+                return;
+            }
+
+            dialog.open(target);
+        }
+
+        @Override
+        protected void onError(AjaxRequestTarget target, Form<?> form) {
+
+        }
+
+        private boolean checkRequiredField(Object value, String fieldName) {
+            if (value == null) {
+                error(MessageFormat.format(getString("required_field"), getString(fieldName)));
+                return false;
+            }
+            return true;
         }
 
         @Override

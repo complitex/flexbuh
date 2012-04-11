@@ -4,11 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
@@ -27,12 +28,10 @@ import org.complitex.flexbuh.personnel.entity.DepartmentProvider;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.web.DepartmentEdit;
 import org.complitex.flexbuh.personnel.web.OrganizationEdit;
-import org.complitex.flexbuh.personnel.web.OrganizationList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wickettree.NestedTree;
 import wickettree.content.CheckedFolder;
-import wickettree.theme.HumanTheme;
 import wickettree.util.InverseSet;
 import wickettree.util.ProviderSubset;
 
@@ -50,7 +49,7 @@ public class DepartmentTreePanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(DepartmentTreePanel.class);
 
-    private static ResourceReference THEME = new HumanTheme();
+    private static ResourceReference THEME = new DepartmentTreeTheme();
 
     private NestedTree<Department> tree;
 
@@ -95,99 +94,124 @@ public class DepartmentTreePanel extends Panel {
             @Override
 			protected org.apache.wicket.Component newContentComponent(String id, IModel<Department> model) {
 
-                return new CheckedFolder<Department>(id, tree, model) {
+                return /*model.equals(department)?
 
-                    //private IModel<Department> selected;
+                        new Folder<Department>(id, tree, model) {
 
-                    @Override
-                    protected IModel<Boolean> newCheckBoxModel(final IModel<Department> model) {
-                        IModel<Boolean> selectModel = new Model<>(false);
-                        if (department != null && department.getId() == null
-                                && model.getObject().equals(department.getMasterDepartment())) {
-                            selectModel.setObject(true);
-                        }
-                        selectedMap.put(model.getObject().getId(), selectModel);
-                        return selectModel;
-                    }
-
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Department department = getModelObject();
-
-                        // search first ancestor with quux not set
-                        while (!selectedMap.get(department.getId()).getObject() && department.getMasterDepartment() != null) {
-                            department = department.getMasterDepartment();
-                        }
-
-                        tree.updateBranch(department, target);
-                    }
-
-                    @Override
-                    protected Component newLabelComponent(String id, IModel<Department> departmentIModel) {
-                        return new Label(id, departmentIModel.getObject().getName());
-                    }
-
-                    @Override
-                    protected MarkupContainer newLinkComponent(String id, final IModel<Department> departmentIModel) {
-                        return new Link(id) {
-                            @Override
-                            public void onClick() {
-                                PageParameters parameters = new PageParameters();
-                                parameters.set(DepartmentEdit.PARAM_DEPARTMENT_ID, departmentIModel.getObject().getId());
-                                setResponsePage(DepartmentEdit.class, parameters);
-                            }
-                        };
-                    }
-
-                    @Override
-                    protected boolean isClickable() {
-                        return true;
-                    }
-
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        //select(getModelObject(), tree, target);
-                    }
-
-                    @Override
-                    public boolean isEnabled() {
-                        return department == null || !getModelObject().getId().equals(department.getId());
-                    }
-
-                    @Override
-                    protected boolean isSelected() {
-                        return false;
-                        //return getModelObject().equals(department);
-                        /*
-                        Department department = getModelObject();
-
-                        IModel<Department> model = provider.model(department);
-
-                        try {
-                            return selected != null && selected.equals(model);
-                        } finally {
-                            model.detach();
-                        }
+                        }:
                         */
-                    }
+                        new CheckedFolder<Department>(id, tree, model) {
 
-                    /*
-                    protected void select(Department department,
-                                          AbstractTree<Department> tree,
-                                          final AjaxRequestTarget target) {
-                        if (selected != null) {
-                            tree.updateNode(selected.getObject(), target);
+                            //private IModel<Department> selected;
 
-                            selected.detach();
-                            selected = null;
-                        }
+                            @Override
+                            protected IModel<Boolean> newCheckBoxModel(final IModel<Department> model) {
+                                IModel<Boolean> selectModel = new Model<>(false);
+                                if (department != null && department.getId() == null
+                                        && model.getObject().equals(department.getMasterDepartment())) {
+                                    selectModel.setObject(true);
+                                }
+                                selectedMap.put(model.getObject().getId(), selectModel);
+                                return selectModel;
+                            }
 
-                        selected = provider.model(department);
+                            @Override
+                            protected Component newCheckBox(String id, IModel<Department> departmentIModel) {
+                                return super.newCheckBox(id, departmentIModel).
+                                        setEnabled(!isDisabled(departmentIModel));
+                            }
 
-                        tree.updateNode(department, target);
-                    }
-                    */
-                };
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                Department department = getModelObject();
+
+                                // search first ancestor with quux not set
+                                while (!selectedMap.get(department.getId()).getObject() && department.getMasterDepartment() != null) {
+                                    department = department.getMasterDepartment();
+                                }
+
+                                tree.updateBranch(department, target);
+                            }
+
+                            @Override
+                            protected Component newLabelComponent(String id, IModel<Department> departmentIModel) {
+                                return new Label(id, departmentIModel.getObject().getName());
+                            }
+
+                            @Override
+                            protected MarkupContainer newLinkComponent(String id, final IModel<Department> departmentIModel) {
+                                return isDisabled(departmentIModel)? new
+                                        WebMarkupContainer(id) {
+                                            @Override
+                                            protected void onComponentTag(ComponentTag tag)
+                                            {
+                                                tag.setName("span");
+                                                super.onComponentTag(tag);
+                                            }
+                                        }:
+                                        new Link(id) {
+                                            @Override
+                                            public void onClick() {
+                                                PageParameters parameters = new PageParameters();
+                                                parameters.set(DepartmentEdit.PARAM_DEPARTMENT_ID, departmentIModel.getObject().getId());
+                                                setResponsePage(DepartmentEdit.class, parameters);
+                                            }
+                                        };
+                            }
+
+                            @Override
+                            protected boolean isClickable() {
+                                return false;
+                            }
+
+                            @Override
+                            protected void onClick(AjaxRequestTarget target) {
+                                //select(getModelObject(), tree, target);
+                            }
+
+                            @Override
+                            public boolean isEnabled() {
+                                return true;//department == null || !getModelObject().getId().equals(department.getId());
+                            }
+
+                            @Override
+                            protected boolean isSelected() {
+                                return getModelObject().equals(department);
+                                /*
+                                Department department = getModelObject();
+
+                                IModel<Department> model = provider.model(department);
+
+                                try {
+                                    return selected != null && selected.equals(model);
+                                } finally {
+                                    model.detach();
+                                }
+                                */
+                            }
+
+                            private boolean isDisabled(IModel<Department> departmentIModel) {
+                                return (department != null && department.getId() == null) ||
+                                        departmentIModel.getObject().equals(department);
+                            }
+
+                            /*
+                            protected void select(Department department,
+                                                  AbstractTree<Department> tree,
+                                                  final AjaxRequestTarget target) {
+                                if (selected != null) {
+                                    tree.updateNode(selected.getObject(), target);
+
+                                    selected.detach();
+                                    selected = null;
+                                }
+
+                                selected = provider.model(department);
+
+                                tree.updateNode(department, target);
+                            }
+                            */
+                        };
 			}
 		};
         tree.add(new Behavior() {
@@ -211,7 +235,7 @@ public class DepartmentTreePanel extends Panel {
                 }
                 setResponsePage(DepartmentEdit.class, parameters);
             }
-        });
+        }.setVisible(isEnabledAction()));
 
         add(new AjaxButton("delete") {
 
@@ -255,7 +279,11 @@ public class DepartmentTreePanel extends Panel {
             protected void onError(AjaxRequestTarget target, Form<?> form) {
 
             }
-        });
+        }.setVisible(isEnabledAction()));
+    }
+
+    private boolean isEnabledAction() {
+        return department == null || department.getId() != null;
     }
 
     private IModel<Set<Department>> newStateModel() {
