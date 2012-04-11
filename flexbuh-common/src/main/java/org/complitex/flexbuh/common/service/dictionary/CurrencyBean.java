@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Currency;
-import org.complitex.flexbuh.common.entity.dictionary.CurrencyFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -31,11 +31,11 @@ public class CurrencyBean extends AbstractBean {
         return sqlSession().selectList(NS + ".selectCurrenciesByCodeNumber", codeNumber);
     }
 
-    public List<Currency> getCurrencies(CurrencyFilter filter) {
+    public List<Currency> getCurrencies(FilterWrapper<Currency> filter) {
         return sqlSession().selectList(NS + ".selectCurrencies", filter);
     }
 
-    public Integer getCurrenciesCount(CurrencyFilter filter){
+    public Integer getCurrenciesCount(FilterWrapper<Currency> filter){
         return (Integer) sqlSession().selectOne(NS + ".selectCurrenciesCount", filter);
     }
 }

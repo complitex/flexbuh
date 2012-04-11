@@ -1,6 +1,8 @@
 package org.complitex.flexbuh.common.entity;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -14,8 +16,32 @@ public class FilterWrapper<T extends Serializable> implements Serializable{
     protected String sortProperty;
     protected boolean ascending;
 
+    private Map<String, Object> map;
+
     public FilterWrapper(T object) {
         this.object = object;
+    }
+
+    public static <T extends Serializable> FilterWrapper<T> of(T object){
+        return new FilterWrapper<>(object);
+    }
+
+    public FilterWrapper<T> add(String key, Object value){
+        if (map == null){
+            map = new HashMap<>();
+        }
+
+        map.put(key, value);
+
+        return this;
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Object> map) {
+        this.map = map;
     }
 
     public T getObject() {

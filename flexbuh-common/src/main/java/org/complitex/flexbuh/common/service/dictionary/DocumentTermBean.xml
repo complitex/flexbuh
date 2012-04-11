@@ -15,15 +15,15 @@
 
 	<sql id="selectDocumentTermsWhere">
         <where>
-            <if test="cDoc != null">`c_doc` = #{cDoc}</if>
-            <if test="cDocSub != null">and `c_doc_sub` = #{cDocSub}</if>
-            <if test="cDocVer != null">and `c_doc_ver` = #{cDocVer}</if>
-            <if test="periodMonth != null">and `period_month` = #{periodMonth}</if>
-			<if test="periodYear != null">and `period_year` = #{periodYear}</if>
-			<if test="periodType != null">and `period_type` = #{periodType}</if>
-            <if test="dateTerm != null">and `date_term` = DATE(#{dateTerm})</if>
-            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
-            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+            <if test="object.cDoc != null">`c_doc` = #{object.cDoc}</if>
+            <if test="object.cDocSub != null">and `c_doc_sub` = #{object.cDocSub}</if>
+            <if test="object.cDocVer != null">and `c_doc_ver` = #{object.cDocVer}</if>
+            <if test="object.periodMonth != null">and `period_month` = #{object.periodMonth}</if>
+			<if test="object.periodYear != null">and `period_year` = #{object.periodYear}</if>
+			<if test="object.periodType != null">and `period_type` = #{object.periodType}</if>
+            <if test="object.dateTerm != null">and `date_term` = DATE(#{object.dateTerm})</if>
+            <if test="object.beginDate != null">and `begin_date` >= DATE(#{object.beginDate})</if>
+            <if test="object.endDate != null">and DATE(#{object.endDate}) >= `end_date`</if>
         </where>
     </sql>
 
@@ -35,14 +35,14 @@
             #{periodYear})
     </insert>
 
-	<select id="selectDocumentTerms" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTermFilter" resultMap="documentTermResultMap">
+	<select id="selectDocumentTerms" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultMap="documentTermResultMap">
         select * from `document_term` <include refid="selectDocumentTermsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         limit #{first}, #{count}
     </select>
 
-     <select id="selectDocumentTermsCount" resultType="int">
+     <select id="selectDocumentTermsCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
         select count(*) from `document_term` <include refid="selectDocumentTermsWhere"/>
     </select>
 

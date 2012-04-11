@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.util.DateUtil;
 
@@ -24,16 +24,21 @@ public class DocumentBean extends AbstractBean {
 		return (Document)sqlSession().selectOne(NS + ".selectDocument", id);
 	}
 
-	public List<Document> getDocuments(DocumentFilter filter) {
+	public List<Document> getDocuments(FilterWrapper<Document> filter) {
 		return sqlSession().selectList(NS + ".selectDocuments", filter);
 	}
 
-    public Integer getDocumentsCount(DocumentFilter filter){
+    public Integer getDocumentsCount(FilterWrapper<Document> filter){
         return (Integer)sqlSession().selectOne(NS + ".selectDocumentsCount", filter);
     }
 
     public List<Document> getLinkedDocuments(String cDoc, String cDocSub, Integer periodYear, Integer periodMonth){
-        DocumentFilter filter = new DocumentFilter(cDoc, cDocSub, DateUtil.getFirstDayOfMonth(periodYear, periodMonth-1));
+        FilterWrapper<Document> filter = new FilterWrapper<>(new Document());
+
+        filter.getObject().setCDoc(cDoc);
+        filter.getObject().setCDocSub(cDocSub);
+
+        filter.add("periodDate", DateUtil.getFirstDayOfMonth(periodYear, periodMonth-1));
 
         return sqlSession().selectList(NS + ".selectLinkedDocuments", filter);
     }

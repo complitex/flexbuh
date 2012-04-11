@@ -12,8 +12,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Region;
-import org.complitex.flexbuh.common.entity.dictionary.RegionFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.RegionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -45,11 +45,9 @@ public class RegionList extends TemplatePage {
 		add(new FeedbackPanel("messages"));
 
 		//Фильтр модель
-		RegionFilter filterObject = new RegionFilter();
+		final IModel<Region> filterModel = new CompoundPropertyModel<>(new Region());
 
-		final IModel<RegionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
-
-		final Form<RegionFilter> filterForm = new Form<>("filter_form", filterModel);
+		final Form<Region> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -58,7 +56,7 @@ public class RegionList extends TemplatePage {
             @Override
             public void onClick() {
                 filterForm.clearInput();
-                filterModel.setObject(new RegionFilter());
+                filterModel.setObject(new Region());
             }
         };
         filterForm.add(filter_reset);
@@ -81,17 +79,19 @@ public class RegionList extends TemplatePage {
         final DataProvider<Region> dataProvider = new DataProvider<Region>() {
             @Override
             protected Iterable<? extends Region> getData(int first, int count) {
-				RegionFilter filter = filterModel.getObject();
+				FilterWrapper<Region> filter = FilterWrapper.of(filterModel.getObject());
+
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
                 filter.setAscending(getSort().isAscending());
+
                 return regionBean.getRegions(filter);
             }
 
             @Override
             protected int getSize() {
-                return regionBean.getRegionsCount(filterModel.getObject());
+                return regionBean.getRegionsCount(FilterWrapper.of(filterModel.getObject()));
             }
         };
         dataProvider.setSort("code", SortOrder.ASCENDING);

@@ -14,8 +14,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -48,11 +48,9 @@ public class DocumentList extends TemplatePage {
 		add(new FeedbackPanel("messages"));
 
 		//Фильтр модель
-        DocumentFilter filterObject = new DocumentFilter();
-
-        final IModel<DocumentFilter> filterModel = new CompoundPropertyModel<>(filterObject);
+        final IModel<Document> filterModel = new CompoundPropertyModel<>(new Document());
 		
-		final Form<DocumentFilter> filterForm = new Form<>("filter_form", filterModel);
+		final Form<Document> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -61,7 +59,7 @@ public class DocumentList extends TemplatePage {
             @Override
             public void onClick() {
                 filterForm.clearInput();
-                filterModel.setObject(new DocumentFilter());
+                filterModel.setObject(new Document());
             }
         };
         filterForm.add(filter_reset);
@@ -108,17 +106,19 @@ public class DocumentList extends TemplatePage {
         final DataProvider<Document> dataProvider = new DataProvider<Document>() {
             @Override
             protected Iterable<? extends Document> getData(int first, int count) {
-				DocumentFilter filter = filterModel.getObject();
+				FilterWrapper<Document> filter = FilterWrapper.of(filterModel.getObject());
+
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
                 filter.setAscending(getSort().isAscending());
+
                 return documentBean.getDocuments(filter);
             }
 
             @Override
             protected int getSize() {
-                return documentBean.getDocumentsCount(filterModel.getObject());
+                return documentBean.getDocumentsCount(FilterWrapper.of(filterModel.getObject()));
             }
         };
         dataProvider.setSort("c_doc", SortOrder.ASCENDING);
