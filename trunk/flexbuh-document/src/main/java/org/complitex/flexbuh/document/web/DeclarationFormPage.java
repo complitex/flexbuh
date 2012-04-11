@@ -12,8 +12,9 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.PersonProfile;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentFilter;
+import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.entity.user.Share;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
@@ -251,9 +252,10 @@ public class DeclarationFormPage extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                DocumentFilter filter = new DocumentFilter();
-                filter.setParentCDoc(declaration.getHead().getCDoc());
-                filter.setParentCDocSub(declaration.getHead().getCDocSub());
+                FilterWrapper<Document> filter = new FilterWrapper<>(new Document());
+
+                filter.getObject().setParentCDoc(declaration.getHead().getCDoc());
+                filter.getObject().setParentCDocSub(declaration.getHead().getCDocSub());
                 
                 return documentBean.getDocumentsCount(filter) > 0;
             }

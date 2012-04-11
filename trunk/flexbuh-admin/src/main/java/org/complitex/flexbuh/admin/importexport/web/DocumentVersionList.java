@@ -12,8 +12,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentVersionFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -45,11 +45,9 @@ public class DocumentVersionList extends TemplatePage {
 		add(new FeedbackPanel("messages"));
 
 		//Фильтр модель
-		DocumentVersionFilter filterObject = new DocumentVersionFilter();
-
-        final IModel<DocumentVersionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
+        final IModel<DocumentVersion> filterModel = new CompoundPropertyModel<>(new DocumentVersion());
 		
-		final Form<DocumentVersionFilter> filterForm = new Form<>("filter_form", filterModel);
+		final Form<DocumentVersion> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -58,7 +56,7 @@ public class DocumentVersionList extends TemplatePage {
             @Override
             public void onClick() {
                 filterForm.clearInput();
-                filterModel.setObject(new DocumentVersionFilter());
+                filterModel.setObject(new DocumentVersion());
             }
         };
         filterForm.add(filter_reset);
@@ -87,17 +85,19 @@ public class DocumentVersionList extends TemplatePage {
         final DataProvider<DocumentVersion> dataProvider = new DataProvider<DocumentVersion>() {
             @Override
             protected Iterable<? extends DocumentVersion> getData(int first, int count) {
-                DocumentVersionFilter filter = filterModel.getObject();
+                FilterWrapper<DocumentVersion> filter = FilterWrapper.of(filterModel.getObject());
+
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
                 filter.setAscending(getSort().isAscending());
+
                 return documentVersionBean.getDocumentVersions(filter);
             }
 
             @Override
             protected int getSize() {
-                return documentVersionBean.getDocumentVersionsCount(filterModel.getObject());
+                return documentVersionBean.getDocumentVersionsCount(FilterWrapper.of(filterModel.getObject()));
             }
         };
         dataProvider.setSort("c_doc", SortOrder.ASCENDING);

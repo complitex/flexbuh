@@ -12,8 +12,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.common.entity.dictionary.TaxInspectionFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -45,11 +45,9 @@ public class TaxInspectionList extends TemplatePage {
 		add(new FeedbackPanel("messages"));
 
 		//Фильтр модель
-		TaxInspectionFilter filterObject = new TaxInspectionFilter();
-
-		final IModel<TaxInspectionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
+		final IModel<TaxInspection> filterModel = new CompoundPropertyModel<>(new TaxInspection());
 		
-		final Form<TaxInspectionFilter> filterForm = new Form<>("filter_form", filterModel);
+		final Form<TaxInspection> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -58,7 +56,7 @@ public class TaxInspectionList extends TemplatePage {
             @Override
             public void onClick() {
                 filterForm.clearInput();
-                filterModel.setObject(new TaxInspectionFilter());
+                filterModel.setObject(new TaxInspection());
             }
         };
         filterForm.add(filter_reset);
@@ -93,7 +91,8 @@ public class TaxInspectionList extends TemplatePage {
         final DataProvider<TaxInspection> dataProvider = new DataProvider<TaxInspection>() {
             @Override
             protected Iterable<? extends TaxInspection> getData(int first, int count) {
-				TaxInspectionFilter filter = filterModel.getObject();
+				FilterWrapper<TaxInspection> filter = FilterWrapper.of(filterModel.getObject());
+
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
@@ -103,7 +102,7 @@ public class TaxInspectionList extends TemplatePage {
 
             @Override
             protected int getSize() {
-                return taxInspectionBean.getTaxInspectionsCount(filterModel.getObject());
+                return taxInspectionBean.getTaxInspectionsCount(FilterWrapper.of(filterModel.getObject()));
             }
         };
         dataProvider.setSort("c_sti", SortOrder.ASCENDING);

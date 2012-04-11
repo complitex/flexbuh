@@ -11,12 +11,12 @@
 
 	<sql id="selectDocumentVersionsWhere">
         <where>
-            <if test="cDoc != null">`c_doc` = #{cDoc}</if>
-            <if test="cDocSub != null">and `c_doc_sub` = #{cDocSub}</if>
-            <if test="cDocVer != null">and `c_doc_ver` = #{cDocVer}</if>
-            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
-            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
-			<if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+            <if test="object.cDoc != null">`c_doc` = #{object.cDoc}</if>
+            <if test="object.cDocSub != null">and `c_doc_sub` = #{object.cDocSub}</if>
+            <if test="object.cDocVer != null">and `c_doc_ver` = #{object.cDocVer}</if>
+            <if test="object.beginDate != null">and `begin_date` >= DATE(#{object.beginDate})</if>
+            <if test="object.endDate != null">and DATE(#{object.endDate}) >= `end_date`</if>
+			<if test="object.nameUk != null">and `name_uk` like concat('%', #{object.nameUk}, '%')</if>
         </where>
     </sql>
 
@@ -29,18 +29,20 @@
     </insert>
 
 	<update id="updateDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion">
-        update `document_version` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate}, `c_doc`=#{cDoc}, `c_doc_sub`=#{cDocSub}, `c_doc_ver`=#{cDocVer}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
-        where `id` = #{id}
+        update `document_version` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate},
+          `c_doc`=#{cDoc}, `c_doc_sub`=#{cDocSub}, `c_doc_ver`=#{cDocVer}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
+          where `id` = #{id}
     </update>
 
-	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersionFilter" resultMap="documentVersionResultMap">
+	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
+            resultMap="documentVersionResultMap">
         select * from `document_version` <include refid="selectDocumentVersionsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         limit #{first}, #{count}
     </select>
 
-	<select id="selectDocumentVersionsCount" resultType="int">
+	<select id="selectDocumentVersionsCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
         select count(*) from `document_version` <include refid="selectDocumentVersionsWhere"/>
     </select>
 

@@ -1,8 +1,8 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
 import com.google.common.collect.Maps;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.common.entity.dictionary.TaxInspectionFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -48,11 +48,11 @@ public class TaxInspectionBean extends AbstractBean {
 		return sqlSession().selectList(NS + ".selectAllTaxInspectionsCodeWithName");
 	}
 
-	public List<TaxInspection> getTaxInspections(TaxInspectionFilter filter) {
+	public List<TaxInspection> getTaxInspections(FilterWrapper<TaxInspection> filter) {
 		return sqlSession().selectList(NS + ".selectTaxInspections", filter);
 	}
 
-    public Integer getTaxInspectionsCount(TaxInspectionFilter filter){
+    public Integer getTaxInspectionsCount(FilterWrapper<TaxInspection> filter){
         return (Integer) sqlSession().selectOne(NS + ".selectTaxInspectionsCount", filter);
     }
 

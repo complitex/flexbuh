@@ -16,8 +16,8 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
-import org.complitex.flexbuh.common.entity.dictionary.TaxInspectionFilter;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -46,11 +46,9 @@ public class TaxInspectionDialog extends Panel {
         add(dialog);
 
         //Фильтр модель
-        TaxInspectionFilter filterObject = new TaxInspectionFilter();
+        final IModel<TaxInspection> filterModel = new CompoundPropertyModel<>(new TaxInspection());
 
-        final IModel<TaxInspectionFilter> filterModel = new CompoundPropertyModel<>(filterObject);
-
-        final Form<TaxInspectionFilter> filterForm = new Form<>("filter_form", filterModel);
+        final Form<TaxInspection> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         dialog.add(filterForm);
 
@@ -58,7 +56,7 @@ public class TaxInspectionDialog extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
-                filterModel.setObject(new TaxInspectionFilter());
+                filterModel.setObject(new TaxInspection());
                 target.add(filterForm);
             }
         };
@@ -101,17 +99,19 @@ public class TaxInspectionDialog extends Panel {
             @SuppressWarnings("unchecked")
             @Override
             protected Iterable<? extends TaxInspection> getData(int first, int count) {
-                TaxInspectionFilter filter = filterModel.getObject();
+                FilterWrapper<TaxInspection> filter = FilterWrapper.of(filterModel.getObject());
+
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
                 filter.setAscending(getSort().isAscending());
+
                 return taxInspectionBean.getTaxInspections(filter);
             }
 
             @Override
             protected int getSize() {
-                return taxInspectionBean.getTaxInspectionsCount(filterModel.getObject());
+                return taxInspectionBean.getTaxInspectionsCount(FilterWrapper.of(filterModel.getObject()));
             }
         };
         dataProvider.setSort("c_sti", SortOrder.ASCENDING);

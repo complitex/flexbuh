@@ -10,12 +10,12 @@
 
 	<sql id="selectCurrenciesWhere">
         <where>
-            <if test="codeString != null">`code_string` = #{codeString}</if>
-            <if test="codeNumber != null">and `code_number` = #{codeNumber}</if>
-            <if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
-            <if test="nameRu != null">and `name_ru` like concat('%', #{nameRu}, '%')</if>
-            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
-            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+            <if test="object.codeString != null">`code_string` = #{object.codeString}</if>
+            <if test="object.codeNumber != null">and `code_number` = #{object.codeNumber}</if>
+            <if test="object.nameUk != null">and `name_uk` like concat('%', #{object.nameUk}, '%')</if>
+            <if test="object.nameRu != null">and `name_ru` like concat('%', #{object.nameRu}, '%')</if>
+            <if test="object.beginDate != null">and `begin_date` >= DATE(#{object.beginDate})</if>
+            <if test="object.endDate != null">and DATE(#{object.endDate}) >= `end_date`</if>
         </where>
     </sql>
 
@@ -33,14 +33,15 @@
         select * from `currency` where `code_number`=#{codeNumber}
     </select>
 
-    <select id="selectCurrencies" parameterType="org.complitex.flexbuh.common.entity.dictionary.CurrencyFilter" resultMap="currencyResultMap">
+    <select id="selectCurrencies" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
+            resultMap="currencyResultMap">
         select * from `currency` <include refid="selectCurrenciesWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         limit #{first}, #{count}
     </select>
 
-	<select id="selectCurrenciesCount" resultType="int">
+	<select id="selectCurrenciesCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
         select count(*) from `currency` <include refid="selectCurrenciesWhere"/>
     </select>
 

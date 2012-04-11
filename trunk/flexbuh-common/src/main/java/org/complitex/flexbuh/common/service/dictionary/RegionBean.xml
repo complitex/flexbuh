@@ -9,31 +9,32 @@
 
 	<sql id="selectRegionsWhere">
         <where>
-            <if test="code != null">`code` = #{code}</if>
-            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
-            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
-			<if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
+            <if test="object.code != null">`code` = #{object.code}</if>
+            <if test="object.beginDate != null">and `begin_date` >= DATE(#{object.beginDate})</if>
+            <if test="object.endDate != null">and DATE(#{object.endDate}) >= `end_date`</if>
+			<if test="object.nameUk != null">and `name_uk` like concat('%', #{object.nameUk}, '%')</if>
         </where>
     </sql>
 
-    <insert id="insertRegion" parameterType="org.complitex.flexbuh.common.entity.dictionary.Region" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertRegion" parameterType="org.complitex.flexbuh.common.entity.dictionary.Region" keyProperty="id"
+            useGeneratedKeys="true">
         insert into `region` (`upload_date`, `begin_date`, `end_date`, `code`, `name_ru`, `name_uk`)
         	values (#{uploadDate}, #{beginDate}, #{endDate}, #{code}, #{nameRu}, #{nameUk})
     </insert>
 
 	<update id="updateRegion" parameterType="org.complitex.flexbuh.common.entity.dictionary.Region">
-        update `region` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate}, `code`=#{code}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
-        where `id` = #{id}
+        update `region` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate},
+          `code`=#{code}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk} where `id` = #{id}
     </update>
 
-	<select id="selectRegions" resultMap="regionResultMap" parameterType="org.complitex.flexbuh.common.entity.dictionary.RegionFilter">
+	<select id="selectRegions" resultMap="regionResultMap" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
         select * from `region` <include refid="selectRegionsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         limit #{first}, #{count}
     </select>
 
-    <select id="selectRegionsCount" resultType="int">
+    <select id="selectRegionsCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
         select count(*) from `region` <include refid="selectRegionsWhere"/>
     </select>
 

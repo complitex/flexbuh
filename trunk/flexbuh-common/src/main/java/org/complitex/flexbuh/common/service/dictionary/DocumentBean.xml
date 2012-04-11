@@ -18,7 +18,8 @@
                     select="org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean.selectDocumentVersionsByDocument"/>
     </resultMap>
 
-    <insert id="insertDocument" parameterType="org.complitex.flexbuh.common.entity.dictionary.Document" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertDocument" parameterType="org.complitex.flexbuh.common.entity.dictionary.Document" keyProperty="id"
+            useGeneratedKeys="true">
         insert into `document`
           (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`,`cnt_set`, `parent_c_doc`,
             `parent_c_doc_sub`, `selected`, `name_ru`, `name_uk`)
@@ -29,18 +30,18 @@
 
 	<sql id="selectDocumentsWhere">
         <where>
-            <if test="cDoc != null">`c_doc` = #{cDoc}</if>
-            <if test="cDocSub != null">and `c_doc_sub` = #{cDocSub}</if>
-            <if test="parentCDoc != null">`parent_c_doc` = #{parentCDoc}</if>
-            <if test="parentCDocSub != null">and `parent_c_doc_sub` = #{parentCDocSub}</if>
-            <if test="cntSet != null">and `cnt_set` = #{cntSet}</if>
-            <if test="nameUk != null">and `name_uk` like concat('%', #{nameUk}, '%')</if>
-            <if test="beginDate != null">and `begin_date` >= DATE(#{beginDate})</if>
-            <if test="endDate != null">and DATE(#{endDate}) >= `end_date`</if>
+            <if test="object.cDoc != null">`c_doc` = #{object.cDoc}</if>
+            <if test="object.cDocSub != null">and `c_doc_sub` = #{object.cDocSub}</if>
+            <if test="object.parentCDoc != null">`parent_c_doc` = #{object.parentCDoc}</if>
+            <if test="object.parentCDocSub != null">and `parent_c_doc_sub` = #{object.parentCDocSub}</if>
+            <if test="object.cntSet != null">and `cnt_set` = #{object.cntSet}</if>
+            <if test="object.nameUk != null">and `name_uk` like concat('%', #{object.nameUk}, '%')</if>
+            <if test="object.beginDate != null">and `begin_date` >= DATE(#{object.beginDate})</if>
+            <if test="object.endDate != null">and DATE(#{object.endDate}) >= `end_date`</if>
         </where>
     </sql>
 
-	<select id="selectDocuments" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentFilter" resultMap="documentResultMap">
+	<select id="selectDocuments" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultMap="documentResultMap">
         select * from `document` <include refid="selectDocumentsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
@@ -55,12 +56,12 @@
         select * from `document` where `id` = #{id}
     </select>
 
-    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentFilter"
+    <select id="selectLinkedDocuments" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="linkedDocumentResultMap">
         select * from `document` d
           left join `document_version` dv on (d.`c_doc` = dv.`c_doc` and d.`c_doc_sub` = dv.`c_doc_sub`)
-        where d.`parent_c_doc` = #{cDoc} and d.`parent_c_doc_sub` = #{cDocSub}
-          and #{periodDate} >= dv.`begin_date` and (dv.`end_date` is null or dv.`end_date` > #{periodDate})
+        where d.`parent_c_doc` = #{object.cDoc} and d.`parent_c_doc_sub` = #{object.cDocSub}
+          and #{map.periodDate} >= dv.`begin_date` and (dv.`end_date` is null or dv.`end_date` > #{map.periodDate})
         order by d.`c_doc`, d.c_doc_sub
     </select>
 

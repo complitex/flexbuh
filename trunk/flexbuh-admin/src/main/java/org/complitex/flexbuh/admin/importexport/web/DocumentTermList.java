@@ -14,8 +14,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentTerm;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentTermFilter;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentTermBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -47,11 +47,9 @@ public class DocumentTermList extends TemplatePage {
 		add(new FeedbackPanel("messages"));
 
 		//Фильтр модель
-        DocumentTermFilter filterObject = new DocumentTermFilter();
+        final IModel<DocumentTerm> filterModel = new CompoundPropertyModel<>(new DocumentTerm());
 
-        final IModel<DocumentTermFilter> filterModel = new CompoundPropertyModel<>(filterObject);
-
-		final Form<DocumentTermFilter> filterForm = new Form<>("filter_form", filterModel);
+		final Form<DocumentTerm> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -60,7 +58,7 @@ public class DocumentTermList extends TemplatePage {
             @Override
             public void onClick() {
                 filterForm.clearInput();
-                filterModel.setObject(new DocumentTermFilter());
+                filterModel.setObject(new DocumentTerm());
             }
         };
         filterForm.add(filter_reset);
@@ -123,7 +121,8 @@ public class DocumentTermList extends TemplatePage {
         final DataProvider<DocumentTerm> dataProvider = new DataProvider<DocumentTerm>() {
             @Override
             protected Iterable<? extends DocumentTerm> getData(int first, int count) {
-                DocumentTermFilter filter = filterModel.getObject();
+                FilterWrapper<DocumentTerm> filter = FilterWrapper.of(filterModel.getObject());
+
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
@@ -133,7 +132,7 @@ public class DocumentTermList extends TemplatePage {
 
             @Override
             protected int getSize() {
-                return documentTermBean.getDocumentTermsCount(filterModel.getObject());
+                return documentTermBean.getDocumentTermsCount(FilterWrapper.of(filterModel.getObject()));
             }
         };
         dataProvider.setSort("c_doc", SortOrder.ASCENDING);

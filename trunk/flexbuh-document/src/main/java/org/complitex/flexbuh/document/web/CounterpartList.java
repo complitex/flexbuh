@@ -15,9 +15,9 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
@@ -70,22 +70,22 @@ public class CounterpartList extends TemplatePage{
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        final FilterWrapper<Counterpart> filter = new FilterWrapper<>(new Counterpart(getSessionId()));
+        final CompoundPropertyModel<Counterpart> filterModel = new CompoundPropertyModel<>(new Counterpart(getSessionId()));
 
-        final Form<FilterWrapper> filterForm = new Form<>("filter_form");
+        final Form<Counterpart> filterForm = new Form<>("filter_form", filterModel);
         add(filterForm);
 
-        filterForm.add(new TextField<>("hk", new PropertyModel<>(filter, "object.hk"))); //ИНН
-        filterForm.add(new TextField<>("hname", new PropertyModel<>(filter, "object.hname"))); //Название
-        filterForm.add(new TextField<>("hloc", new PropertyModel<>(filter, "object.hloc"))); //Адрес
-        filterForm.add(new TextField<>("htel", new PropertyModel<>(filter, "object.htel"))); //Телефон
-        filterForm.add(new TextField<>("hnspdv", new PropertyModel<>(filter, "object.hnspdv"))); //Страховой номер
+        filterForm.add(new TextField<>("hk")); //ИНН
+        filterForm.add(new TextField<>("hname")); //Название
+        filterForm.add(new TextField<>("hloc")); //Адрес
+        filterForm.add(new TextField<>("htel")); //Телефон
+        filterForm.add(new TextField<>("hnspdv")); //Страховой номер
 
         //Все
         filterForm.add(new Button("reset"){
             @Override
             public void onSubmit() {
-                filter.setObject(new Counterpart(getSessionId()));
+                filterModel.setObject(new Counterpart(getSessionId()));
             }
         });
 
@@ -94,6 +94,8 @@ public class CounterpartList extends TemplatePage{
             @Override
             public Iterator<? extends Counterpart> iterator(int first, int count) {
                 selectMap.clear();
+
+                FilterWrapper<Counterpart> filter = FilterWrapper.of(filterModel.getObject());
 
                 filter.setFirst(first);
                 filter.setCount(count);
@@ -105,9 +107,9 @@ public class CounterpartList extends TemplatePage{
 
             @Override
             public int size() {
-                filter.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+                filterModel.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
 
-                return counterpartBean.getCounterpartCount(filter);
+                return counterpartBean.getCounterpartCount(FilterWrapper.of(filterModel.getObject()));
             }
 
             @Override

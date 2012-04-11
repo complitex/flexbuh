@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Region;
-import org.complitex.flexbuh.common.entity.dictionary.RegionFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -31,11 +31,11 @@ public class RegionBean extends AbstractBean {
 		return sqlSession().selectList(NS + ".selectRegionByCode", code);
 	}
 
-    public List<Region> getRegions(RegionFilter filter) {
+    public List<Region> getRegions(FilterWrapper<Region> filter) {
         return sqlSession().selectList(NS + ".selectRegions", filter);
     }
 
-    public Integer getRegionsCount(RegionFilter filter){
+    public Integer getRegionsCount(FilterWrapper<Region> filter){
         return (Integer) sqlSession().selectOne(NS + ".selectRegionsCount", filter);
     }
 }

@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.common.service.dictionary;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentTerm;
-import org.complitex.flexbuh.common.entity.dictionary.DocumentTermFilter;
 import org.complitex.flexbuh.common.service.AbstractBean;
 
 import javax.ejb.Stateless;
@@ -23,11 +23,11 @@ public class DocumentTermBean extends AbstractBean {
         return (DocumentTerm)sqlSession().selectOne(NS + ".selectDocumentTerm", id);
     }
 
-    public List<DocumentTerm> getDocumentTerms(DocumentTermFilter filter) {
+    public List<DocumentTerm> getDocumentTerms(FilterWrapper<DocumentTerm> filter) {
         return sqlSession().selectList(NS + ".selectDocumentTerms", filter);
     }
 
-    public Integer getDocumentTermsCount(DocumentTermFilter filter){
+    public Integer getDocumentTermsCount(FilterWrapper<DocumentTerm> filter){
         return (Integer)sqlSession().selectOne(NS + ".selectDocumentTermsCount", filter);
     }
 

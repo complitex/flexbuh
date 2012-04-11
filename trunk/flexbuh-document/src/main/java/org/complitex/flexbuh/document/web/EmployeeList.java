@@ -16,9 +16,9 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
@@ -38,6 +38,7 @@ import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.complitex.flexbuh.document.service.EmployeeBean;
+import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,22 +72,22 @@ public class EmployeeList extends TemplatePage{
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
-        final FilterWrapper<Employee> filter = new FilterWrapper<>(new Employee(getSessionId()));
+        final CompoundPropertyModel<Employee> filterModel = new CompoundPropertyModel<>(new Employee(getSessionId()));
 
-        final Form filterForm = new Form("filter_form");
+        final Form<Employee> filterForm = new Form<>("filter_form", filterModel);
         add(filterForm);
 
-        filterForm.add(new TextField<>("htin", new PropertyModel<>(filter, "object.htin"))); //Идентификационный номер
-        filterForm.add(new TextField<>("hname", new PropertyModel<>(filter, "object.hname"))); //ФИО
-        filterForm.add(new TextField<>("hbirthday", new PropertyModel<>(filter, "object.hbirthday"))); //Дата рождения
-        filterForm.add(new TextField<>("hdateIn", new PropertyModel<>(filter, "object.hdateIn"))); //Дата принятия на работу
-        filterForm.add(new TextField<>("hdateOut", new PropertyModel<>(filter, "object.hdateOut"))); //Дата увольнения
+        filterForm.add(new TextField<>("htin")); //Идентификационный номер
+        filterForm.add(new TextField<>("hname")); //ФИО
+        filterForm.add(new DatePicker<>("hbirthday")); //Дата рождения
+        filterForm.add(new DatePicker<>("hdateIn")); //Дата принятия на работу
+        filterForm.add(new DatePicker<>("hdateOut")); //Дата увольнения
 
         //Все
         filterForm.add(new Button("reset"){
             @Override
             public void onSubmit() {
-                filter.setObject(new Employee(getSessionId()));
+                filterModel.setObject(new Employee(getSessionId()));
             }
         });
 
@@ -95,6 +96,8 @@ public class EmployeeList extends TemplatePage{
             @Override
             public Iterator<? extends Employee> iterator(int first, int count) {
                 selectMap.clear();
+
+                FilterWrapper<Employee> filter = FilterWrapper.of(filterModel.getObject());
 
                 filter.setFirst(first);
                 filter.setCount(count);
@@ -106,9 +109,9 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public int size() {
-                filter.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+                filterModel.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
 
-                return employeeBean.getEmployeesCount(filter);
+                return employeeBean.getEmployeesCount(FilterWrapper.of(filterModel.getObject()));
             }
 
             @Override
