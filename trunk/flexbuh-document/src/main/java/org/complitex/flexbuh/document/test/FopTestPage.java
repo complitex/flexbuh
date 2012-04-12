@@ -82,7 +82,7 @@ public class FopTestPage extends WebPage{
 
             // Step 5: Setup input and output for XSLT transformation
             // Setup input stream
-            Source src = new StreamSource(new StringReader(declarationService.getString(declaration, false)));
+            Source src = new StreamSource(new StringReader(declarationService.getString(declaration)));
 
 //            // Resulting SAX events (the generated FO) must be piped through to FOP
 //            Result res = new SAXResult(fop.getDefaultHandler());

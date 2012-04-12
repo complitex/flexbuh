@@ -88,9 +88,13 @@
         select count(*) <include refid="selectPersonProfilesFromWhere"/>
     </select>
 
-    <select id="selectAllPersonProfiles" parameterType="long" resultMap="personProfileResultMap">
+    <select id="selectAllSharedPersonProfiles" parameterType="long" resultMap="personProfileResultMap">
         select *, concat(u.`last_name`,' ', substring(u.`first_name`, 1, 1)) as user_name
           <include refid="selectPersonProfilesFromWhere"/>
+    </select>
+
+    <select id="selectAllPersonProfiles" parameterType="long" resultMap="personProfileResultMap">
+        select * from `person_profile` where `session_id` = #{sessionId}
     </select>
 
     <delete id="deletePersonProfile" parameterType="long">

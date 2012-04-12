@@ -21,7 +21,7 @@ public class PersonProfileChoice extends DropDownChoice<PersonProfile>{
     public PersonProfileChoice(String id) {
         super(id);
 
-        List<PersonProfile> profiles = personProfileBean.getAllPersonProfiles(TemplateSession.getSessionId());
+        List<PersonProfile> profiles = personProfileBean.getAllSharedPersonProfiles(TemplateSession.getSessionId());
 
         Long selectedPersonProfileId = TemplateSession.getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 

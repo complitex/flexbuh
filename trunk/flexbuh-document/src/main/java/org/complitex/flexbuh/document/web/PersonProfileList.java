@@ -42,10 +42,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -242,16 +240,49 @@ public class PersonProfileList extends TemplatePage {
 
                                     Long selectedPersonProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
-                                    //Selected
+
                                     boolean selectedSet = false;
 
-                                    for (PersonProfile personProfile : personProfiles){
-                                        if (personProfile.getId().equals(selectedPersonProfileId)){
+                                    for (int i = 0, personProfilesSize = personProfiles.size(); i < personProfilesSize; i++) {
+                                        PersonProfile personProfile = personProfiles.get(i);
+                                        personProfile.mergePhysicalNames();
+
+                                        //num
+                                        personProfile.setNum(i + 1);
+
+                                        //selected
+                                        if (personProfile.getId().equals(selectedPersonProfileId)) {
                                             personProfile.setSelected(true);
                                             selectedSet = true;
-                                        }else {
+                                        } else {
                                             personProfile.setSelected(false);
                                         }
+
+                                        //name
+                                        if (personProfile.getName() == null || personProfile.getName().isEmpty()){
+                                            personProfile.setName(personProfile.getProfileName());
+                                        }
+
+                                        //empty for null
+                                        Field[] fields = PersonProfile.class.getDeclaredFields();
+
+                                        for (Field field : fields){
+                                            field.setAccessible(true);
+
+                                            if (field.get(personProfile) == null) {
+                                                if (Integer.class.equals(field.getType())){
+                                                    field.set(personProfile, 0);
+                                                }else if (String.class.equals(field.getType())){
+                                                    field.set(personProfile, "");
+                                                }else if (Date.class.equals(field.getType())){
+                                                    field.set(personProfile, new Date(0));
+                                                }
+                                            }
+                                        }
+
+                                        //prepare opz format
+                                        personProfile.setId(null);
+                                        personProfile.setProfileName(null);
                                     }
 
                                     if (!selectedSet && !personProfiles.isEmpty()){
@@ -263,6 +294,7 @@ public class PersonProfileList extends TemplatePage {
 
                                     XmlUtil.writeXml(Settings.class, new Settings(personProfiles), os, "windows-1251");
                                 } catch (Exception e) {
+                                    log.error("Ошибка экспорта профиля", e);
                                     log.error("Cannot export person profile to xml: {}", new Object[]{e, EventCategory.EXPORT});
                                 }
                             }

@@ -93,7 +93,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 new LoadableDetachableModel<List<PersonProfile>>() {
                     @Override
                     protected List<PersonProfile> load() {
-                        return personProfileBean.getAllPersonProfiles(getSessionId());
+                        return personProfileBean.getAllSharedPersonProfiles(getSessionId());
                     }
                 },
                 new IChoiceRenderer<PersonProfile>() {

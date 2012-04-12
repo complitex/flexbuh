@@ -197,10 +197,15 @@ public class DeclarationFormPage extends TemplatePage{
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
-                Long selected = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+                Long selectedId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
                 //todo extract method
-                if ((selected != null && selected.equals(declaration.getPersonProfileId()))){
+                if ((selectedId != null && selectedId.equals(declaration.getPersonProfileId()))){
+                    PersonProfile personProfile = personProfileBean.getPersonProfile(selectedId);
+
+                    declaration.getHead().setTin(personProfile != null && personProfile.getTin() != null
+                                            ? personProfile.getTin() : 0);
+
                     declarationService.validateAndSave(declaration);
 
                     getSession().info(getStringFormat("info_saved", declaration.getFullName()));
