@@ -31,26 +31,11 @@
             <result column="group_name"/>
         </collection>
 
-        <collection property="organizations" column="id"
-                    ofType="org.complitex.flexbuh.common.entity.organization.OrganizationBase">
-            <result column="organization_id" property="id"/>
-            <result column="organization_version" property="version"/>
-            <result column="organization_name" property="name"/>
-            <result column="organization_type" property="type"/>
-            <result column="organization_deleted" property="deleted"/>
-            <result column="organization_entry_into_force_date" property="entryIntoForceDate"/>
-            <result column="organization_completion_date" property="completionDate"/>
-        </collection>
     </resultMap>
 
     <sql id="userColumns">
         uc.*,
-        gc.`group_name` as `group_name`,
-        o.`id` as `organization_id`, o.`version` as `organization_version`,
-        o.`name` as `organization_name`, o.`type` as `organization_type`,
-        o.`deleted` as `organization_deleted`,
-        o.`entry_into_force_date` as `organization_entry_into_force_date`,
-        o.`completion_date` as `organization_completion_date`
+        gc.`group_name` as `group_name`
     </sql>
 
     <sql id="userFilter">
@@ -104,8 +89,6 @@
         limit #{first}, #{count}
         ) as uc
         left join `usergroup` gc on uc.`login` = gc.`login`
-        left join `user_organization` uo on uc.`login` = uo.`login`
-        left join `organization` o on uo.`organization_id` = o.`id`
     </select>
 
     <select id="selectUsersCount" resultType="int" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
@@ -117,8 +100,6 @@
         select <include refid="userColumns"/>
         from `user` uc
         left join `usergroup` gc on uc.`login` = gc.`login`
-        left join `user_organization` uo on uc.`login` = uo.`login`
-        left join `organization` o on uo.`organization_id` = o.`id`
         where uc.`session_id` = #{sessionId}
     </select>
 
@@ -126,8 +107,6 @@
         select <include refid="userColumns"/>
         from `user` uc
         left join `usergroup` gc on uc.`login` = gc.`login`
-        left join `user_organization` uo on uc.`login` = uo.`login`
-        left join `organization` o on uo.`organization_id` = o.`id`
         where uc.`id` = #{id}
         order by gc.`group_name`
     </select>
@@ -136,8 +115,6 @@
         select <include refid="userColumns"/>
         from `user` uc
         left join `usergroup` gc on uc.`login` = gc.`login`
-        left join `user_organization` uo on uc.`login` = uo.`login`
-        left join `organization` o on uo.`organization_id` = o.`id`
         where uc.`login` = #{login}
         order by gc.`group_name`
     </select>
@@ -155,20 +132,9 @@
         delete from `usergroup` where `login` = #{login} and `group_name` = #{role}
     </delete>
 
-    <!--User organization-->
-    <insert id="insertUserOrganization" parameterType="map">
-        insert into `user_organization` (`login`, `organization_id`) values (#{login}, #{organizationId})
-    </insert>
-
-    <delete id="deleteUserOrganization" parameterType="map">
-        delete from `user_organization` where `login` = #{login} and `organization_id` = #{organizationId}
-    </delete>
-
     <select id="selectSharedUsers" parameterType="long" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
             left join `usergroup` gc on uc.`login` = gc.`login`
-            left join `user_organization` uo on uc.`login` = uo.`login`
-            left join `organization` o on uo.`organization_id` = o.`id`
             left join `share` s on (s.`shared_to_session_id` = uc.`session_id`)
         where s.`session_id` = #{sessionId}
     </select>
@@ -176,8 +142,6 @@
     <select id="findUser" parameterType="string" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
             left join `usergroup` gc on uc.`login` = gc.`login`
-            left join `user_organization` uo on uc.`login` = uo.`login`
-            left join `organization` o on uo.`organization_id` = o.`id`
         where  upper(uc.`login`) = upper(#{s}) or  upper(uc.`email`) = upper(#{s})
           or upper(concat_ws(' ', uc.last_name, uc.first_name, uc.middle_name)) = upper(#{s})
     </select>

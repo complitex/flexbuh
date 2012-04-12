@@ -20,25 +20,26 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.flexbuh.common.entity.organization.Organization;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
-import org.complitex.flexbuh.common.entity.organization.OrganizationFilter;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventModel;
 import org.complitex.flexbuh.common.logging.EventObjectFactory;
 import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.common.service.organization.OrganizationBean;
-import org.complitex.flexbuh.common.service.organization.OrganizationTypeBean;
+import org.complitex.flexbuh.common.service.organization.OrganizationBaseBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddOrganizationButton;
 import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.common.web.component.OrganizationTypeAutoCompleteTextField;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
+import org.complitex.flexbuh.personnel.entity.Organization;
+import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
+import org.complitex.flexbuh.personnel.service.OrganizationBean;
+import org.complitex.flexbuh.personnel.service.OrganizationTypeBean;
+import org.complitex.flexbuh.personnel.web.component.OrganizationTypeAutoCompleteTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,9 @@ public class OrganizationList extends TemplatePage {
 
     @EJB
     private OrganizationTypeBean organizationTypeBean;
+
+    @EJB
+    private OrganizationBaseBean organizationBaseBean;
 
     @EJB
     private UserBean userBean;
@@ -179,7 +183,7 @@ public class OrganizationList extends TemplatePage {
             return;
         }
         List<Long> organizationIds = Lists.newArrayList();
-        for (OrganizationBase organizationBase : userBean.getCurrentUser().getOrganizations()) {
+        for (OrganizationBase organizationBase : organizationBaseBean.getUserOrganizations(userBean.getCurrentUser())) {
             organizationIds.add(organizationBase.getId());
         }
         filter.setOrganizationIds(organizationIds);

@@ -9,7 +9,7 @@
         <result column="code" property="code"/>
 
         <association property="organization" column="{id=organization_id, currentDate=current_date}"
-                     select="org.complitex.flexbuh.common.service.organization.OrganizationBean.selectCurrentOrganizationById"/>
+                     select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentOrganizationById"/>
 
         <association property="masterDepartment" column="{id=master_id, currentDate=current_date}"
                      select="selectCurrentDepartmentById"/>

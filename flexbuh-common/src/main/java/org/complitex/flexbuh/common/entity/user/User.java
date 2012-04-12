@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.DomainObject;
-import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.util.FIOUtil;
 
 import java.util.Date;
@@ -28,7 +27,6 @@ public class User extends DomainObject {
     private Address address;
 
     private List<String> roles = Lists.newArrayList();
-    private List<OrganizationBase> organizations = Lists.newArrayList();
 
     public String getFullName(){
         return FIOUtil.getFIO(lastName, firstName, middleName);
@@ -120,14 +118,6 @@ public class User extends DomainObject {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
-    }
-
-    public List<OrganizationBase> getOrganizations() {
-        return organizations;
-    }
-
-    public void setOrganizations(List<OrganizationBase> organizations) {
-        this.organizations = organizations;
     }
 
     @Override

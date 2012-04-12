@@ -2,11 +2,11 @@ package org.complitex.flexbuh.personnel.web.test;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
-import org.complitex.flexbuh.common.entity.organization.Organization;
-import org.complitex.flexbuh.common.entity.organization.OrganizationFilter;
-import org.complitex.flexbuh.common.service.organization.OrganizationBean;
 import org.complitex.flexbuh.personnel.entity.Department;
+import org.complitex.flexbuh.personnel.entity.Organization;
+import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
+import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.slf4j.Logger;
 
 import javax.ejb.EJB;

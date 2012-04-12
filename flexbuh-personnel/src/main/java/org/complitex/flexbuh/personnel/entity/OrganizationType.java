@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.common.entity.organization;
+package org.complitex.flexbuh.personnel.entity;
 
 import org.complitex.flexbuh.common.entity.LocalizedDomainObject;
 

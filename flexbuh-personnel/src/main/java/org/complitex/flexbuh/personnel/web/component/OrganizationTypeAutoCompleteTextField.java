@@ -1,8 +1,9 @@
-package org.complitex.flexbuh.common.web.component;
+package org.complitex.flexbuh.personnel.web.component;
 
 import org.apache.wicket.model.PropertyModel;
-import org.complitex.flexbuh.common.entity.organization.OrganizationType;
-import org.complitex.flexbuh.common.service.organization.OrganizationTypeBean;
+import org.complitex.flexbuh.common.web.component.AutoCompleteTextField;
+import org.complitex.flexbuh.personnel.entity.OrganizationType;
+import org.complitex.flexbuh.personnel.service.OrganizationTypeBean;
 
 import javax.ejb.EJB;
 import java.util.List;

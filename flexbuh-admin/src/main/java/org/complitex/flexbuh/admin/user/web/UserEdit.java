@@ -36,7 +36,7 @@ import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
-import org.complitex.flexbuh.common.service.organization.OrganizationBean;
+import org.complitex.flexbuh.common.service.organization.OrganizationBaseBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
@@ -84,9 +84,10 @@ public class UserEdit extends FormTemplatePage {
 	private EventObjectFactory eventObjectFactory;
 
     @EJB
-    private OrganizationBean organizationBean;
+    private OrganizationBaseBean organizationBaseBean;
 
     private User user;
+    private List<OrganizationBase> userOrganizations = Lists.newArrayList();
     private IModel<String> streetModel = new Model<>();
     private IModel<String> cityModel = new Model<>();
 
@@ -127,6 +128,11 @@ public class UserEdit extends FormTemplatePage {
     }
 
     private void init() {
+
+        if (user.getId() != null) {
+            userOrganizations = organizationBaseBean.getUserOrganizations(user);
+        }
+
         add(new Label("title", getString(user.getId() == null ? "title_create" : "title_edit")));
         add(new Label("header", getString(user.getId() == null ? "title_create" : "title_edit")));
 
@@ -435,11 +441,10 @@ public class UserEdit extends FormTemplatePage {
         userOrganizationContainer.add(organizationsContainer);
 
         final Map<OrganizationBase, IModel<Boolean>> selectedOrganizationsMap = newHashMap();
-        for (OrganizationBase organization : user.getOrganizations()) {
+        for (OrganizationBase organization : userOrganizations) {
             selectedOrganizationsMap.put(organization, new Model<Boolean>(false));
         }
-        ListView<OrganizationBase> organizations = new ListView<OrganizationBase>("organizations",
-                new PropertyModel<List<OrganizationBase>>(user, "organizations")) {
+        ListView<OrganizationBase> organizations = new ListView<OrganizationBase>("organizations", userOrganizations) {
 
             @Override
             protected void populateItem(ListItem<OrganizationBase> item) {
@@ -471,20 +476,23 @@ public class UserEdit extends FormTemplatePage {
 
         final ArrayList<OrganizationBase> selectedNewOrganizations = Lists.newArrayList();
         final List<OrganizationBase> selectOrganizations = getSelectOrganizations();
-        final ListMultipleChoice<OrganizationBase> selectOrganizationsChoice = new ListMultipleChoice<OrganizationBase>("select_organizations",
-                new Model<>(selectedNewOrganizations), selectOrganizations,
-                new IChoiceRenderer<OrganizationBase>() {
+        log.debug("Select organization: {}", selectOrganizations);
+        final ListMultipleChoice<OrganizationBase> selectOrganizationsChoice =
+                new ListMultipleChoice<OrganizationBase>("select_organizations",
+                        new Model<>(selectedNewOrganizations), selectOrganizations,
+                        new IChoiceRenderer<OrganizationBase>() {
 
-                    @Override
-                    public Object getDisplayValue(OrganizationBase object) {
-                        return getStringOrKey(object.getFullName());
-                    }
+                            @Override
+                            public Object getDisplayValue(OrganizationBase object) {
+                                return getStringOrKey(object.getFullName());
+                            }
 
-                    @Override
-                    public String getIdValue(OrganizationBase object, int index) {
-                        return String.valueOf(object.getId());
-                    }
-                });
+                            @Override
+                            public String getIdValue(OrganizationBase object, int index) {
+                                return String.valueOf(object.getId());
+                            }
+                        }
+                );
         selectOrganizationsChoice.setOutputMarkupId(true);
         selectOrganizationsForm.add(selectOrganizationsChoice);
 
@@ -523,11 +531,11 @@ public class UserEdit extends FormTemplatePage {
                 for (Map.Entry<OrganizationBase, IModel<Boolean>> entry : selectedOrganizationsMap.entrySet()) {
                     if (entry.getValue().getObject()) {
                         selectOrganizations.add(entry.getKey());
-                        user.getOrganizations().remove(entry.getKey());
+                        userOrganizations.remove(entry.getKey());
                     }
                 }
                 selectedOrganizationsMap.clear();
-                for (OrganizationBase organization : user.getOrganizations()) {
+                for (OrganizationBase organization : userOrganizations) {
                     selectedOrganizationsMap.put(organization, new Model<>(false));
                 }
 
@@ -539,7 +547,7 @@ public class UserEdit extends FormTemplatePage {
 
             @Override
             public boolean isEnabled() {
-                return user.getOrganizations().size() > 0;
+                return userOrganizations.size() > 0;
             }
         };
         userOrganizationContainer.add(removeOrganizations);
@@ -550,7 +558,7 @@ public class UserEdit extends FormTemplatePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 selectOrganizations.removeAll(selectedNewOrganizations);
-                user.getOrganizations().addAll(selectedNewOrganizations);
+                userOrganizations.addAll(selectedNewOrganizations);
                 for (OrganizationBase newOrganization : selectedNewOrganizations) {
                     selectedOrganizationsMap.put(newOrganization, new Model<>(false));
                 }
@@ -582,9 +590,9 @@ public class UserEdit extends FormTemplatePage {
 
     @SuppressWarnings("unchecked")
     private List<OrganizationBase> getSelectOrganizations() {
-        List<OrganizationBase> list = new ArrayList<OrganizationBase>(organizationBean.getOrganizations(null));
+        List<OrganizationBase> list = new ArrayList<OrganizationBase>(organizationBaseBean.getAllOrganizations());
 
-        list.removeAll(user.getOrganizations());
+        list.removeAll(userOrganizations);
 
         return list;
     }
@@ -652,10 +660,10 @@ public class UserEdit extends FormTemplatePage {
                 oldUser = userBean.getUser(user.getId());
                 createUser = false;
             }
-            if (!userBean.isPersonalManager(user)) {
-                user.setOrganizations(Lists.<OrganizationBase>newArrayList());
-            }
             userBean.save(user);
+            if (userBean.isPersonalManager(user)) {
+                organizationBaseBean.editUserOrganizationList(userOrganizations, user);
+            }
             if (createUser) {
                 log.info("Create user '{}'", new Object[]{user, EventCategory.CREATE,
                             new EventObjectId(user.getId()), new EventModel(User.class.getName()),

@@ -2,7 +2,6 @@ package org.complitex.flexbuh.personnel.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
-import org.complitex.flexbuh.common.entity.organization.Organization;
 
 import java.util.List;
 

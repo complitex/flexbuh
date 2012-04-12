@@ -2,7 +2,6 @@ package org.complitex.flexbuh.common.entity.organization;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.common.entity.DomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 /**
@@ -33,7 +32,7 @@ public class OrganizationBase extends TemporalDomainObject implements Comparable
     public String getFullName() {
         StringBuilder builder = new StringBuilder();
         if (type != null) {
-            builder.append(type).append("\"");
+            builder.append(type).append(" \"");
         }
         if (name != null) {
             builder.append(name);

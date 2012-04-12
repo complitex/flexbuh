@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.organization.OrganizationBaseBean">
+    <resultMap id="organizationBaseResultMap" type="org.complitex.flexbuh.common.entity.organization.OrganizationBase"
+            extends="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectResultMap">
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <sql id="columns">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
+        `name`, `type`
+    </sql>
+
+    <sql id="properties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+         #{name}, #{type}
+    </sql>
+
+    <!--User organization-->
+    <insert id="insertUserOrganization" parameterType="map">
+        insert into `user_organization` (`login`, `organization_id`) values (#{login}, #{organizationId})
+    </insert>
+
+    <delete id="deleteUserOrganization" parameterType="map">
+        delete from `user_organization` where `login` = #{login} and `organization_id` = #{organizationId}
+    </delete>
+
+    <select id="selectUserOrganizations" parameterType="map" resultMap="organizationBaseResultMap">
+        select o.* from  `organization` o
+        left join `user_organization` uo on uo.`organization_id` = o.`id`
+        where uo.`login` = #{login} and
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+    </select>
+
+    <select id="selectCurrentOrganizations" parameterType="map" resultMap="organizationBaseResultMap">
+        select * from `organization` where
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+    </select>
+
+</mapper>
