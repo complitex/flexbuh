@@ -26,6 +26,10 @@ public class PersonProfileBean extends AbstractBean {
         return (PersonProfile) sqlSession().selectOne(NS + ".selectPersonProfile", id);
     }
 
+    public List<PersonProfile> getAllSharedPersonProfiles(Long sessionId){
+        return sqlSession().selectList(NS + ".selectAllSharedPersonProfiles", sessionId);
+    }
+
     public List<PersonProfile> getAllPersonProfiles(Long sessionId){
         return sqlSession().selectList(NS + ".selectAllPersonProfiles", sessionId);
     }

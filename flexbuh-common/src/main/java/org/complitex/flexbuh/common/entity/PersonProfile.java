@@ -60,6 +60,15 @@ public class PersonProfile extends SessionObject {
 
     private String userName;
 
+    private Integer num;
+
+    //opz format
+    private String savePath = "C:\\OPZ\\xml\\";
+    private String printPath = "C:\\OPZ\\output\\";
+    private String sendPath = "C:\\OPZ\\send\\";
+    private String autoFill = "1";
+    private String autoSend = "1";
+
     public void parsePhysicalNames(){
         lastName = FIOUtil.getLastName(name);
         firstName = FIOUtil.getFirstName(name);
@@ -350,13 +359,67 @@ public class PersonProfile extends SessionObject {
      * <code>TemplateSession.getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID)</code>
      * @return активный профиль в OPZ
      */
-    @XmlAttribute(name = "SELECTED")
+    @XmlAttribute(name = "selected")
     public boolean isSelected() {
         return selected;
     }
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    @XmlAttribute(name = "num")
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
+    @XmlElement(name = "SAVE_PATH")
+    public String getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
+    }
+
+    @XmlElement(name = "PRINT_PATH")
+    public String getPrintPath() {
+        return printPath;
+    }
+
+    public void setPrintPath(String printPath) {
+        this.printPath = printPath;
+    }
+
+    @XmlElement(name = "SEND_PATH")
+    public String getSendPath() {
+        return sendPath;
+    }
+
+    public void setSendPath(String sendPath) {
+        this.sendPath = sendPath;
+    }
+
+    @XmlElement(name = "AUTOFILL")
+    public String getAutoFill() {
+        return autoFill;
+    }
+
+    public void setAutoFill(String autoFill) {
+        this.autoFill = autoFill;
+    }
+
+    @XmlElement(name = "AUTOSEND")
+    public String getAutoSend() {
+        return autoSend;
+    }
+
+    public void setAutoSend(String autoSend) {
+        this.autoSend = autoSend;
     }
 
     @XmlTransient

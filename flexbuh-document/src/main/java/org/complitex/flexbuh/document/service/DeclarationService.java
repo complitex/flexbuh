@@ -62,7 +62,7 @@ public class DeclarationService {
     @EJB
     private RuleService ruleService;
 
-    public String getString(Declaration declaration, boolean validate) throws DeclarationParseException {
+    public String getString(Declaration declaration, String encoding, boolean validate) throws DeclarationParseException {
         try {
             sortDeclarationValues(declaration);
 
@@ -74,6 +74,7 @@ public class DeclarationService {
 
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             m.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION, declaration.getTemplateName() + ".xsd");
+            m.setProperty(Marshaller.JAXB_ENCODING, encoding);
 
             if (validate){
                 m.setSchema(templateService.getSchema(declaration.getTemplateName()));
@@ -90,7 +91,7 @@ public class DeclarationService {
     }
 
     public String getString(Declaration declaration) throws DeclarationParseException{
-        return getString(declaration, false);
+        return getString(declaration, "UTF-8", false);
     }
 
     public void validate(Declaration declaration){
@@ -165,7 +166,7 @@ public class DeclarationService {
             transformer.setOutputProperty(OutputKeys.VERSION, "1.0");
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
-            transformer.transform(new StreamSource(new StringReader(getString(declaration, false))), result);
+            transformer.transform(new StreamSource(new StringReader(getString(declaration))), result);
 
             return result.getWriter().toString();
         } catch (Exception e) {

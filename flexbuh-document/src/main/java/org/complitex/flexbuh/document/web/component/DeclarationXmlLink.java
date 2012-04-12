@@ -35,9 +35,20 @@ public class DeclarationXmlLink extends NoCacheLink {
     @Override
     public void onClick() {
         try {
-            String data = declarationService.getString(declaration);
+            //clear id before marshal
+            Long oldId = declaration.getId();
+            Long oldPersonProfileId = declaration.getPersonProfileId();
+            declaration.setId(null);
+            declaration.setPersonProfileId(null);
+
+            String data = declarationService.getString(declaration, "windows-1251", false);
+
+            //recover id
+            declaration.setId(oldId);
+            declaration.setPersonProfileId(oldPersonProfileId);
+
             StringResourceStream stringResourceStream = new StringResourceStream(data, "application/xml");
-            stringResourceStream.setCharset(Charset.forName("UTF-8"));
+            stringResourceStream.setCharset(Charset.forName("windows-1251"));
             stringResourceStream.setLastModified(Time.now());
 
             getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(

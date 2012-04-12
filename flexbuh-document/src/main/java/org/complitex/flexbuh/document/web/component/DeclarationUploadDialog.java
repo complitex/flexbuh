@@ -58,7 +58,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<FileUpload> fileUploads = fileUploadModel.getObject();
 
-                List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
+                List<PersonProfile> personProfiles = personProfileBean.getAllSharedPersonProfiles(getSessionId());
 
                 for (FileUpload fileUpload : fileUploads){
                     String fileName = fileUpload.getClientFileName();
