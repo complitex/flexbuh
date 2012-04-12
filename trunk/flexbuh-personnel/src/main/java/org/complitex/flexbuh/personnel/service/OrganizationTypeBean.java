@@ -1,8 +1,8 @@
-package org.complitex.flexbuh.common.service.organization;
+package org.complitex.flexbuh.personnel.service;
 
 import org.complitex.flexbuh.common.entity.LocalizedDomainObject;
-import org.complitex.flexbuh.common.entity.organization.OrganizationType;
-import org.complitex.flexbuh.common.entity.organization.OrganizationTypeFilter;
+import org.complitex.flexbuh.personnel.entity.OrganizationType;
+import org.complitex.flexbuh.personnel.entity.OrganizationTypeFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 

@@ -3,7 +3,6 @@ package org.complitex.flexbuh.common.service.user;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
@@ -81,13 +80,6 @@ public class UserBean extends AbstractBean {
             newRole.put("role", role);
             sqlSession().insert(NS + ".insertUserRole", newRole);
         }
-        //сохранение организаций
-        Map<String, Object> newOrganization = Maps.newHashMap();
-        newOrganization.put("login", user.getLogin());
-        for(OrganizationBase organization : user.getOrganizations()){
-            newOrganization.put("organizationId", organization.getId());
-            sqlSession().insert(NS + ".insertUserOrganization", newOrganization);
-        }
     }
 
     @Transactional
@@ -141,58 +133,6 @@ public class UserBean extends AbstractBean {
         while (i < user.getRoles().size()) {
             role.put("role", user.getRoles().get(i));
             sqlSession().delete(NS + ".insertUserRole", role);
-            i++;
-        }
-
-        // редактирование организаций пользователя
-        Collections.sort(user.getOrganizations());
-        Collections.sort(dbUser.getOrganizations());
-        log.debug("Db organizations: {}", dbUser.getOrganizations());
-        log.debug("New organizations: {}", user.getOrganizations());
-        Map<String, Object> organization = Maps.newHashMap();
-        organization.put("login", user.getLogin());
-        i = 0; k = 0;
-        while (k < dbUser.getOrganizations().size()) {
-
-            OrganizationBase dbUserOrganization = dbUser.getOrganizations().get(k);
-
-            j = -1;
-            while (i < user.getOrganizations().size()) {
-                OrganizationBase userOrganization = user.getOrganizations().get(i);
-                j = dbUserOrganization.compareTo(userOrganization);
-                if (j < 0) {
-                    organization.put("organizationId", dbUserOrganization.getId());
-                    log.debug("Delete user organization: {}", dbUserOrganization.getId());
-                    sqlSession().delete(NS + ".deleteUserOrganization", organization);
-                    break;
-                } else if (j > 0) {
-                    organization.put("organizationId", userOrganization.getId());
-                    log.debug("Insert user organization: {}", userOrganization.getId());
-                    sqlSession().insert(NS + ".insertUserOrganization", organization);
-                } else {
-                    log.debug("Equals: {}", userOrganization.getId());
-                    i++;
-                    break;
-                }
-                i++;
-            }
-            if (i >= user.getOrganizations().size() && j != 0) {
-                break;
-            }
-            k++;
-        }
-
-        while (k < dbUser.getOrganizations().size()) {
-            organization.put("organizationId", dbUser.getOrganizations().get(k).getId());
-            log.debug("Delete user organization: {}", dbUser.getOrganizations().get(k).getId());
-            sqlSession().delete(NS + ".deleteUserOrganization", organization);
-            k++;
-        }
-
-        while (i < user.getOrganizations().size()) {
-            organization.put("organizationId", user.getOrganizations().get(i).getId());
-            log.debug("Insert user organization: {}", user.getOrganizations().get(i).getId());
-            sqlSession().delete(NS + ".insertUserOrganization", organization);
             i++;
         }
 

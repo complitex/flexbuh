@@ -1,8 +1,9 @@
-package org.complitex.flexbuh.common.entity.organization;
+package org.complitex.flexbuh.personnel.entity;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.DomainObject;
+import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 
 /**
  * @author Pavel Sknar

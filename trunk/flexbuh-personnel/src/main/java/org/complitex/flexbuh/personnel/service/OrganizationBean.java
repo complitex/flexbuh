@@ -1,8 +1,8 @@
-package org.complitex.flexbuh.common.service.organization;
+package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
-import org.complitex.flexbuh.common.entity.organization.Organization;
-import org.complitex.flexbuh.common.entity.organization.OrganizationFilter;
+import org.complitex.flexbuh.personnel.entity.Organization;
+import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.slf4j.Logger;

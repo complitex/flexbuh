@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.complitex.flexbuh.common.service.organization.OrganizationTypeBean">
+<mapper namespace="org.complitex.flexbuh.personnel.service.OrganizationTypeBean">
     
-    <resultMap id="organizationTypeResultMap" type="org.complitex.flexbuh.common.entity.organization.OrganizationType"
+    <resultMap id="organizationTypeResultMap" type="org.complitex.flexbuh.personnel.entity.OrganizationType"
             extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
     </resultMap>
     
-    <insert id="insertOrganizationType" parameterType="org.complitex.flexbuh.common.entity.organization.OrganizationType" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertOrganizationType" parameterType="org.complitex.flexbuh.personnel.entity.OrganizationType" keyProperty="id" useGeneratedKeys="true">
         insert into `organization_type` (`name_ru`, `name_uk`)
         	values (#{nameRu}, #{nameUk})
     </insert>
