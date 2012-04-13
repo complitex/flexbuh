@@ -82,7 +82,10 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 	public void update(DocumentVersion dictionary) {
 		documentVersionBean.update(dictionary);
 	}
-	
+
+    /**
+     * Метод выполняет проверку пересечения дат с уже загруженными объектами
+     */
 	@SuppressWarnings("unchecked")
 	private void processBeginAndEndDates(DocumentVersion documentVersion, MultiValueMap createdDictionaries, Map<Long, DocumentVersion> processedDictionaries) {
 		List<DocumentVersion> oldDocumentVersions = documentVersionBean.getDocumentVersionsByDocument(documentVersion.getCDoc(), documentVersion.getCDocSub());
