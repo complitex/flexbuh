@@ -30,6 +30,7 @@ import java.util.Map;
  */
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
+@Deprecated
 public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<DocumentVersion> {
 	private final static Logger log = LoggerFactory.getLogger(ImportDocumentVersionXMLService.class);
 
@@ -68,7 +69,7 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 			}
 		}
 		Validate.isTrue(documentVersion.validate(), "Invalid processing document term: " + documentVersion);
-		processBeginAndEndDates(documentVersion, createdDictionaries, processedDictionaries);
+//		processBeginAndEndDates(documentVersion, createdDictionaries, processedDictionaries);
 
 		return Lists.newArrayList(documentVersion);
 	}
@@ -89,9 +90,11 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 	@SuppressWarnings("unchecked")
 	private void processBeginAndEndDates(DocumentVersion documentVersion, MultiValueMap createdDictionaries, Map<Long, DocumentVersion> processedDictionaries) {
 		List<DocumentVersion> oldDocumentVersions = documentVersionBean.getDocumentVersionsByDocument(documentVersion.getCDoc(), documentVersion.getCDocSub());
-		if (createdDictionaries.containsKey(documentVersion.hashCode())) {
+
+        if (createdDictionaries.containsKey(documentVersion.hashCode())) {
 			oldDocumentVersions.addAll(createdDictionaries.getCollection(documentVersion.hashCode()));
 		}
+
 		for (DocumentVersion oldDocumentVersion : oldDocumentVersions) {
 
 			if (oldDocumentVersion.getId() != null && processedDictionaries.containsKey(oldDocumentVersion.getId())) {
@@ -152,20 +155,12 @@ public class ImportDocumentVersionXMLService extends ImportDictionaryXMLService<
 
 	private void pointOnSegment(AbstractPeriodDictionary dictionary, Date point, String errorMessage) {
 		if (!isPositiveInfinityPoint(dictionary) && !isNegativeInfinityPoint(dictionary) && point != null) {
-			//log.debug("Check positive infinity {}: {}", dictionary.getEndDate(), DateUtils.isSameDay(dictionary.getEndDate(), maxEndDate));
-			//log.debug("Compare {} and {}: {}", new Object[] {dictionary.getBeginDate(), point, dictionary.getBeginDate().compareTo(point)});
-			//log.debug("Compare {} and {}: {}", new Object[] {dictionary.getEndDate(), point, dictionary.getEndDate().compareTo(point)});
-			//log.debug("Result composition: {}", dictionary.getBeginDate().compareTo(point) * dictionary.getEndDate().compareTo(point));
 			Validate.isTrue((dictionary.getBeginDate().compareTo(point) * dictionary.getEndDate().compareTo(point)) > 0, errorMessage);
 		}
 	}
 
 	private String printToLogInvalidDate(AbstractPeriodDictionary oldDictionary, AbstractPeriodDictionary newDictionary) {
-		return new StringBuilder("Invalid processing documentVersion date. ").
-				append("New value: ").
-				append(newDictionary).
-				append(", old value: ").
-				append(oldDictionary).toString();
+		return "Invalid processing documentVersion date. New value: " + newDictionary + ", old value: " + oldDictionary;
 	}
 
 	@NotNull

@@ -53,4 +53,9 @@
     <select id="selectDocumentVersionsByDocument" parameterType="map" resultMap="documentVersionResultMap">
         select * from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub} order by `c_doc_ver` desc
     </select>
+
+    <select id="isExistDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion">
+        select count(*) > 0 from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
+          and `c_doc_ver` = #{cDocVer}
+    </select>
 </mapper>

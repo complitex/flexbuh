@@ -20,6 +20,7 @@ import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
 import org.complitex.flexbuh.common.entity.dictionary.DictionaryType;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DictionaryTypeBean;
+import org.complitex.flexbuh.common.service.dictionary.DocumentVersionService;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
@@ -42,6 +43,9 @@ public class ImportDictionary extends TemplatePage {
 
     @EJB
     private ImportDictionaryService importDictionaryService;
+
+    @EJB
+    private DocumentVersionService documentVersionService;
 
     private IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
 

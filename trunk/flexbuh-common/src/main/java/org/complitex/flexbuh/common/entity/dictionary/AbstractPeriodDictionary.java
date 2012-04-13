@@ -2,14 +2,23 @@ package org.complitex.flexbuh.common.entity.dictionary;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
 
 /**
  * @author Pavel Sknar
  *         Date: 08.08.11 15:21
  */
+@XmlType
+@XmlAccessorType(value = XmlAccessType.FIELD)
 public abstract class AbstractPeriodDictionary extends AbstractDictionary {
+    @XmlElement(name = "D_BEGIN")
 	private Date beginDate;
+
+    @XmlElement(name = "D_END")
 	private Date endDate;
 
 	public Date getBeginDate() {
