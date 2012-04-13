@@ -43,4 +43,8 @@ public class DocumentVersionBean extends AbstractBean {
     public Integer getDocumentVersionsCount(FilterWrapper<DocumentVersion> filter){
         return (Integer) sqlSession().selectOne(NS + ".selectDocumentVersionsCount", filter);
     }
+
+    public boolean isExist(DocumentVersion documentVersion){
+        return sqlSession().selectOne(NS + ".isExistDocumentVersion");
+    }
 }

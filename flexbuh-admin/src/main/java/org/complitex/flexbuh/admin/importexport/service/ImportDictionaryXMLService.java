@@ -71,7 +71,8 @@ public abstract class ImportDictionaryXMLService<T extends AbstractDictionary> e
 		NodeList nodeRows = document.getElementsByTagName(tagName);
 		for (int i = 0; i < nodeRows.getLength(); i++) {
 			List<T> dictionaries = processDictionaryNode(nodeRows.item(i).getChildNodes(), importDate, beginDate, endDate, createdDictionaries, processedDictionaries);
-			for (T dictionary : dictionaries) {
+
+            for (T dictionary : dictionaries) {
 				createdDictionaries.put(dictionary.hashCode(), dictionary);
 			}
 		}
