@@ -3,7 +3,9 @@ package org.complitex.flexbuh.common.service.dictionary;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentTerm;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.ICrudBean;
 
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -12,11 +14,32 @@ import java.util.List;
  *         Date: 27.08.11 10:05
  */
 @Stateless
-public class DocumentTermBean extends AbstractBean {
+@LocalBean
+public class DocumentTermBean extends AbstractBean implements ICrudBean<DocumentTerm>{
     public static final String NS = DocumentTermBean.class.getName();
 
+    @Override
+    public Long getId(DocumentTerm documentTerm) {
+        return sqlSession().selectOne(NS + ".selectDocumentTermId", documentTerm);
+    }
+
+    @Override
     public void save(DocumentTerm documentTerm) {
-        sqlSession().insert(NS + ".insertDocumentTerm", documentTerm);
+        if (documentTerm.getId() == null){
+            sqlSession().insert(NS + ".insertDocumentTerm", documentTerm);
+        }else {
+            sqlSession().update(NS + ".updateDocumentTerm", documentTerm);
+        }
+    }
+
+    @Override
+    public DocumentTerm load(Long id) {
+        return getDocumentTerm(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+
     }
 
     public DocumentTerm getDocumentTerm(Long id) {

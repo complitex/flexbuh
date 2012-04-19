@@ -3,7 +3,9 @@ package org.complitex.flexbuh.common.service.dictionary;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Region;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.ICrudBean;
 
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -12,16 +14,33 @@ import java.util.List;
  *         Date: 28.08.11 15:14
  */
 @Stateless
-public class RegionBean extends AbstractBean {
+@LocalBean
+public class RegionBean extends AbstractBean implements ICrudBean<Region>{
     public static final String NS = RegionBean.class.getName();
 
-    public void save(Region region) {
-        sqlSession().insert(NS + ".insertRegion", region);
+    @Override
+    public Long getId(Region region) {
+        return sqlSession().selectOne(NS + ".selectRegionId", region);
     }
 
-	public void update(Region region) {
-		sqlSession().update(NS + ".updateRegion", region);
-	}
+    @Override
+    public void save(Region region) {
+        if (region.getId() == null){
+            sqlSession().insert(NS + ".insertRegion", region);
+        }else {
+            sqlSession().update(NS + ".updateRegion", region);
+        }
+    }
+
+    @Override
+    public Region load(Long id) {
+        return getRegion(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        sqlSession().delete(NS + ".deleteRegion", id);
+    }
 
     public Region getRegion(Long id) {
         return (Region)sqlSession().selectOne(NS + ".selectRegion", id);

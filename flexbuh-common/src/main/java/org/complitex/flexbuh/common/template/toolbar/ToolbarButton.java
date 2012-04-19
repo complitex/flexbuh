@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.ResourceModel;
 
 import java.util.Random;
 
@@ -32,7 +31,7 @@ public abstract class ToolbarButton extends Panel {
         AbstractLink link = addLink();
         add(link);
 
-        link.add(addImage(path, new ResourceModel(titleKey).wrapOnAssignment(this).getObject()));
+        link.add(addImage(path, titleKey));
     }
 
     public ToolbarButton(String id, String path, String titleKey, String tagId) {
@@ -78,13 +77,13 @@ public abstract class ToolbarButton extends Panel {
         }
     }
 
-    protected ContextImage addImage(String path, final String title) {
+    protected ContextImage addImage(String path, final String titleKey) {
         return new ContextImage("image", path) {
 
             @Override
             protected void onComponentTag(ComponentTag tag) {
                 super.onComponentTag(tag);
-                tag.put("title", title);
+                tag.put("title", getString(titleKey));
 
                 if (tagId != null) {
                     tag.setId(tagId);

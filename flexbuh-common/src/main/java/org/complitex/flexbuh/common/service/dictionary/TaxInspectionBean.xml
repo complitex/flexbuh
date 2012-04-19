@@ -26,7 +26,8 @@
         </where>
     </sql>
 
-    <insert id="insertTaxInspection" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspection" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertTaxInspection" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspection"
+            keyProperty="id" useGeneratedKeys="true">
         insert into `tax_inspection`
           (`upload_date`, `begin_date`, `end_date`, `c_sti`, `c_reg`,`c_raj`, `t_sti`,
             `name_ru`, `name_uk`, `name_raj_ru`, `name_raj_uk`)
@@ -79,5 +80,11 @@
 
     <select id="selectTaxInspectionsByDistrictName" parameterType="string" resultMap="taxInspectionResultMap">
         select * from `tax_inspection` where `name_raj_uk` = #{nameRaj}
+    </select>
+
+    <select id="selectTaxInspectionId" parameterType="org.complitex.flexbuh.common.entity.dictionary.TaxInspection"
+            resultType="long">
+        select `id` from `tax_inspection` where `c_sti` = #{cSti} and `c_raj` = #{cRaj} and `c_reg` = #{cReg}
+          and `t_sti` = #{tSti}
     </select>
 </mapper>

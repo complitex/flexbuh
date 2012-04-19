@@ -3,20 +3,43 @@ package org.complitex.flexbuh.common.entity.dictionary;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.complitex.flexbuh.common.entity.RowSet;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 /**
  * @author Pavel Sknar
  *         Date: 05.08.11 17:54
  */
+@XmlRootElement(name = "ROW")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DocumentTerm extends AbstractPeriodDictionary {
+    @XmlRootElement(name = "ROWSET")
+    @XmlSeeAlso(DocumentTerm.class)
+    public final static class RS extends RowSet<DocumentTerm>{}
+
+    @XmlElement(name = "C_DOC")
 	private String cDoc;
+
+    @XmlElement(name = "C_DOC_SUB")
 	private String cDocSub;
+
+    @XmlElement(name = "C_DOC_VER")
 	private Integer cDocVer;
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    @XmlElement(name = "D_TERM")
 	private Date dateTerm;
+
+    @XmlElement(name = "PERIOD_MONTH")
 	private Integer periodMonth;
+
+    @XmlElement(name = "PERIOD_TYPE")
 	private Integer periodType;
+
+    @XmlElement(name = "PERIOD_YEAR")
 	private Integer periodYear;
 
 	public String getCDoc() {

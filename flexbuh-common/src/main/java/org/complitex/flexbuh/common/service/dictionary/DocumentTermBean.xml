@@ -57,4 +57,15 @@
 	<select id="selectPeriodMonths" resultType="int">
         select distinct `period_month` from `document_term` order by `period_month`
     </select>
+
+    <select id="selectDocumentTermId" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm"
+            resultType="long">
+        select `id` from `document_term` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
+          and `c_doc_ver` = #{cDocVer} and `period_month` = #{periodMonth} and `period_type` = #{periodType}
+          and `period_year` = #{periodYear}
+    </select>
+
+    <update id="updateDocumentTerm" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm">
+        update `document_term` set `upload_date` = #{uploadDate}, `date_term` = #{dateTerm}
+    </update>
 </mapper>

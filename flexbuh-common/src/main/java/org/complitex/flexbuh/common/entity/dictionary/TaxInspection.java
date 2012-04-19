@@ -3,28 +3,42 @@ package org.complitex.flexbuh.common.entity.dictionary;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import java.util.Locale;
+import javax.xml.bind.annotation.*;
 
 /**
  * @author Pavel Sknar
  *         Date: 05.08.11 13:06
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TaxInspection extends AbstractPeriodDictionary {
+    @XmlElement(name = "C_STI")
 	private Integer cSti;
+
+    @XmlElement(name = "C_REG")
 	private Integer cReg;
+
+    @XmlElement(name = "C_RAJ")
 	private Integer cRaj;
+
+    @XmlElement(name = "T_STI")
 	private Integer tSti;
-    
+
+    @XmlTransient
     private String nameRajRu;
+
+    @XmlElement(name = "NAME_RAJ")
     private String nameRajUk;
-    
-    public String getAreaName(Locale locale){
-        switch (locale.getLanguage()){
-            case "ru":
-                return nameRajRu != null ? nameRajRu : nameRajUk;
-            default:
-                return nameRajUk;
-        }
+
+    @XmlElement(name = "NAME_STI")
+    @Override
+    public String getNameUk() {
+        return super.getNameUk();
+    }
+
+    @Override
+    public void setNameUk(String nameUk) {
+        super.setNameUk(nameUk);
     }
 
     public Integer getCSti() {

@@ -21,9 +21,7 @@ import javax.transaction.UserTransaction;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -47,8 +45,7 @@ public class ImportUserProfileXMLService extends ImportXMLService<PersonProfile>
     @EJB
     private ConfigBean configBean;
 
-    public void process(Long sessionId, ImportListener<PersonProfile> listener, String name, InputStream inputStream,
-                        Locale locale, Date beginDate, Date endDate) {
+    public void process(Long sessionId, ImportListener<PersonProfile> listener, String name, InputStream inputStream) {
         listener.begin();
 
         try {
@@ -86,7 +83,8 @@ public class ImportUserProfileXMLService extends ImportXMLService<PersonProfile>
             listener.completed();
         } catch (Throwable th) {
             log.warn("Cancel import user profile: " + name, th);
-            listener.error();
+
+            listener.error(th.getLocalizedMessage());
         }
     }
 

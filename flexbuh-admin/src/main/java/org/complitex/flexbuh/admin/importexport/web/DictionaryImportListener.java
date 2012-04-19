@@ -2,7 +2,6 @@ package org.complitex.flexbuh.admin.importexport.web;
 
 import org.complitex.flexbuh.common.service.ImportListener;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -10,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 * @author Anatoly A. Ivanov java@inheaven.ru
 *         Date: 20.03.12 16:27
 */
-public class DictionaryImportListener implements ImportListener<File>, Serializable {
+public class DictionaryImportListener implements ImportListener<String>, Serializable {
     public static enum Status {
         PROCESSING, PROCESSED, ERROR
     }
@@ -23,6 +22,8 @@ public class DictionaryImportListener implements ImportListener<File>, Serializa
 
     private Status status = null;
 
+    private String errorMessage;
+
     @Override
     public void begin() {
         status = Status.PROCESSING;
@@ -30,13 +31,13 @@ public class DictionaryImportListener implements ImportListener<File>, Serializa
     }
 
     @Override
-    public void processed(File file) {
-        fileName = file.getName();
+    public void processed(String fileName) {
+        this.fileName = fileName;
         countCompleted.incrementAndGet();
     }
 
     @Override
-    public void skip(File file) {
+    public void skip(String fileName) {
         countCanceled.incrementAndGet();
     }
 
@@ -52,7 +53,8 @@ public class DictionaryImportListener implements ImportListener<File>, Serializa
     }
 
     @Override
-    public void error() {
+    public void error(String message) {
+        errorMessage = message;
         status = Status.ERROR;
         countProcess.decrementAndGet();
     }
@@ -85,5 +87,13 @@ public class DictionaryImportListener implements ImportListener<File>, Serializa
         return countProcess.get() == 0
                 && (Status.PROCESSED.equals(status)
                 || Status.ERROR.equals(status));
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

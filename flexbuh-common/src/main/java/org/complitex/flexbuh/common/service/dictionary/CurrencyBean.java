@@ -3,7 +3,9 @@ package org.complitex.flexbuh.common.service.dictionary;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Currency;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.ICrudBean;
 
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -12,16 +14,32 @@ import java.util.List;
  *         Date: 11.08.11 14:10
  */
 @Stateless
-public class CurrencyBean extends AbstractBean {
+@LocalBean
+public class CurrencyBean extends AbstractBean implements ICrudBean<Currency> {
     public static final String NS = CurrencyBean.class.getName();
 
-    public void save(Currency currency) {
-        sqlSession().insert(NS + ".insertCurrency", currency);
+    @Override
+    public Long getId(Currency currency){
+        return sqlSession().selectOne(NS + ".selectCurrencyId", currency);
     }
 
-	public void update(Currency currency) {
-		sqlSession().update(NS + ".updateCurrency", currency);
-	}
+    public void save(Currency currency){
+        if (currency.getId() == null){
+            sqlSession().insert(NS + ".insertCurrency", currency);
+        }else {
+            sqlSession().update(NS + ".updateCurrency", currency);
+        }
+    }
+
+    @Override
+    public Currency load(Long id) {
+        return getCurrency(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        sqlSession().delete(NS + ".deleteCurrency", id);
+    }
 
     public Currency getCurrency(Long id) {
         return (Currency)sqlSession().selectOne(NS + ".selectCurrency", id);
@@ -38,4 +56,6 @@ public class CurrencyBean extends AbstractBean {
     public Integer getCurrenciesCount(FilterWrapper<Currency> filter){
         return (Integer) sqlSession().selectOne(NS + ".selectCurrenciesCount", filter);
     }
+
+
 }

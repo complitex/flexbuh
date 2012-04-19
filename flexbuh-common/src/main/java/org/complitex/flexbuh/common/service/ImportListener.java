@@ -13,5 +13,5 @@ public interface ImportListener<T> {
 
 	void completed();
 
-	void error();
+	void error(String message);
 }

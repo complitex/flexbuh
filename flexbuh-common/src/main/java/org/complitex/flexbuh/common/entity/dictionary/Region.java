@@ -1,13 +1,24 @@
 package org.complitex.flexbuh.common.entity.dictionary;
 
+import org.complitex.flexbuh.common.entity.RowSet;
+
+import javax.xml.bind.annotation.*;
+
 /**
  * @author Pavel Sknar
  *         Date: 05.08.11 12:24
  */
+@XmlRootElement(name = "row")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Region extends AbstractPeriodDictionary {
+    @XmlRootElement(name = "rowset")
+    @XmlSeeAlso(Region.class)
+    public final static class RS extends RowSet<Region>{}
+
+    @XmlElement(name = "CODE")
 	private Integer code;
 
-	public Integer getCode() {
+    public Integer getCode() {
 		return code;
 	}
 
@@ -18,10 +29,5 @@ public class Region extends AbstractPeriodDictionary {
 	@Override
 	public boolean validate() {
 		return super.validate() && code != null;
-	}
-
-	@Override
-	public int hashCode() {
-		return code;
 	}
 }

@@ -1,6 +1,8 @@
 package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.entity.template.TemplateXSD;
+import org.complitex.flexbuh.common.entity.template.TemplateXSL;
+import org.complitex.flexbuh.common.exception.AbstractException;
 import org.complitex.flexbuh.common.service.TemplateBean;
 import org.complitex.flexbuh.common.xml.LSInputImpl;
 import org.complitex.flexbuh.document.entity.Declaration;
@@ -42,7 +44,13 @@ public class TemplateService {
 
     public Document getTemplate(String templateName, Declaration declaration) throws CreateDocumentException {
         try {
-            return declarationService.getDocument(declaration, templateBean.getTemplateXSL(templateName));
+            TemplateXSL xsl = templateBean.getTemplateXSL(templateName);
+
+            if (xsl == null){
+                throw new AbstractException("Шаблон {0} не найден", templateName){};
+            }
+
+            return declarationService.getDocument(declaration, xsl);
         } catch (Exception e) {
             throw new CreateDocumentException(e);
         }
