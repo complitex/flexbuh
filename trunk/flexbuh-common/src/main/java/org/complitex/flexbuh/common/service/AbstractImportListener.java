@@ -22,6 +22,6 @@ public abstract class AbstractImportListener<T> implements ImportListener<T>{
     }
 
     @Override
-    public void error() {
+    public void error(String message) {
     }
 }

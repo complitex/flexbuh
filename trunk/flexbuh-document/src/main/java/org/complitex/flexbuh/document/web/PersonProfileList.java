@@ -177,10 +177,10 @@ public class PersonProfileList extends TemplatePage {
                                     }
 
                                     @Override
-                                    public void error() {
+                                    public void error(String message) {
                                         error.set(true);
                                     }
-                                }, fileUpload.getClientFileName(), fileUpload.getInputStream(), null, null, null);
+                                }, fileUpload.getClientFileName(), fileUpload.getInputStream());
 
                                 if (error.get()) {
                                     log.error("Failed import");

@@ -73,4 +73,16 @@
     <insert id="insertCode" parameterType="map">
         insert into `code` (`field_code_id`, `code`) values (#{fieldCodeId}, #{code})
     </insert>
+
+    <delete id="deleteAllFieldCode">
+        delete from `field_code`
+    </delete>
+
+    <delete id="deleteAllField">
+        delete from `field`
+    </delete>
+
+    <delete id="deleteAllCode">
+        delete from `code`
+    </delete>
 </mapper>

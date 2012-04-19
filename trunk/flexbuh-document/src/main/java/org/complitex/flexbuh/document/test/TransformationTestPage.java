@@ -2,10 +2,10 @@ package org.complitex.flexbuh.document.test;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.common.entity.template.TemplateXSL;
 import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

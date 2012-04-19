@@ -3,38 +3,37 @@
 
 <mapper namespace="org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean">
     <resultMap id="documentVersionResultMap" type="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion"
-			   extends="org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
+               extends="org.complitex.flexbuh.common.entity.dictionary.AbstractPeriodDictionary.periodDictionaryResultMap">
         <result column="c_doc" property="cDoc"/>
         <result column="c_doc_sub" property="cDocSub"/>
         <result column="c_doc_ver" property="cDocVer"/>
     </resultMap>
 
-	<sql id="selectDocumentVersionsWhere">
+    <sql id="selectDocumentVersionsWhere">
         <where>
             <if test="object.cDoc != null">`c_doc` = #{object.cDoc}</if>
             <if test="object.cDocSub != null">and `c_doc_sub` = #{object.cDocSub}</if>
             <if test="object.cDocVer != null">and `c_doc_ver` = #{object.cDocVer}</if>
             <if test="object.beginDate != null">and `begin_date` >= DATE(#{object.beginDate})</if>
             <if test="object.endDate != null">and DATE(#{object.endDate}) >= `end_date`</if>
-			<if test="object.nameUk != null">and `name_uk` like concat('%', #{object.nameUk}, '%')</if>
+            <if test="object.nameUk != null">and `name_uk` like concat('%', #{object.nameUk}, '%')</if>
         </where>
     </sql>
 
     <insert id="insertDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion"
             keyProperty="id" useGeneratedKeys="true">
         insert into `document_version`
-          (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `name_ru`, `name_uk`)
-        values
-          (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cDocVer}, #{nameRu}, #{nameUk})
+        (`upload_date`, `begin_date`, `end_date`, `c_doc`, `c_doc_sub`, `c_doc_ver`, `name_ru`, `name_uk`)
+                values
+                        (#{uploadDate}, #{beginDate}, #{endDate}, #{cDoc}, #{cDocSub}, #{cDocVer}, #{nameRu}, #{nameUk})
     </insert>
 
-	<update id="updateDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion">
+    <update id="updateDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion">
         update `document_version` set `upload_date`=#{uploadDate}, `begin_date`=#{beginDate}, `end_date`=#{endDate},
-          `c_doc`=#{cDoc}, `c_doc_sub`=#{cDocSub}, `c_doc_ver`=#{cDocVer}, `name_ru`=#{nameRu}, `name_uk`=#{nameUk}
-          where `id` = #{id}
+                `name_ru`=#{nameRu}, `name_uk`=#{nameUk} where `id` = #{id}
     </update>
 
-	<select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
+    <select id="selectDocumentVersions" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="documentVersionResultMap">
         select * from `document_version` <include refid="selectDocumentVersionsWhere"/>
         order by ${sortProperty}
@@ -42,11 +41,11 @@
         limit #{first}, #{count}
     </select>
 
-	<select id="selectDocumentVersionsCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
+    <select id="selectDocumentVersionsCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">
         select count(*) from `document_version` <include refid="selectDocumentVersionsWhere"/>
     </select>
 
-	<select id="selectDocumentVersion" parameterType="long" resultMap="documentVersionResultMap">
+    <select id="selectDocumentVersion" parameterType="long" resultMap="documentVersionResultMap">
         select * from `document_version` where `id` = #{id}
     </select>
 
@@ -54,8 +53,13 @@
         select * from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub} order by `c_doc_ver` desc
     </select>
 
-    <select id="isExistDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion">
-        select count(*) > 0 from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
-          and `c_doc_ver` = #{cDocVer}
+    <select id="selectDocumentVersionId" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion"
+            resultType="long">
+        select `id` from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
+                and `c_doc_ver` = #{cDocVer}
     </select>
+
+    <delete id="deleteDocumentVersion" parameterType="long">
+        delete from `document_version` where `id` = #{id}
+    </delete>
 </mapper>

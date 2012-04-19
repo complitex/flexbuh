@@ -14,10 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.flexbuh.admin.importexport.service.ImportTemplateControlService;
-import org.complitex.flexbuh.admin.importexport.service.ImportTemplateFOService;
-import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSDService;
-import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXSLService;
+import org.complitex.flexbuh.admin.importexport.service.ImportTemplateService;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -38,18 +35,9 @@ public class ImportFile extends TemplatePage {
     private final static Logger log = LoggerFactory.getLogger(ImportFile.class);
 
     @EJB
-    private ImportTemplateFOService importTemplateFOService;
+    private ImportTemplateService importTemplateService;
 
-    @EJB
-    private ImportTemplateXSDService importTemplateXSDService;
-
-    @EJB
-    private ImportTemplateXSLService importTemplateXSLService;
-
-    @EJB
-    private ImportTemplateControlService importTemplateControlService;
-
-    private IModel<List<DataFile>> dataFileModel = new ListModel<>();
+    private IModel<List<ImportTemplateService.TYPE>> typeModel = new ListModel<>();
 
     public ImportFile() {
 
@@ -64,17 +52,17 @@ public class ImportFile extends TemplatePage {
         container.add(form);
 
         //Dictionary types
-        final CheckBoxMultipleChoice<DataFile> dataFiles =
-                new CheckBoxMultipleChoice<>("dataFiles", dataFileModel, Arrays.asList(DataFile.values()),
-                        new IChoiceRenderer<DataFile>() {
+        final CheckBoxMultipleChoice<ImportTemplateService.TYPE> dataFiles =
+                new CheckBoxMultipleChoice<>("dataFiles", typeModel, Arrays.asList(ImportTemplateService.TYPE.values()),
+                        new IChoiceRenderer<ImportTemplateService.TYPE>() {
 
                             @Override
-                            public Object getDisplayValue(DataFile object) {
-                                return getString(object.toString());
+                            public Object getDisplayValue(ImportTemplateService.TYPE object) {
+                                return getString(object.name());
                             }
 
                             @Override
-                            public String getIdValue(DataFile object, int index) {
+                            public String getIdValue(ImportTemplateService.TYPE object, int index) {
                                 return object.toString();
                             }
                         });
@@ -87,35 +75,12 @@ public class ImportFile extends TemplatePage {
             public void onSubmit() {
                 log.debug("Submit process");
 
-                log.debug("Selected objects: {}", dataFileModel.getObject());
+                log.debug("Selected objects: {}", typeModel.getObject());
 
                 DictionaryImportListener importListener = new DictionaryImportListener();
 
-                final Long sessionId = getSessionId();
-
-                for (DataFile dataFile : dataFileModel.getObject()) {
-                    switch (dataFile) {
-                        case CONTROL:
-                            log.debug("start import control");
-                            importListener.addCountTotal(importTemplateControlService.listImportFiles().length);
-                            importTemplateControlService.processFiles(sessionId, importListener, null, null);
-                            break;
-                        case FO:
-                            log.debug("start import fo");
-                            importListener.addCountTotal(importTemplateFOService.listImportFiles().length);
-                            importTemplateFOService.processFiles(sessionId, importListener, null, null);
-                            break;
-                        case XSD:
-                            log.debug("start import xsd");
-                            importListener.addCountTotal(importTemplateXSDService.listImportFiles().length);
-                            importTemplateXSDService.processFiles(sessionId, importListener, null, null);
-                            break;
-                        case XSL:
-                            log.debug("start import xsl");
-                            importListener.addCountTotal(importTemplateXSLService.listImportFiles().length);
-                            importTemplateXSLService.processFiles(sessionId, importListener, null, null);
-                            break;
-                    }
+                for (ImportTemplateService.TYPE type : typeModel.getObject()) {
+                    importTemplateService.process(type, importListener);
                 }
 
                 container.add(newTimer(importListener));
@@ -152,7 +117,7 @@ public class ImportFile extends TemplatePage {
                         new Object[]{listener.currentImportFile(), listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
 
                 if (listener.isEnded()) {
-                    dataFileModel.getObject().clear();
+                    typeModel.getObject().clear();
 
                     info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
                     stop();
@@ -161,21 +126,5 @@ public class ImportFile extends TemplatePage {
                 }
             }
         };
-    }
-
-
-    private enum DataFile {
-        XSD("xsd"), XSL("xsl"), FO("fo"), CONTROL("control");
-
-        private String fileName;
-
-        private DataFile(String fileName) {
-            this.fileName = fileName;
-        }
-
-        @Override
-        public String toString() {
-            return fileName;
-        }
     }
 }

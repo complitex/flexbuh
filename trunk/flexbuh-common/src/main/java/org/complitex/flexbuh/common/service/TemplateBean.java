@@ -7,6 +7,8 @@ import org.complitex.flexbuh.common.entity.template.TemplateXSD;
 import org.complitex.flexbuh.common.entity.template.TemplateXSL;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ import java.util.List;
  *         Date: 27.07.11 15:59
  */
 @Stateless
+@TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
 public class TemplateBean extends AbstractBean {
     public static final String NS = TemplateBean.class.getName();
 

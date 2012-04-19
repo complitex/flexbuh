@@ -1,9 +1,9 @@
 package org.complitex.flexbuh.common.entity.dictionary;
 
 import com.google.common.collect.Sets;
+import org.complitex.flexbuh.common.entity.RowSet;
 
 import javax.xml.bind.annotation.*;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -13,14 +13,15 @@ import java.util.Set;
  */
 @XmlRootElement(name = "zdoc")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class FieldCode implements Serializable{
+public class FieldCode extends AbstractDictionary{
+    @XmlRootElement(name = "root")
+    @XmlSeeAlso(FieldCode.class)
+    public final static class RS extends RowSet<FieldCode>{}
+
     public final static String COUNTERPART_SPR_NAME = "spr_contragents";
     public final static String EMPLOYEE_SPR_NAME = "spr_works";
     
     public final static Set<String> IMPLEMENTED = Sets.newHashSet(COUNTERPART_SPR_NAME, EMPLOYEE_SPR_NAME);
-
-    @XmlTransient
-    private Long id;
 
     @XmlElementWrapper(name = "codes")
     @XmlElement(name = "code")
@@ -28,14 +29,6 @@ public class FieldCode implements Serializable{
 
     @XmlElement(name = "field")
     private List<Field> fields;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public List<String> getCodes() {
         return codes;

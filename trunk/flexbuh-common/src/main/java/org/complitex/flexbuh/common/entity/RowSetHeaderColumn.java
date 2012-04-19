@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.document.entity;
+package org.complitex.flexbuh.common.entity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

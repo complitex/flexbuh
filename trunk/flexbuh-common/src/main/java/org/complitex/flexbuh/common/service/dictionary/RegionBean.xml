@@ -45,4 +45,9 @@
 	<select id="selectRegion" parameterType="long" resultMap="regionResultMap">
         select * from `region` where `id` = #{id}
     </select>
+
+    <select id="selectRegionId" parameterType="org.complitex.flexbuh.common.entity.dictionary.Region"
+            resultType="long">
+        select `id` from `region` where `code` = #{code}
+    </select>
 </mapper>

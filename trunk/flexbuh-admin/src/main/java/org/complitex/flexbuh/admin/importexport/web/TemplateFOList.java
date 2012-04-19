@@ -30,7 +30,7 @@ public class TemplateFOList extends TemplatePage {
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
 	@EJB
-	TemplateBean templateBean;
+    TemplateBean templateBean;
 
 	public TemplateFOList() {
 

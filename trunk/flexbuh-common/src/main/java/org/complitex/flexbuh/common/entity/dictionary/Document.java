@@ -1,25 +1,39 @@
 package org.complitex.flexbuh.common.entity.dictionary;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.entity.RowSet;
 import org.complitex.flexbuh.common.util.DateUtil;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import javax.xml.bind.annotation.*;
+import java.util.*;
 
 /**
  * @author Pavel Sknar
  *         Date: 05.08.11 15:43
  */
+@XmlRootElement(name = "ROW")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Document extends AbstractPeriodDictionary {
+    @XmlRootElement(name = "ROWSET")
+    @XmlSeeAlso(Document.class)
+    public final static class RS extends RowSet<Document> {}
+
+    @XmlElement(name = "C_DOC")
 	private String cDoc;
+
+    @XmlElement(name = "C_DOC_SUB")
 	private String cDocSub;
 
+    @XmlElement(name = "C_DOC_CNT_SET")
 	private Boolean cntSet; // Может подаваться в отчетном периоде более одного раза
-	private String parentCDoc;
-	private String parentCDocSub;
-	private Boolean selected = false;
 
+    @XmlElement(name = "PARENT_C_DOC")
+	private String parentCDoc;
+
+    @XmlElement(name = "PARENT_C_DOC_SUB")
+	private String parentCDocSub;
+
+    @XmlTransient
     private List<DocumentVersion> documentVersions;
 
     public Document() {
@@ -31,6 +45,13 @@ public class Document extends AbstractPeriodDictionary {
 
     public Integer getVersion(int periodYear, int periodMonth){    
         Date date = DateUtil.getFirstDayOfMonth(periodYear, periodMonth - 1);
+
+        Collections.sort(documentVersions, new Comparator<DocumentVersion>() {
+            @Override
+            public int compare(DocumentVersion o1, DocumentVersion o2) {
+                return o2.getCDocVer().compareTo(o1.getCDocVer());
+            }
+        });
 
         for (DocumentVersion dv : documentVersions){
             if (dv.getBeginDate().before(date) && (dv.getEndDate() == null || dv.getEndDate().after(date))){
@@ -81,14 +102,6 @@ public class Document extends AbstractPeriodDictionary {
 		this.parentCDocSub = parentCDocSub;
 	}
 
-	public Boolean getSelected() {
-		return selected;
-	}
-
-	public void setSelected(Boolean selected) {
-		this.selected = selected;
-	}
-
     public List<DocumentVersion> getDocumentVersions() {
         return documentVersions;
     }
@@ -99,7 +112,7 @@ public class Document extends AbstractPeriodDictionary {
 
     @Override
 	public boolean validate() {
-		return  super.validate() && cDoc != null && cDocSub != null && cntSet != null && selected != null;
+		return  super.validate() && cDoc != null && cDocSub != null && cntSet != null;
 	}
 
 	@Override

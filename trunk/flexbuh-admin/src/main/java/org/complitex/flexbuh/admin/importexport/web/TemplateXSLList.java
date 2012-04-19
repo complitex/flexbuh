@@ -30,7 +30,7 @@ public class TemplateXSLList extends TemplatePage {
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
 	@EJB
-	TemplateBean templateBean;
+    TemplateBean templateBean;
 
 	public TemplateXSLList() {
 

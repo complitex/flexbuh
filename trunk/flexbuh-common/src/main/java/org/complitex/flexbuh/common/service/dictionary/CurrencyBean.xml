@@ -48,4 +48,13 @@
     <select id="selectCurrency" parameterType="long" resultMap="currencyResultMap">
         select * from `currency` where `id` = #{id}
     </select>
+
+    <select id="selectCurrencyId" parameterType="org.complitex.flexbuh.common.entity.dictionary.Currency"
+            resultType="long">
+        select `id` from `currency` where `code_number` = #{codeNumber}
+    </select>
+
+    <delete id="deleteCurrency" parameterType="long">
+        delete from `currency` where `id` = #{id}
+    </delete>
 </mapper>

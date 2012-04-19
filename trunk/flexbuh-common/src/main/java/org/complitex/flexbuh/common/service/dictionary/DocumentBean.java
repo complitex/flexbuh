@@ -3,8 +3,10 @@ package org.complitex.flexbuh.common.service.dictionary;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.ICrudBean;
 import org.complitex.flexbuh.common.util.DateUtil;
 
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -13,11 +15,32 @@ import java.util.List;
  *         Date: 22.08.11 12:15
  */
 @Stateless
-public class DocumentBean extends AbstractBean {
+@LocalBean
+public class DocumentBean extends AbstractBean implements ICrudBean<Document>{
     public static final String NS = DocumentBean.class.getName();
 
+    @Override
+    public Long getId(Document document) {
+        return sqlSession().selectOne(NS + ".selectDocumentId", document);
+    }
+
+    @Override
     public void save(Document document) {
-        sqlSession().insert(NS + ".insertDocument", document);
+        if (document.getId() == null){
+            sqlSession().insert(NS + ".insertDocument", document);
+        }else {
+            sqlSession().update(NS + ".updateDocument", document);
+        }
+    }
+
+    @Override
+    public Document load(Long id) {
+        return getDocument(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        sqlSession().delete(NS + ".deleteDocument", id);
     }
 
     public Document getDocument(Long id) {

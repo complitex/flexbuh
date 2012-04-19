@@ -13,21 +13,17 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
 import org.complitex.flexbuh.common.entity.dictionary.DictionaryType;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DictionaryTypeBean;
-import org.complitex.flexbuh.common.service.dictionary.DocumentVersionService;
 import org.complitex.flexbuh.common.template.TemplatePage;
-import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,9 +39,6 @@ public class ImportDictionary extends TemplatePage {
 
     @EJB
     private ImportDictionaryService importDictionaryService;
-
-    @EJB
-    private DocumentVersionService documentVersionService;
 
     private IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
 
@@ -77,26 +70,11 @@ public class ImportDictionary extends TemplatePage {
 
         form.add(dictionaryTypes);
 
-        //Begin Date
-        final IModel<Date> beginDateModel = new Model<>();
-        final DatePicker<Date> beginDatePicker = new DatePicker<>("beginDate", beginDateModel, Date.class);
-        form.add(beginDatePicker);
-
-        //End Date
-        final IModel<Date> endDateModel = new Model<>();
-        final DatePicker<Date> endDatePicker = new DatePicker<>("endDate", endDateModel, Date.class);
-        form.add(endDatePicker);
-
         //Кнопка импортировать
         Button process = new Button("process") {
             @Override
             public void onSubmit() {
-                log.debug("Submit process");
-
                 List<String> fileNames = Lists.newArrayList();
-                log.debug("Selected objects: {}", dictionaryModel.getObject());
-
-                log.debug("Begin date {}, end date {}", beginDateModel.getObject(), endDateModel.getObject());
 
                 for (DictionaryType dictionaryType : dictionaryModel.getObject()) {
                     fileNames.add(dictionaryType.getFileName());
@@ -105,8 +83,7 @@ public class ImportDictionary extends TemplatePage {
                 DictionaryImportListener importListener = new DictionaryImportListener();
                 importListener.addCountTotal(fileNames.size());
 
-                importDictionaryService.processFiles(getSessionId(), importListener, fileNames,
-                        beginDateModel.getObject(), endDateModel.getObject());
+                importDictionaryService.process(importListener, fileNames);
 
                 container.add(newTimer(importListener));
             }
@@ -143,6 +120,10 @@ public class ImportDictionary extends TemplatePage {
 
                 if (listener.isEnded()) {
                     dictionaryModel.getObject().clear();
+
+                    if (listener.getErrorMessage() != null){
+                        error(listener.getErrorMessage());
+                    }
 
                     info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
                     stop();

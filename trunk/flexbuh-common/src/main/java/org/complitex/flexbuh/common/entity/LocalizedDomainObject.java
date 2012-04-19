@@ -1,12 +1,19 @@
 package org.complitex.flexbuh.common.entity;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.Locale;
 
 /**
  * @author Pavel Sknar
  *         Date: 05.08.11 11:47
  */
+@XmlType
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class LocalizedDomainObject extends DomainObject {
+    @XmlElement(name = "NAME")
     private String nameUk;
     private String nameRu;
 
