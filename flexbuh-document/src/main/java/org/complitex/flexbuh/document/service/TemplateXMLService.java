@@ -1,9 +1,8 @@
 package org.complitex.flexbuh.document.service;
 
-import org.complitex.flexbuh.common.entity.template.TemplateXSD;
-import org.complitex.flexbuh.common.entity.template.TemplateXSL;
+import org.complitex.flexbuh.common.entity.template.TemplateXML;
 import org.complitex.flexbuh.common.exception.AbstractException;
-import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.xml.LSInputImpl;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.exception.CreateDocumentException;
@@ -28,23 +27,25 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringReader;
 
+import static org.complitex.flexbuh.common.entity.template.TemplateXMLType.*;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 02.08.11 16:22
  */
 @Stateless
-public class TemplateService {
-    private final static Logger log = LoggerFactory.getLogger(TemplateService.class);
+public class TemplateXMLService {
+    private final static Logger log = LoggerFactory.getLogger(TemplateXMLService.class);
 
     @EJB
-    private TemplateBean templateBean;
+    private TemplateXMLBean templateXMLBean;
 
     @EJB
     private DeclarationService declarationService;
 
     public Document getTemplate(String templateName, Declaration declaration) throws CreateDocumentException {
         try {
-            TemplateXSL xsl = templateBean.getTemplateXSL(templateName);
+            TemplateXML xsl = templateXMLBean.getTemplateXML(XSL, templateName);
 
             if (xsl == null){
                 throw new AbstractException("Шаблон {0} не найден", templateName){};
@@ -67,18 +68,18 @@ public class TemplateService {
 
     public Document getTemplateXSDDocument(String templateName) throws CreateDocumentException {
         try {
-            return createDocument(templateBean.getTemplateXSD(templateName).getData());
+            return createDocument(templateXMLBean.getTemplateXML(XSD, templateName).getData());
         } catch (Exception e) {
             throw new CreateDocumentException(e);
         }
     }
 
     public Document getTemplateControlDocument(String templateName) throws IOException, SAXException, ParserConfigurationException {
-        return createDocument(templateBean.getTemplateControl(templateName).getData());
+        return createDocument(templateXMLBean.getTemplateXML(CONTROL, templateName).getData());
     }
 
     public Schema getSchema(String templateName) throws SAXException {
-        TemplateXSD xsd = templateBean.getTemplateXSD(templateName);
+        TemplateXML xsd = templateXMLBean.getTemplateXML(XSD, templateName);
 
         Source xsdSource = new StreamSource(new StringReader(xsd.getData()), templateName + ".xsd");
 
@@ -88,7 +89,7 @@ public class TemplateService {
             @Override
             public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
                 if ("common_types.xsd".equals(systemId)){
-                    TemplateXSD common = templateBean.getTemplateXSD("common_types");
+                    TemplateXML common = templateXMLBean.getTemplateXML(XSD, "common_types");
 
                     LSInputImpl lsInput = new LSInputImpl();
                     lsInput.setStringData(common.getData());

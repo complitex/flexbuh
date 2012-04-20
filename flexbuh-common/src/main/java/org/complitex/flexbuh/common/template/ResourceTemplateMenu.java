@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.template;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import java.util.ResourceBundle;
  */
 public abstract class ResourceTemplateMenu implements ITemplateMenu {
     private static final Logger log = LoggerFactory.getLogger(ResourceTemplateMenu.class);
-    
+
     private List<ITemplateLink> templateLinks = new ArrayList<ITemplateLink>();
 
     /**
@@ -64,9 +65,12 @@ public abstract class ResourceTemplateMenu implements ITemplateMenu {
     public List<ITemplateLink> getTemplateLinks(Locale locale) {
         return templateLinks;
     }
-    
+
     protected void add(String key, Class<? extends Page> page){
         templateLinks.add(new ResourceTemplateLink(key, this, page));
-        
+    }
+
+    protected void add(String key, Class<? extends Page> page, PageParameters pageParameters){
+        templateLinks.add(new ResourceTemplateLink(key, this, page, pageParameters, null));
     }
 }

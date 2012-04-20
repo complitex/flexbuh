@@ -18,12 +18,25 @@ public class FilterWrapper<T extends Serializable> implements Serializable{
 
     private Map<String, Object> map;
 
+    public FilterWrapper() {
+    }
+
     public FilterWrapper(T object) {
         this.object = object;
     }
 
+    public FilterWrapper(T object, int first, int count) {
+        this.object = object;
+        this.first = first;
+        this.count = count;
+    }
+
     public static <T extends Serializable> FilterWrapper<T> of(T object){
         return new FilterWrapper<>(object);
+    }
+
+    public static <T extends Serializable> FilterWrapper<T> of(T object, int first, int count){
+        return new FilterWrapper<>(object, first, count);
     }
 
     public FilterWrapper<T> add(String key, Object value){

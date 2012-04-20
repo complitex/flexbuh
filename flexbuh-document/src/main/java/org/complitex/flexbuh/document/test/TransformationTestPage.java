@@ -2,8 +2,9 @@ package org.complitex.flexbuh.document.test;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.complitex.flexbuh.common.entity.template.TemplateXSL;
-import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.entity.template.TemplateXML;
+import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
+import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.w3c.dom.Document;
@@ -36,10 +37,10 @@ import java.io.StringWriter;
  */
 public class TransformationTestPage extends WebPage {
     @EJB
-    private TemplateBean templateBean;
+    private TemplateXMLBean templateXMLBean;
 
     public TransformationTestPage() throws TransformerException, ParserConfigurationException, IOException, SAXException {
-        TemplateXSL templateXSL = templateBean.getTemplateXSL("F0100203");
+        TemplateXML templateXSL = templateXMLBean.getTemplateXML(TemplateXMLType.XSL, "F0100203");
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
 

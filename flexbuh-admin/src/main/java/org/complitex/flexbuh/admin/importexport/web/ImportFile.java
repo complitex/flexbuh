@@ -15,6 +15,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.importexport.service.ImportTemplateService;
+import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -37,7 +38,7 @@ public class ImportFile extends TemplatePage {
     @EJB
     private ImportTemplateService importTemplateService;
 
-    private IModel<List<ImportTemplateService.TYPE>> typeModel = new ListModel<>();
+    private IModel<List<TemplateXMLType>> typeModel = new ListModel<>();
 
     public ImportFile() {
 
@@ -52,22 +53,24 @@ public class ImportFile extends TemplatePage {
         container.add(form);
 
         //Dictionary types
-        final CheckBoxMultipleChoice<ImportTemplateService.TYPE> dataFiles =
-                new CheckBoxMultipleChoice<>("dataFiles", typeModel, Arrays.asList(ImportTemplateService.TYPE.values()),
-                        new IChoiceRenderer<ImportTemplateService.TYPE>() {
+        final CheckBoxMultipleChoice<TemplateXMLType> dataFiles =
+                new CheckBoxMultipleChoice<>("dataFiles", typeModel, Arrays.asList(TemplateXMLType.values()),
+                        new IChoiceRenderer<TemplateXMLType>() {
 
                             @Override
-                            public Object getDisplayValue(ImportTemplateService.TYPE object) {
+                            public Object getDisplayValue(TemplateXMLType object) {
                                 return getString(object.name());
                             }
 
                             @Override
-                            public String getIdValue(ImportTemplateService.TYPE object, int index) {
+                            public String getIdValue(TemplateXMLType object, int index) {
                                 return object.toString();
                             }
                         });
 
         form.add(dataFiles);
+
+        final DictionaryImportListener importListener = new DictionaryImportListener();
 
         //Кнопка импортировать
         Button process = new Button("process") {
@@ -77,9 +80,7 @@ public class ImportFile extends TemplatePage {
 
                 log.debug("Selected objects: {}", typeModel.getObject());
 
-                DictionaryImportListener importListener = new DictionaryImportListener();
-
-                for (ImportTemplateService.TYPE type : typeModel.getObject()) {
+                for (TemplateXMLType type : typeModel.getObject()) {
                     importTemplateService.process(type, importListener);
                 }
 
@@ -88,7 +89,7 @@ public class ImportFile extends TemplatePage {
 
             @Override
             public boolean isVisible() {
-                return true; //listeners.isEmpty();
+                return importListener.isEnded();
             }
         };
         form.add(process);

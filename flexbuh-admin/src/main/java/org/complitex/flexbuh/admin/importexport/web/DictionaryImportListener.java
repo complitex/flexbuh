@@ -6,9 +6,9 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
-* @author Anatoly A. Ivanov java@inheaven.ru
-*         Date: 20.03.12 16:27
-*/
+ * @author Anatoly A. Ivanov java@inheaven.ru
+ *         Date: 20.03.12 16:27
+ */
 public class DictionaryImportListener implements ImportListener<String>, Serializable {
     public static enum Status {
         PROCESSING, PROCESSED, ERROR
@@ -85,8 +85,7 @@ public class DictionaryImportListener implements ImportListener<String>, Seriali
 
     public boolean isEnded() {
         return countProcess.get() == 0
-                && (Status.PROCESSED.equals(status)
-                || Status.ERROR.equals(status));
+                && (status == null || Status.PROCESSED.equals(status) || Status.ERROR.equals(status));
     }
 
     public String getErrorMessage() {

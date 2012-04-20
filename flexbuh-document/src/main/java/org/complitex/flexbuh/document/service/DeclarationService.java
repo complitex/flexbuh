@@ -2,9 +2,9 @@ package org.complitex.flexbuh.document.service;
 
 import org.apache.fop.apps.Driver;
 import org.complitex.flexbuh.common.entity.PersonProfile;
-import org.complitex.flexbuh.common.entity.template.TemplateFO;
-import org.complitex.flexbuh.common.entity.template.TemplateXSL;
-import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.entity.template.TemplateXML;
+import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
+import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.util.ZipUtil;
 import org.complitex.flexbuh.document.entity.*;
 import org.complitex.flexbuh.document.exception.CreateDocumentException;
@@ -54,10 +54,10 @@ public class DeclarationService {
     private DeclarationBean declarationBean;
 
     @EJB
-    private TemplateBean templateBean;
+    private TemplateXMLBean templateXMLBean;
 
     @EJB
-    private TemplateService templateService;
+    private TemplateXMLService templateXMLService;
 
     @EJB
     private RuleService ruleService;
@@ -77,7 +77,7 @@ public class DeclarationService {
             m.setProperty(Marshaller.JAXB_ENCODING, encoding);
 
             if (validate){
-                m.setSchema(templateService.getSchema(declaration.getTemplateName()));
+                m.setSchema(templateXMLService.getSchema(declaration.getTemplateName()));
             }
 
             StringWriter writer = new StringWriter();
@@ -96,7 +96,7 @@ public class DeclarationService {
 
     public void validate(Declaration declaration){
         try {
-            Schema schema = templateService.getSchema(declaration.getTemplateName());
+            Schema schema = templateXMLService.getSchema(declaration.getTemplateName());
             Validator validator = schema.newValidator();
 
             StreamSource streamSource = new StreamSource(new StringReader(getString(declaration)));
@@ -127,7 +127,7 @@ public class DeclarationService {
 
     public void sortDeclarationValues(Declaration declaration) {
         try {
-            Document document = templateService.getTemplateXSDDocument(declaration.getTemplateName());
+            Document document = templateXMLService.getTemplateXSDDocument(declaration.getTemplateName());
 
             List<DeclarationValue> sortedDeclarationValues = new ArrayList<>();
 
@@ -154,7 +154,7 @@ public class DeclarationService {
         }
     }
 
-    public String getString(Declaration declaration, TemplateXSL xsl) throws DeclarationParseException{
+    public String getString(Declaration declaration, TemplateXML xsl) throws DeclarationParseException{
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
@@ -174,7 +174,7 @@ public class DeclarationService {
         }
     }
 
-    public Document getDocument(Declaration declaration, TemplateXSL xsl) throws DeclarationParseException {
+    public Document getDocument(Declaration declaration, TemplateXML xsl) throws DeclarationParseException {
         try {
             //Parse document
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -342,7 +342,7 @@ public class DeclarationService {
 
     public void writePdf(Declaration declaration, OutputStream outputStream){
         try {
-            TemplateFO templateFO = templateBean.getTemplateFO(declaration.getTemplateName());
+            TemplateXML templateFO = templateXMLBean.getTemplateXML(TemplateXMLType.FO, declaration.getTemplateName());
 
             FopConfiguration.init();
 

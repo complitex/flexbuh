@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.TemplateXMLBean">
+    <resultMap id="templateXMLResultMap" type="org.complitex.flexbuh.common.entity.template.TemplateXML">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="data" property="data"/>
+        <result column="upload_date" property="uploadDate"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <insert id="insertTemplateXML" parameterType="org.complitex.flexbuh.common.entity.template.TemplateXML">
+        insert into `${type.table}` (`name`, `data`, `upload_date`) values (#{name}, #{data}, #{uploadDate})
+    </insert>
+
+    <update id="updateTemplateXML" parameterType="org.complitex.flexbuh.common.entity.template.TemplateXML">
+        update `${type.table}` set `data` = #{data}, `upload_date` = #{uploadDate} where `id` = #{id}
+    </update>
+
+    <select id="selectTemplateXML" parameterType="org.complitex.flexbuh.common.entity.template.TemplateXMLType"
+            resultMap="templateXMLResultMap">
+        select *, '${type.name()}' as type from `${type.table}` where `name` = #{name}
+    </select>
+
+    <select id="selectTemplateXMLs" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
+            resultMap="templateXMLResultMap">
+        select `name`, `upload_date` from `${object.table}` order by `name` limit #{first}, #{count}
+    </select>
+
+    <select id="selectTemplateXMLsCount" parameterType="org.complitex.flexbuh.common.entity.template.TemplateXMLType"
+            resultType="int">
+        select count(id) from `${table}`
+    </select>
+
+    <select id="selectTemplateXMLId" parameterType="org.complitex.flexbuh.common.entity.template.TemplateXML"
+            resultType="long">
+        select `id` from `${type.table}` where `name` = #{name}
+    </select>
+</mapper>

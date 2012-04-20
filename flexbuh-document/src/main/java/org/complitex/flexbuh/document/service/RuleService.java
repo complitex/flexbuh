@@ -36,7 +36,7 @@ public class RuleService {
     public final static Pattern SUM_PATTERN = Pattern.compile("SUM\\(\\^(\\w*)\\)");
 
     @EJB
-    private TemplateService templateService;
+    private TemplateXMLService templateService;
 
     public Map<String, Rule> getRules(String templateName) {
         Map<String, Rule> rules = new LinkedHashMap<>();

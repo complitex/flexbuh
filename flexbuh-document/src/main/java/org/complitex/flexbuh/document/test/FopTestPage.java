@@ -4,8 +4,9 @@ import org.apache.fop.apps.Driver;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
-import org.complitex.flexbuh.common.entity.template.TemplateFO;
-import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.entity.template.TemplateXML;
+import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
+import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
 import org.complitex.flexbuh.document.service.DeclarationBean;
@@ -28,7 +29,7 @@ import java.io.StringReader;
  */
 public class FopTestPage extends WebPage{
     @EJB
-    private TemplateBean templateBean;
+    private TemplateXMLBean templateXMLBean;
     
     @EJB
     private DeclarationBean declarationBean;
@@ -46,7 +47,7 @@ public class FopTestPage extends WebPage{
     }
 
     private void fopTest(){
-        TemplateFO templateFO = templateBean.getTemplateFO("J0110102");
+        TemplateXML templateFO = templateXMLBean.getTemplateXML(TemplateXMLType.FO,"J0110102");
         Declaration declaration = declarationBean.getDeclaration(1L);
 
         try {
