@@ -36,7 +36,6 @@
         <mapper resource="org/complitex/flexbuh/common/entity/dictionary/AbstractPeriodDictionary.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/CurrencyBean.xml"/>
-        <mapper resource="org/complitex/flexbuh/common/service/dictionary/DictionaryTypeBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/DocumentBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/DocumentTermBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/dictionary/DocumentVersionBean.xml"/>

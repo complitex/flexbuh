@@ -18,12 +18,12 @@ import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
 import org.complitex.flexbuh.common.entity.dictionary.DictionaryType;
 import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.common.service.dictionary.DictionaryTypeBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,9 +33,6 @@ import java.util.List;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ImportDictionary extends TemplatePage {
     private final static Logger log = LoggerFactory.getLogger(ImportDictionary.class);
-
-    @EJB
-    private DictionaryTypeBean dictionaryTypeService;
 
     @EJB
     private ImportDictionaryService importDictionaryService;
@@ -54,17 +51,17 @@ public class ImportDictionary extends TemplatePage {
 
         //Dictionary types
         final CheckBoxMultipleChoice<DictionaryType> dictionaryTypes =
-                new CheckBoxMultipleChoice<>("dictionaryTypes", dictionaryModel, dictionaryTypeService.getDictionaryTypes(),
+                new CheckBoxMultipleChoice<>("dictionaryTypes", dictionaryModel, Arrays.asList(DictionaryType.values()),
                         new IChoiceRenderer<DictionaryType>() {
 
                             @Override
-                            public Object getDisplayValue(DictionaryType object) {
-                                return object.getName(getLocale());
+                            public Object getDisplayValue(DictionaryType type) {
+                                return getString(type.name());
                             }
 
                             @Override
-                            public String getIdValue(DictionaryType object, int index) {
-                                return object.getCode();
+                            public String getIdValue(DictionaryType type, int index) {
+                                return type.ordinal() + "";
                             }
                         });
 
@@ -74,16 +71,16 @@ public class ImportDictionary extends TemplatePage {
         Button process = new Button("process") {
             @Override
             public void onSubmit() {
-                List<String> fileNames = Lists.newArrayList();
+                List<DictionaryType> fileNames = Lists.newArrayList();
 
                 for (DictionaryType dictionaryType : dictionaryModel.getObject()) {
-                    fileNames.add(dictionaryType.getFileName());
+                    fileNames.add(dictionaryType);
                 }
 
                 DictionaryImportListener importListener = new DictionaryImportListener();
                 importListener.addCountTotal(fileNames.size());
 
-                importDictionaryService.process(importListener, fileNames);
+                importDictionaryService.process(importListener, dictionaryModel.getObject());
 
                 container.add(newTimer(importListener));
             }
