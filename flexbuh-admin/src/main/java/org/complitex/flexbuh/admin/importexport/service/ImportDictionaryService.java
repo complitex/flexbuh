@@ -56,12 +56,12 @@ public class ImportDictionaryService{
     private ConfigBean configBean;
 
     @Asynchronous
-    public void process(ImportListener<String> listener, List<String> fileNames){
+    public void process(ImportListener<String> listener, List<DictionaryType> dictionaryTypes){
         listener.begin();
 
         try {
-            for (String fileName : fileNames){
-                processFile(listener, fileName);
+            for (DictionaryType dictionaryType : dictionaryTypes){
+                processFile(listener, dictionaryType);
             }
 
             listener.completed();
@@ -72,38 +72,38 @@ public class ImportDictionaryService{
         }
     }
 
-    private void processFile(ImportListener<String> listener, String fileName) throws ImportException {
+    private void processFile(ImportListener<String> listener, DictionaryType dictionaryType) throws ImportException {
         try {
-            switch (fileName.toUpperCase()){
-                case "SPR_CURRENCY.XML":
-                    process(Currency.RS.class, currencyBean, fileName);
+            switch (dictionaryType){
+                case CURRENCY:
+                    process(Currency.RS.class, currencyBean, dictionaryType);
                     break;
-                case "SPR_DOC.XML":
-                    process(Document.RS.class, documentBean, fileName);
+                case DOCUMENT:
+                    process(Document.RS.class, documentBean, dictionaryType);
                     break;
-                case "SPR_TERM.XML":
-                    process(DocumentTerm.RS.class, documentTermBean, fileName);
+                case DOCUMENT_TERM:
+                    process(DocumentTerm.RS.class, documentTermBean, dictionaryType);
                     break;
-                case "SPR_VER.XML":
-                    process(DocumentVersion.RS.class, documentVersionBean, fileName);
+                case DOCUMENT_VERSION:
+                    process(DocumentVersion.RS.class, documentVersionBean, dictionaryType);
                     break;
-                case "SPR_REGION.XML":
-                    process(Region.RS.class, regionBean, fileName);
+                case REGION:
+                    process(Region.RS.class, regionBean, dictionaryType);
                     break;
-                case "SPR_STI.XML":
-                    process(TaxInspectionRegion.RS.class, taxInspectionRegionBean, fileName);
+                case TAX_INSPECTION:
+                    process(TaxInspectionRegion.RS.class, taxInspectionRegionBean, dictionaryType);
                     break;
-                case "SPRFORFIELDS.XML":
+                case FIELD_CODE:
                     fieldCodeBean.deleteAllFieldCode();
-                    process(FieldCode.RS.class, fieldCodeBean, fileName);
+                    process(FieldCode.RS.class, fieldCodeBean, dictionaryType);
                     break;
             }
 
-            listener.processed(fileName);
+            listener.processed(dictionaryType.getFileName());
         } catch (RuntimeException e){
             throw new ImportException(e, "Критическая ошибка импорта");
         } catch (Exception e) {
-            listener.skip(fileName);
+            listener.skip(dictionaryType.getFileName());
 
             log.error("Ошибка импорта файла", e);
         }
@@ -111,10 +111,11 @@ public class ImportDictionaryService{
 
     private <T extends AbstractDictionary, RS extends RowSet<T>> void process(Class<RS> rowSetClass,
                                                                               ICrudBean<T> crudBean,
-                                                                              String fileName) throws ImportException {
+                                                                              DictionaryType dictionaryType)
+            throws ImportException {
         String dir = configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true);
 
         importDictionaryJAXBService.process(rowSetClass, crudBean, new AbstractImportListener<T>(){},
-                FileUtil.getFileInputStream(dir, SUB_DIR, fileName));
+                FileUtil.getFileInputStream(dir, SUB_DIR, dictionaryType.getFileName()));
     }
 }

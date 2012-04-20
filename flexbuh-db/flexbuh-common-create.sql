@@ -269,23 +269,6 @@ CREATE TABLE `template_control` (
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- DictionaryType
--- --------------------------
-
-DROP TABLE IF EXISTS `dictionary_type`;
-
-CREATE TABLE `dictionary_type` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `code` VARCHAR(40) NOT NULL,
-  `file_name` VARCHAR(255) NOT NULL,
-  `name_uk` VARCHAR(255) NOT NULL,
-  `name_ru` VARCHAR(255),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `key_dictionary_type__code` (`code`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
 -- Currency
 -- --------------------------
 

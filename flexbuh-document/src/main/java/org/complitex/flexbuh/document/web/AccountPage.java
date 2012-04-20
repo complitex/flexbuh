@@ -24,6 +24,7 @@ import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.entity.user.Share;
 import org.complitex.flexbuh.common.entity.user.User;
+import org.complitex.flexbuh.common.service.TemplateSession;
 import org.complitex.flexbuh.common.service.user.ShareBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -166,6 +167,9 @@ public class AccountPage extends FormTemplatePage{
 
                 accountService.writeAccountZip(getSessionId(), outputStream);
 
+                String fileName = "flexbuh_" + TemplateSession.get().getLogin() + "_" +getSessionId() + "_"
+                        + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip";
+
                 getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
                         new AbstractResourceStreamWriter() {
 
@@ -188,7 +192,7 @@ public class AccountPage extends FormTemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "flexbuh_" + getSessionId() + "_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
+                        }, fileName));
 
             }
         });

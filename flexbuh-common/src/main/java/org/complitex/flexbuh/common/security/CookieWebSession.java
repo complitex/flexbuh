@@ -169,4 +169,8 @@ public class CookieWebSession extends WebSession {
         session.setLastAccessDate(new Date());
         getSessionBean().updateLastAccessDate(session);
     }
+
+    public String getLogin() {
+        return login;
+    }
 }
