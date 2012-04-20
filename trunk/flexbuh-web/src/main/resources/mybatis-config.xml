@@ -24,7 +24,7 @@
 
     <mappers>
         <mapper resource="org/complitex/flexbuh/common/service/ConfigBean.xml"/>
-        <mapper resource="org/complitex/flexbuh/common/service/TemplateBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/common/service/TemplateXMLBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/FeedbackBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/TemporalEntityBean.xml"/>
         <mapper resource="org/complitex/flexbuh/common/service/PersonProfileBean.xml"/>

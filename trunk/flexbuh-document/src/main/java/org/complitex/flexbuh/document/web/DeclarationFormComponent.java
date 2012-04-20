@@ -27,12 +27,13 @@ import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.complitex.flexbuh.document.service.DeclarationFillService;
 import org.complitex.flexbuh.document.service.DeclarationMarkupService;
 import org.complitex.flexbuh.document.service.RuleService;
-import org.complitex.flexbuh.document.service.TemplateService;
+import org.complitex.flexbuh.document.service.TemplateXMLService;
 import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.*;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
+import org.mozilla.javascript.EvaluatorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -54,7 +55,7 @@ public class DeclarationFormComponent extends Panel{
     private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
 
     @EJB
-    private TemplateService templateService;
+    private TemplateXMLService templateService;
 
     @EJB
     private DeclarationFillService declarationService;
@@ -479,6 +480,8 @@ public class DeclarationFormComponent extends Panel{
                 autoFill.getDeclarationModel().setObject(value);
                 target.add((Component)autoFill);
             }
+        } catch (EvaluatorException e){
+            log.warn(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("Ошибка автозаполнения", e);
         }

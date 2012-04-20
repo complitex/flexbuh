@@ -7,19 +7,21 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.07.11 16:02
  */
-public abstract class AbstractTemplate implements Serializable {
+public class TemplateXML implements Serializable {
     private Long id;
+    private TemplateXMLType type;
     private String name;
     private String data;
-	private Date uploadDate;
+    private Date uploadDate;
 
-    protected AbstractTemplate() {
-    }
-
-    protected AbstractTemplate(String name, String data, Date uploadDate) {
+    public TemplateXML(TemplateXMLType type, String name, String data, Date uploadDate) {
+        this.type = type;
         this.name = name;
         this.data = data;
-		this.uploadDate = uploadDate;
+        this.uploadDate = uploadDate;
+    }
+
+    public TemplateXML() {
     }
 
     public Long getId() {
@@ -28,6 +30,14 @@ public abstract class AbstractTemplate implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public TemplateXMLType getType() {
+        return type;
+    }
+
+    public void setType(TemplateXMLType type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -46,11 +56,11 @@ public abstract class AbstractTemplate implements Serializable {
         this.data = data;
     }
 
-	public Date getUploadDate() {
-		return uploadDate;
-	}
+    public Date getUploadDate() {
+        return uploadDate;
+    }
 
-	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = uploadDate;
-	}
+    public void setUploadDate(Date uploadDate) {
+        this.uploadDate = uploadDate;
+    }
 }

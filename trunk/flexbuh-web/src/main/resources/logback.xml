@@ -1,39 +1,57 @@
 <configuration debug="true" scan="true" scanPeriod="30 seconds">
 
-	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
 
-	<appender name="DB" class="ch.qos.logback.classic.db.FlexbuhDBAppender">
-		<!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>INFO</level>
-		</filter>
+    <appender name="DB" class="ch.qos.logback.classic.db.FlexbuhDBAppender">
+        <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
 
-		<connectionSource class="ch.qos.logback.core.db.JNDIConnectionSource">
-			<param name="jndiLocation" value="jdbc/flexbuhResource"/>
-		</connectionSource>
-	</appender>
+        <connectionSource class="ch.qos.logback.core.db.JNDIConnectionSource">
+            <param name="jndiLocation" value="jdbc/flexbuhResource"/>
+        </connectionSource>
+    </appender>
 
-	<appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/tmp/flexbuh/log.txt</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- rollover daily -->
-			<fileNamePattern>log-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy
-				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-			<!-- or whenever the file size reaches 100MB -->
-			<maxFileSize>100MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%d %-5level %logger - %msg%n</pattern>
-		</encoder>
-	</appender>
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/tmp/flexbuh/log.txt</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>log-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-	<logger name="org.complitex.flexbuh">
-    	<appender-ref ref="DB" />
-  	</logger>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-	<root level="INFO">
-		<appender-ref ref="ROLLING"/>
-	</root>
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <logger name="org.complitex.flexbuh">
+        <appender-ref ref="DB" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="ROLLING"/>
+    </root>
+
+    <!--<logger name="java.sql">
+        <level value="debug" />
+    </logger>
+
+    <logger name="org.apache.ibatis">
+        <level value="debug" />
+    </logger>-->
 </configuration>

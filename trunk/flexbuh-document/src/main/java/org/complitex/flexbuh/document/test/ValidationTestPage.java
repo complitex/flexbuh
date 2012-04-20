@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.document.exception.CreateDocumentException;
-import org.complitex.flexbuh.document.service.TemplateService;
+import org.complitex.flexbuh.document.service.TemplateXMLService;
 import org.complitex.flexbuh.document.web.validation.RestrictionValidator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class ValidationTestPage extends WebPage{
     @EJB
-    private TemplateService templateService;
+    private TemplateXMLService templateService;
 
     public ValidationTestPage() throws IOException, SAXException, ParserConfigurationException, CreateDocumentException {
 //        add(CSSPackageResource.getHeaderContribution(TooltipBehavior.CSS));

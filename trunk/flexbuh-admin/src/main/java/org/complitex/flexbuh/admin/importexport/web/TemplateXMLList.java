@@ -6,9 +6,11 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.complitex.flexbuh.common.entity.template.TemplateXSL;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.entity.template.TemplateXML;
+import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.common.service.TemplateBean;
+import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -24,39 +26,42 @@ import java.util.Date;
  *         Date: 31.08.11 11:19
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public class TemplateXSLList extends TemplatePage {
-	private final static Logger log = LoggerFactory.getLogger(TemplateXSLList.class);
+public class TemplateXMLList extends TemplatePage {
+	private final static Logger log = LoggerFactory.getLogger(TemplateXMLList.class);
 
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
 	@EJB
-    TemplateBean templateBean;
+    TemplateXMLBean templateXMLBean;
 
-	public TemplateXSLList() {
+	public TemplateXMLList(PageParameters parameters) {
+        final TemplateXMLType type = TemplateXMLType.valueOf(parameters.get("type").toString().toUpperCase());
+
+        add(new Label("title", getString("title_" + type.name())));
 
 		final Form form = new Form("filter_form");
         form.setOutputMarkupId(true);
         add(form);
 
 		//Модель
-        final DataProvider<TemplateXSL> dataProvider = new DataProvider<TemplateXSL>() {
+        final DataProvider<TemplateXML> dataProvider = new DataProvider<TemplateXML>() {
             @Override
-            protected Iterable<? extends TemplateXSL> getData(int first, int count) {
-                return templateBean.getTemplateXSL(first, count);
+            protected Iterable<? extends TemplateXML> getData(int first, int count) {
+                return templateXMLBean.getTemplateXML(type, first, count);
             }
 
             @Override
             protected int getSize() {
-                return templateBean.getTemplateXSLsCount();
+                return templateXMLBean.getTemplateXMLsCount(type);
             }
         };
         dataProvider.setSort("file_name", SortOrder.ASCENDING);
 
 		//Таблица
-        DataView<TemplateXSL> dataView = new DataView<TemplateXSL>("templates", dataProvider, 10) {
+        DataView<TemplateXML> dataView = new DataView<TemplateXML>("templates", dataProvider, 10) {
 
             @Override
-            protected void populateItem(Item<TemplateXSL> item) {
+            protected void populateItem(Item<TemplateXML> item) {
 
                 item.add(new Label("file_name", item.getModelObject().getName()));
                 item.add(new Label("upload_date", getStringDate(item.getModelObject().getUploadDate())));

@@ -37,7 +37,7 @@ public class DeclarationMarkupService {
     private final static String WICKET_NAMESPACE_URI = "http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd";
 
     @EJB
-    private TemplateService templateService;
+    private TemplateXMLService templateService;
 
     @EJB
     private FieldCodeBean fieldCodeBean;
