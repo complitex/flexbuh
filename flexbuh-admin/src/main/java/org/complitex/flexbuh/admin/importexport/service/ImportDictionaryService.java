@@ -76,28 +76,30 @@ public class ImportDictionaryService{
         try {
             switch (dictionaryType){
                 case CURRENCY:
-                    process(Currency.RS.class, currencyBean, dictionaryType);
+                    process(Currency.RS.class, currencyBean, dictionaryType.getFileName());
                     break;
                 case DOCUMENT:
-                    process(Document.RS.class, documentBean, dictionaryType);
+                    process(Document.RS.class, documentBean, dictionaryType.getFileName());
                     break;
                 case DOCUMENT_TERM:
-                    process(DocumentTerm.RS.class, documentTermBean, dictionaryType);
+                    process(DocumentTerm.RS.class, documentTermBean, dictionaryType.getFileName());
                     break;
                 case DOCUMENT_VERSION:
-                    process(DocumentVersion.RS.class, documentVersionBean, dictionaryType);
+                    process(DocumentVersion.RS.class, documentVersionBean, dictionaryType.getFileName());
                     break;
                 case REGION:
-                    process(Region.RS.class, regionBean, dictionaryType);
+                    process(Region.RS.class, regionBean, dictionaryType.getFileName());
                     break;
                 case TAX_INSPECTION:
-                    process(TaxInspectionRegion.RS.class, taxInspectionRegionBean, dictionaryType);
+                    process(TaxInspectionRegion.RS.class, taxInspectionRegionBean, dictionaryType.getFileName());
                     break;
                 case FIELD_CODE:
                     fieldCodeBean.deleteAllFieldCode();
-                    process(FieldCode.RS.class, fieldCodeBean, dictionaryType);
+                    process(FieldCode.RS.class, fieldCodeBean, dictionaryType.getFileName());
                     break;
             }
+
+            log.info("processed", new Object[]{1,2,3,4,5,6,7,8,9});
 
             listener.processed(dictionaryType.getFileName());
         } catch (RuntimeException e){
@@ -111,11 +113,11 @@ public class ImportDictionaryService{
 
     private <T extends AbstractDictionary, RS extends RowSet<T>> void process(Class<RS> rowSetClass,
                                                                               ICrudBean<T> crudBean,
-                                                                              DictionaryType dictionaryType)
+                                                                              String fileName)
             throws ImportException {
         String dir = configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true);
 
         importDictionaryJAXBService.process(rowSetClass, crudBean, new AbstractImportListener<T>(){},
-                FileUtil.getFileInputStream(dir, SUB_DIR, dictionaryType.getFileName()));
+                FileUtil.getFileInputStream(dir, SUB_DIR, fileName));
     }
 }
