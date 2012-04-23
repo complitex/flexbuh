@@ -11,8 +11,9 @@ import static org.complitex.flexbuh.common.util.StringUtil.emptyOnNull;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 16.11.11 14:45
  */
-@XmlType(name = "row")
-@XmlAccessorType(value = XmlAccessType.PROPERTY)
+@XmlType(name = "row",
+        propOrder = {"personProfileId", "hk", "hname", "hloc", "htel", "hnspdv"})
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Counterpart extends SessionObject {
     private Long personProfileId;
 
