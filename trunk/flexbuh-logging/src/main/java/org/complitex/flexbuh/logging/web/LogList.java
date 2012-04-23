@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -20,7 +20,6 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.SharedResourceReference;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.logging.EventProperty;
 import org.complitex.flexbuh.common.security.SecurityRole;
@@ -223,8 +222,8 @@ public class LogList extends TemplatePage {
 					logger.error("Can not instance LogChangePanel", e);
 				}
 
-                Image expandImage = new Image("expand_image", new SharedResourceReference(
-                        expandModel.contains(log.getId()) ? IMAGE_ARROW_TOP : IMAGE_ARROW_BOTTOM));
+                ContextImage expandImage = new ContextImage("expand_image",
+                        expandModel.contains(log.getId()) ? IMAGE_ARROW_TOP : IMAGE_ARROW_BOTTOM);
 
                 AjaxSubmitLink expandLink = new AjaxSubmitLink("expand_link") {
 

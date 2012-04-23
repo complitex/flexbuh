@@ -301,8 +301,8 @@ public class DeclarationService {
         for (Declaration declaration : declarations){
             declaration.getHead().setCDocCnt(declaration.getId().intValue());
 
-            ZipUtil.writeZip(new ByteArrayInputStream(getString(declaration).getBytes("UTF-8")), zipOutputStream, dir,
-                    declaration.getFileName() + ".xml");
+            ZipUtil.writeZip(new ByteArrayInputStream(getString(declaration, "windows-1251", false).getBytes("windows-1251")),
+                    zipOutputStream, dir, declaration.getFileName() + ".xml");
         }
     }
 
