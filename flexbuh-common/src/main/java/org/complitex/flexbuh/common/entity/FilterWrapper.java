@@ -13,7 +13,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable{
 
     protected int first;
     protected int count;
-    protected String sortProperty;
+    protected String sortProperty = "id";
     protected boolean ascending;
 
     private Map<String, Object> map;
