@@ -11,7 +11,8 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 17.11.11 15:58
  */
-@XmlType(name = "row")
+@XmlType(name = "row",
+        propOrder = {"personProfileId", "htin", "hname", "hbirthdayString", "hdateInString", "hdateOutString"})
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class Employee extends SessionObject{
     private Long personProfileId;
