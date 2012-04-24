@@ -29,7 +29,8 @@
 
     <update id="updateDocument" parameterType="org.complitex.flexbuh.common.entity.dictionary.Document">
         update `document` set `upload_date` = #{uploadDate}, `c_doc` = #{cDoc}, `c_doc_sub` = #{cDocSub},
-          `cnt_set` = #{cntSet}, `parent_c_doc` = #{parentCDocSub}, `name_uk` = #{nameUk}
+          `cnt_set` = #{cntSet}, `parent_c_doc` = #{parentCDoc}, `parent_c_doc_sub` = #{parentCDocSub},
+            `name_uk` = #{nameUk}
         where `id` = #{id}
     </update>
 
