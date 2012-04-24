@@ -13,7 +13,7 @@ import java.util.Locale;
 public class DateUtil {
     private static final SimpleDateFormat DATE_FORMAT_FULL = new SimpleDateFormat("dd.MM.yyyy");
     private static final SimpleDateFormat DATE_FORMAT_SMALL = new SimpleDateFormat("dd.MM.yy");
-    
+
     public static Date getCurrentDate() {
         return Calendar.getInstance().getTime();
     }
@@ -91,6 +91,13 @@ public class DateUtil {
         return calendar.getTime();
     }
 
+    public static Date getLastDayOfMonth(int year, int month) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return calendar.getTime();
+    }
+
     public static Date justBefore(Date current) {
         Calendar c = Calendar.getInstance();
         c.setTime(current);
@@ -132,7 +139,7 @@ public class DateUtil {
         c.set(year, month, day);
         return c.getTime();
     }
-    
+
     public static Date getDate(String s){
         Date date = null;
 
@@ -152,16 +159,16 @@ public class DateUtil {
 
         return date;
     }
-    
+
     public static int getCurrentYear(){
         Calendar calendar = Calendar.getInstance();
-        
+
         return calendar.get(Calendar.YEAR);
     }
-    
+
     public static int getCurrentMonth(){
         Calendar calendar = Calendar.getInstance();
-        
+
         return calendar.get(Calendar.MONTH);
     }
 

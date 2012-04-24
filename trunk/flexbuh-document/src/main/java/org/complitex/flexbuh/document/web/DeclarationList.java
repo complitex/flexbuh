@@ -455,6 +455,7 @@ public class DeclarationList extends TemplatePage{
             public void onUpdate(AjaxRequestTarget target) {
                 target.add(feedbackPanel);
                 target.add(periodYearContainer);
+                target.add(tableContainer);
             }
         };
 

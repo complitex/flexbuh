@@ -380,13 +380,16 @@ public class DeclarationService {
         return declarationBean.getDeclarationsCount(filter) > 0;
     }
 
-    public Declaration save(Long sessionId, List<PersonProfile> personProfiles, String fileName, InputStream inputStream) throws DeclarationParseException {
+    public Declaration parse(Long sessionId, List<PersonProfile> personProfiles, String fileName, InputStream inputStream)
+            throws DeclarationParseException {
 
         Declaration declaration = getDeclaration(inputStream);
 
         declaration.setSessionId(sessionId);
 
         //Person profile by file name
+        declaration.setPersonProfileId(null);
+
         try{
             Integer tin = Integer.valueOf(fileName.substring(4, 14));
 
@@ -400,11 +403,6 @@ public class DeclarationService {
         }catch (Exception e){
             //no tin in file name
         }
-
-        validate(declaration);
-        check(declaration);
-
-        declarationBean.save(declaration);
 
         return declaration;
     }
