@@ -199,13 +199,6 @@ public class DeclarationCreate extends FormTemplatePage{
                     declaration.setSessionId(getSessionId());
                 }
 
-                //check duplicate
-//                if (declarationService.hasStoredDeclaration(declaration)){
-//                    error(getStringFormat("error_same_period", declaration.getShortName()));
-//
-//                    return;
-//                }
-
                 setResponsePage(new DeclarationFormPage(declaration));
             }
         });
