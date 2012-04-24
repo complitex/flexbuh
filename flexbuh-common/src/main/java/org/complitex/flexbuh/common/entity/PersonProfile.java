@@ -4,7 +4,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -14,6 +16,20 @@ import java.util.Date;
 @XmlType
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class PersonProfile extends SessionObject {
+    public static final class DateAdapter extends XmlAdapter<String, Date> {
+        private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+
+        @Override
+        public Date unmarshal(String v) throws Exception {
+            return DATE_FORMAT.parse(v);
+        }
+
+        @Override
+        public String marshal(Date v) throws Exception {
+            return DATE_FORMAT.format(v);
+        }
+    }
+
     public final static String SELECTED_PERSON_PROFILE_ID = "selected_person_profile_id";
 
     private PersonType personType = PersonType.JURIDICAL_PERSON; // тип плательщика
@@ -206,6 +222,7 @@ public class PersonProfile extends SessionObject {
         this.contractDate = contractDate;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     @XmlElement(name = "CONTRACT_NUMBER")
     public String getContractNumber() {
         return contractNumber;
