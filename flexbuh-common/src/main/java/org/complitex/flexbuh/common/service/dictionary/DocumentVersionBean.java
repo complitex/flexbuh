@@ -54,6 +54,11 @@ public class DocumentVersionBean extends AbstractBean implements ICrudBean<Docum
         return sqlSession().selectList(NS + ".selectDocumentVersionsByDocument");
     }
 
+    public DocumentVersion getDocumentVersion(String cDoc, String cDocSub, Integer cDocVer){
+        return sqlSession().selectOne(NS + ".findDocumentVersion", new DocumentVersion(cDoc, cDocSub, cDocVer));
+
+    }
+
     public List<DocumentVersion> getDocumentVersions(FilterWrapper<DocumentVersion> filter) {
         return sqlSession().selectList(NS + ".selectDocumentVersions", filter);
     }

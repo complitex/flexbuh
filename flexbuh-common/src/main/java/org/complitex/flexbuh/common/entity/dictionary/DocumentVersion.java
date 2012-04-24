@@ -24,6 +24,15 @@ public class DocumentVersion extends AbstractPeriodDictionary implements Compara
     @XmlElement(name = "C_DOC_VER")
     private Integer cDocVer;
 
+    public DocumentVersion() {
+    }
+
+    public DocumentVersion(String cDoc, String cDocSub, Integer cDocVer) {
+        this.cDoc = cDoc;
+        this.cDocSub = cDocSub;
+        this.cDocVer = cDocVer;
+    }
+
     @XmlElement(name = "NORM_DOC")
     @Override
     public String getNameUk() {

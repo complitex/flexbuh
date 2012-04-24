@@ -8,10 +8,14 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.common.template.TemplatePanel;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationHead;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -19,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +41,9 @@ public class DeclarationUploadDialog extends TemplatePanel {
 
     @EJB
     private DeclarationBean declarationBean;
+
+    @EJB
+    private DocumentVersionBean documentVersionBean;
 
     private Dialog dialog;
 
@@ -64,33 +72,56 @@ public class DeclarationUploadDialog extends TemplatePanel {
                     String fileName = fileUpload.getClientFileName();
 
                     try {
-                        Declaration declaration = declarationService.save(getSessionId(), personProfiles, fileName,
+                        Declaration declaration = declarationService.parse(getSessionId(), personProfiles, fileName,
                                 fileUpload.getInputStream());
 
-                        PersonProfile personProfile = declaration.getPersonProfile();
+                        //period version check
+                        DeclarationHead head = declaration.getHead();
+                        DocumentVersion documentVersion = documentVersionBean.getDocumentVersion(head.getCDoc(),
+                                head.getCDocSub(), head.getCDocVer());
 
-                        String info = getStringFormat("info_declaration_upload",
-                                fileName,
-                                getString("period_type_" + declaration.getHead().getPeriodType()),
-                                declaration.getHead().getPeriodMonth(),
-                                declaration.getHead().getPeriodYear(),
-                                personProfile != null ? personProfile.getProfileName() : getString("empty_profile"));
+                        Date periodDate = DateUtil.getLastDayOfMonth(head.getPeriodYear(), head.getPeriodMonth() - 1);
 
-                        info += ", " + (declaration.isValidated()
-                                ? getString("info_validated")
-                                : getStringFormat("info_validate_error", declaration.getValidateMessage()));
+                        if (documentVersion.getEndDate() == null){
+                            documentVersion.setEndDate(DateUtil.newDate(31, 11, 2099));
+                        }
 
-                        info += ", " + (declaration.isChecked()
-                                ? getString("info_checked")
-                                : getStringFormat("info_check_error", declaration.getCheckMessage()));
+                        if (documentVersion == null
+                                || periodDate.before(documentVersion.getBeginDate())
+                                || periodDate.after(documentVersion.getEndDate())){
+                            error(getStringFormat("error_period_date", declaration.getTemplateName(),
+                                    head.getPeriodMonth(), head.getPeriodYear(),
+                                    documentVersion.getCDocVer(), documentVersion.getBeginDate(),
+                                    documentVersion.getEndDate()));
+                        }else {
+                            //validate structure, check rules and save
+                            declarationService.validate(declaration);
+                            declarationService.check(declaration);
+                            declarationBean.save(declaration);
 
-                        getSession().info(info);
+                            PersonProfile personProfile = declaration.getPersonProfile();
+
+                            info(getStringFormat("info_declaration_upload",
+                                    fileName,
+                                    getString("period_type_" + declaration.getHead().getPeriodType()),
+                                    declaration.getHead().getPeriodMonth(),
+                                    declaration.getHead().getPeriodYear(),
+                                    personProfile != null ? personProfile.getProfileName() : getString("empty_profile")));
+
+                            info(declaration.isValidated()
+                                    ? getString("info_validated")
+                                    : getStringFormat("info_validate_error", declaration.getValidateMessage()));
+
+                            info((declaration.isChecked()
+                                    ? getString("info_checked")
+                                    : getStringFormat("info_check_error", declaration.getCheckMessage())));
+                        }
                     } catch (NumberFormatException e) {
-                        getSession().error(getStringFormat("error_filename", fileName));
+                        error(getStringFormat("error_filename", fileName));
 
                         log.error("Ошибка загрузки файла");
                     } catch (Exception e) {
-                        getSession().error(getStringFormat("error_upload", fileName));
+                        error(getStringFormat("error_upload", fileName));
 
                         log.error("Ошибка загрузки файла", e);
                     }
@@ -99,6 +130,8 @@ public class DeclarationUploadDialog extends TemplatePanel {
                 update.onUpdate(target);
 
                 dialog.close(target);
+
+                fileUploadModel.getObject().clear();
             }
 
             @Override

@@ -62,4 +62,9 @@
     <delete id="deleteDocumentVersion" parameterType="long">
         delete from `document_version` where `id` = #{id}
     </delete>
+
+    <select id="findDocumentVersion" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion"
+            resultMap="documentVersionResultMap">
+        select * from `document_version` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub} and `c_doc_ver` = #{cDocVer}
+    </select>
 </mapper>
