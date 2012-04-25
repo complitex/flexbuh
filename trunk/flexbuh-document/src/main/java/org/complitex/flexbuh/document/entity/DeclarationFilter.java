@@ -2,9 +2,9 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.AbstractFilter;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -21,7 +21,7 @@ public class DeclarationFilter extends AbstractFilter{
     private Integer periodYear;
     private Date date;
 
-    private List<Period> periods = new ArrayList<>();
+    private Set<Period> periods = new HashSet<>();
 
     public DeclarationFilter() {
     }
@@ -115,11 +115,11 @@ public class DeclarationFilter extends AbstractFilter{
         this.date = date;
     }
 
-    public List<Period> getPeriods() {
+    public Set<Period> getPeriods() {
         return periods;
     }
 
-    public void setPeriods(List<Period> periods) {
+    public void setPeriods(Set<Period> periods) {
         this.periods = periods;
     }
 }

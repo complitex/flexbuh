@@ -1,12 +1,18 @@
 package org.complitex.flexbuh.document.entity;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 30.12.11 14:27
  */
 public class Period implements Serializable, Comparable<Period>{
+    // order = period_month + 13*period_type
+    private final static List<Integer> ORDER = Arrays.asList(1+13, 2+13, 3+13, 3 + 13*2, 4+13, 5+13, 6+13, 6 + 13*2,
+            6 + 13*3, 7+13, 8+13, 9+13, 9 + 13*2, 9 + 13*4, 10+13, 11+13, 12+13, 12 + 13*2, 12 + 13*3, 12 + 13*5);
+
     private int month;
     private int type;
     private int year;
@@ -70,11 +76,7 @@ public class Period implements Serializable, Comparable<Period>{
     public int compareTo(Period p) {
         if (p != null){
             if (year == p.year){
-                if (type == p.type){
-                    return Integer.compare(month, p.month);
-                }else {
-                    return Integer.compare(type, p.type);
-                }
+                return new Integer(ORDER.indexOf(month + 13*type)).compareTo(ORDER.indexOf(p.month + 13*p.type));
             }else {
                 return Integer.compare(year, p.year);
             }

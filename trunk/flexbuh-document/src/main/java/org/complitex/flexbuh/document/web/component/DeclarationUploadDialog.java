@@ -15,7 +15,9 @@ import org.complitex.flexbuh.common.template.TemplatePanel;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.document.entity.Declaration;
+import org.complitex.flexbuh.document.entity.DeclarationFilter;
 import org.complitex.flexbuh.document.entity.DeclarationHead;
+import org.complitex.flexbuh.document.entity.Period;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -47,7 +49,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
 
     private Dialog dialog;
 
-    public DeclarationUploadDialog(String id, final IAjaxUpdate update) {
+    public DeclarationUploadDialog(String id, final DeclarationFilter declarationFilter, final IAjaxUpdate update) {
         super(id);
 
         dialog = new Dialog("dialog");
@@ -116,6 +118,10 @@ public class DeclarationUploadDialog extends TemplatePanel {
                                     ? getString("info_checked")
                                     : getStringFormat("info_check_error", declaration.getCheckMessage())));
                         }
+
+                        //add to filter
+                        declarationFilter.getPeriods().add(new Period(head.getPeriodMonth(), head.getPeriodType(),
+                                head.getPeriodYear()));
                     } catch (NumberFormatException e) {
                         error(getStringFormat("error_filename", fileName));
 
