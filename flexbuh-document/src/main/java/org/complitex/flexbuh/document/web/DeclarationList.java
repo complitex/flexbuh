@@ -169,7 +169,7 @@ public class DeclarationList extends TemplatePage{
                         AjaxLink action = new AjaxLink("action_select") {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
-                                List<Period> filterPeriods = declarationFilter.getPeriods();
+                                Set<Period> filterPeriods = declarationFilter.getPeriods();
 
                                 if (filterPeriods.contains(period)){
                                     filterPeriods.remove(period);
@@ -463,7 +463,7 @@ public class DeclarationList extends TemplatePage{
         };
 
         //Загрузка файлов
-        declarationUploadDialog = new DeclarationUploadDialog("upload_dialog", update);
+        declarationUploadDialog = new DeclarationUploadDialog("upload_dialog", declarationFilter, update);
         add(declarationUploadDialog);
 
         //Отображение пустого списка
