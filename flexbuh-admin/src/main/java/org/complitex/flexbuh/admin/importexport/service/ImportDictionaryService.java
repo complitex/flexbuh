@@ -99,8 +99,6 @@ public class ImportDictionaryService{
                     break;
             }
 
-            log.info("processed", new Object[]{1,2,3,4,5,6,7,8,9});
-
             listener.processed(dictionaryType.getFileName());
         } catch (RuntimeException e){
             throw new ImportException(e, "Критическая ошибка импорта");

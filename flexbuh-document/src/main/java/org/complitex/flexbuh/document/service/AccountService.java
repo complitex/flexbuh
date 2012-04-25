@@ -63,7 +63,8 @@ public class AccountService {
                 }
             }
 
-            ZipUtil.writeZip(Settings.class, new Settings(personProfiles), zipOutputStream, SPR_DIR, Settings.FILE_NAME);
+            ZipUtil.writeZip(PersonProfile.RS.class, new PersonProfile.RS (personProfiles), zipOutputStream, SPR_DIR,
+                    PersonProfile.RS.FILE_NAME);
 
             //Counterpart
             ZipUtil.writeZip(CounterpartRowSet.class, new CounterpartRowSet(counterpartBean.getAllCounterparts(sessionId)),
@@ -170,12 +171,12 @@ public class AccountService {
             while((entry = zipInputStream.getNextEntry()) != null) {
                 String fileName = entry.getName();
 
-                if (fileName.endsWith(Settings.FILE_NAME)){
-                    Settings settings = (Settings) JAXBContext.newInstance(Settings.class)
+                if (fileName.endsWith(PersonProfile.RS.FILE_NAME)){
+                    PersonProfile.RS rs = (PersonProfile.RS) JAXBContext.newInstance(PersonProfile.RS.class)
                             .createUnmarshaller()
                             .unmarshal(zipInputStream);
 
-                    List<PersonProfile> personProfiles = settings.getPersonProfiles();
+                    List<PersonProfile> personProfiles = rs.getRows();
 
                     for (PersonProfile personProfile : personProfiles){
                         Long oldId = personProfile.getId();

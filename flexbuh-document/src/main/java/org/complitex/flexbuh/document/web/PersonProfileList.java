@@ -33,8 +33,7 @@ import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
-import org.complitex.flexbuh.document.entity.Settings;
-import org.complitex.flexbuh.document.service.ImportUserProfileXMLService;
+import org.complitex.flexbuh.document.service.ImportPersonProfileXMLService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,7 @@ public class PersonProfileList extends TemplatePage {
     private PersonProfileBean personProfileBean;
 
     @EJB
-    private ImportUserProfileXMLService importUserProfileXMLService;
+    private ImportPersonProfileXMLService importUserProfileXMLService;
 
     @EJB
     private ConfigBean configBean;
@@ -292,7 +291,7 @@ public class PersonProfileList extends TemplatePage {
                                     //Write xml
                                     OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
 
-                                    XmlUtil.writeXml(Settings.class, new Settings(personProfiles), os, "windows-1251");
+                                    XmlUtil.writeXml(PersonProfile.RS .class, new PersonProfile.RS(personProfiles), os, "windows-1251");
                                 } catch (Exception e) {
                                     log.error("Ошибка экспорта профиля", e);
                                     log.error("Cannot export person profile to xml: {}", new Object[]{e, EventCategory.EXPORT});

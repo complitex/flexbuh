@@ -1,34 +1,46 @@
 package org.complitex.flexbuh.common.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
  *         Date: 31.08.11 14:26
  */
-@XmlType
+@XmlRootElement(name = "ROW")
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class PersonProfile extends SessionObject {
     public static final class DateAdapter extends XmlAdapter<String, Date> {
-        private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
-
         @Override
         public Date unmarshal(String v) throws Exception {
-            return DATE_FORMAT.parse(v);
+            return DateUtil.getDate(v);
         }
 
         @Override
         public String marshal(Date v) throws Exception {
-            return DATE_FORMAT.format(v);
+            return DateUtil.getString(v);
         }
     }
+
+    @XmlRootElement(name = "ROWSET")
+    @XmlSeeAlso(PersonProfile.class)
+    public final static class RS extends RowSet<PersonProfile>{
+        public static final String FILE_NAME = "SETTINGS.XML";
+
+        public RS() {
+        }
+
+        public RS(List<PersonProfile> rows) {
+            super(rows);
+        }
+    };
 
     public final static String SELECTED_PERSON_PROFILE_ID = "selected_person_profile_id";
 
@@ -213,6 +225,7 @@ public class PersonProfile extends SessionObject {
         this.koatuu = koatuu;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     @XmlElement(name = "CONTRACT_DATE")
     public Date getContractDate() {
         return contractDate;
@@ -222,7 +235,6 @@ public class PersonProfile extends SessionObject {
         this.contractDate = contractDate;
     }
 
-    @XmlJavaTypeAdapter(DateAdapter.class)
     @XmlElement(name = "CONTRACT_NUMBER")
     public String getContractNumber() {
         return contractNumber;
