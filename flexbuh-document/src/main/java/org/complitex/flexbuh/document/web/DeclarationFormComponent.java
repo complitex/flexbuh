@@ -120,14 +120,6 @@ public class DeclarationFormComponent extends Panel{
         return commonTypes;
     }
 
-    public XPath getSchemaXPath(){
-        if (schemaXPath == null){
-            schemaXPath = XmlUtil.newSchemaXPath();
-        }
-
-        return schemaXPath;
-    }
-
     private void init(){
         WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -427,11 +419,11 @@ public class DeclarationFormComponent extends Panel{
     }
 
     private RestrictionBehavior createRestrictionBehavior(String schemaType, String title) throws XPathExpressionException {
-        Element typeElement = XmlUtil.getElementByName(schemaType, getCommonTypes(), getSchemaXPath());
+        Element typeElement = XmlUtil.getElementByName(schemaType, getCommonTypes());
 
         if (typeElement != null && "xs:complexType".equals(typeElement.getTagName())){
             Element extension = (Element) typeElement.getElementsByTagName("xs:extension").item(0);
-            typeElement = XmlUtil.getElementByName(extension.getAttribute("base"), getCommonTypes(), getSchemaXPath());
+            typeElement = XmlUtil.getElementByName(extension.getAttribute("base"), getCommonTypes());
         }
 
         return new RestrictionBehavior(typeElement, getLocale(), title);

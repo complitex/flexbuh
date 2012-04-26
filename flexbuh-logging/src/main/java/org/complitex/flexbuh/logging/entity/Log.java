@@ -1,25 +1,58 @@
 package org.complitex.flexbuh.logging.entity;
 
-import com.google.common.collect.Lists;
 import org.complitex.flexbuh.common.entity.DomainObject;
+import org.complitex.flexbuh.common.logging.EventKey;
 import org.complitex.flexbuh.common.logging.EventProperty;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Pavel Sknar
  *         Date: 08.11.11 12:32
  */
 public class Log extends DomainObject {
+	public static enum LEVEL {DEBUG, INFO, ERROR, WARN}
 
-	public static enum LEVEL {INFO, ERROR, WARN}
+    private final static Pattern MODULE_PATTERN = Pattern.compile("(org\\.complitex\\.flexbuh\\.\\w+)\\.(.+)");
 
 	private long time;
     private String controller;
     private String description;
 	private String level;
+    private String loggerName;
 
-	private List<EventProperty> properties = Lists.newArrayList();
+	private Map<String, String> map;
+    private List<EventProperty> eventProperties;
+
+    public String get(EventKey key){
+        if (eventProperties != null && (map == null || eventProperties.size() != map.size())){
+            map = new HashMap<>();
+
+            for (EventProperty p : eventProperties){
+                map.put(p.getMappedKey(), p.getMappedValue());
+            }
+        }
+
+        return map.get(key.name());
+    }
+
+    public String getModuleName(){
+        Matcher matcher = MODULE_PATTERN.matcher(loggerName);
+
+        if (matcher.matches()){
+            return matcher.group(1);
+        }
+
+        return null;
+    }
+
+    public boolean containsKey(EventKey key){
+        return map.containsKey(key.name());
+    }
 
 	public long getTime() {
 		return time;
@@ -53,41 +86,19 @@ public class Log extends DomainObject {
 		this.level = level;
 	}
 
-	public List<EventProperty> getProperties() {
-		return properties;
-	}
+    public List<EventProperty> getEventProperties() {
+        return eventProperties;
+    }
 
-	public void setProperties(List<EventProperty> properties) {
-		this.properties = properties;
-	}
-	/*
-	public String getObjectId() {
-		return getPropertyValue("objectId");
-	}
+    public void setEventProperties(List<EventProperty> eventProperties) {
+        this.eventProperties = eventProperties;
+    }
 
-	public String getLogin() {
-		return getPropertyValue("login");
-	}
+    public String getLoggerName() {
+        return loggerName;
+    }
 
-	public String getModule() {
-		return getPropertyValue("module");
-	}
-
-	public String getModel() {
-		return getPropertyValue("model");
-	}
-
-	public String getCategory() {
-		return getPropertyValue("category");
-	}
-
-	private String getPropertyValue(String name) {
-		for (EventProperty property : properties) {
-			if (StringUtils.equals(property.getName(), name)) {
-				return property.getValue();
-			}
-		}
-		return null;
-	}
-	*/
+    public void setLoggerName(String loggerName) {
+        this.loggerName = loggerName;
+    }
 }

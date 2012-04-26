@@ -28,10 +28,8 @@ import org.complitex.flexbuh.common.entity.CityType;
 import org.complitex.flexbuh.common.entity.StreetType;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.entity.user.User;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.logging.EventModel;
-import org.complitex.flexbuh.common.logging.EventObjectFactory;
-import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.FIOBean;
@@ -79,9 +77,6 @@ public class UserEdit extends FormTemplatePage {
     
     @EJB
     private FIOBean fioBean;
-
-    @EJB
-	private EventObjectFactory eventObjectFactory;
 
     @EJB
     private OrganizationBaseBean organizationBaseBean;
@@ -665,14 +660,9 @@ public class UserEdit extends FormTemplatePage {
                 organizationBaseBean.editUserOrganizationList(userOrganizations, user);
             }
             if (createUser) {
-                log.info("Create user '{}'", new Object[]{user, EventCategory.CREATE,
-                            new EventObjectId(user.getId()), new EventModel(User.class.getName()),
-                            eventObjectFactory.getEventNewObject(user)});
+                log.info("Создание пользователя", new Event(EventCategory.CREATE, user));
             } else {
-                log.info("Edit user '{}'", new Object[]{user, EventCategory.EDIT,
-                            new EventObjectId(user.getId()), new EventModel(User.class.getName()),
-                            eventObjectFactory.getEventNewObject(user),
-                            eventObjectFactory.getEventOldObject(oldUser)});
+                log.info("Редактирование пользователя", new Event(EventCategory.EDIT, user));
             }
 
             info(getString("user_saved"));

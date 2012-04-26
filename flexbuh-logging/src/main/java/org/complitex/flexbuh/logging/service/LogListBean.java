@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.logging.service;
 
-import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.logging.entity.Log;
 
@@ -13,32 +12,26 @@ import java.util.List;
  */
 @Stateless
 public class LogListBean extends AbstractBean {
-	public static final String STATEMENT_PREFIX = LogListBean.class.getCanonicalName();
+	public static final String NS = LogListBean.class.getCanonicalName();
 
-    @SuppressWarnings({"unchecked"})
-    @Transactional
     public List<Log> getLogs(LogFilter filter){
-        return sqlSession().selectList(STATEMENT_PREFIX + ".selectLogs", filter);
+        return sqlSession().selectList(NS + ".selectLogs", filter);
     }
 
-    @Transactional
     public int getLogsCount(LogFilter filter){
-        return (Integer) sqlSession().selectOne(STATEMENT_PREFIX + ".selectLogsCount", filter);
+        return (Integer) sqlSession().selectOne(NS + ".selectLogsCount", filter);
     }
 
-    @Transactional
     public List<String> getModules(){
-        return sqlSession().selectList(STATEMENT_PREFIX + ".selectModules");
+        return sqlSession().selectList(NS + ".selectModules");
     }
 
-    @Transactional
     public List<String> getControllers(){
-        return sqlSession().selectList(STATEMENT_PREFIX + ".selectControllers");
+        return sqlSession().selectList(NS + ".selectControllers");
     }
 
-    @Transactional
     public List<String> getModels(){
-        return sqlSession().selectList(STATEMENT_PREFIX + ".selectModels");
+        return sqlSession().selectList(NS + ".selectModels");
     }
 
 }

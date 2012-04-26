@@ -21,10 +21,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.logging.EventModel;
-import org.complitex.flexbuh.common.logging.EventObjectFactory;
-import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.organization.OrganizationBaseBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
@@ -67,9 +65,6 @@ public class OrganizationList extends TemplatePage {
 
     @EJB
     private UserBean userBean;
-
-    @EJB
-	private EventObjectFactory eventObjectFactory;
 
     private Map<Long, IModel<Boolean>> selectMap = Maps.newHashMap();
 
@@ -209,9 +204,8 @@ public class OrganizationList extends TemplatePage {
                             Long id = select.getKey();
                             Organization organization = organizationBean.getOrganization(id);
                             organizationBean.deleteOrganization(organization);
-                            log.info("Delete organization '{}'", new Object[]{organization, EventCategory.REMOVE,
-                                    new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
-                                    eventObjectFactory.getEventOldObject(organization)});
+
+                            log.debug("Удаление организации", new Event(EventCategory.REMOVE, organization, null));
                         }
                     }
                 }

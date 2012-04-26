@@ -18,10 +18,8 @@ import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.CityType;
 import org.complitex.flexbuh.common.entity.StreetType;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.logging.EventModel;
-import org.complitex.flexbuh.common.logging.EventObjectFactory;
-import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
@@ -56,9 +54,6 @@ public class OrganizationEdit extends FormTemplatePage {
     private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
 
     public final static String PARAM_ORGANIZATION_ID = "organization_id";
-
-    @EJB
-	private EventObjectFactory eventObjectFactory;
 
     @EJB
     private OrganizationBean organizationBean;
@@ -244,14 +239,9 @@ public class OrganizationEdit extends FormTemplatePage {
         }
         organizationBean.save(organization, getLocale());
         if (createOrganization) {
-            log.info("Create organization '{}'", new Object[]{organization, EventCategory.CREATE,
-                        new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
-                        eventObjectFactory.getEventNewObject(organization)});
+            log.debug("Создание организации", new Event(EventCategory.CREATE, organization));
         } else {
-            log.info("Edit organization '{}'", new Object[]{organization, EventCategory.EDIT,
-                        new EventObjectId(organization.getId()), new EventModel(Organization.class.getName()),
-                        eventObjectFactory.getEventNewObject(organization),
-                        eventObjectFactory.getEventOldObject(oldOrganization)});
+            log.debug("Редактирование организации", new Event(EventCategory.CREATE, oldOrganization, organization));
         }
 
         info(getString("organization_saved"));

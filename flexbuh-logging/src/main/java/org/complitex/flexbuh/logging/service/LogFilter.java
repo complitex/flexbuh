@@ -28,27 +28,6 @@ public class LogFilter extends AbstractFilter {
 	private String objectId;
 	private EventCategory category;
 
-	public int getCountSignificantProperties() {
-		int count = 0;
-
-		if (login != null) {
-			count++;
-		}
-		if (module != null) {
-			count++;
-		}
-		if (model != null) {
-			count++;
-		}
-		if (category != null) {
-			count++;
-		}
-		if (objectId != null) {
-			count++;
-		}
-		return count;
-	}
-
 	public Date getTimestmp() {
 		return timestmp;
 	}

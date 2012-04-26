@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.complitex.flexbuh.common.logging.EventProperty;
+import org.complitex.flexbuh.common.logging.EventKey;
 import org.complitex.flexbuh.logging.entity.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +32,15 @@ import java.util.Map;
  *         Date: 17.11.11 15:21
  */
 public class LogChangePanel extends Panel {
-
 	private final static Logger logger = LoggerFactory.getLogger(LogChangePanel.class);
 
     public LogChangePanel(String id, Log log) throws IOException, SAXException, ParserConfigurationException {
         super(id);
-		Map<String, EventProperty> properties = listToMap(log.getProperties());
 
 		List<DiffObject> diffs = Lists.newArrayList();
 
-		String oldObject = getPropertyValue(properties, "oldObject");
-		String newObject = getPropertyValue(properties, "newObject");
+		String oldObject = log.get(EventKey.OLD_OBJECT);
+		String newObject = log.get(EventKey.NEW_OBJECT);
 
 		MapDifference<String, String> diff = Maps.difference(getFields(oldObject), getFields(newObject));
 		for (Map.Entry<String, MapDifference.ValueDifference<String>> differenceEntry : diff.entriesDiffering().entrySet()) {
@@ -92,18 +90,6 @@ public class LogChangePanel extends Panel {
 		}
 
 		return fields;
-	}
-
-	private static String getPropertyValue(Map<String, EventProperty> properties, String propertyName) {
-		return properties.containsKey(propertyName)? properties.get(propertyName).getValue(): "";
-	}
-
-	private static Map<String, EventProperty> listToMap(List<EventProperty> properties) {
-		Map<String, EventProperty> resultMap = Maps.newHashMap();
-		for (EventProperty property : properties) {
-			resultMap.put(property.getName(), property);
-		}
-		return resultMap;
 	}
 
 	private class DiffObject implements Serializable {
