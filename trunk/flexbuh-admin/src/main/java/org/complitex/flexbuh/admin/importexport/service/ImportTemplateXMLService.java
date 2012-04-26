@@ -23,8 +23,8 @@ import java.io.*;
  *         Date: 27.07.11 16:30
  */
 @Stateless
-public class ImportTemplateService {
-    private final static Logger log = LoggerFactory.getLogger(ImportTemplateService.class);
+public class ImportTemplateXMLService {
+    private final static Logger log = LoggerFactory.getLogger(ImportTemplateXMLService.class);
 
     private static final int BUFFER = 2048;
     private static final String DEFAULT_FILE_ENCODING = "CP1251";

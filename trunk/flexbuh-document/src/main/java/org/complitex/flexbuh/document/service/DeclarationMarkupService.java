@@ -20,7 +20,6 @@ import org.w3c.dom.NodeList;
 
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
-import javax.xml.xpath.XPath;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -74,10 +73,6 @@ public class DeclarationMarkupService {
         Document template = templateService.getTemplate(templateName, new Declaration(templateName));
         Document schema = templateService.getTemplateXSDDocument(templateName);
 
-        //XPath
-        XPath schemaXPath = XmlUtil.newSchemaXPath();
-        XPath templateXPath = XmlUtil.newXPath();
-        
         //Fields
         List<Field> fields = fieldCodeBean.getFields(templateName);
         Set<String> sprNameSet = new HashSet<>();
@@ -103,7 +98,7 @@ public class DeclarationMarkupService {
 
             if (XmlUtil.getParentById("StretchTable", inputElement) == null){
                 //type
-                Element schemaElement = XmlUtil.getElementByName(inputElement.getAttribute("id"), schema, schemaXPath);
+                Element schemaElement = XmlUtil.getElementByName(inputElement.getAttribute("id"), schema);
                 String type = schemaElement.getAttribute("type");
                 inputElement.setAttribute("schema", type);
 
@@ -167,7 +162,7 @@ public class DeclarationMarkupService {
         //Dynamic table input
         List<Element> tbodyElements = new ArrayList<>();
 
-        NodeList stretchList = XmlUtil.getElementsById("StretchTable", containerElement, templateXPath);
+        NodeList stretchList = XmlUtil.getElementsById("StretchTable", containerElement);
 
         int index = 0;
 
@@ -184,7 +179,7 @@ public class DeclarationMarkupService {
                 tbody.removeAttribute("id");
 
                 int addRow = !tbody.getAttribute("addRow").isEmpty() ? Integer.parseInt(tbody.getAttribute("addRow")) : 1;
-                NodeList stretchTables = XmlUtil.getElementsById("StretchTable", tbody, templateXPath);
+                NodeList stretchTables = XmlUtil.getElementsById("StretchTable", tbody);
 
                 //repeater
                 String repeaterWicketId = "repeater_" + index;
@@ -233,7 +228,7 @@ public class DeclarationMarkupService {
                         }
 
                         //type
-                        Element schemaElement = XmlUtil.getElementByName(id, schema, schemaXPath);
+                        Element schemaElement = XmlUtil.getElementByName(id, schema);
                         String type = schemaElement.getAttribute("type");
 
                         stretchInputElement.setAttribute("type", "text");
@@ -243,7 +238,7 @@ public class DeclarationMarkupService {
                     }
 
                     //Row number
-                    NodeList spRownumList = XmlUtil.getElementsById("spRownum", stretchTableElement, templateXPath);
+                    NodeList spRownumList = XmlUtil.getElementsById("spRownum", stretchTableElement);
 
                     for (int k = 0, spLen = spRownumList.getLength(); k < spLen; ++k) {
                         Element spRownumElement = (Element) spRownumList.item(k);

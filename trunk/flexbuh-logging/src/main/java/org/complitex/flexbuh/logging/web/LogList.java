@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.logging.web;
 
-import com.google.common.collect.Maps;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -21,7 +20,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.logging.EventProperty;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
@@ -35,7 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.complitex.flexbuh.common.logging.EventKey.*;
 
 /**
  * @author Pavel Sknar
@@ -58,9 +61,6 @@ public class LogList extends TemplatePage {
     }
 
     private void init() {
-
-        //add(JavaScriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.IE_SELECT_FIX_JS));
-
         add(new Label("title", getString("title")));
         add(new FeedbackPanel("messages"));
 
@@ -143,17 +143,17 @@ public class LogList extends TemplatePage {
         filterForm.add(new TextField<String>("objectId"));
 
         //Category
-        filterForm.add(new DropDownChoice<>("category", EventCategory.getCategories(),
+        filterForm.add(new DropDownChoice<>("category", Arrays.asList(EventCategory.values()),
                 new IChoiceRenderer<EventCategory>() {
 
                     @Override
                     public Object getDisplayValue(EventCategory object) {
-                        return getStringOrKey(object.getValue());
+                        return getStringOrKey(object.name());
                     }
 
                     @Override
                     public String getIdValue(EventCategory object, int index) {
-                        return String.valueOf(object.getValue());
+                        return String.valueOf(object.ordinal());
                     }
 				}));
 
@@ -193,7 +193,7 @@ public class LogList extends TemplatePage {
                 return logListBean.getLogsCount(filterModel.getObject());
             }
         };
-        dataProvider.setSort("timestmp", SortOrder.ASCENDING);
+        dataProvider.setSort("timestmp", SortOrder.DESCENDING);
 
         //Таблица журнала событий
         DataView<Log> dataView = new DataView<Log>("logs", dataProvider, 1) {
@@ -201,22 +201,22 @@ public class LogList extends TemplatePage {
             @Override
             protected void populateItem(Item<Log> item) {
                 final Log log = item.getModelObject();
-				Map<String, EventProperty> properties = listToMap(log.getProperties());
 
                 item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTime())), "dd.MM.yy HH:mm:ss"));
 				//item.add(LogManager.get().getLinkComponent("objectId", log));
-				item.add(new Label("objectId", getPropertyValue(properties, "objectId")));
+				item.add(new Label("objectId", log.get(OBJECT_ID)));
 				item.add(new Label("caller_class", getStringOrKey(log.getController())));
 				item.add(new Label("formatted_message", log.getDescription()));
-				item.add(new Label("login", getPropertyValue(properties, "login")));
-				item.add(new Label("module", getStringOrKey(getPropertyValue(properties, "module"))));
-				item.add(new Label("model", getStringOrKey(getPropertyValue(properties, "model"))));
-				item.add(new Label("category", getStringOrKey(getPropertyValue(properties, "category"))));
+				item.add(new Label("login", log.get(LOGIN)));
+				item.add(new Label("module", getStringOrKey(log.getModuleName())));
+				item.add(new Label("model", getStringOrKey(log.get(MODEL_CLASS))));
+				item.add(new Label("category", getStringOrKey(log.get(CATEGORY))));
 				item.add(new Label("level_string", getStringOrKey(log.getLevel())));
 
 				try {
 					LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
-					logChangePanel.setVisible((properties.containsKey("oldObject") || properties.containsKey("newObject")) && expandModel.contains(log.getId()));
+					logChangePanel.setVisible((log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT))
+                            && expandModel.contains(log.getId()));
 					item.add(logChangePanel);
 				} catch (Exception e) {
 					logger.error("Can not instance LogChangePanel", e);
@@ -243,7 +243,7 @@ public class LogList extends TemplatePage {
 					}
 				};
                 expandLink.setDefaultFormProcessing(false);
-                expandLink.setVisible(properties.containsKey("oldObject") || properties.containsKey("newObject"));
+                expandLink.setVisible(log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT));
                 expandLink.add(expandImage);
                 item.add(expandLink);
             }
@@ -264,16 +264,4 @@ public class LogList extends TemplatePage {
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
     }
-
-	private static String getPropertyValue(Map<String, EventProperty> properties, String propertyName) {
-		return properties.containsKey(propertyName)? properties.get(propertyName).getValue() : "";
-	}
-
-	private static Map<String, EventProperty> listToMap(List<EventProperty> properties) {
-		Map<String, EventProperty> resultMap = Maps.newHashMap();
-		for (EventProperty property : properties) {
-			resultMap.put(property.getName(), property);
-		}
-		return resultMap;
-	}
 }

@@ -14,7 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.flexbuh.admin.importexport.service.ImportTemplateService;
+import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXMLService;
 import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -36,7 +36,7 @@ public class ImportFile extends TemplatePage {
     private final static Logger log = LoggerFactory.getLogger(ImportFile.class);
 
     @EJB
-    private ImportTemplateService importTemplateService;
+    private ImportTemplateXMLService importTemplateService;
 
     private IModel<List<TemplateXMLType>> typeModel = new ListModel<>();
 

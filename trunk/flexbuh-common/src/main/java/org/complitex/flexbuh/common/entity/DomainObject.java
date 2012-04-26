@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @author Pavel Sknar
  *         Date: 08.08.11 16:43
  */
-public abstract class DomainObject implements Serializable {
+public abstract class DomainObject implements ILongId, Serializable {
 	private Long id;
 
 	@XmlElement(name = "FB_ID")

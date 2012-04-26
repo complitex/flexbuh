@@ -2,10 +2,8 @@ package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.logging.EventModel;
-import org.complitex.flexbuh.common.logging.EventObjectFactory;
-import org.complitex.flexbuh.common.logging.EventObjectId;
 import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.ImportXMLService;
@@ -28,9 +26,6 @@ public class ImportPersonProfileXMLService extends ImportXMLService<PersonProfil
 
     @EJB
     private PersonProfileBean personProfileBean;
-
-    @EJB
-    private EventObjectFactory eventObjectFactory;
 
     @EJB
     private ConfigBean configBean;
@@ -58,9 +53,7 @@ public class ImportPersonProfileXMLService extends ImportXMLService<PersonProfil
 
                 listener.processed(personProfile);
 
-                log.info("Import person profile {}", new Object[]{personProfile, EventCategory.IMPORT,
-                        new EventObjectId(personProfile.getId()), new EventModel(PersonProfile.class.getName()),
-                        eventObjectFactory.getEventNewObject(personProfile)});
+                log.debug("Импорт профиля", new Event(EventCategory.IMPORT, personProfile));
             }
 
             listener.completed();

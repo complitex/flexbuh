@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 *         Date: 20.04.12 15:33
 */
 public enum TemplateXMLType {
-    FO("template_fo", "fo", "\\w{6}\\d{2}.[Ff][Oo]"),
-    XSD("template_xsd", "xsd", "((\\w{6}\\d{2})|(common_types)).[Xx][Ss][Dd]"),
-    XSL("template_xsl", "xsl", "\\w{6}\\d{2}.[Xx][Ss][Ll]"),
-    CONTROL("template_control", "controls", "\\w{6}\\d{2}.[Xx][Mm][Ll]");
+    FO("template_fo", "fo", "\\w{6}\\d{2}\\.[Ff][Oo]"),
+    XSD("template_xsd", "xsd", "((\\w{6}\\d{2})|(common_types))\\.[Xx][Ss][Dd]"),
+    XSL("template_xsl", "xsl", "\\w{6}\\d{2}\\.[Xx][Ss][Ll]"),
+    CONTROL("template_control", "controls", "\\w{6}\\d{2}\\.[Xx][Mm][Ll]");
 
     private String table;
     private String subDir;
