@@ -120,6 +120,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
                         }
 
                         //add to filter
+                        declarationFilter.getPeriods().clear();
                         declarationFilter.getPeriods().add(new Period(head.getPeriodMonth(), head.getPeriodType(),
                                 head.getPeriodYear()));
                     } catch (NumberFormatException e) {
