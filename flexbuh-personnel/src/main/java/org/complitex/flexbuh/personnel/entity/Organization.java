@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.Address;
 import org.complitex.flexbuh.common.entity.DomainObject;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
@@ -83,5 +84,10 @@ public class Organization extends OrganizationBase {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

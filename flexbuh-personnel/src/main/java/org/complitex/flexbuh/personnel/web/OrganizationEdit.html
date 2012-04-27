@@ -12,7 +12,7 @@
     </h1>
     <div wicket:id="messages"></div>
 
-    <div wicket:id="template_object_edit_dialog"></div>
+    <!--div wicket:id="template_object_edit_dialog"></div-->
 
     <form action="#" wicket:id="form">
         <table class="tbForm">
@@ -40,10 +40,10 @@
                 <th><wicket:message key="httpAddress"/> </th>
                 <td><input type="text" maxlength="255" wicket:id="httpAddress" style="width: 277px"/></td>
             </tr>
-            <tr>
+            <!--tr>
                 <th><wicket:message key="entryIntoForceDate"/></th>
                 <td><input type="text" wicket:id="entryIntoForceDate" style="width: 80px"/></td>
-            </tr>
+            </tr-->
         </table>
 
         <div wicket:id="departments"></div>
@@ -75,6 +75,10 @@
         <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
         <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
     </form>
+
+    <div wicket:id="organization_history"/>
+
+    <!--div wicket:id="organization_history"></div-->
 </wicket:extend>
 </body>
 </html>

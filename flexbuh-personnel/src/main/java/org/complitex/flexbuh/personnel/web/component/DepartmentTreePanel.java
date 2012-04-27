@@ -65,6 +65,8 @@ public class DepartmentTreePanel extends Panel {
     public DepartmentTreePanel(String id, Organization organization) {
         super(id);
         filter.setOrganizationId(organization.getId());
+        filter.setEntryIntoForceDate(organization.getEntryIntoForceDate());
+        filter.setCompletionDate(organization.getCompletionDate());
         filter.setSortProperty("name");
         filter.setCount(Integer.MAX_VALUE);
         init();
@@ -73,6 +75,8 @@ public class DepartmentTreePanel extends Panel {
     public DepartmentTreePanel(String id, Department department) {
         super(id);
         filter.setOrganizationId(department.getOrganization().getId());
+        filter.setEntryIntoForceDate(department.getEntryIntoForceDate());
+        filter.setCompletionDate(department.getCompletionDate());
         filter.setSortProperty("name");
         filter.setCount(Integer.MAX_VALUE);
         this.department = department;
@@ -114,7 +118,7 @@ public class DepartmentTreePanel extends Panel {
                             @Override
                             protected Component newCheckBox(String id, IModel<Department> departmentIModel) {
                                 return super.newCheckBox(id, departmentIModel).
-                                        setEnabled(!isDisabled(departmentIModel));
+                                        setEnabled(!isDisabled(departmentIModel) && !departmentIModel.getObject().isDeleted());
                             }
 
                             @Override
@@ -130,8 +134,17 @@ public class DepartmentTreePanel extends Panel {
                             }
 
                             @Override
-                            protected Component newLabelComponent(String id, IModel<Department> departmentIModel) {
-                                return new Label(id, departmentIModel.getObject().getName());
+                            protected Component newLabelComponent(String id, final IModel<Department> departmentIModel) {
+                                return new Label(id, departmentIModel.getObject().getName()) {
+                                    @Override
+                                    protected void onComponentTag(ComponentTag tag) {
+                                        super.onComponentTag(tag);
+                                        if (departmentIModel.getObject().isDeleted()) {
+                                            tag.put("class", "deleted");
+                                            log.debug("object deleted: {}", departmentIModel.getObject());
+                                        }
+                                    }
+                                };
                             }
 
                             @Override
@@ -216,6 +229,7 @@ public class DepartmentTreePanel extends Panel {
                 response.renderCSSReference(THEME);
             }
         });
+        tree.setOutputMarkupId(true);
 
         add(tree);
 
@@ -302,5 +316,13 @@ public class DepartmentTreePanel extends Panel {
 
     public Department getMasterDepartment() {
         return department != null? department.getMasterDepartment(): null;
+    }
+
+    public void update(AjaxRequestTarget target, Organization organization) {
+        filter.setOrganizationId(organization.getId());
+        filter.setEntryIntoForceDate(organization.getEntryIntoForceDate());
+        filter.setCompletionDate(organization.getCompletionDate());
+        provider.setRoots(new DepartmentIterator(departmentBean.getDepartments(filter)));
+        target.add(tree);
     }
 }

@@ -379,6 +379,14 @@ ul {
     text-align: center;
 }
 
+.tbColor tr.selected {
+    background-color: #E0E4E9;
+}
+
+.tbColor tr.deleted {
+    font-style: italic;
+}
+
 .formFrame {
     margin-bottom: 20px;
     width: 100%;
@@ -654,4 +662,69 @@ div.wicket-aa ul li.selected {
 /* PlaceholderTextFieldPanel settings */
 .placeholder {
     color: #AAAAAA;
+}
+
+.history_button {
+    width: 23px;
+    height: 23px;
+    border: 0;
+}
+
+.history_back_button_on {
+    float: left;
+    background: url('../images/pageNavPrev.gif') no-repeat;
+    cursor: pointer;
+}
+
+.history_back_button_off {
+    float: left;
+    background: url('../images/pageNavPrevOff.gif') no-repeat;
+}
+
+.history_forward_button_on {
+    float: right;
+    background: url('../images/pageNavNext.gif') no-repeat;
+    cursor: pointer;
+}
+
+.history_forward_button_off {
+    float: right;
+    background: url('../images/pageNavNextOff.gif') no-repeat;
+}
+
+.history_start_button_on {
+    float: left;
+    background: url('../images/pageNavStart.gif') no-repeat;
+    cursor: pointer;
+}
+
+.history_start_button_off {
+    float: left;
+    background: url('../images/pageNavStartOff.gif') no-repeat;
+}
+
+.history_end_button_on {
+    float: right;
+    background: url('../images/pageNavEnd.gif') no-repeat;
+    cursor: pointer;
+}
+
+.history_end_button_off {
+    float: right;
+    background: url('../images/pageNavEndOff.gif') no-repeat;
+}
+
+#history_buttons {
+    display: inline-block;
+    margin-left: 40%;
+    margin-top: 18px;
+    bottom: 0;
+    background-color: #E0E4E9;
+    border-radius: 11px;
+    padding-top: 1px;
+}
+
+#history_buttons table.center {
+    margin-left: auto;
+    margin-right: auto;
 }

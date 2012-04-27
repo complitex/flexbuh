@@ -5,6 +5,7 @@ import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectHistoryFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +75,14 @@ public class OrganizationBean extends AbstractBean {
         return (Organization) sqlSession().selectOne(NS + ".selectCurrentOrganizationById", params);
     }
 
+    public Organization getOrganization(long id, long version) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("version", version);
+
+        return (Organization) sqlSession().selectOne(NS + ".selectOrganizationByIdAndVersion", params);
+    }
+
     public List<Organization> getOrganizations(OrganizationFilter filter) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("filter", filter);
@@ -88,6 +97,26 @@ public class OrganizationBean extends AbstractBean {
         params.put("currentDate", new Date());
 
         return (Integer)sqlSession().selectOne(NS + ".selectCurrentOrganizationsCount", params);
+    }
+
+    public List<Organization> getOrganizationHistory(Long id, TemporalDomainObjectHistoryFilter filter) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("filter", filter);
+
+        return sqlSession().selectList(NS + ".selectOrganizationHistory", params);
+    }
+
+    public int getOrganizationHistoryCount(Long id, TemporalDomainObjectHistoryFilter filter) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("filter", filter);
+
+        return (Integer)sqlSession().selectOne(NS + ".selectOrganizationHistoryCount", params);
+    }
+
+    public Organization getOrganizationLastInHistory(Long id) {
+        return sqlSession().selectOne(NS + ".selectOrganizationLastInHistory", id);
     }
 
 }

@@ -170,7 +170,21 @@
 
     <select id="selectCurrentOrganizationById" parameterType="map" resultMap="organizationResultMap">
         select * from `organization` where `id` = #{id} and
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+    </select>
+
+    <select id="selectOrganizationByIdAndVersion" parameterType="map" resultMap="organizationResultMap">
+        select * from `organization` where `id` = #{id} and `version` = #{version}
+    </select>
+
+    <select id="selectOrganizationHistory" parameterType="map" resultMap="organizationResultMap">
+        select * from `organization` where `id` = #{id}
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectHistoryFilter"/>
+    </select>
+
+    <select id="selectOrganizationHistoryCount" parameterType="map" resultType="int">
+        select count(distinct version) from `organization` where `id` = #{id}
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectHistoryFilterCount"/>
     </select>
 
     <select id="selectCurrentOrganizations" parameterType="map" resultMap="organizationResultMap">
@@ -178,14 +192,19 @@
         <include refid="physicalAddress"/> as `physical_address`,
         <include refid="juridicalAddress"/> as `juridical_address`
         from `organization` where
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
         <include refid="filter_order_limit"/>
     </select>
 
     <select id="selectCurrentOrganizationsCount" parameterType="map" resultType="int">
         select count(distinct id) from `organization` where
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
         <include refid="filter"/>
+    </select>
+    
+    <select id="selectOrganizationLastInHistory" parameterType="long" resultMap="organizationResultMap">
+        select * from `organization` where `id` = #{id} and `version` =
+        (select max(`version`) from `organization` where `id` = #{id})
     </select>
 
 </mapper>

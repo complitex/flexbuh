@@ -152,7 +152,8 @@ public class DepartmentEdit extends FormTemplatePage {
         form.add(new TextField<>("name", new PropertyModel<String>(department, "name")));
         form.add(new TextField<>("code", new PropertyModel<String>(department, "code")));
 
-        // Дата создания организации
+        // Дата создания подразделения
+        /*
         final DatePicker<Date> birthdayPicker = new DatePicker<Date>("entryIntoForceDate",
                 new PropertyModel<Date>(department, "entryIntoForceDate"), Date.class) {
 
@@ -163,6 +164,7 @@ public class DepartmentEdit extends FormTemplatePage {
         };
         birthdayPicker.setDateFormat("dd.mm.yy");
         form.add(birthdayPicker);
+        */
 
         // Departments
         panel = new DepartmentTreePanel("departments", department);
@@ -203,13 +205,16 @@ public class DepartmentEdit extends FormTemplatePage {
         @Override
         public void onSubmit() {
             boolean emptyRequiredField = !checkRequiredField(department.getName(), "name");
+            /*
             if (!checkRequiredField(department.getEntryIntoForceDate(), "entryIntoForceDate")) {
                 emptyRequiredField = true;
             }
-
+            */
             if (emptyRequiredField) {
                 return;
             }
+
+            department.setEntryIntoForceDate(new Date());
 
             boolean newObject = department.getId() == null;
             departmentBean.save(department);
