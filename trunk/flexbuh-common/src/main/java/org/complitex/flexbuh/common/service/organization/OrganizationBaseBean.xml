@@ -31,12 +31,12 @@
         select o.* from  `organization` o
         left join `user_organization` uo on uo.`organization_id` = o.`id`
         where uo.`login` = #{login} and
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
     </select>
 
     <select id="selectCurrentOrganizations" parameterType="map" resultMap="organizationBaseResultMap">
         select * from `organization` where
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
     </select>
 
 </mapper>

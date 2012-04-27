@@ -7,6 +7,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,6 +32,7 @@ import org.complitex.flexbuh.common.template.toolbar.AddOrganizationButton;
 import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
+import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.personnel.entity.Organization;
@@ -38,12 +40,15 @@ import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.OrganizationTypeBean;
 import org.complitex.flexbuh.personnel.web.component.OrganizationTypeAutoCompleteTextField;
+import org.complitex.flexbuh.personnel.web.component.TemporalObjectEditDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Map;
+
+import static org.complitex.flexbuh.personnel.web.OrganizationEdit.*;
 
 /**
  * @author Pavel Sknar
@@ -140,7 +145,7 @@ public class OrganizationList extends TemplatePage {
                         protected void onUpdate(AjaxRequestTarget target) {
                             //update
                         }
-                    }));
+                    }).setEnabled(!organization.isDeleted()));
 
                 item.add(new Label("type", organization.getType()));
                 item.add(new Label("name", organization.getName()));
@@ -153,9 +158,22 @@ public class OrganizationList extends TemplatePage {
 
                 PageParameters pageParameters = new PageParameters();
 
-                pageParameters.set("organization_id", organization.getId());
+                pageParameters.set(PARAM_ORGANIZATION_ID, organization.getId());
                 item.add(new BookmarkablePageLinkPanel<Organization>("action_edit", getString("action_edit"),
                         OrganizationEdit.class, pageParameters));
+            }
+
+            @Override
+            protected Item<Organization> newItem(String id, int index, final IModel<Organization> model) {
+                return new Item<Organization>(id, index, model) {
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        super.onComponentTag(tag);
+                        if (model.getObject().isDeleted()) {
+                            tag.put("class", "deleted");
+                        }
+                    }
+                };
             }
         };
         filterForm.add(dataView);

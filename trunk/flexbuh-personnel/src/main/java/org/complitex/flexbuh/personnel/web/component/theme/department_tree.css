@@ -85,7 +85,6 @@ span.tree-content a:hover {
 
 span.tree-content .selected {
   background-color: #E0E4E9;
-  border-right: 1px solid #FFFFFF;
   color: #007AAE;
 }
 
@@ -108,4 +107,8 @@ span.tree-content .selected {
   background-image: url(folder-other.gif);
   background-position: 0px 50%;
   background-repeat: no-repeat;
+}
+
+.deleted {
+  font-style: italic;
 }
