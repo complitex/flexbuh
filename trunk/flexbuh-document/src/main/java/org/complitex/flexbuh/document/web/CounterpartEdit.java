@@ -15,9 +15,6 @@ import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.ShareBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
-import org.complitex.flexbuh.common.web.component.FirstNameAutoCompleteTextField;
-import org.complitex.flexbuh.common.web.component.LastNameAutoCompleteTextField;
-import org.complitex.flexbuh.common.web.component.MiddleNameAutoCompleteTextField;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.service.CounterpartBean;
 
@@ -73,9 +70,7 @@ public class CounterpartEdit extends FormTemplatePage{
         add(form);
         
         form.add(new TextField("hk"));
-        form.add(new LastNameAutoCompleteTextField("lastName").setRequired(true));
-        form.add(new FirstNameAutoCompleteTextField("firstName").setRequired(true));
-        form.add(new MiddleNameAutoCompleteTextField("middleName"));
+        form.add(new TextField("hname").setRequired(true));
         form.add(new TextField("hloc"));
         form.add(new TextField("htel"));
         form.add(new TextField("hnspdv"));

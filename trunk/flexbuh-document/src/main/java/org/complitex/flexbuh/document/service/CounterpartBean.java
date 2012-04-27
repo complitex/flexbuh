@@ -2,7 +2,6 @@ package org.complitex.flexbuh.document.service;
 
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.service.AbstractBean;
-import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartRowSet;
@@ -27,9 +26,6 @@ public class CounterpartBean extends AbstractBean{
     @EJB
     private PersonProfileBean personProfileBean;
 
-    @EJB
-    private FIOBean fioBean;
-
     public Counterpart getCounterpart(Long id){
         return (Counterpart) sqlSession().selectOne("selectCounterpart", id);
     }
@@ -51,8 +47,6 @@ public class CounterpartBean extends AbstractBean{
     }
 
     public void save(Counterpart counterpart) {
-        fioBean.createFIO(counterpart.getFirstName(), counterpart.getMiddleName(), counterpart.getLastName());
-
         if (counterpart.getId() == null){
             sqlSession().insert("insertCounterpart", counterpart);
         }else{
