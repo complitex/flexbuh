@@ -88,7 +88,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
                             documentVersion.setEndDate(DateUtil.newDate(31, 11, 2099));
                         }
 
-                        if (documentVersion == null
+                        if (!declarationService.checkPeriod(declaration) || documentVersion == null
                                 || periodDate.before(documentVersion.getBeginDate())
                                 || periodDate.after(documentVersion.getEndDate())){
                             error(getStringFormat("error_period_date", declaration.getTemplateName(),

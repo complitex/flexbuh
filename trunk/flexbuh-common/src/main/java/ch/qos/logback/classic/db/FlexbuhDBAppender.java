@@ -10,8 +10,6 @@ import java.util.Map;
  *         Date: 03.11.11 15:52
  */
 public class FlexbuhDBAppender extends DBAppender {
-	private static final String ROOT_PACKAGE = "org.complitex.flexbuh";
-
 	@Override
 	Map<String, String> mergePropertyMaps(ILoggingEvent event) {
 		Map<String, String> result = super.mergePropertyMaps(event);

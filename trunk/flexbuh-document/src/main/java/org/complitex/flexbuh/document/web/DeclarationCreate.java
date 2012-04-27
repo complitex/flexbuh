@@ -50,7 +50,7 @@ public class DeclarationCreate extends FormTemplatePage{
         //Default date
         int month = DateUtil.getCurrentMonth() + (DateUtil.getCurrentDay() < 20 ? 0 : 1);
         int year = DateUtil.getCurrentYear();
-                
+
         declaration.getHead().setPeriodMonth(month > 0 ? month : 1);
         declaration.getHead().setPeriodYear(month > 0 ? year : year - 1);
 
@@ -69,7 +69,7 @@ public class DeclarationCreate extends FormTemplatePage{
                 : PersonType.JURIDICAL_PERSON);
 
         final DropDownChoice<PersonType> person = new DropDownChoice<>("person", personModel,
-                Arrays.asList(PersonType.JURIDICAL_PERSON, PersonType.PHYSICAL_PERSON),
+                Arrays.asList(PersonType.values()),
                 new IChoiceRenderer<PersonType>() {
                     @Override
                     public Object getDisplayValue(PersonType object) {
@@ -87,7 +87,7 @@ public class DeclarationCreate extends FormTemplatePage{
 
         //Профиль
         declaration.setPersonProfile(selectedPersonProfile);
-        
+
         final DropDownChoice<PersonProfile> personProfile = new DropDownChoice<>("person_profile",
                 new PropertyModel<PersonProfile>(declaration, "personProfile"),
                 new LoadableDetachableModel<List<PersonProfile>>() {
@@ -119,13 +119,11 @@ public class DeclarationCreate extends FormTemplatePage{
                     @Override
                     protected List<Document> load() {
                         switch (person.getModelObject()) {
-                            case JURIDICAL_PERSON:
-                                return documentBean.getJuridicalDocuments();
                             case PHYSICAL_PERSON:
                                 return documentBean.getPhysicalDocuments();
+                            default:
+                                return documentBean.getJuridicalDocuments();
                         }
-
-                        return null;
                     }
                 },
                 new IChoiceRenderer<Document>() {
@@ -184,6 +182,13 @@ public class DeclarationCreate extends FormTemplatePage{
 
                 if (declaration.getHead().getCDocVer() == null) {
                     error(getStringFormat("error_not_version", declaration.getShortName()));
+
+                    return;
+                }
+
+                //check period
+                if (!declarationService.checkPeriod(declaration)){
+                    error(getStringFormat("error_check_period", declaration.getShortName()));
 
                     return;
                 }
