@@ -1,7 +1,6 @@
 package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.SessionObject;
-import org.complitex.flexbuh.common.util.FIOUtil;
 
 import javax.xml.bind.annotation.*;
 
@@ -19,9 +18,7 @@ public class Counterpart extends SessionObject {
 
     private Integer num;
     private String hk;
-    private String lastName;
-    private String firstName;
-    private String middleName;
+    private String hname;
     private String hloc;
     private String htel;
     private String hnspdv;
@@ -62,13 +59,11 @@ public class Counterpart extends SessionObject {
 
     @XmlElement(name = "HNAME")
     public String getHname() {
-        return FIOUtil.getFIO(lastName, firstName, middleName);
+        return hname;
     }
 
     public void setHname(String hname) {
-        lastName = FIOUtil.getLastName(hname);
-        firstName = FIOUtil.getFirstName(hname);
-        middleName = FIOUtil.getMiddleName(hname);
+        this.hname = hname;
     }
 
     @XmlElement(name = "HLOC")
@@ -96,32 +91,5 @@ public class Counterpart extends SessionObject {
 
     public void setHnspdv(String hnspdv) {
         this.hnspdv = hnspdv;
-    }
-
-    @XmlTransient
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    @XmlTransient
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    @XmlTransient
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
     }
 }
