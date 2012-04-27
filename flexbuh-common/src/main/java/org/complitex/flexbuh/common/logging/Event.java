@@ -19,7 +19,7 @@ public class Event implements Serializable {
     public Event(EventCategory category, ILongId oldObject, ILongId newObject){
         map.put(CATEGORY, category.name());
 
-        ILongId object = newObject != null ? newObject : oldObject != null ?oldObject : null;
+        ILongId object = newObject != null ? newObject : oldObject != null ? oldObject : null;
 
         if (object != null) {
             map.put(MODEL_CLASS, object.getClass().getName());

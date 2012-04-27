@@ -36,6 +36,8 @@ public abstract class ServletAuthWebApplication extends WebApplication
         super.init();
         getSecuritySettings().setAuthorizationStrategy(new RoleAuthorizationStrategy(this));
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(this);
+
+        getRequestCycleListeners().add(new RequestCycleListener());
     }
 
     @Override

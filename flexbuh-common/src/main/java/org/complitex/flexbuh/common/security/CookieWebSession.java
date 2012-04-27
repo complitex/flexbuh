@@ -12,7 +12,6 @@ import org.complitex.flexbuh.common.service.user.SessionBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.util.EjbUtil;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import javax.servlet.http.Cookie;
 import java.security.MessageDigest;
@@ -36,9 +35,6 @@ public class CookieWebSession extends WebSession {
     public CookieWebSession(Request request, String login) {
         super(request);
         this.login = login;
-
-        MDC.put("LOGIN", login);
-        MDC.put("SESSION_ID", login);
     }
 
     public Long getSessionId() {

@@ -2,9 +2,11 @@ package org.complitex.flexbuh.document.service;
 
 import org.apache.fop.apps.Driver;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.dictionary.DocumentTerm;
 import org.complitex.flexbuh.common.entity.template.TemplateXML;
 import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.service.TemplateXMLBean;
+import org.complitex.flexbuh.common.service.dictionary.DocumentTermBean;
 import org.complitex.flexbuh.common.util.ZipUtil;
 import org.complitex.flexbuh.document.entity.*;
 import org.complitex.flexbuh.document.exception.CreateDocumentException;
@@ -61,6 +63,9 @@ public class DeclarationService {
 
     @EJB
     private RuleService ruleService;
+
+    @EJB
+    private DocumentTermBean documentTermBean;
 
     public String getString(Declaration declaration, String encoding, boolean validate) throws DeclarationParseException {
         try {
@@ -405,5 +410,19 @@ public class DeclarationService {
         }
 
         return declaration;
+    }
+
+    public boolean checkPeriod(Declaration declaration){
+        DeclarationHead head = declaration.getHead();
+
+        DocumentTerm documentTerm = new DocumentTerm();
+        documentTerm.setCDoc(head.getCDoc());
+        documentTerm.setCDocSub(head.getCDocSub());
+        documentTerm.setCDocVer(head.getCDocVer());
+        documentTerm.setPeriodMonth(head.getPeriodMonth());
+        documentTerm.setPeriodType(head.getPeriodType());
+        documentTerm.setPeriodYear(head.getPeriodYear());
+
+        return documentTermBean.getId(documentTerm) != null;
     }
 }
