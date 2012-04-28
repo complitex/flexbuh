@@ -659,10 +659,11 @@ public class UserEdit extends FormTemplatePage {
             if (userBean.isPersonalManager(user)) {
                 organizationBaseBean.editUserOrganizationList(userOrganizations, user);
             }
+
             if (createUser) {
-                log.info("Создание пользователя", new Event(EventCategory.CREATE, user));
+                log.info("Создание пользователя", new Event(EventCategory.CREATE, oldUser, user));
             } else {
-                log.info("Редактирование пользователя", new Event(EventCategory.EDIT, user));
+                log.info("Редактирование пользователя", new Event(EventCategory.EDIT, oldUser, user));
             }
 
             info(getString("user_saved"));
