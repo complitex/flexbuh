@@ -1,9 +1,7 @@
-<configuration debug="true" scan="true" scanPeriod="30 seconds">
-
-    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+<configuration debug="true">
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
     <appender name="DB" class="ch.qos.logback.classic.db.FlexbuhDBAppender">
-        <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
@@ -13,45 +11,55 @@
         </connectionSource>
     </appender>
 
-    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="FLEXBUH_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
         <file>/tmp/flexbuh/log.txt</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>log-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <!-- or whenever the file size reaches 100MB -->
+            <fileNamePattern>/tmp/flexbuh/log-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
-            <pattern>%d %-5level %logger - %msg%n</pattern>
+            <pattern>%d %-5level %X{SESSION_ID} %X{LOGIN} %logger - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="FLEXBUH_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <file>/tmp/flexbuh/log_debug.txt</file>
+            <fileNamePattern>/tmp/flexbuh/log_debug-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
+            <pattern>%d %-5level %X{SESSION_ID} %X{LOGIN} %logger - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="info">
-        <appender-ref ref="STDOUT" />
+    <appender name="STDOUT_INFO" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%n%d %-5level %X{SESSION_ID} %X{LOGIN} %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FLEXBUH_INFO"/>
+        <appender-ref ref="STDOUT_INFO"/>
     </root>
 
     <logger name="org.complitex.flexbuh">
-        <appender-ref ref="DB" />
+        <appender-ref ref="DB"/>
     </logger>
 
-    <root level="INFO">
-        <appender-ref ref="ROLLING"/>
-    </root>
-
-    <!--<logger name="java.sql">
-        <level value="debug" />
+    <logger name="org.complitex.flexbuh" level="DEBUG">
+        <appender-ref ref="FLEXBUH_DEBUG"/>
     </logger>
-
-    <logger name="org.apache.ibatis">
-        <level value="debug" />
-    </logger>-->
 </configuration>
