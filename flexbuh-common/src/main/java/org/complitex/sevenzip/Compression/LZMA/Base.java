@@ -1,6 +1,6 @@
 // Base.java
 
-package SevenZip.Compression.LZMA;
+package org.complitex.sevenzip.Compression.LZMA;
 
 public class Base
 {

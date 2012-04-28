@@ -1,4 +1,4 @@
-package SevenZip.Compression.RangeCoder;
+package org.complitex.sevenzip.Compression.RangeCoder;
 import java.io.IOException;
 
 public class BitTreeEncoder
@@ -14,7 +14,7 @@ public class BitTreeEncoder
 	
 	public void Init()
 	{
-		Decoder.InitBitModels(Models);
+        org.complitex.sevenzip.Compression.RangeCoder.Decoder.InitBitModels(Models);
 	}
 	
 	public void Encode(Encoder rangeEncoder, int symbol) throws IOException

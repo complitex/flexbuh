@@ -1,4 +1,4 @@
-package SevenZip;
+package org.complitex.sevenzip;
 
 public interface ICodeProgress
 {

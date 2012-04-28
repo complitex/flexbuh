@@ -13,6 +13,7 @@ import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.complitex.flexbuh.document.exception.DeclarationParseException;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
+import org.complitex.sevenzip.Compression.LZMA.Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -239,7 +240,7 @@ public class DeclarationService {
             throw new Exception("input .lzma file is too short");
         }
 
-        SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+        Decoder decoder = new Decoder();
 
         if (!decoder.SetDecoderProperties(properties)){
             throw new Exception("Incorrect stream properties");

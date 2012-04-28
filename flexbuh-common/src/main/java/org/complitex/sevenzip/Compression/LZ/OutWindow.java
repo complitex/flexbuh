@@ -1,6 +1,6 @@
 // LZ.OutWindow
 
-package SevenZip.Compression.LZ;
+package org.complitex.sevenzip.Compression.LZ;
 
 import java.io.IOException;
 

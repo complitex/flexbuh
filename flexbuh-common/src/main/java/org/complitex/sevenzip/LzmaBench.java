@@ -1,4 +1,4 @@
-package SevenZip;
+package org.complitex.sevenzip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -299,8 +299,8 @@ public class LzmaBench
 		}
 		System.out.print("\n       Compressing                Decompressing\n\n");
 		
-		SevenZip.Compression.LZMA.Encoder encoder = new SevenZip.Compression.LZMA.Encoder();
-		SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+        org.complitex.sevenzip.Compression.LZMA.Encoder encoder = new org.complitex.sevenzip.Compression.LZMA.Encoder();
+        org.complitex.sevenzip.Compression.LZMA.Decoder decoder = new org.complitex.sevenzip.Compression.LZMA.Decoder();
 		
 		if (!encoder.SetDictionarySize(dictionarySize))
 			throw new Exception("Incorrect dictionary size");
