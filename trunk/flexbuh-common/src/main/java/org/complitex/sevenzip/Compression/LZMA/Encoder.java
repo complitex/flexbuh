@@ -1,7 +1,7 @@
-package SevenZip.Compression.LZMA;
+package org.complitex.sevenzip.Compression.LZMA;
 
-import SevenZip.Compression.RangeCoder.BitTreeEncoder;
-import SevenZip.ICodeProgress;
+import org.complitex.sevenzip.Compression.RangeCoder.BitTreeEncoder;
+import org.complitex.sevenzip.ICodeProgress;
 
 import java.io.IOException;
 
@@ -70,11 +70,11 @@ public class Encoder
 		{
 			short[] m_Encoders = new short[0x300];
 
-			public void Init() { SevenZip.Compression.RangeCoder.Encoder.InitBitModels(m_Encoders); }
+			public void Init() { org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(m_Encoders); }
 
 
 
-			public void Encode(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, byte symbol) throws IOException
+			public void Encode(org.complitex.sevenzip.Compression.RangeCoder.Encoder rangeEncoder, byte symbol) throws IOException
 			{
 				int context = 1;
 				for (int i = 7; i >= 0; i--)
@@ -85,7 +85,7 @@ public class Encoder
 				}
 			}
 
-			public void EncodeMatched(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, byte matchByte, byte symbol) throws IOException
+			public void EncodeMatched(org.complitex.sevenzip.Compression.RangeCoder.Encoder rangeEncoder, byte matchByte, byte symbol) throws IOException
 			{
 				int context = 1;
 				boolean same = true;
@@ -115,7 +115,7 @@ public class Encoder
 					{
 						int matchBit = (matchByte >> i) & 1;
 						int bit = (symbol >> i) & 1;
-						price += SevenZip.Compression.RangeCoder.Encoder.GetPrice(m_Encoders[((1 + matchBit) << 8) + context], bit);
+						price += org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice(m_Encoders[((1 + matchBit) << 8) + context], bit);
 						context = (context << 1) | bit;
 						if (matchBit != bit)
 						{
@@ -127,7 +127,7 @@ public class Encoder
 				for (; i >= 0; i--)
 				{
 					int bit = (symbol >> i) & 1;
-					price += SevenZip.Compression.RangeCoder.Encoder.GetPrice(m_Encoders[context], bit);
+					price += org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice(m_Encoders[context], bit);
 					context = (context << 1) | bit;
 				}
 				return price;
@@ -182,7 +182,7 @@ public class Encoder
 
 		public void Init(int numPosStates)
 		{
-			SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_choice);
+            org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_choice);
 
 			for (int posState = 0; posState < numPosStates; posState++)
 			{
@@ -192,7 +192,7 @@ public class Encoder
 			_highCoder.Init();
 		}
 
-		public void Encode(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, int symbol, int posState) throws IOException
+		public void Encode(org.complitex.sevenzip.Compression.RangeCoder.Encoder rangeEncoder, int symbol, int posState) throws IOException
 		{
 			if (symbol < Base.kNumLowLenSymbols)
 			{
@@ -218,10 +218,10 @@ public class Encoder
 
 		public void SetPrices(int posState, int numSymbols, int[] prices, int st)
 		{
-			int a0 = SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_choice[0]);
-			int a1 = SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_choice[0]);
-			int b0 = a1 + SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_choice[1]);
-			int b1 = a1 + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_choice[1]);
+			int a0 = org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_choice[0]);
+			int a1 = org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_choice[0]);
+			int b0 = a1 + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_choice[1]);
+			int b1 = a1 + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_choice[1]);
 			int i = 0;
 			for (i = 0; i < Base.kNumLowLenSymbols; i++)
 			{
@@ -267,7 +267,7 @@ public class Encoder
 				UpdateTable(posState);
 		}
 
-		public void Encode(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, int symbol, int posState) throws IOException
+		public void Encode(org.complitex.sevenzip.Compression.RangeCoder.Encoder rangeEncoder, int symbol, int posState) throws IOException
 		{
 			super.Encode(rangeEncoder, symbol, posState);
 			if (--_counters[posState] == 0)
@@ -300,8 +300,8 @@ public class Encoder
 		public boolean IsShortRep() { return (BackPrev == 0); }
 	};
 	Optimal[] _optimum = new Optimal[kNumOpts];
-	SevenZip.Compression.LZ.BinTree _matchFinder = null;
-	SevenZip.Compression.RangeCoder.Encoder _rangeEncoder = new SevenZip.Compression.RangeCoder.Encoder();
+    org.complitex.sevenzip.Compression.LZ.BinTree _matchFinder = null;
+    org.complitex.sevenzip.Compression.RangeCoder.Encoder _rangeEncoder = new org.complitex.sevenzip.Compression.RangeCoder.Encoder();
 
 	short[] _isMatch = new short[Base.kNumStates<<Base.kNumPosStatesBitsMax];
 	short[] _isRep = new short[Base.kNumStates];
@@ -362,7 +362,7 @@ public class Encoder
 	{
 		if (_matchFinder == null)
 		{
-			SevenZip.Compression.LZ.BinTree bt = new SevenZip.Compression.LZ.BinTree();
+            org.complitex.sevenzip.Compression.LZ.BinTree bt = new org.complitex.sevenzip.Compression.LZ.BinTree();
 			int numHashBytes = 4;
 			if (_matchFinderType == EMatchFinderTypeBT2)
 				numHashBytes = 2;
@@ -396,13 +396,13 @@ public class Encoder
 		BaseInit();
 		_rangeEncoder.Init();
 
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_isMatch);
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_isRep0Long);
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_isRep);
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_isRepG0);
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_isRepG1);
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_isRepG2);
-		SevenZip.Compression.RangeCoder.Encoder.InitBitModels(_posEncoders);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_isMatch);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_isRep0Long);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_isRep);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_isRepG0);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_isRepG1);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_isRepG2);
+        org.complitex.sevenzip.Compression.RangeCoder.Encoder.InitBitModels(_posEncoders);
 
 
 
@@ -453,8 +453,8 @@ public class Encoder
 
 	int GetRepLen1Price(int state, int posState)
 	{
-		return SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isRepG0[state]) +
-				SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isRep0Long[(state << Base.kNumPosStatesBitsMax) + posState]);
+		return org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isRepG0[state]) +
+                org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isRep0Long[(state << Base.kNumPosStatesBitsMax) + posState]);
 	}
 
 	int GetPureRepPrice(int repIndex, int state, int posState)
@@ -462,18 +462,18 @@ public class Encoder
 		int price;
 		if (repIndex == 0)
 		{
-			price = SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isRepG0[state]);
-			price += SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRep0Long[(state << Base.kNumPosStatesBitsMax) + posState]);
+			price = org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isRepG0[state]);
+			price += org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRep0Long[(state << Base.kNumPosStatesBitsMax) + posState]);
 		}
 		else
 		{
-			price = SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRepG0[state]);
+			price = org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRepG0[state]);
 			if (repIndex == 1)
-				price += SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isRepG1[state]);
+				price += org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isRepG1[state]);
 			else
 			{
-				price += SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRepG1[state]);
-				price += SevenZip.Compression.RangeCoder.Encoder.GetPrice(_isRepG2[state], repIndex - 2);
+				price += org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRepG1[state]);
+				price += org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice(_isRepG2[state], repIndex - 2);
 			}
 		}
 		return price;
@@ -604,12 +604,12 @@ public class Encoder
 
 		int posState = (position & _posStateMask);
 
-		_optimum[1].Price = SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(_state << Base.kNumPosStatesBitsMax) + posState]) +
+		_optimum[1].Price = org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(_state << Base.kNumPosStatesBitsMax) + posState]) +
 				_literalEncoder.GetSubCoder(position, _previousByte).GetPrice(!Base.StateIsCharState(_state), matchByte, currentByte);
 		_optimum[1].MakeAsChar();
 
-		int matchPrice = SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(_state << Base.kNumPosStatesBitsMax) + posState]);
-		int repMatchPrice = matchPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[_state]);
+		int matchPrice = org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(_state << Base.kNumPosStatesBitsMax) + posState]);
+		int repMatchPrice = matchPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[_state]);
 
 		if (matchByte == currentByte)
 		{
@@ -662,7 +662,7 @@ public class Encoder
 			while (--repLen >= 2);
 		}
 
-		int normalMatchPrice = matchPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isRep[_state]);
+		int normalMatchPrice = matchPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isRep[_state]);
 
 		len = ((repLens[0] >= 2) ? repLens[0] + 1 : 2);
 		if (len <= lenMain)
@@ -804,7 +804,7 @@ public class Encoder
 			posState = (position & _posStateMask);
 
 			int curAnd1Price = curPrice +
-				SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(state << Base.kNumPosStatesBitsMax) + posState]) +
+                    org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(state << Base.kNumPosStatesBitsMax) + posState]) +
 				_literalEncoder.GetSubCoder(position, _matchFinder.GetIndexByte(0 - 2)).
 				GetPrice(!Base.StateIsCharState(state), matchByte, currentByte);
 
@@ -819,8 +819,8 @@ public class Encoder
 				nextIsChar = true;
 			}
 
-			matchPrice = curPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state << Base.kNumPosStatesBitsMax) + posState]);
-			repMatchPrice = matchPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state]);
+			matchPrice = curPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state << Base.kNumPosStatesBitsMax) + posState]);
+			repMatchPrice = matchPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state]);
 
 			if (matchByte == currentByte &&
 				!(nextOptimum.PosPrev < cur && nextOptimum.BackPrev == 0))
@@ -854,8 +854,8 @@ public class Encoder
 
 					int posStateNext = (position + 1) & _posStateMask;
 					int nextRepMatchPrice = curAnd1Price +
-						SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]) +
-						SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state2]);
+                            org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]) +
+                            org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state2]);
 					{
 						int offset = cur + 1 + lenTest2;
 						while (lenEnd < offset)
@@ -915,15 +915,15 @@ public class Encoder
 						int posStateNext = (position + lenTest) & _posStateMask;
 						int curAndLenCharPrice =
 								repMatchPrice + GetRepPrice(repIndex, lenTest, state, posState) +
-								SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]) +
+                                        org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]) +
 								_literalEncoder.GetSubCoder(position + lenTest,
 								_matchFinder.GetIndexByte(lenTest - 1 - 1)).GetPrice(true,
 								_matchFinder.GetIndexByte(lenTest - 1 - (reps[repIndex] + 1)),
 								_matchFinder.GetIndexByte(lenTest - 1));
 						state2 = Base.StateUpdateChar(state2);
 						posStateNext = (position + lenTest + 1) & _posStateMask;
-						int nextMatchPrice = curAndLenCharPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]);
-						int nextRepMatchPrice = nextMatchPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state2]);
+						int nextMatchPrice = curAndLenCharPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]);
+						int nextRepMatchPrice = nextMatchPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state2]);
 
 						// for(; lenTest2 >= 2; lenTest2--)
 						{
@@ -956,7 +956,7 @@ public class Encoder
 			}
 			if (newLen >= startLen)
 			{
-				normalMatchPrice = matchPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isRep[state]);
+				normalMatchPrice = matchPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isRep[state]);
 				while (lenEnd < cur + newLen)
 					_optimum[++lenEnd].Price = kIfinityPrice;
 
@@ -989,7 +989,7 @@ public class Encoder
 
 								int posStateNext = (position + lenTest) & _posStateMask;
 								int curAndLenCharPrice = curAndLenPrice +
-									SevenZip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]) +
+                                        org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice0(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]) +
 									_literalEncoder.GetSubCoder(position + lenTest,
 									_matchFinder.GetIndexByte(lenTest - 1 - 1)).
 									GetPrice(true,
@@ -997,8 +997,8 @@ public class Encoder
 									_matchFinder.GetIndexByte(lenTest - 1));
 								state2 = Base.StateUpdateChar(state2);
 								posStateNext = (position + lenTest + 1) & _posStateMask;
-								int nextMatchPrice = curAndLenCharPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]);
-								int nextRepMatchPrice = nextMatchPrice + SevenZip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state2]);
+								int nextMatchPrice = curAndLenCharPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isMatch[(state2 << Base.kNumPosStatesBitsMax) + posStateNext]);
+								int nextRepMatchPrice = nextMatchPrice + org.complitex.sevenzip.Compression.RangeCoder.Encoder.GetPrice1(_isRep[state2]);
 
 								int offset = lenTest + 1 + lenTest2;
 								while (lenEnd < cur + offset)
@@ -1330,7 +1330,7 @@ public class Encoder
 			for (posSlot = 0; posSlot < _distTableSize; posSlot++)
 				_posSlotPrices[st + posSlot] = encoder.GetPrice(posSlot);
 			for (posSlot = Base.kEndPosModelIndex; posSlot < _distTableSize; posSlot++)
-				_posSlotPrices[st + posSlot] += ((((posSlot >> 1) - 1) - Base.kNumAlignBits) << SevenZip.Compression.RangeCoder.Encoder.kNumBitPriceShiftBits);
+				_posSlotPrices[st + posSlot] += ((((posSlot >> 1) - 1) - Base.kNumAlignBits) << org.complitex.sevenzip.Compression.RangeCoder.Encoder.kNumBitPriceShiftBits);
 
 			int st2 = lenToPosState * Base.kNumFullDistances;
 			int i;

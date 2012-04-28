@@ -1,4 +1,5 @@
-package SevenZip.Compression.RangeCoder;
+package org.complitex.sevenzip.Compression.RangeCoder;
+
 import java.io.IOException;
 
 public class Decoder

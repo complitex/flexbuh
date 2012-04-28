@@ -1,10 +1,10 @@
 // LZ.BinTree
 
-package SevenZip.Compression.LZ;
+package org.complitex.sevenzip.Compression.LZ;
 import java.io.IOException;
 
 
-public class BinTree extends InWindow
+public class BinTree extends org.complitex.sevenzip.Compression.LZ.InWindow
 {
 	int _cyclicBufferPos;
 	int _cyclicBufferSize = 0;

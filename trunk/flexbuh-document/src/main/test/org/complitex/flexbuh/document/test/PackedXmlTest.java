@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.document.test;
 
+import org.complitex.sevenzip.Compression.LZMA.Decoder;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -49,7 +51,7 @@ public class PackedXmlTest {
         byte[] properties = new byte[propertiesSize];
         if (inStream.read(properties, 0, propertiesSize) != propertiesSize)
             throw new Exception("input .lzma file is too short");
-        SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+        Decoder decoder = new Decoder();
         if (!decoder.SetDecoderProperties(properties))
             throw new Exception("Incorrect stream properties");
         long outSize = 0;
