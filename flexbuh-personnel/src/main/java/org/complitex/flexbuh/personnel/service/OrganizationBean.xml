@@ -207,4 +207,27 @@
         (select max(`version`) from `organization` where `id` = #{id})
     </select>
 
+    <select id="selectOrganizationPreviewInHistoryByField" parameterType="map" resultMap="organizationResultMap">
+        select * from `organization` where `id` = #{id} and `version` = (select max(o1.`version`) from `organization` o1
+        inner join `organization` o2 on o1.`id` = o2.`id`
+            where o1.id = #{id} and
+            (o1.`version` = o2.`version` + 1 and
+             (o1.`${fieldName}` != o2.`${fieldName}` or o1.`${fieldName}` is null and o2.`${fieldName}` is not null or
+              o1.`${fieldName}` is not null and o2.`${fieldName}` is null) or (o1.`version` = 1 and o2.`version` = 1))
+              and #{version} > o1.`version`)
+        order by `version`
+    </select>
+
+    <select id="selectOrganizationNextInHistoryByField" parameterType="map" resultMap="organizationResultMap">
+        select * from `organization` where `id` = #{id} and `version` = (select min(o1.`version`) from `organization` o1
+        inner join `organization` o2 on o1.`id` = o2.`id`
+            where o1.id = #{id} and
+            (o1.`version` = o2.`version` + 1 and
+             (o1.`${fieldName}` != o2.`${fieldName}` or o1.`${fieldName}` is null and o2.`${fieldName}` is not null or
+              o1.`${fieldName}` is not null and o2.`${fieldName}` is null or
+              o1.`deleted` or o1.`completion_date` is null))
+            and o1.`version` > #{version})
+        order by `version`
+    </select>
+
 </mapper>
