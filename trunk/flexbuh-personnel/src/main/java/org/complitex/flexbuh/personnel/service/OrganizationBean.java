@@ -72,7 +72,7 @@ public class OrganizationBean extends AbstractBean {
         params.put("id", id);
         params.put("currentDate", new Date());
 
-        return (Organization) sqlSession().selectOne(NS + ".selectCurrentOrganizationById", params);
+        return sqlSession().selectOne(NS + ".selectCurrentOrganizationById", params);
     }
 
     public Organization getOrganization(long id, long version) {
@@ -80,7 +80,7 @@ public class OrganizationBean extends AbstractBean {
         params.put("id", id);
         params.put("version", version);
 
-        return (Organization) sqlSession().selectOne(NS + ".selectOrganizationByIdAndVersion", params);
+        return sqlSession().selectOne(NS + ".selectOrganizationByIdAndVersion", params);
     }
 
     public List<Organization> getOrganizations(OrganizationFilter filter) {
@@ -96,7 +96,7 @@ public class OrganizationBean extends AbstractBean {
         params.put("filter", filter);
         params.put("currentDate", new Date());
 
-        return (Integer)sqlSession().selectOne(NS + ".selectCurrentOrganizationsCount", params);
+        return sqlSession().selectOne(NS + ".selectCurrentOrganizationsCount", params);
     }
 
     public List<Organization> getOrganizationHistory(Long id, TemporalDomainObjectHistoryFilter filter) {
@@ -112,11 +112,29 @@ public class OrganizationBean extends AbstractBean {
         params.put("id", id);
         params.put("filter", filter);
 
-        return (Integer)sqlSession().selectOne(NS + ".selectOrganizationHistoryCount", params);
+        return sqlSession().selectOne(NS + ".selectOrganizationHistoryCount", params);
     }
 
     public Organization getOrganizationLastInHistory(Long id) {
         return sqlSession().selectOne(NS + ".selectOrganizationLastInHistory", id);
+    }
+
+    public Organization getOrganizationPreviewInHistoryByField(Long id, Long version, String fieldName) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("version", version);
+        params.put("fieldName", fieldName);
+
+        return sqlSession().selectOne(NS + ".selectOrganizationPreviewInHistoryByField", params);
+    }
+
+    public Organization getOrganizationNextInHistoryByField(Long id, Long version, String fieldName) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("version", version);
+        params.put("fieldName", fieldName);
+
+        return sqlSession().selectOne(NS + ".selectOrganizationNextInHistoryByField", params);
     }
 
 }

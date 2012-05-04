@@ -715,16 +715,19 @@ div.wicket-aa ul li.selected {
 }
 
 #history_buttons {
-    display: inline-block;
-    margin-left: 40%;
-    margin-top: 18px;
+    display: table-cell;
     bottom: 0;
     background-color: #E0E4E9;
     border-radius: 11px;
-    padding-top: 1px;
 }
 
-#history_buttons table.center {
-    margin-left: auto;
-    margin-right: auto;
+.history_buttons_page_center {
+    margin-left: 40%;
+    margin-top: 18px;
+}
+
+.history_buttons_field_center {
+    float: left;
+    margin-top: -6px;
+    height: 25px;
 }

@@ -3,8 +3,11 @@ package org.complitex.flexbuh.personnel.web.component;
 import com.google.common.collect.Maps;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -57,6 +60,7 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
 
     public TemporalHistoryPanel(String id, T currentObject, TemporalDomainObjectUpdate<T> update) {
         super(id);
+        update.addToUpdate(this);
         initProperties(currentObject);
 
         historyButtonsContainer = new WebMarkupContainer("historyButtonsContainer");
@@ -80,6 +84,23 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
         historyButtonsContainer.add(endHistoryButton);
     }
 
+    public void internalPrepareForUpdate(TemporalDomainObjectUpdate<T> update) {
+
+        T object = update.getObject();
+
+        initProperties(object);
+
+        entryIntoForceDate.setObject(HISTORY_DATE_FORMAT.format(object.getEntryIntoForceDate()));
+
+        updateState(start, HTML_CLASSES.get(HISTORY_START_BUTTON), startHistoryButton);
+
+        updateState(previous, HTML_CLASSES.get(HISTORY_BACK_BUTTON), backHistoryButton);
+
+        updateState(next, HTML_CLASSES.get(HISTORY_FORWARD_BUTTON), forwardHistoryButton);
+
+        updateState(end, HTML_CLASSES.get(HISTORY_END_BUTTON), endHistoryButton);
+    }
+
     private void initProperties(T currentObject) {
         start = getStartModification(currentObject);
         previous = getPreviousModification(currentObject);
@@ -99,17 +120,8 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
 
                 if (object != null) {
                     update.setObject(object);
-                    initProperties(object);
 
-                    entryIntoForceDate.setObject(HISTORY_DATE_FORMAT.format(object.getEntryIntoForceDate()));
-
-                    updateState(start, HTML_CLASSES.get(HISTORY_START_BUTTON), startHistoryButton);
-
-                    updateState(previous, HTML_CLASSES.get(HISTORY_BACK_BUTTON), backHistoryButton);
-
-                    updateState(next, HTML_CLASSES.get(HISTORY_FORWARD_BUTTON), forwardHistoryButton);
-
-                    updateState(end, HTML_CLASSES.get(HISTORY_END_BUTTON), endHistoryButton);
+                    internalPrepareForUpdate(update);
 
                     target.add(historyButtonsContainer);
 
@@ -144,29 +156,30 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
 
     private T getPreviousModification(T object) {
         return object.getId() != null && object.getVersion() != null && object.getVersion() > 1?
-                getTemporalDomainObject(object.getId(), object.getVersion() - 1): null;
+                getTemporalDomainObjectPreviousInHistory(object): null;
     }
 
     private T getNextModification(T object) {
         return object.getId() != null && object.getVersion() != null && object.getCompletionDate() != null?
-                getTemporalDomainObject(object.getId(), object.getVersion() + 1): null;
+                getTemporalDomainObjectNextInHistory(object): null;
     }
 
     private T getStartModification(T object) {
         return object.getId() != null && object.getVersion() != null && object.getVersion() != 1?
-                getTemporalDomainObject(object.getId(), 1): null;
+                getTemporalDomainObjectStartInHistory(object): null;
     }
 
     private T getEndModification(T object) {
         if (object.getId() != null && object.getVersion() != null &&
                 (object.getVersion() != 1 || object.getCompletionDate() != null)) {
-            T endOrganization = getTemporalDomainObjectLastInHistory(object.getId());
-            return endOrganization.getVersion().equals(object.getVersion()) ? null: endOrganization;
+            T endOrganization = getTemporalDomainObjectLastInHistory(object);
+            return endOrganization.getVersion() > object.getVersion() ? endOrganization: null;
         }
         return null;
     }
 
-    protected abstract T getTemporalDomainObject(long id, long version);
-
-    protected abstract T getTemporalDomainObjectLastInHistory(long id);
+    protected abstract T getTemporalDomainObjectPreviousInHistory(T object);
+    protected abstract T getTemporalDomainObjectNextInHistory(T object);
+    protected abstract T getTemporalDomainObjectStartInHistory(T object);
+    protected abstract T getTemporalDomainObjectLastInHistory(T object);
 }

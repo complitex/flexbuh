@@ -1,10 +1,12 @@
 package org.complitex.flexbuh.personnel.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -27,10 +29,7 @@ import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
-import org.complitex.flexbuh.personnel.web.component.DepartmentTreePanel;
-import org.complitex.flexbuh.personnel.web.component.OrganizationTypeAutoCompleteTextField;
-import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryPanel;
+import org.complitex.flexbuh.personnel.web.component.*;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.slf4j.Logger;
@@ -76,6 +75,12 @@ public class OrganizationEdit extends FormTemplatePage {
     private FeedbackPanel messagesPanel;
 
     private UpdatedAjaxBehavior updatedAjaxBehavior;
+
+    private TemporalHistoryIncrementalPanel<Organization> organizationHistoryPanel;
+
+    private TemporalDomainObjectUpdate<Organization> historyUpdate;
+
+    private TemporalHistoryPanel<Organization> currentEnabledPanel;
 
     protected OrganizationEdit() {
         organization = new Organization();
@@ -135,55 +140,6 @@ public class OrganizationEdit extends FormTemplatePage {
         updatedAjaxBehavior = new UpdatedAjaxBehavior();
         form.add(updatedAjaxBehavior);
 
-        add(form);
-
-        // Тип организации
-        form.add(new OrganizationTypeAutoCompleteTextField("type"));
-
-        // Название организации
-        form.add(new TextField<>("name").add(new AjaxEventBehavior("onmouseover") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                // TODO history panel here
-            }
-        }));
-
-        // Телефон
-        form.add(new TextField<String>("phone") {
-            @Override
-            public <String> IConverter<String> getConverter(final Class<String> type) {
-                return super.getConverter(type);
-                // US telephone number mask
-//                return new MaskConverter<>(PHONE_MASK);
-            }
-        });
-
-        // Факс
-        form.add(new TextField<String>("fax") {
-            @Override
-            public <String> IConverter<String> getConverter(final Class<String> type) {
-                return super.getConverter(type);
-                // US telephone number mask
-//                return new MaskConverter<>(PHONE_MASK);
-            }
-        });
-
-        form.add(new TextField<>("email"));
-
-        form.add(new TextField<>("httpAddress"));
-
-        // Дата создания организации
-		/*final DatePicker<Date> birthdayPicker = new DatePicker<Date>("entryIntoForceDate",
-                Date.class) {
-
-            @Override
-			public <Date> IConverter<Date> getConverter(Class<Date> type) {
-				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
-			}
-        };
-        birthdayPicker.setDateFormat("dd.mm.yy");
-		form.add(birthdayPicker);
-		*/
-
         // Departments
         final DepartmentTreePanel panel = new DepartmentTreePanel("departments", organization);
         if (organization.getId() == null) {
@@ -208,7 +164,7 @@ public class OrganizationEdit extends FormTemplatePage {
                 new CompoundPropertyModel<>(organization.getPhysicalAddress()), physicalCityModel, physicalStreetModel);
         physicalAddress.add(physicalAddressPanel);
 
-        // User home address
+        // Organization juridical address
 
         final ClickAjaxBehavior juridicalClickBehavior = new ClickAjaxBehavior(false);
 
@@ -223,6 +179,79 @@ public class OrganizationEdit extends FormTemplatePage {
         final AddressPanel juridicalAddressPanel = new AddressPanel("juridical_address_fields",
                 new CompoundPropertyModel<>(organization.getJuridicalAddress()), juridicalCityModel, juridicalStreetModel);
         juridicalAddress.add(juridicalAddressPanel);
+
+        historyUpdate = new TemporalDomainObjectUpdate<Organization>() {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                super.onUpdate(target);
+
+                organization = getObject();
+                //form.setModelObject(organization);
+                form.setModel(new CompoundPropertyModel<>(organization));
+                physicalAddressPanel.updateModel(new CompoundPropertyModel<>(organization.getPhysicalAddress()),
+                        physicalCityModel, physicalStreetModel);
+                juridicalAddressPanel.updateModel(new CompoundPropertyModel<>(organization.getJuridicalAddress()),
+                        juridicalCityModel, juridicalStreetModel);
+                if (physicalClickBehavior.isOpened()) {
+                    physicalAddress.setActive(null);
+                } else if (physicalAddress.getActive() == null) {
+                    physicalAddress.setActive(new AccordionActive(false));
+                }
+                if (juridicalClickBehavior.isOpened()) {
+                    juridicalAddress.setActive(null);
+                } else if (juridicalAddress.getActive() == null) {
+                    juridicalAddress.setActive(new AccordionActive(false));
+                }
+                target.add(form);
+                target.add(organizationHistoryPanel);
+                panel.update(target, organization);
+            }
+        };
+
+        add(form);
+
+        // Тип организации
+        addHistoryFieldToForm(form, "type", new OrganizationTypeAutoCompleteTextField("type"));
+
+        // Название организации
+        addHistoryFieldToForm(form, "name", new TextField<>("name"));
+
+        // Телефон
+        addHistoryFieldToForm(form, "phone", new TextField<String>("phone") {
+            @Override
+            public <String> IConverter<String> getConverter(final Class<String> type) {
+                return super.getConverter(type);
+                // US telephone number mask
+//                return new MaskConverter<>(PHONE_MASK);
+            }
+        });
+
+        // Факс
+        addHistoryFieldToForm(form, "fax", new TextField<String>("fax") {
+            @Override
+            public <String> IConverter<String> getConverter(final Class<String> type) {
+                return super.getConverter(type);
+                // US telephone number mask
+//                return new MaskConverter<>(PHONE_MASK);
+            }
+        });
+
+        addHistoryFieldToForm(form, "email", new TextField<>("email"));
+
+        addHistoryFieldToForm(form, "http_address", new TextField<>("httpAddress"));
+
+        // Дата создания организации
+		/*final DatePicker<Date> birthdayPicker = new DatePicker<Date>("entryIntoForceDate",
+                Date.class) {
+
+            @Override
+			public <Date> IConverter<Date> getConverter(Class<Date> type) {
+				return (IConverter<Date>)new PatternDateConverter(FORM_DATE_FORMAT, true);
+			}
+        };
+        birthdayPicker.setDateFormat("dd.mm.yy");
+		form.add(birthdayPicker);
+		*/
 
         // Button update/create organization
         form.add(new SaveOrganizationButton("submit"));
@@ -249,33 +278,10 @@ public class OrganizationEdit extends FormTemplatePage {
         add(dialog);
         */
 
-        TemporalDomainObjectUpdate<Organization> historyUpdate = new TemporalDomainObjectUpdate<Organization>() {
-            @Override
-            public void onUpdate(AjaxRequestTarget target) {
+        historyUpdate.setObject(organization);
 
-                organization = getObject();
-                //form.setModelObject(organization);
-                form.setModel(new CompoundPropertyModel<>(organization));
-                physicalAddressPanel.updateModel(new CompoundPropertyModel<>(organization.getPhysicalAddress()),
-                        physicalCityModel, physicalStreetModel);
-                juridicalAddressPanel.updateModel(new CompoundPropertyModel<>(organization.getJuridicalAddress()),
-                        juridicalCityModel, juridicalStreetModel);
-                if (physicalClickBehavior.isOpened()) {
-                    physicalAddress.setActive(null);
-                } else if (physicalAddress.getActive() == null) {
-                    physicalAddress.setActive(new AccordionActive(false));
-                }
-                if (juridicalClickBehavior.isOpened()) {
-                    juridicalAddress.setActive(null);
-                } else if (juridicalAddress.getActive() == null) {
-                    juridicalAddress.setActive(new AccordionActive(false));
-                }
-                target.add(form);
-                panel.update(target, organization);
-            }
-        };
-
-        add(new TemporalHistoryPanel<Organization>("organization_history", organization, historyUpdate) {
+        organizationHistoryPanel =
+                new TemporalHistoryIncrementalPanel<Organization>("organization_history", organization, historyUpdate) {
 
             @Override
             protected Organization getTemporalDomainObject(long id, long version) {
@@ -283,11 +289,39 @@ public class OrganizationEdit extends FormTemplatePage {
             }
 
             @Override
-            protected Organization getTemporalDomainObjectLastInHistory(long id) {
-                return organizationBean.getOrganizationLastInHistory(id);
+            protected Organization getTemporalDomainObjectLastInHistory(Organization object) {
+                return organizationBean.getOrganizationLastInHistory(object.getId());
             }
-        });
+        };
+        organizationHistoryPanel.setOutputMarkupId(true);
+        add(organizationHistoryPanel);
 
+        /*
+        form.add(new TemporalHistoryPanel<Organization>("organization_phone_history", organization, historyUpdate) {
+
+            private String fieldName = "phone";
+
+            @Override
+            protected Organization getTemporalDomainObjectPreviousInHistory(Organization object) {
+                return organizationBean.getOrganizationPreviewInHistoryByField(object.getId(), object.getVersion(), fieldName);
+            }
+
+            @Override
+            protected Organization getTemporalDomainObjectNextInHistory(Organization object) {
+                return organizationBean.getOrganizationNextInHistoryByField(object.getId(), object.getVersion(), fieldName);
+            }
+
+            @Override
+            protected Organization getTemporalDomainObjectStartInHistory(Organization object) {
+                return organizationBean.getOrganization(object.getId(), 1);
+            }
+
+            @Override
+            protected Organization getTemporalDomainObjectLastInHistory(Organization organization) {
+                return organizationBean.getOrganizationLastInHistoryByField(organization.getId(), fieldName);
+            }
+        }.setOutputMarkupId(true));
+        */
         /*
         add(new TemporalHistoryList<Organization>("organization_history", organization) {
             @Override
@@ -471,5 +505,70 @@ public class OrganizationEdit extends FormTemplatePage {
         public boolean isUpdated() {
             return updated;
         }
+    }
+
+    private void addHistoryFieldToForm(Form<Organization> form, final String fieldName, Component field) {
+        final TemporalHistoryPanel<Organization> historyPanel =
+            new TemporalHistoryPanel<Organization>(fieldName + "_history",
+                    organization, historyUpdate) {
+
+            @Override
+            protected Organization getTemporalDomainObjectPreviousInHistory(Organization object) {
+                return organizationBean.getOrganizationPreviewInHistoryByField(object.getId(),
+                        object.getVersion(), fieldName);
+            }
+
+            @Override
+            protected Organization getTemporalDomainObjectNextInHistory(Organization object) {
+                return organizationBean.getOrganizationNextInHistoryByField(object.getId(),
+                        object.getVersion(), fieldName);
+            }
+
+            @Override
+            protected Organization getTemporalDomainObjectStartInHistory(Organization object) {
+                return organizationBean.getOrganization(object.getId(), 1);
+            }
+
+            @Override
+            protected Organization getTemporalDomainObjectLastInHistory(Organization organization) {
+                return organizationBean.getOrganizationLastInHistory(organization.getId());
+            }
+        };
+        historyPanel.setOutputMarkupId(true);
+        historyPanel.setVisible(false);
+        historyPanel.setOutputMarkupPlaceholderTag(true);
+        /*
+        WebMarkupContainer container = new WebMarkupContainer(fieldName + "_container");
+
+        container.add(new AjaxEventBehavior("onmouseover") {
+            protected void onEvent(final AjaxRequestTarget target) {
+                if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
+                    currentEnabledPanel.setVisible(false);
+                    target.add(currentEnabledPanel);
+                }
+                historyPanel.setVisible(true);
+                currentEnabledPanel = historyPanel;
+                target.add(historyPanel);
+            }
+        });
+
+        container.add(field);
+        container.add(historyPanel);
+        form.add(container);
+        */
+        field.add(new AjaxEventBehavior("onmouseover") {
+            protected void onEvent(final AjaxRequestTarget target) {
+                if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
+                    currentEnabledPanel.setVisible(false);
+                    target.add(currentEnabledPanel);
+                }
+                historyPanel.setVisible(true);
+                currentEnabledPanel = historyPanel;
+                target.add(historyPanel);
+            }
+        });
+
+        form.add(field);
+        form.add(historyPanel);
     }
 }
