@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
     <appender name="DB" class="ch.qos.logback.classic.db.FlexbuhDBAppender">
