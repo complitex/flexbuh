@@ -29,8 +29,8 @@
     </appender>
 
     <appender name="FLEXBUH_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/tmp/flexbuh/log_debug.txt</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <file>/tmp/flexbuh/log_debug.txt</file>
             <fileNamePattern>/tmp/flexbuh/log_debug-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>

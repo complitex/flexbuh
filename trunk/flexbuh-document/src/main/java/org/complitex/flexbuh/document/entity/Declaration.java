@@ -259,8 +259,6 @@ public class Declaration implements Serializable{
         head.setCDocSub(document.getCDocSub());
 
         name = document.getNameUk();
-
-        updateVersion();
     }
 
     public void updateVersion(){
