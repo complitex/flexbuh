@@ -39,7 +39,7 @@
         select * from `document_term` <include refid="selectDocumentTermsWhere"/>
         order by ${sortProperty}
         <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        limit #{first}, #{count}
+        <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
      <select id="selectDocumentTermsCount" resultType="int" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper">

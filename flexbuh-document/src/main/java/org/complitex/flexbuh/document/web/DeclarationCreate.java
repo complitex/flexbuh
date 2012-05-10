@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -112,6 +113,11 @@ public class DeclarationCreate extends FormTemplatePage{
         person.setOutputMarkupId(true);
         form.add(personProfile);
 
+        //Период
+        final DeclarationPeriodPanel periodPanel = new DeclarationPeriodPanel("period_panel", declaration);
+        periodPanel.setOutputMarkupId(true);
+        form.add(periodPanel);
+
         //Отчетный документ
         final DropDownChoice document = new DropDownChoice<>("document",
                 new PropertyModel<Document>(declaration, "document"),
@@ -140,6 +146,15 @@ public class DeclarationCreate extends FormTemplatePage{
         );
         document.setOutputMarkupId(true);
         document.setRequired(true);
+        document.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                periodPanel.detachModels();
+
+                target.add(periodPanel);
+            }
+        });
+        document.add(new AjaxIndicatorAppender());
         form.add(document);
 
         person.add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -170,9 +185,6 @@ public class DeclarationCreate extends FormTemplatePage{
                 target.add(person);
             }
         });
-
-        //Period
-        form.add(new DeclarationPeriodPanel("period_panel", declaration));
 
         form.add(new Button("submit"){
             @Override
