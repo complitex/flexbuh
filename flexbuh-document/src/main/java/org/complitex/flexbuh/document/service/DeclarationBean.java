@@ -80,6 +80,10 @@ public class DeclarationBean extends AbstractBean{
         return sqlSession().selectList(NS + ".selectDeclarations", filter);
     }
 
+    public List<Long> getAllDeclarationIds(DeclarationFilter filter){
+        return sqlSession().selectList(NS + ".selectAllDeclarationIds", filter);
+    }
+
     public List<Declaration> getAllDeclarations(Long sessionId){
         return sqlSession().selectList(NS + ".selectAllDeclarations", sessionId);
     }

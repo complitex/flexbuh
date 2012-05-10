@@ -117,6 +117,10 @@
         limit #{first}, #{count}
     </select>
 
+    <select id="selectAllDeclarationIds" resultType="long" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
+        select de.id <include refid = "selectDeclarationsFromWhere"/>
+    </select>
+
     <select id="selectDeclarationsCount" resultType="int" parameterType="org.complitex.flexbuh.document.entity.DeclarationFilter">
         select count(*) <include refid = "selectDeclarationsFromWhere"/>
     </select>
@@ -157,47 +161,47 @@
 
     <select id="selectDeclarationPeriods" parameterType="map" resultType="org.complitex.flexbuh.document.entity.Period">
         select
-          `period_type` as type, `period_month` as month, `period_year` as year
+        `period_type` as type, `period_month` as month, `period_year` as year
         from
-          `declaration` d left join `share` s on (d.`session_id` = s.`session_id`)
+        `declaration` d left join `share` s on (d.`session_id` = s.`session_id`)
         where
-          (d.`session_id` = #{sessionId} or s.shared_to_session_id = #{sessionId}) and `parent_id` is null
-          <if test="personProfileId != null">and d.`person_profile_id` = #{personProfileId}</if>
-          <if test="personProfileId == null">and d.`person_profile_id` is null</if>
-          group by `period_type`, `period_month`, `year`
+        (d.`session_id` = #{sessionId} or s.shared_to_session_id = #{sessionId}) and `parent_id` is null
+        <if test="personProfileId != null">and d.`person_profile_id` = #{personProfileId}</if>
+        <if test="personProfileId == null">and d.`person_profile_id` is null</if>
+        group by `period_type`, `period_month`, `year`
     </select>
 
     <select id="selectPossibleDeclarationParentId" parameterType="long" resultType="long">
         select
-          distinct parent.`id`
-        from
-            `declaration` child
-                    left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
-                    left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
-                    left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
-        where
-            (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
-                    and child.`period_type` = parent.`period_type`
-                    and child.`period_month` = parent.`period_month`
-                    and child.`period_year` = parent.`period_year`
-                    and child.`id` = #{id}
-        order by parent.`date` desc limit 1
+        distinct parent.`id`
+            from
+                    `declaration` child
+                            left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
+                            left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
+                            left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
+            where
+                    (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
+                            and child.`period_type` = parent.`period_type`
+                            and child.`period_month` = parent.`period_month`
+                            and child.`period_year` = parent.`period_year`
+                            and child.`id` = #{id}
+            order by parent.`date` desc limit 1
     </select>
 
     <select id="selectPossibleDeclarationParent" parameterType="long" resultMap="declarationResultMap">
         select
-          distinct parent.*, parent_doc.`name_uk` as `name`
-        from
-            `declaration` child
-                    left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
-                    left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
-                    left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
-        where
-            (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
-                    and child.`period_type` = parent.`period_type`
-                    and child.`period_month` = parent.`period_month`
-                    and child.`period_year` = parent.`period_year`
-                    and child.`id` = #{id}
-        order by parent.`date` desc limit 1
+        distinct parent.*, parent_doc.`name_uk` as `name`
+            from
+                    `declaration` child
+                            left join `document` child_doc on (child.`c_doc` = child_doc.`c_doc` and child.`c_doc_sub` = child_doc.`c_doc_sub`)
+                            left join `declaration` parent on (parent.`c_doc` = child_doc.`parent_c_doc` and parent.`c_doc_sub` = child_doc.`parent_c_doc_sub`)
+                            left join `document` parent_doc on (parent_doc.`c_doc` = parent.`c_doc` and parent_doc.`c_doc_sub` = parent.`c_doc_sub`)
+            where
+                    (child.`person_profile_id` = parent.`person_profile_id` or (child.`person_profile_id` is null and parent.`person_profile_id` is null))
+                            and child.`period_type` = parent.`period_type`
+                            and child.`period_month` = parent.`period_month`
+                            and child.`period_year` = parent.`period_year`
+                            and child.`id` = #{id}
+            order by parent.`date` desc limit 1
     </select>
 </mapper>

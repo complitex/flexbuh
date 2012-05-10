@@ -5,17 +5,6 @@
 <head>
     <wicket:head>
         <title wicket:id="title"></title>
-
-        <script type="text/javascript">
-            function selectAll(cb){
-                var items = document.getElementsByTagName('input');
-                for (i=0; i< items.length; i++){
-                    if (items[i].type == 'checkbox' && !items[i].disabled){
-                        items[i].checked = cb.checked;
-                    }
-                }
-            }
-        </script>
     </wicket:head>
 </head>
 
@@ -48,7 +37,7 @@
             <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
                 <thead>
                 <tr>
-                    <th width="20px"><!--<input type="checkbox" onclick="selectAll(this)"/>--></th>
+                    <th width="20px"><input type="checkbox" wicket:id="select_all_period"/></th>
                     <th></th>
                     <th>
                         <span wicket:id="header.name"><wicket:message key="name"/></span>
@@ -61,7 +50,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <th></th>
+                    <th class="center"><span wicket:id="selected_count" style="font-weight: normal; color: #273540"/></th>
                     <th></th>
                     <th><input type="text" wicket:id="name"/></th>
                     <th><input wicket:id="date" size="10"/></th>
