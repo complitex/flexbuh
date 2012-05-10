@@ -199,12 +199,18 @@ public class Declaration implements Serializable{
         fillValue(name, StringUtil.getString(value));
     }
 
-    public void fillValue(String name, String value){
+    public void fillValue(String name, String value, boolean force){
         DeclarationValue declarationValue = getDeclarationValue(name);
 
         if (declarationValue != null){
             declarationValue.setValue(value);
+        }else if (force){
+            declarationValues.add(new DeclarationValue(name, value));
         }
+    }
+
+    public void fillValue(String name, String value){
+        fillValue(name, value, false);
     }
 
     public void fillValueByType(String type, Integer value){

@@ -36,8 +36,8 @@ public class RestrictionBehavior extends Behavior{
     private Integer minLength;
     private Integer maxLength;
     private Integer totalDigits;
-    private Long minInclusive;
-    private Long maxInclusive;
+    private Float minInclusive;
+    private Float maxInclusive;
 
     private boolean complex = false;
     private boolean requiredRowNum = false;
@@ -94,10 +94,10 @@ public class RestrictionBehavior extends Behavior{
                             enumeration.add(value);
                             break;
                         case "xs:minInclusive":
-                            minInclusive = Long.valueOf(value);
+                            minInclusive = Float.valueOf(value);
                             break;
                         case "xs:maxInclusive":
-                            maxInclusive = Long.valueOf(value);
+                            maxInclusive = Float.valueOf(value);
                             break;
                         case "xs:totalDigits":
                             totalDigits = Integer.valueOf(value);
@@ -296,19 +296,19 @@ public class RestrictionBehavior extends Behavior{
         this.totalDigits = totalDigits;
     }
 
-    public Long getMinInclusive() {
+    public Float getMinInclusive() {
         return minInclusive;
     }
 
-    public void setMinInclusive(Long minInclusive) {
+    public void setMinInclusive(Float minInclusive) {
         this.minInclusive = minInclusive;
     }
 
-    public Long getMaxInclusive() {
+    public Float getMaxInclusive() {
         return maxInclusive;
     }
 
-    public void setMaxInclusive(Long maxInclusive) {
+    public void setMaxInclusive(Float maxInclusive) {
         this.maxInclusive = maxInclusive;
     }
 

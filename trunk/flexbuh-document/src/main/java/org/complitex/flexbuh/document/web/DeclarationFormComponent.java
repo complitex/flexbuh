@@ -40,7 +40,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.ejb.EJB;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +69,6 @@ public class DeclarationFormComponent extends Panel{
 
     //Loadable
     private transient Document commonTypes;
-    private transient XPath schemaXPath;
 
     private Map<String, Rule> rulesMap;
     private Map<String, IDeclarationStringComponent> simpleTextFieldMap = new HashMap<>();
@@ -95,6 +93,11 @@ public class DeclarationFormComponent extends Panel{
         try {
             //Rules
             rulesMap = ruleService.getRules(templateName);
+
+            //Auto fill period
+            if (declaration.getId() == null) {
+                declarationService.autoFillPeriod(declaration);
+            }
 
             init();
 
@@ -155,6 +158,8 @@ public class DeclarationFormComponent extends Panel{
                         DeclarationValue declarationValue = declaration.getDeclarationValue(wicketId);
 
                         if (declarationValue != null && "1".equals(declarationValue.getValue())){
+                            radioSet.setModelObject(wicketId);
+                        }else if (radioSet.getModelObject() == null){
                             radioSet.setModelObject(wicketId);
                         }
 

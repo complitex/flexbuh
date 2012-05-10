@@ -21,7 +21,7 @@ import static org.complitex.flexbuh.common.entity.PersonType.*;
 @Stateless
 public class DeclarationFillService {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
-    
+
     @EJB
     private TaxInspectionBean taxInspectionBean;
 
@@ -34,7 +34,7 @@ public class DeclarationFillService {
         }
 
         DeclarationHead head = declaration.getHead();
-        
+
         TaxInspection taxInspection = taxInspectionBean.getTaxInspection(personProfile.getTaxInspectionId());
 
         declaration.fillValueByType("DGHTINJ", personProfile.getTin());
@@ -99,21 +99,9 @@ public class DeclarationFillService {
         }
 
         //AutoFillMainParameters
-        declaration.fillValue("HZ", "1");
         declaration.fillValue("HCOPY", "1");
         declaration.fillValue("HNPDV", personProfile.getIpn());
 
-        if (head.getPeriodType() == 2 && head.getPeriodMonth() == 3){
-            declaration.fillValue("H1KV", "1");
-        }
-        if (head.getPeriodType() == 3){
-            declaration.fillValue("HHY", "1");
-        }
-        if (head.getPeriodMonth() == 2 && head.getPeriodMonth() == 9){
-            declaration.fillValue("H3KV", "1");
-        }
-
-        //todo HY
 
         if (personProfile.getPersonType().getCode() == 1){
             declaration.fillValue("HJ", "1");
@@ -132,7 +120,7 @@ public class DeclarationFillService {
         declaration.fillValue("HKOATUU", personProfile.getKoatuu());
         declaration.fillValue("HTINSTI", personProfile.getCStiTin());
     }
-    
+
     private void autoFillNakladnaHeader(String type, Declaration declaration){
         PersonProfile personProfile = declaration.getPersonProfile();
 
@@ -143,6 +131,49 @@ public class DeclarationFillService {
         declaration.fillValue("HLOC" + type, personProfile.getAddress());
     }
 
+    public void autoFillPeriod(Declaration declaration){
+        DeclarationHead head = declaration.getHead();
+
+        //Период
+        if (head.getPeriodType() == 2){
+            switch (head.getPeriodMonth()){
+                case 3:
+                    declaration.fillValue("H1KV", "1", true);
+                    break;
+                case 6:
+                    declaration.fillValue("H2KV", "1", true);
+                    break;
+                case 9:
+                    declaration.fillValue("H3KV", "1", true);
+                    break;
+                case 12:
+                    declaration.fillValue("H4KV", "1", true);
+                    break;
+            }
+        }
+        if (head.getPeriodType() == 3){
+            declaration.fillValue("HHY", "1", true);
+        }
+        if (head.getPeriodType() == 5){
+            declaration.fillValue("HY", "1", true);
+        }
+
+        declaration.fillValue("HZY", head.getPeriodYear() + "", true);
+
+        //Тип документа
+        switch (head.getCDocStan()){
+            case 1:
+                declaration.fillValue("HZ", "1", true);
+                break;
+            case 2:
+                declaration.fillValue("HZN", "1", true);
+                break;
+            case 3:
+                declaration.fillValue("HZU", "1", true);
+                break;
+        }
+    }
+
     private String getString(Date date){
         if (date != null){
             return DATE_FORMAT.format(date);
@@ -150,6 +181,4 @@ public class DeclarationFillService {
 
         return null;
     }
-
-
 }

@@ -67,7 +67,8 @@ public class DeclarationPeriodPanel extends Panel {
 
                         if (!documentTerms.isEmpty()){
                             for (DocumentTerm documentTerm : documentTerms){
-                                if (documentTerm.getPeriodType().equals(declaration.getHead().getPeriodType())) {
+                                if (documentTerm.getPeriodType().equals(declaration.getHead().getPeriodType())
+                                        && documentTerm.getPeriodMonth().equals(declaration.getHead().getPeriodMonth())) {
                                     years.add(documentTerm.getPeriodYear());
                                 }
                             }
