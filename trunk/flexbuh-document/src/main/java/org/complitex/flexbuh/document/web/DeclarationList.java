@@ -82,7 +82,7 @@ public class DeclarationList extends TemplatePage{
 
     private DeclarationUploadDialog declarationUploadDialog;
 
-    private Map<Declaration, IModel<Boolean>> selectMap = new HashMap<>();
+    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
 
     private DeclarationFilter declarationFilter;
 
@@ -173,6 +173,14 @@ public class DeclarationList extends TemplatePage{
 
                                 if (filterPeriods.contains(period)){
                                     filterPeriods.remove(period);
+
+                                    //remove selected on change period
+                                    List<Long> list = declarationBean.getAllDeclarationIds(declarationFilter);
+                                    for (Long id : selectMap.keySet()){
+                                        if (!list.contains(id)){
+                                            selectMap.remove(id);
+                                        }
+                                    }
                                 }else{
                                     filterPeriods.add(period);
                                 }
@@ -197,6 +205,44 @@ public class DeclarationList extends TemplatePage{
         Form filterForm = new Form("filter_form");
         tableContainer.add(filterForm);
 
+        //Выбор всех документов в периоде
+        final Label selectedCount = new Label("selected_count", new LoadableDetachableModel<Object>() {
+            @Override
+            protected Object load() {
+                int count = 0;
+
+                for (IModel<Boolean> s : selectMap.values()){
+                    if (s.getObject()){
+                        count++;
+                    }
+                }
+
+                return count > 0 ? count : "";
+            }
+        });
+        selectedCount.setOutputMarkupId(true);
+        filterForm.add(selectedCount);
+
+        final CheckBox selectAllPeriod = new CheckBox("select_all_period", new Model<>(Boolean.FALSE));
+        selectAllPeriod.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (selectAllPeriod.getModelObject()){
+                    List<Long> list = declarationBean.getAllDeclarationIds(declarationFilter);
+
+                    for (Long id : list){
+                        selectMap.put(id, Model.of(Boolean.TRUE));
+                    }
+                }else {
+                    selectMap.clear();
+                }
+
+                target.add(tableContainer);
+                target.add(selectedCount);
+            }
+        });
+        filterForm.add(selectAllPeriod);
+
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));
 
@@ -215,8 +261,6 @@ public class DeclarationList extends TemplatePage{
         SortableDataProvider<Declaration> dataProvider = new SortableDataProvider<Declaration>() {
             @Override
             public Iterator<? extends Declaration> iterator(int first, int count) {
-                selectMap.clear();
-
                 declarationFilter.setFirst(first);
                 declarationFilter.setCount(count);
                 declarationFilter.setSortProperty(getSort().getProperty());
@@ -247,15 +291,18 @@ public class DeclarationList extends TemplatePage{
                 final Declaration declaration = item.getModelObject();
 
                 //Select
-                IModel<Boolean> selectModel = new Model<>(false);
+                IModel<Boolean> selectModel = selectMap.get(declaration.getId());
 
-                selectMap.put(declaration, selectModel);
+                if (selectModel == null){
+                    selectModel = Model.of(Boolean.FALSE);
+                    selectMap.put(declaration.getId(), selectModel);
+                }
 
                 item.add(new CheckBox("select", selectModel)
                         .add(new AjaxFormComponentUpdatingBehavior("onchange") {
                             @Override
                             protected void onUpdate(AjaxRequestTarget target) {
-                                //update
+                                target.add(selectedCount);
                             }
                         }));
 
@@ -365,7 +412,7 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(new Button("download_xml_zip"){
             @Override
             public void onSubmit() {
-                List<Declaration> selectedDeclarations = getSelectedDeclaration();
+                List<Long> selectedDeclarations = getSelectedDeclarationIds();
 
                 if (selectedDeclarations.isEmpty()){
                     info(getString("info_select_declarations"));
@@ -375,7 +422,7 @@ public class DeclarationList extends TemplatePage{
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                 try {
-                    declarationService.writeXmlZip(selectedDeclarations, outputStream);
+                    declarationService.writeXmlZip(declarationBean.getDeclarations(getSelectedDeclarationIds()), outputStream);
                 } catch (DeclarationZipException e) {
                     error(getString("error_download_xml_zip"));
                 }
@@ -409,9 +456,9 @@ public class DeclarationList extends TemplatePage{
         filterForm.add(new Button("download_pdf_zip"){
             @Override
             public void onSubmit() {
-                List<Declaration> selectedDeclarations = getSelectedDeclaration();
+                List<Long> selectedDeclarationIds = getSelectedDeclarationIds();
 
-                if (selectedDeclarations.isEmpty()){
+                if (selectedDeclarationIds.isEmpty()){
                     info(getString("info_select_declarations"));
                     return;
                 }
@@ -419,7 +466,7 @@ public class DeclarationList extends TemplatePage{
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                 try {
-                    declarationService.writePdfZip(selectedDeclarations, outputStream);
+                    declarationService.writePdfZip(declarationBean.getDeclarations(selectedDeclarationIds), outputStream);
                 } catch (DeclarationZipException e) {
                     error(getString("error_download_pdf_zip"));
                 }
@@ -493,12 +540,12 @@ public class DeclarationList extends TemplatePage{
         });
     }
 
-    private List<Declaration> getSelectedDeclaration() {
-        List<Declaration> selectedDeclarations = new ArrayList<>();
+    private List<Long> getSelectedDeclarationIds() {
+        List<Long> selectedDeclarations = new ArrayList<>();
 
-        for (Declaration declaration : selectMap.keySet()){
-            if (selectMap.get(declaration).getObject()){
-                selectedDeclarations.add(declaration);
+        for (Long declarationId : selectMap.keySet()){
+            if (selectMap.get(declarationId).getObject()){
+                selectedDeclarations.add(declarationId);
             }
         }
         return selectedDeclarations;
@@ -525,9 +572,9 @@ public class DeclarationList extends TemplatePage{
         list.add(new DeleteItemButton(id){
             @Override
             protected void onClick() {
-                for (Declaration declaration : selectMap.keySet()){
-                    if (selectMap.get(declaration).getObject()){
-                        declarationBean.deleteDeclaration(declaration.getId());
+                for (Long id : selectMap.keySet()){
+                    if (selectMap.get(id).getObject()){
+                        declarationBean.deleteDeclaration(id);
                     }
                 }
             }
