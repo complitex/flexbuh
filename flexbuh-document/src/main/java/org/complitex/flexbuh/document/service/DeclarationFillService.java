@@ -83,7 +83,6 @@ public class DeclarationFillService {
         }
 
         autoFillNakladnaHeader("SEL", declaration);
-        autoFillNakladnaHeader("BUY", declaration);
 
         //else
 

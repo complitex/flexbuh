@@ -32,6 +32,11 @@ public class Employee extends SessionObject{
         super(sessionId);
     }
 
+    public Employee(Long sessionId, Long personProfileId) {
+        super(sessionId);
+        this.personProfileId = personProfileId;
+    }
+
     @XmlElement(name = "FB_PERSON_PROFILE_ID")
     public Long getPersonProfileId() {
         return personProfileId;

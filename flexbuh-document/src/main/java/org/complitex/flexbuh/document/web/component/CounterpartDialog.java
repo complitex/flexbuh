@@ -33,7 +33,7 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
     
     private Dialog dialog;
 
-    public CounterpartDialog(String id, Long sessionId) {
+    public CounterpartDialog(String id, Long sessionId, Long personProfileId) {
         super(id);
         
         dialog = new Dialog("dialog");
@@ -68,7 +68,7 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
         final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Counterpart> list = counterpartBean.getCounterparts(new FilterWrapper<>(new Counterpart(sessionId)));
+        List<Counterpart> list = counterpartBean.getCounterparts(new FilterWrapper<>(new Counterpart(sessionId, personProfileId)));
 
         ListView listView = new ListView<Counterpart>("counterparts", list) {
             @Override

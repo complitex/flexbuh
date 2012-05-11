@@ -29,20 +29,20 @@ public class AutocompleteDialogTestPage extends TemplatePage{
         EmployeeDialog employeeDialog = new EmployeeDialog("e1", getSessionId());
         add(employeeDialog);
 
-        form.add(new EmployeeAutocompleteDialog("autocomplete",
+        form.add(new EmployeeAutocompleteDialog("autocomplete", getSessionId(), 1L,
                 new DeclarationStringModel(null, "T1RXXXXG02", null, null, null,  new Declaration("J0500103")),
-                getSessionId(), employeeDialog));
+                employeeDialog));
 
         //Counterpart
 
-        CounterpartDialog counterpartDialog = new CounterpartDialog("c1", getSessionId());
+        CounterpartDialog counterpartDialog = new CounterpartDialog("c1", getSessionId(), 1L);
         add(counterpartDialog);
         
-        form.add(new CounterpartAutocompleteDialog("a1",
+        form.add(new CounterpartAutocompleteDialog("a1", getSessionId(), 1L,
                        new DeclarationStringModel(null, "T1RXXXXG3S", null, null, null,  new Declaration("J0200506")),
-                       getSessionId(), counterpartDialog));
-        form.add(new CounterpartAutocompleteDialog("a2",
+                       counterpartDialog));
+        form.add(new CounterpartAutocompleteDialog("a2", getSessionId(), 1L,
                                new DeclarationStringModel(null, "T2RXXXXG2S", null, null, null,  new Declaration("J0200506")),
-                               getSessionId(), counterpartDialog));
+                               counterpartDialog));
     }
 }

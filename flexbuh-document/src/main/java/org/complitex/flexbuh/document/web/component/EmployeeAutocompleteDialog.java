@@ -25,13 +25,16 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
     @EJB
     private EmployeeBean employeeBean;
 
-    private Long sessionId;
     private DeclarationStringModel model;
 
-    public EmployeeAutocompleteDialog(String id, final DeclarationStringModel model, Long sessionId, IAutocompleteDialog<Employee> dialog) {
+    private Long personProfileId;
+    private Long sessionId;
+
+    public EmployeeAutocompleteDialog(String id, Long sessionId, Long personProfileId, final DeclarationStringModel model, IAutocompleteDialog<Employee> dialog) {
         super(id, model, model.getDeclaration().getTemplateName(), model.getName(), FieldCode.EMPLOYEE_SPR_NAME, dialog);
 
         this.sessionId = sessionId;
+        this.personProfileId = personProfileId;
         this.model = model;
     }
 
@@ -56,7 +59,7 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
     @Override
     protected List<Employee> getValues(String tern) {
         try {
-            FilterWrapper<Employee> filter = new FilterWrapper<>(new Employee(sessionId));
+            FilterWrapper<Employee> filter = new FilterWrapper<>(new Employee(sessionId, personProfileId));
 
             switch (getAlias()){
                 case "HTIN":

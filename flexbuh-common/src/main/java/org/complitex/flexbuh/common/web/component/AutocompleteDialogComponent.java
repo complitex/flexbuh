@@ -29,6 +29,7 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
     private AutocompleteAjaxComponent<T> autocompleteComponent;
 
     private String alias;
+    private Field field;
    
     public AutocompleteDialogComponent(String id, final IModel<String> model, String code, String name, String sprName,
                                        final IAutocompleteDialog<T> dialog) {
@@ -36,11 +37,11 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
 
         setOutputMarkupId(true);
 
-        //Alias
-        Field field = fieldCodeBean.getField(code, name, sprName);
-        alias = field.getAlias();
+        field = fieldCodeBean.getField(code, name, sprName);
 
-        alias = (alias != null && !alias.isEmpty()) ?  alias.replace(field.getPrefix(), "") : "WTF?";
+        //Alias
+        alias = field.getAlias() != null ? field.getAlias() : field.getName();
+        alias = alias.replace(field.getPrefix(), "");
 
         autocompleteComponent = new AutocompleteAjaxComponent<T>("autocomplete", new Model<T>(), getChoiceRenderer()) {
             @Override
@@ -105,7 +106,7 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
         getParent().visitChildren(getClass(), new IVisitor<AutocompleteDialogComponent<T>, Void>() {
             @Override
             public void component(AutocompleteDialogComponent<T> component, IVisit<Void> visit) {
-                if (!AutocompleteDialogComponent.this.equals(component)){
+                if (!AutocompleteDialogComponent.this.equals(component) && component.getId().contains(field.getPrefix())){
                     component.updateModel(target, object);
                 }
             }
