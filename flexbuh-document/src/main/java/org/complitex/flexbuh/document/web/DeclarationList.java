@@ -218,7 +218,7 @@ public class DeclarationList extends TemplatePage{
                     }
                 }
 
-                return count > 0 ? count : "";
+                return count > 0 ? "(" + count + ")" : "";
             }
         });
         selectedCount.setOutputMarkupId(true);
@@ -293,7 +293,6 @@ public class DeclarationList extends TemplatePage{
 
                 //Select
                 IModel<Boolean> selectModel = selectMap.get(declaration.getId());
-
                 if (selectModel == null){
                     selectModel = Model.of(Boolean.FALSE);
                     selectMap.put(declaration.getId(), selectModel);
@@ -352,6 +351,21 @@ public class DeclarationList extends TemplatePage{
 
                         PageParameters pageParameters = new PageParameters();
                         pageParameters.set("id", linkedDeclaration.getId());
+
+                        //Select
+                        IModel<Boolean> selectModel = selectMap.get(linkedDeclaration.getId());
+                        if (selectModel == null){
+                            selectModel = Model.of(Boolean.FALSE);
+                            selectMap.put(linkedDeclaration.getId(), selectModel);
+                        }
+
+                        linkedItem.add(new CheckBox("select", selectModel)
+                                .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                                    @Override
+                                    protected void onUpdate(AjaxRequestTarget target) {
+                                        target.add(selectedCount);
+                                    }
+                                }));
 
                         linkedItem.add(new BookmarkablePageLinkPanel<>("name", linkedDeclaration.getTemplateName()
                                 + " " + linkedDeclaration.getName(), DeclarationFormPage.class, pageParameters,
@@ -450,7 +464,7 @@ public class DeclarationList extends TemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "declaration_xml_" + DateUtil.getString(DateUtil.getCurrentDate()) + ".zip"));
+                        }, "declaration_xml_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
             }
         });
 
@@ -494,7 +508,7 @@ public class DeclarationList extends TemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "declaration_pdf" + ".zip"));
+                        }, "declaration_pdf_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
             }
         });
 
