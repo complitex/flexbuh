@@ -30,6 +30,11 @@ public class Counterpart extends SessionObject {
         super(sessionId);
     }
 
+    public Counterpart(Long sessionId, Long personProfileId) {
+        super(sessionId);
+        this.personProfileId = personProfileId;
+    }
+
     @XmlElement(name = "FB_PERSON_PROFILE_ID")
     public Long getPersonProfileId() {
         return personProfileId;

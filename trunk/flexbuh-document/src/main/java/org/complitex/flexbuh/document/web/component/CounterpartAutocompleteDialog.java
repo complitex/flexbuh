@@ -25,14 +25,17 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
     @EJB
     private CounterpartBean counterpartBean;
 
-    private Long sessionId;
-
     private DeclarationStringModel model;
 
-    public CounterpartAutocompleteDialog(String id, DeclarationStringModel model, Long sessionId, IAutocompleteDialog<Counterpart> dialog) {
+    private Long sessionId;
+    private Long personProfileId;
+
+    public CounterpartAutocompleteDialog(String id, Long sessionId, Long personProfileId, DeclarationStringModel model,
+                                         IAutocompleteDialog<Counterpart> dialog) {
         super(id, model, model.getDeclaration().getTemplateName(), model.getName(), FieldCode.COUNTERPART_SPR_NAME, dialog);
 
         this.sessionId = sessionId;
+        this.personProfileId  = personProfileId;
         this.model = model;
     }
 
@@ -59,7 +62,7 @@ public class CounterpartAutocompleteDialog extends AutocompleteDialogComponent<C
     @Override
     protected List<Counterpart> getValues(String tern) {
         try {
-            FilterWrapper<Counterpart> filter = new FilterWrapper<>(new Counterpart(sessionId));
+            FilterWrapper<Counterpart> filter = new FilterWrapper<>(new Counterpart(sessionId, personProfileId));
 
             switch (getAlias()){
                 case "HK":

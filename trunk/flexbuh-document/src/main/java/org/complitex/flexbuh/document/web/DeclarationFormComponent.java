@@ -198,7 +198,8 @@ public class DeclarationFormComponent extends Panel{
                     }else if (wicketId.contains("dialog")){
                         switch (wicketId.replace("dialog_", "")){
                             case FieldCode.COUNTERPART_SPR_NAME:
-                                counterpartDialog = new CounterpartDialog(wicketId, declaration.getSessionId());
+                                counterpartDialog = new CounterpartDialog(wicketId, declaration.getSessionId(),
+                                        declaration.getPersonProfileId());
                                 container.add(counterpartDialog);
                                 break;
                             case FieldCode.EMPLOYEE_SPR_NAME:
@@ -303,7 +304,8 @@ public class DeclarationFormComponent extends Panel{
             });
 
         } else if (field.equals(FieldCode.COUNTERPART_SPR_NAME)) {
-            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, model, declaration.getSessionId(), counterpartDialog);
+            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, declaration.getSessionId(),
+                    declaration.getPersonProfileId(), model, counterpartDialog);
             container.add(component);
 
             //restriction
@@ -311,7 +313,8 @@ public class DeclarationFormComponent extends Panel{
 
             declarationStringComponent = component;
         } else if (field.equals(FieldCode.EMPLOYEE_SPR_NAME)) {
-            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, model, declaration.getSessionId(), employeeDialog);
+            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, declaration.getSessionId(),
+                    declaration.getPersonProfileId(), model, employeeDialog);
             container.add(component);
 
             //restriction
