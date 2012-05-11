@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -82,7 +83,7 @@ public class DeclarationList extends TemplatePage{
 
     private DeclarationUploadDialog declarationUploadDialog;
 
-    private Map<Long, IModel<Boolean>> selectMap = new HashMap<>();
+    private Map<Long, IModel<Boolean>> selectMap = new ConcurrentHashMap<>();
 
     private DeclarationFilter declarationFilter;
 
@@ -176,8 +177,8 @@ public class DeclarationList extends TemplatePage{
 
                                     //remove selected on change period
                                     List<Long> list = declarationBean.getAllDeclarationIds(declarationFilter);
-                                    for (Long id : selectMap.keySet()){
-                                        if (!list.contains(id)){
+                                    for (Long id : selectMap.keySet()) {
+                                        if (!list.contains(id)) {
                                             selectMap.remove(id);
                                         }
                                     }
@@ -449,7 +450,7 @@ public class DeclarationList extends TemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "declaration_xml" + ".zip"));
+                        }, "declaration_xml_" + DateUtil.getString(DateUtil.getCurrentDate()) + ".zip"));
             }
         });
 
