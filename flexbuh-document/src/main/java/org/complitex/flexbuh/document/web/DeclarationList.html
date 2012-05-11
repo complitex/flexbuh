@@ -37,7 +37,9 @@
             <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
                 <thead>
                 <tr>
-                    <th width="20px"><input type="checkbox" wicket:id="select_all_period"/></th>
+                    <th width="20px" class="center">
+                        <span wicket:id="selected_count" style="font-weight: normal; color: #273540"></span>
+                    </th>
                     <th></th>
                     <th>
                         <span wicket:id="header.name"><wicket:message key="name"/></span>
@@ -50,7 +52,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <th class="center"><span wicket:id="selected_count" style="font-weight: normal; color: #273540"/></th>
+                    <th class="center"><input type="checkbox" wicket:id="select_all_period"/></th>
                     <th></th>
                     <th><input type="text" wicket:id="name"/></th>
                     <th><input wicket:id="date" size="10"/></th>

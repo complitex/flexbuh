@@ -149,8 +149,6 @@ public class DeclarationCreate extends FormTemplatePage{
         document.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                periodPanel.detachModels();
-
                 target.add(periodPanel);
             }
         });
