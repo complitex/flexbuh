@@ -87,8 +87,6 @@ public class OrganizationEdit extends FormTemplatePage {
 
     private TemporalHistoryPanel<Organization> currentEnabledPanel;
 
-    private Component phoneField;
-
     protected OrganizationEdit() {
         organization = new Organization();
         organization.setJuridicalAddress(new Address());
@@ -214,7 +212,16 @@ public class OrganizationEdit extends FormTemplatePage {
                 target.add(form);
                 target.add(organizationHistoryPanel);
                 //panel.update(target, organization);
-                panel.update(target, organization.getEntryIntoForceDate());
+                Date currentDate;
+                if (organization.isDeleted()) {
+                    currentDate = organization.getCompletionDate();
+                } else if (organization.getCompletionDate() != null) {
+                    currentDate = organization.getEntryIntoForceDate();
+                } else {
+                    currentDate = new Date();
+                }
+
+                panel.update(target, currentDate);
             }
         };
 
@@ -227,15 +234,14 @@ public class OrganizationEdit extends FormTemplatePage {
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
 
         // Телефон
-        phoneField = new TextField<String>("phone") {
+        addHistoryFieldToForm(form, "phone", new TextField<String>("phone") {
             @Override
             public <String> IConverter<String> getConverter(final Class<String> type) {
                 return super.getConverter(type);
                 // US telephone number mask
 //                return new MaskConverter<>(PHONE_MASK);
             }
-        };
-        addHistoryFieldToForm(form, "phone", phoneField);
+        });
 
         // Факс
         addHistoryFieldToForm(form, "fax", new TextField<String>("fax") {
