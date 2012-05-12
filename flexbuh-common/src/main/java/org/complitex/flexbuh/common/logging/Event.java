@@ -15,6 +15,7 @@ import static org.complitex.flexbuh.common.logging.EventKey.*;
  */
 public class Event implements Serializable {
     private Map<EventKey, String> map = new HashMap<>();
+    private Throwable throwable;
 
     public Event(EventCategory category, ILongId oldObject, ILongId newObject){
         map.put(CATEGORY, category.name());
@@ -40,6 +41,20 @@ public class Event implements Serializable {
         this(category, null, newObject);
     }
 
+    public Event(Throwable throwable, EventCategory category, ILongId newObject){
+        this(category, null, newObject);
+        this.throwable = throwable;
+    }
+
+    public Event(EventCategory category) {
+        map.put(CATEGORY, category.name());
+    }
+
+    public Event(EventCategory category, Class modelClass) {
+        map.put(CATEGORY, category.name());
+        map.put(MODEL_CLASS, modelClass.getName());
+    }
+
     public Map<String, String> getMap() {
         Map<String, String> m = new HashMap<>();
 
@@ -48,5 +63,34 @@ public class Event implements Serializable {
         }
 
         return m;
+    }
+
+    @Override
+    public String toString() {
+        if (throwable != null){
+            String message = throwable.getMessage();
+
+            if (throwable.getCause() != null){
+                String initialCause = getInitialCause(throwable);
+
+                if (message != null){
+                    message += ". Причина: " + initialCause;
+                }else {
+                    message = initialCause;
+                }
+            }
+
+            return message;
+        }
+
+        return super.toString();
+    }
+
+    private String getInitialCause(Throwable t){
+        while (t.getCause() != null){
+            t = t.getCause();
+        }
+
+        return t.getMessage();
     }
 }

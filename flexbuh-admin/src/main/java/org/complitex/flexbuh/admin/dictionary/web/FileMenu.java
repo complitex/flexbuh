@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.web;
+package org.complitex.flexbuh.admin.dictionary.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -12,7 +12,7 @@ import org.complitex.flexbuh.common.template.ResourceTemplateMenu;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class FileMenu extends ResourceTemplateMenu {
     public FileMenu() {
-        add("import_file", ImportFile.class);
+        add("import_file", ImportTemplate.class);
         add("xsd_list", TemplateXMLList.class, new PageParameters(){{set("type", "xsd");}});
         add("xsl_list", TemplateXMLList.class, new PageParameters(){{set("type", "xsl");}});
         add("fo_list", TemplateXMLList.class, new PageParameters(){{set("type", "fo");}});

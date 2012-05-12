@@ -34,7 +34,7 @@ public class FieldCodeTestPage extends WebPage{
         fieldCode.setCodes(Arrays.asList("1", "2", "3"));
         fieldCode.setFields(Arrays.asList(new Field("a", "b", "c", "d"), new Field("e", "f", "j", "h")));
 
-        fieldCodeBean.save(fieldCode);
+        fieldCodeBean.insert(fieldCode);
     }
     
     private void testLoad(){

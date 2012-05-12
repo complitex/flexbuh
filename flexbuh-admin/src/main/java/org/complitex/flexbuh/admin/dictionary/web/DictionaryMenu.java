@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.web;
+package org.complitex.flexbuh.admin.dictionary.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.flexbuh.common.security.SecurityRole;

@@ -24,12 +24,13 @@ public class RegionBean extends AbstractBean implements ICrudBean<Region>{
     }
 
     @Override
-    public void save(Region region) {
-        if (region.getId() == null){
-            sqlSession().insert(NS + ".insertRegion", region);
-        }else {
-            sqlSession().update(NS + ".updateRegion", region);
-        }
+    public void insert(Region region) {
+        sqlSession().insert(NS + ".insertRegion", region);
+    }
+
+    @Override
+    public void update(Region region) {
+        sqlSession().update(NS + ".updateRegion", region);
     }
 
     @Override

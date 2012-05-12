@@ -24,12 +24,13 @@ public class DocumentTermBean extends AbstractBean implements ICrudBean<Document
     }
 
     @Override
-    public void save(DocumentTerm documentTerm) {
-        if (documentTerm.getId() == null){
-            sqlSession().insert(NS + ".insertDocumentTerm", documentTerm);
-        }else {
-            sqlSession().update(NS + ".updateDocumentTerm", documentTerm);
-        }
+    public void insert(DocumentTerm documentTerm) {
+        sqlSession().insert(NS + ".insertDocumentTerm", documentTerm);
+    }
+
+    @Override
+    public void update(DocumentTerm documentTerm) {
+        sqlSession().update(NS + ".updateDocumentTerm", documentTerm);
     }
 
     @Override

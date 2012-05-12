@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.web;
+package org.complitex.flexbuh.admin.dictionary.web;
 
 import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -15,7 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.flexbuh.admin.importexport.service.ImportDictionaryService;
+import org.complitex.flexbuh.admin.dictionary.service.ImportDictionaryService;
 import org.complitex.flexbuh.common.entity.dictionary.DictionaryType;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -39,6 +39,9 @@ public class ImportDictionary extends TemplatePage {
 
     private IModel<List<DictionaryType>> dictionaryModel = new ListModel<>();
 
+    private DictionaryImportListener importListener;
+    private CheckBoxMultipleChoice<DictionaryType> dictionaryTypes;
+
     public ImportDictionary() {
 
         final WebMarkupContainer container = new WebMarkupContainer("container");
@@ -49,22 +52,37 @@ public class ImportDictionary extends TemplatePage {
         Form form = new Form("form");
         container.add(form);
 
+        importListener = new DictionaryImportListener();
+
         //Dictionary types
-        final CheckBoxMultipleChoice<DictionaryType> dictionaryTypes =
-                new CheckBoxMultipleChoice<>("dictionaryTypes", dictionaryModel, Arrays.asList(DictionaryType.values()),
-                        new IChoiceRenderer<DictionaryType>() {
+        dictionaryTypes = new CheckBoxMultipleChoice<>("dictionaryTypes", dictionaryModel,
+                Arrays.asList(DictionaryType.values()),
+                new IChoiceRenderer<DictionaryType>() {
 
-                            @Override
-                            public Object getDisplayValue(DictionaryType type) {
-                                return getString(type.name());
-                            }
+                    @Override
+                    public Object getDisplayValue(DictionaryType type) {
+                        String info = "";
 
-                            @Override
-                            public String getIdValue(DictionaryType type, int index) {
-                                return type.ordinal() + "";
-                            }
-                        });
+                        DictionaryImportChildListener childListener = importListener.getChildListener(type, false);
 
+                        if (childListener != null && childListener.getStatus() != null){
+                            info += " (" + "всего: " + childListener.getTotal();
+                            info += ", " + "добавлено: " + childListener.getInserted();
+                            info += ", " + "обновлено: " + childListener.getUpdated();
+                            info += childListener.getErrorMessage() != null
+                                    ? ", ошибка: " + childListener.getErrorMessage() : "";
+                            info += ")";
+                        }
+
+                        return getString(type.name()) + info;
+                    }
+
+                    @Override
+                    public String getIdValue(DictionaryType type, int index) {
+                        return type.ordinal() + "";
+                    }
+                });
+        dictionaryTypes.setOutputMarkupId(true);
         form.add(dictionaryTypes);
 
         //Кнопка импортировать
@@ -77,12 +95,11 @@ public class ImportDictionary extends TemplatePage {
                     fileNames.add(dictionaryType);
                 }
 
-                DictionaryImportListener importListener = new DictionaryImportListener();
-                importListener.addCountTotal(fileNames.size());
+                importListener.clear();
 
                 importDictionaryService.process(importListener, dictionaryModel.getObject());
 
-                container.add(newTimer(importListener));
+                container.add(newTimer());
             }
 
             @Override
@@ -106,26 +123,28 @@ public class ImportDictionary extends TemplatePage {
         });
     }
 
-    private AjaxSelfUpdatingTimerBehavior newTimer(final DictionaryImportListener listener){
+    private AjaxSelfUpdatingTimerBehavior newTimer(){
 
         return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
+                target.add(dictionaryTypes);
 
-                log.debug("listener status: {}, count completed: {}, count canceled: {}",
-                        new Object[]{listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
-
-                if (listener.isEnded()) {
+                if (importListener.isEnded()) {
                     dictionaryModel.getObject().clear();
 
-                    if (listener.getErrorMessage() != null){
-                        error(listener.getErrorMessage());
+                    if (importListener.getCriticalErrorMessage() != null){
+                        error(importListener.getCriticalErrorMessage());
                     }
 
-                    info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
+                    info(getStringFormat("complete"));
                     stop();
                 } else {
-                    info(getStringFormat("processing", listener.currentImportFile(), listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
+                    DictionaryType dictionaryType = importListener.getProcessing();
+
+                    if (dictionaryType != null) {
+                        info(getStringFormat("processing", dictionaryType.getFileName()));
+                    }
                 }
             }
         };

@@ -66,6 +66,6 @@
     </select>
 
     <update id="updateDocumentTerm" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm">
-        update `document_term` set `upload_date` = #{uploadDate}, `date_term` = #{dateTerm}
+        update `document_term` set `upload_date` = #{uploadDate}, `date_term` = #{dateTerm} where `id` = #{id}
     </update>
 </mapper>

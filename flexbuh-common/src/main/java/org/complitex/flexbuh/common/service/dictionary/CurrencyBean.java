@@ -23,12 +23,14 @@ public class CurrencyBean extends AbstractBean implements ICrudBean<Currency> {
         return sqlSession().selectOne(NS + ".selectCurrencyId", currency);
     }
 
-    public void save(Currency currency){
-        if (currency.getId() == null){
-            sqlSession().insert(NS + ".insertCurrency", currency);
-        }else {
-            sqlSession().update(NS + ".updateCurrency", currency);
-        }
+    @Override
+    public void insert(Currency currency) {
+        sqlSession().insert(NS + ".insertCurrency", currency);
+    }
+
+    @Override
+    public void update(Currency currency) {
+        sqlSession().update(NS + ".updateCurrency", currency);
     }
 
     @Override
