@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.web;
+package org.complitex.flexbuh.admin.dictionary.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -14,9 +14,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.flexbuh.admin.importexport.service.ImportTemplateXMLService;
+import org.complitex.flexbuh.admin.dictionary.service.ImportTemplateService;
 import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.security.SecurityRole;
+import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -31,16 +32,16 @@ import java.util.List;
  *         Date: 30.08.11 10:09
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public class ImportFile extends TemplatePage {
+public class ImportTemplate extends TemplatePage {
 
-    private final static Logger log = LoggerFactory.getLogger(ImportFile.class);
+    private final static Logger log = LoggerFactory.getLogger(ImportTemplate.class);
 
     @EJB
-    private ImportTemplateXMLService importTemplateService;
+    private ImportTemplateService importTemplateService;
 
     private IModel<List<TemplateXMLType>> typeModel = new ListModel<>();
 
-    public ImportFile() {
+    public ImportTemplate() {
 
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
@@ -70,7 +71,7 @@ public class ImportFile extends TemplatePage {
 
         form.add(dataFiles);
 
-        final DictionaryImportListener importListener = new DictionaryImportListener();
+        final AbstractImportListener importListener = new AbstractImportListener(){};
 
         //Кнопка импортировать
         Button process = new Button("process") {
@@ -84,13 +85,13 @@ public class ImportFile extends TemplatePage {
                     importTemplateService.process(type, importListener);
                 }
 
-                container.add(newTimer(importListener));
+//                container.add(newTimer(importListener));
             }
 
-            @Override
-            public boolean isVisible() {
-                return importListener.isEnded();
-            }
+//            @Override
+//            public boolean isVisible() {
+//                return importListener.isEnded();
+//            }
         };
         form.add(process);
 
@@ -108,23 +109,19 @@ public class ImportFile extends TemplatePage {
         });
     }
 
-    private AjaxSelfUpdatingTimerBehavior newTimer(final DictionaryImportListener listener){
+    private AjaxSelfUpdatingTimerBehavior newTimer(){
 
         return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
-
-                log.debug("import file: {}, listener status: {}, count completed: {}, count canceled: {}",
-                        new Object[]{listener.currentImportFile(), listener.getStatus(), listener.getCountCompleted(), listener.getCountCanceled()});
-
-                if (listener.isEnded()) {
-                    typeModel.getObject().clear();
-
-                    info(getStringFormat("complete", listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
-                    stop();
-                } else {
-                    info(getStringFormat("processing", listener.currentImportFile(), listener.getCountCompleted(), listener.getCountCanceled(), listener.getCountTotal()));
-                }
+//                if (listener.isEnded()) {
+//                    typeModel.getObject().clear();
+//
+//                    info(getStringFormat("complete", 0, 0, 0));
+//                    stop();
+//                } else {
+//                    info(getStringFormat("processing", 0, 0, 0, 0));
+//                }
             }
         };
     }

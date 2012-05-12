@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.web;
+package org.complitex.flexbuh.admin.dictionary.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;

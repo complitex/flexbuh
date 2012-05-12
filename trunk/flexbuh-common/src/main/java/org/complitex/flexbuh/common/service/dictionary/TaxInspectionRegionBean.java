@@ -25,13 +25,22 @@ public class TaxInspectionRegionBean extends AbstractBean implements ICrudBean<T
     }
 
     @Override
-    public void save(TaxInspectionRegion taxInspectionRegion) {
+    public void insert(TaxInspectionRegion taxInspectionRegion) {
         for (TaxInspection taxInspection : taxInspectionRegion.getTaxInspections()){
             taxInspection.setCReg(taxInspectionRegion.getCReg());
-
             taxInspection.setId(taxInspectionBean.getId(taxInspection));
 
-            taxInspectionBean.save(taxInspection);
+            taxInspectionBean.insert(taxInspection);
+        }
+    }
+
+    @Override
+    public void update(TaxInspectionRegion taxInspectionRegion) {
+        for (TaxInspection taxInspection : taxInspectionRegion.getTaxInspections()){
+            taxInspection.setCReg(taxInspectionRegion.getCReg());
+            taxInspection.setId(taxInspectionBean.getId(taxInspection));
+
+            taxInspectionBean.update(taxInspection);
         }
     }
 

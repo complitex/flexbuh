@@ -25,12 +25,13 @@ public class DocumentBean extends AbstractBean implements ICrudBean<Document>{
     }
 
     @Override
-    public void save(Document document) {
-        if (document.getId() == null){
-            sqlSession().insert(NS + ".insertDocument", document);
-        }else {
-            sqlSession().update(NS + ".updateDocument", document);
-        }
+    public void insert(Document document) {
+        sqlSession().insert(NS + ".insertDocument", document);
+    }
+
+    @Override
+    public void update(Document document) {
+        sqlSession().update(NS + ".updateDocument", document);
     }
 
     @Override

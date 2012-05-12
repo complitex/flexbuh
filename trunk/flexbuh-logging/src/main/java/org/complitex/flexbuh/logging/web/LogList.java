@@ -213,14 +213,12 @@ public class LogList extends TemplatePage {
 				item.add(new Label("category", getStringOrKey(log.get(CATEGORY))));
 				item.add(new Label("level_string", getStringOrKey(log.getLevel())));
 
-				try {
+
 					LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
 					logChangePanel.setVisible((log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT))
                             && expandModel.contains(log.getId()));
 					item.add(logChangePanel);
-				} catch (Exception e) {
-					logger.error("Can not instance LogChangePanel", e);
-				}
+
 
                 ContextImage expandImage = new ContextImage("expand_image",
                         expandModel.contains(log.getId()) ? IMAGE_ARROW_TOP : IMAGE_ARROW_BOTTOM);

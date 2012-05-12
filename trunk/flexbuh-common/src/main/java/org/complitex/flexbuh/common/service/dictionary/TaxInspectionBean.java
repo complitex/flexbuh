@@ -26,12 +26,13 @@ public class TaxInspectionBean extends AbstractBean implements ICrudBean<TaxInsp
     }
 
     @Override
-    public void save(TaxInspection taxInspection) {
-        if (taxInspection.getId() == null){
-            sqlSession().insert(NS + ".insertTaxInspection", taxInspection);
-        }else {
-            sqlSession().update(NS + ".updateTaxInspection", taxInspection);
-        }
+    public void insert(TaxInspection taxInspection) {
+        sqlSession().insert(NS + ".insertTaxInspection", taxInspection);
+    }
+
+    @Override
+    public void update(TaxInspection taxInspection) {
+        sqlSession().update(NS + ".updateTaxInspection", taxInspection);
     }
 
     @Override

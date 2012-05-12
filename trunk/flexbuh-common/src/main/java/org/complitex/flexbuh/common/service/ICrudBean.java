@@ -7,7 +7,9 @@ package org.complitex.flexbuh.common.service;
 public interface ICrudBean<T> {
     Long getId(T o);
 
-    void save(T o);
+    void insert(T o);
+
+    void update(T o);
 
     T load(Long id);
 

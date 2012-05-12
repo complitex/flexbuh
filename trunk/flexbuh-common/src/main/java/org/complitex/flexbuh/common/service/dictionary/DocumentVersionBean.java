@@ -25,12 +25,13 @@ public class DocumentVersionBean extends AbstractBean implements ICrudBean<Docum
     }
 
     @Override
-    public void save(DocumentVersion documentVersion) {
-        if (documentVersion.getId() == null){
-            sqlSession().insert(NS + ".insertDocumentVersion", documentVersion);
-        }else {
-            sqlSession().update(NS + ".updateDocumentVersion", documentVersion);
-        }
+    public void insert(DocumentVersion documentVersion) {
+        sqlSession().insert(NS + ".insertDocumentVersion", documentVersion);
+    }
+
+    @Override
+    public void update(DocumentVersion documentVersion) {
+        sqlSession().update(NS + ".updateDocumentVersion", documentVersion);
     }
 
     @Override

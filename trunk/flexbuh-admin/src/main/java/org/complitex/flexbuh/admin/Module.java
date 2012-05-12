@@ -1,6 +1,6 @@
 package org.complitex.flexbuh.admin;
 
-import org.complitex.flexbuh.admin.importexport.entity.DictionaryConfig;
+import org.complitex.flexbuh.admin.dictionary.entity.DictionaryConfig;
 import org.complitex.flexbuh.common.service.ConfigBean;
 
 import javax.annotation.PostConstruct;

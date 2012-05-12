@@ -1,4 +1,4 @@
-package org.complitex.flexbuh.admin.importexport.entity;
+package org.complitex.flexbuh.admin.dictionary.entity;
 
 import org.complitex.flexbuh.common.entity.IConfig;
 

@@ -59,7 +59,7 @@
         <appender-ref ref="DB"/>
     </logger>
 
-    <logger name="org.complitex.flexbuh" level="DEBUG">
-        <appender-ref ref="FLEXBUH_DEBUG"/>
-    </logger>
+    <!--<logger name="org.complitex.flexbuh" level="DEBUG">-->
+        <!--<appender-ref ref="FLEXBUH_DEBUG"/>-->
+    <!--</logger>-->
 </configuration>

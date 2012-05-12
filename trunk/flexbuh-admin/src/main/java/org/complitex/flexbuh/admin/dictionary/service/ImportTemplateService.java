@@ -1,7 +1,7 @@
-package org.complitex.flexbuh.admin.importexport.service;
+package org.complitex.flexbuh.admin.dictionary.service;
 
-import org.complitex.flexbuh.admin.importexport.entity.DictionaryConfig;
-import org.complitex.flexbuh.admin.importexport.web.DictionaryImportListener;
+import org.complitex.flexbuh.admin.dictionary.entity.DictionaryConfig;
+import org.complitex.flexbuh.admin.dictionary.web.DictionaryImportListener;
 import org.complitex.flexbuh.common.entity.template.TemplateXML;
 import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.service.ConfigBean;
@@ -23,8 +23,8 @@ import java.io.*;
  *         Date: 27.07.11 16:30
  */
 @Stateless
-public class ImportTemplateXMLService {
-    private final static Logger log = LoggerFactory.getLogger(ImportTemplateXMLService.class);
+public class ImportTemplateService {
+    private final static Logger log = LoggerFactory.getLogger(ImportTemplateService.class);
 
     private static final int BUFFER = 2048;
     private static final String DEFAULT_FILE_ENCODING = "CP1251";
@@ -43,7 +43,7 @@ public class ImportTemplateXMLService {
 
         //count
         if (listener instanceof DictionaryImportListener){
-            ((DictionaryImportListener) listener).addCountTotal(fileNames.length);
+            //todo ((DictionaryImportListener) listener).addCountTotal(fileNames.length);
         }
 
         listener.begin();

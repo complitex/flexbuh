@@ -40,26 +40,27 @@ public class FieldCodeBean extends AbstractBean implements ICrudBean<FieldCode>{
     }
 
     @Override
-    public void save(FieldCode fieldCode){
+    public void insert(FieldCode fieldCode) {
         //todo add unique key
-        if (fieldCode.getId() == null) {
-            sqlSession().insert(NS + ".insertFieldCode", fieldCode);
+        sqlSession().insert(NS + ".insertFieldCode", fieldCode);
 
-            for (Field field : fieldCode.getFields()) {
-                field.setFieldCodeId(fieldCode.getId());
-                sqlSession().insert(NS + ".insertField", field);
-            }
-
-            for (String code : fieldCode.getCodes()){
-                Map<String, Object> map = new HashMap<>();
-                map.put("fieldCodeId", fieldCode.getId());
-                map.put("code", code);
-
-                sqlSession().insert(NS + ".insertCode", map);
-            }
-        }else{
-            //todo
+        for (Field field : fieldCode.getFields()) {
+            field.setFieldCodeId(fieldCode.getId());
+            sqlSession().insert(NS + ".insertField", field);
         }
+
+        for (String code : fieldCode.getCodes()){
+            Map<String, Object> map = new HashMap<>();
+            map.put("fieldCodeId", fieldCode.getId());
+            map.put("code", code);
+
+            sqlSession().insert(NS + ".insertCode", map);
+        }
+    }
+
+    @Override
+    public void update(FieldCode fieldCode) {
+        //todo
     }
 
     @Override

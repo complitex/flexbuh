@@ -6,7 +6,7 @@
         <menu class="org.complitex.flexbuh.admin.AdminMenu"/>
         <menu class="org.complitex.flexbuh.document.web.DocumentMenu"/>
         <menu class="org.complitex.flexbuh.personnel.web.PersonnelMenu"/>
-		<menu class="org.complitex.flexbuh.admin.importexport.web.DictionaryMenu"/>
-		<menu class="org.complitex.flexbuh.admin.importexport.web.FileMenu"/>
+		<menu class="org.complitex.flexbuh.admin.dictionary.web.DictionaryMenu"/>
+		<menu class="org.complitex.flexbuh.admin.dictionary.web.FileMenu"/>
     </sidebar>
 </template>
