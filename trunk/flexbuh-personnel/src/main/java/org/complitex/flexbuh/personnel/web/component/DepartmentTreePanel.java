@@ -2,6 +2,9 @@ package org.complitex.flexbuh.personnel.web.component;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,12 +17,10 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IDetachable;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.personnel.entity.*;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.web.DepartmentEdit;
@@ -33,6 +34,7 @@ import wickettree.util.ProviderSubset;
 
 import javax.ejb.EJB;
 import javax.ejb.ObjectNotFoundException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +57,8 @@ public class DepartmentTreePanel extends Panel {
 
     private DepartmentFilter filter = new DepartmentFilter();
 
+    private DepartmentFilter oldFilter;
+
     private Set<Department> state = new InverseSet<>(new ProviderSubset<>(provider));
 
     private Department department;
@@ -65,8 +69,13 @@ public class DepartmentTreePanel extends Panel {
     public DepartmentTreePanel(String id, Organization organization) {
         super(id);
         filter.setOrganizationId(organization.getId());
-        filter.setEntryIntoForceDate(organization.getEntryIntoForceDate());
-        filter.setCompletionDate(organization.getCompletionDate());
+        //filter.setEntryIntoForceDate(organization.getEntryIntoForceDate());
+        //filter.setCompletionDate(organization.getCompletionDate());
+        if (organization.getCompletionDate() == null) {
+            filter.setCurrentDate(new Date());
+        } else {
+            filter.setCurrentDate(organization.getCompletionDate());
+        }
         filter.setSortProperty("name");
         filter.setCount(Integer.MAX_VALUE);
         init();
@@ -135,16 +144,31 @@ public class DepartmentTreePanel extends Panel {
 
                             @Override
                             protected Component newLabelComponent(String id, final IModel<Department> departmentIModel) {
-                                return new Label(id, departmentIModel.getObject().getName()) {
-                                    @Override
-                                    protected void onComponentTag(ComponentTag tag) {
-                                        super.onComponentTag(tag);
-                                        if (departmentIModel.getObject().isDeleted()) {
-                                            tag.put("class", "deleted");
-                                            log.debug("object deleted: {}", departmentIModel.getObject());
-                                        }
-                                    }
-                                };
+                                return new Label(id, departmentIModel.getObject().getName()).
+                                        add(new AttributeModifier("class", "") {
+                                            @Override
+                                            protected String newValue(String currentValue, String replacementValue) {
+
+                                                String htmlClass = "";
+
+                                                if (departmentIModel.getObject().isDeleted()) {
+                                                    htmlClass = "deleted ";
+                                                }
+
+                                                if (oldFilter == null) {
+                                                    return htmlClass;
+                                                }
+
+                                                oldFilter.setId(departmentIModel.getObject().getId());
+                                                List<Department> oldDepartment = departmentBean.getDepartments(oldFilter);
+
+                                                htmlClass += oldDepartment.size() != 0 &&
+                                                        oldDepartment.get(0).getEntryIntoForceDate().equals(
+                                                        departmentIModel.getObject().getEntryIntoForceDate()) ? "" : "edited ";
+
+                                                return htmlClass;
+                                            }
+                                });
                             }
 
                             @Override
@@ -318,11 +342,38 @@ public class DepartmentTreePanel extends Panel {
         return department != null? department.getMasterDepartment(): null;
     }
 
-    public void update(AjaxRequestTarget target, Organization organization) {
+//    public void update(AjaxRequestTarget target, Organization organization) {
+
+    public void update(AjaxRequestTarget target, Date currentDate) {
+
+        if (oldFilter == null) {
+            oldFilter = new DepartmentFilter();
+            oldFilter.setCount(Integer.MAX_VALUE);
+        }
+
+        oldFilter.setCurrentDate(filter.getCurrentDate());
+
+        filter.setCurrentDate(currentDate);
+        /*
+
+        if (oldFilter == null) {
+            oldFilter = new DepartmentFilter();
+            oldFilter.setSortProperty("version");
+            oldFilter.setCount(Integer.MAX_VALUE);
+        }
+
+        oldFilter.setOrganizationId(filter.getOrganizationId());
+        oldFilter.setEntryIntoForceDate(filter.getEntryIntoForceDate());
+        oldFilter.setCompletionDate(filter.getCompletionDate());
+
         filter.setOrganizationId(organization.getId());
         filter.setEntryIntoForceDate(organization.getEntryIntoForceDate());
         filter.setCompletionDate(organization.getCompletionDate());
+        */
+
         provider.setRoots(new DepartmentIterator(departmentBean.getDepartments(filter)));
+
+        log.debug("old filter: {}\n\tnew filter: {}", oldFilter, filter);
         target.add(tree);
     }
 }

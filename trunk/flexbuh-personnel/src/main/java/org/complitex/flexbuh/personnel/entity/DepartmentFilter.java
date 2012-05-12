@@ -21,9 +21,11 @@ public class DepartmentFilter extends AbstractFilter {
 
     private Date completionDate;
 
-    private boolean byCurrentDate;
+    private Date currentDate;
 
     private Long masterId;
+
+    private Long id;
 
     public String getName() {
         return name;
@@ -57,6 +59,14 @@ public class DepartmentFilter extends AbstractFilter {
         this.masterId = masterId;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Date getEntryIntoForceDate() {
         return entryIntoForceDate;
     }
@@ -73,12 +83,12 @@ public class DepartmentFilter extends AbstractFilter {
         this.completionDate = completionDate;
     }
 
-    public boolean isByCurrentDate() {
-        return byCurrentDate;
+    public Date getCurrentDate() {
+        return currentDate;
     }
 
-    public void setByCurrentDate(boolean byCurrentDate) {
-        this.byCurrentDate = byCurrentDate;
+    public void setCurrentDate(Date currentDate) {
+        this.currentDate = currentDate;
     }
 
     @Override
