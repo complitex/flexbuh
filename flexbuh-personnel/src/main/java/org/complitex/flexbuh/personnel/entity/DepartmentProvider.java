@@ -26,7 +26,7 @@ public class DepartmentProvider implements ITreeProvider<Department> {
     }
 
     @Override
-    public Iterator<? extends Department> getRoots() {
+    public Iterator<Department> getRoots() {
         return departments;
     }
 

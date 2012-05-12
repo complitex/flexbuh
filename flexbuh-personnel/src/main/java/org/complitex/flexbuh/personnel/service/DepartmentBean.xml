@@ -32,59 +32,30 @@
     <sql id="filter">
         <choose>
             <when test="currentDate != null">
-                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+            </when>
+            <when test="id != null">
+                `id` = #{id}
             </when>
             <otherwise>
                 `id` is not null
             </otherwise>
         </choose>
-        <if test="filter != null">
-            <if test="filter.name != null"> and `name` like concat('%', #{filter.name}, '%')</if>
-            <if test="filter.code != null"> and `type` like #{filter.code}</if>
-            <if test="filter.organizationId != null"> and `organization_id` = #{filter.organizationId}</if>
-            <if test="filter.organizationId != null and filter.masterId == null"> and `master_id` is null</if>
-            <if test="filter.masterId != null"> and `master_id` = #{filter.masterId}</if>
-            <if test="currentDate == null and filter.entryIntoForceDate != null">
-                and (`completion_date` > #{filter.entryIntoForceDate} or `completion_date` is null)
-            </if>
-            <if test="currentDate == null and filter.completionDate != null">
-                and #{filter.completionDate} >= `entry_into_force_date`
-            </if>
+        <if test="currentDate != null and id != null"> and `id` = #{id}</if>
+        <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
+        <if test="code != null"> and `type` like #{filter.code}</if>
+        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+        <if test="organizationId != null and masterId == null"> and `master_id` is null</if>
+        <if test="masterId != null"> and `master_id` = #{masterId}</if>
+        <if test="currentDate == null and entryIntoForceDate != null">
+            and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
         </if>
-        group by `id` desc
-    </sql>
-
-    <sql id="filter_order_limit">
-        <choose>
-            <when test="currentDate != null">
-                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
-            </when>
-            <otherwise>
-                `id` is not null
-            </otherwise>
-        </choose>
-        <choose>
-            <when test="filter != null">
-                <if test="filter.name != null"> and `name` like concat('%', #{filter.name}, '%')</if>
-                <if test="filter.code != null"> and `type` like #{filter.code}</if>
-                <if test="filter.organizationId != null"> and `organization_id` = #{filter.organizationId}</if>
-                <if test="filter.organizationId != null and filter.masterId == null"> and `master_id` is null</if>
-                <if test="filter.masterId != null"> and `master_id` = #{filter.masterId}</if>
-                <if test="currentDate == null and filter.entryIntoForceDate != null">
-                    and (`completion_date` > #{filter.entryIntoForceDate} or `completion_date` is null)
-                </if>
-                <if test="currentDate == null and filter.completionDate != null">
-                    and #{filter.completionDate} >= `entry_into_force_date`
-                </if>
-                group by `id` desc
-                order by ${filter.sortProperty}
-                <choose><when test="filter.ascending">asc</when><otherwise>desc</otherwise></choose>
-                limit #{filter.first}, #{filter.count}
-            </when>
-            <otherwise>
-                group by `id` desc
-            </otherwise>
-        </choose>
+        <if test="currentDate == null and completionDate != null">
+            and #{completionDate} >= `entry_into_force_date`
+        </if>
+        <if test="currentDate == null and id == null">
+          group by `id` order by `id` desc, `version` desc
+        </if>
     </sql>
 
     <insert id="insertDepartment"
@@ -151,12 +122,18 @@
          <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
     </select>
 
-    <select id="selectCurrentDepartments" parameterType="map" resultMap="departmentResultMap">
-        select *, #{currentDate} as `current_date` from `department` where
-        <include refid="filter_order_limit"/>
+    <select id="selectCurrentDepartments" parameterType="org.complitex.flexbuh.personnel.entity.DepartmentFilter" resultMap="departmentResultMap">
+        select *, #{currentDate} as `current_date` from
+        (select * from `department` where
+        <include refid="filter"/>) as s
+        <if test="sortProperty != null">
+          order by ${sortProperty}
+          <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        </if>
+        limit #{first}, #{count}
     </select>
 
-    <select id="selectCurrentDepartmentsCount" parameterType="map" resultMap="departmentResultMap">
+    <select id="selectCurrentDepartmentsCount" parameterType="org.complitex.flexbuh.personnel.entity.DepartmentFilter" resultMap="departmentResultMap">
         select *, #{currentDate} as `current_date` from `department` where
         <include refid="filter"/>
     </select>

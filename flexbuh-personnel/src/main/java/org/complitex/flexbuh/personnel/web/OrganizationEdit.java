@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -15,6 +16,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.common.entity.Address;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -65,6 +68,8 @@ public class OrganizationEdit extends FormTemplatePage {
 
     protected Organization organization;
 
+    private Organization oldOrganization = null;
+
     private IModel<String> physicalStreetModel = new Model<String>();
     private IModel<String> physicalCityModel = new Model<String>();
 
@@ -81,6 +86,8 @@ public class OrganizationEdit extends FormTemplatePage {
     private TemporalDomainObjectUpdate<Organization> historyUpdate;
 
     private TemporalHistoryPanel<Organization> currentEnabledPanel;
+
+    private Component phoneField;
 
     protected OrganizationEdit() {
         organization = new Organization();
@@ -185,6 +192,7 @@ public class OrganizationEdit extends FormTemplatePage {
             public void onUpdate(AjaxRequestTarget target) {
                 super.onUpdate(target);
 
+                oldOrganization = organization;
                 organization = getObject();
                 //form.setModelObject(organization);
                 form.setModel(new CompoundPropertyModel<>(organization));
@@ -202,9 +210,11 @@ public class OrganizationEdit extends FormTemplatePage {
                 } else if (juridicalAddress.getActive() == null) {
                     juridicalAddress.setActive(new AccordionActive(false));
                 }
+
                 target.add(form);
                 target.add(organizationHistoryPanel);
-                panel.update(target, organization);
+                //panel.update(target, organization);
+                panel.update(target, organization.getEntryIntoForceDate());
             }
         };
 
@@ -217,14 +227,15 @@ public class OrganizationEdit extends FormTemplatePage {
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
 
         // Телефон
-        addHistoryFieldToForm(form, "phone", new TextField<String>("phone") {
+        phoneField = new TextField<String>("phone") {
             @Override
             public <String> IConverter<String> getConverter(final Class<String> type) {
                 return super.getConverter(type);
                 // US telephone number mask
 //                return new MaskConverter<>(PHONE_MASK);
             }
-        });
+        };
+        addHistoryFieldToForm(form, "phone", phoneField);
 
         // Факс
         addHistoryFieldToForm(form, "fax", new TextField<String>("fax") {
@@ -296,32 +307,6 @@ public class OrganizationEdit extends FormTemplatePage {
         organizationHistoryPanel.setOutputMarkupId(true);
         add(organizationHistoryPanel);
 
-        /*
-        form.add(new TemporalHistoryPanel<Organization>("organization_phone_history", organization, historyUpdate) {
-
-            private String fieldName = "phone";
-
-            @Override
-            protected Organization getTemporalDomainObjectPreviousInHistory(Organization object) {
-                return organizationBean.getOrganizationPreviewInHistoryByField(object.getId(), object.getVersion(), fieldName);
-            }
-
-            @Override
-            protected Organization getTemporalDomainObjectNextInHistory(Organization object) {
-                return organizationBean.getOrganizationNextInHistoryByField(object.getId(), object.getVersion(), fieldName);
-            }
-
-            @Override
-            protected Organization getTemporalDomainObjectStartInHistory(Organization object) {
-                return organizationBean.getOrganization(object.getId(), 1);
-            }
-
-            @Override
-            protected Organization getTemporalDomainObjectLastInHistory(Organization organization) {
-                return organizationBean.getOrganizationLastInHistoryByField(organization.getId(), fieldName);
-            }
-        }.setOutputMarkupId(true));
-        */
         /*
         add(new TemporalHistoryList<Organization>("organization_history", organization) {
             @Override
@@ -507,7 +492,8 @@ public class OrganizationEdit extends FormTemplatePage {
         }
     }
 
-    private void addHistoryFieldToForm(Form<Organization> form, final String fieldName, Component field) {
+    private void addHistoryFieldToForm(Form<Organization> form, final String fieldName,
+                                       final Component field) {
         final TemporalHistoryPanel<Organization> historyPanel =
             new TemporalHistoryPanel<Organization>(fieldName + "_history",
                     organization, historyUpdate) {
@@ -567,8 +553,23 @@ public class OrganizationEdit extends FormTemplatePage {
                 target.add(historyPanel);
             }
         });
+        field.add(new AttributeModifier("class", "") {
+            @Override
+            protected String newValue(String currentValue, String replacementValue) {
+                if (oldOrganization == null) {
+                    return "";
+                }
+                PropertyModel<String> propertyModel1 = new PropertyModel<>(oldOrganization, field.getId());
+                PropertyModel<String> propertyModel2 = new PropertyModel<>(organization, field.getId());
+                return StringUtils.equals(propertyModel1.getObject(), propertyModel2.getObject()) ? "" : "edited";
+            }
+        });
 
         form.add(field);
         form.add(historyPanel);
+    }
+
+    private String transformDatabaseField2ClassField(String databaseField) {
+        return StringUtils.remove(databaseField, '_');
     }
 }

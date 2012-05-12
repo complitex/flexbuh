@@ -71,22 +71,22 @@ public class DepartmentBean extends AbstractBean {
     }
 
     public List<Department> getDepartments(DepartmentFilter filter) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("filter", filter);
-        if (filter == null || filter.isByCurrentDate()) {
-            params.put("currentDate", new Date());
+        if (filter == null) {
+            filter = new DepartmentFilter();
+            filter.setCurrentDate(new Date());
+            filter.setCount(Integer.MAX_VALUE);
         }
 
-        return sqlSession().selectList(NS + ".selectCurrentDepartments", params);
+        return sqlSession().selectList(NS + ".selectCurrentDepartments", filter);
     }
 
     public int getDepartmentsCount(DepartmentFilter filter) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("filter", filter);
-        if (filter == null || filter.isByCurrentDate()) {
-            params.put("currentDate", new Date());
+        if (filter == null) {
+            filter = new DepartmentFilter();
+            filter.setCurrentDate(new Date());
+            filter.setCount(Integer.MAX_VALUE);
         }
 
-        return (Integer)sqlSession().selectOne(NS + ".selectCurrentDepartmentsCount", params);
+        return (Integer)sqlSession().selectOne(NS + ".selectCurrentDepartmentsCount", filter);
     }
 }
