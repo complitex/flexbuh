@@ -169,7 +169,9 @@ public class DeclarationFormComponent extends Panel{
                         checkBox.setOutputMarkupId(true);
 
                         parent.add(checkBox);
-                    }                    
+                    }else if ("sp_rownum_input".endsWith(type)){
+                        //todo add auto update text field
+                    }
                 }
 
                 if (wicketId != null){
