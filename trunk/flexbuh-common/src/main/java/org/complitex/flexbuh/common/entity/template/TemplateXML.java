@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.common.entity.template;
 
+import org.complitex.flexbuh.common.entity.ILongId;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.07.11 16:02
  */
-public class TemplateXML implements Serializable {
+public class TemplateXML implements ILongId, Serializable {
     private Long id;
     private TemplateXMLType type;
     private String name;
@@ -24,6 +26,7 @@ public class TemplateXML implements Serializable {
     public TemplateXML() {
     }
 
+    @Override
     public Long getId() {
         return id;
     }

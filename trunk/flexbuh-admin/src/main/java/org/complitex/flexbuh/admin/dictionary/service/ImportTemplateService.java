@@ -1,11 +1,14 @@
 package org.complitex.flexbuh.admin.dictionary.service;
 
 import org.complitex.flexbuh.admin.dictionary.entity.DictionaryConfig;
+import org.complitex.flexbuh.admin.dictionary.web.DictionaryImportChildListener;
 import org.complitex.flexbuh.admin.dictionary.web.DictionaryImportListener;
 import org.complitex.flexbuh.common.entity.template.TemplateXML;
 import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
+import org.complitex.flexbuh.common.exception.CriticalImportException;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.ConfigBean;
-import org.complitex.flexbuh.common.service.ImportListener;
 import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.common.util.FileUtil;
@@ -17,6 +20,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 import java.io.*;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -35,52 +39,62 @@ public class ImportTemplateService {
     @EJB
     private ConfigBean configBean;
 
+
+    public void process(DictionaryImportListener listener, List<TemplateXMLType> types){
+        for (TemplateXMLType type : types){
+            process(type, listener.getChildListener(type, true));
+        }
+    }
+
     @Asynchronous
-    public void process(TemplateXMLType type, ImportListener<String> listener){
+    public void process(TemplateXMLType type, DictionaryImportChildListener listener){
         String root = configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true);
 
         String[] fileNames = FileUtil.getFileNames(root, type.getSubDir(), type.getPattern());
 
-        //count
-        if (listener instanceof DictionaryImportListener){
-            //todo ((DictionaryImportListener) listener).addCountTotal(fileNames.length);
-        }
+        //Всего
+        listener.setTotal(fileNames.length);
 
-        listener.begin();
+        //Обработка
+        listener.processing();
 
-        for (String fileName : fileNames){
-            InputStream inputStream = FileUtil.getFileInputStream(root, type.getSubDir(), fileName);
-
-            processFile(type, listener, fileName, getData(inputStream));
-        }
-
-        listener.completed();
-    }
-
-    protected String getData(InputStream inputStream){
         try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            for (String fileName : fileNames){
+                InputStream inputStream = FileUtil.getFileInputStream(root, type.getSubDir(), fileName);
 
-            bufferedInputStream.mark(BUFFER);
-
-            byte[] line = new byte[BUFFER];
-
-            int n = bufferedInputStream.read(line);
-
-            if (n != -1 && new String(line).toUpperCase().contains("UTF-8")) {
-                bufferedInputStream.reset();
-
-                return getData(bufferedInputStream, "UTF-8");
+                processFile(type, listener, fileName, getData(inputStream));
             }
 
+            //Обработано
+            listener.processed();
+            log.info("Тип: {}, Всего: {}, добавлено: {}, обновлено: {}",
+                    new Object[]{type.name(), listener.getTotal(), listener.getInserted() ,
+                    listener.getUpdated(), new Event(EventCategory.IMPORT, TemplateXML.class)});
+        } catch (Exception e) {
+            listener.error(e.getMessage());
+
+            log.error("Критическая ошибка импорта", e);
+        }
+    }
+
+    protected String getData(InputStream inputStream) throws IOException {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+
+        bufferedInputStream.mark(BUFFER);
+
+        byte[] line = new byte[BUFFER];
+
+        int n = bufferedInputStream.read(line);
+
+        if (n != -1 && new String(line).toUpperCase().contains("UTF-8")) {
             bufferedInputStream.reset();
 
-            return changeWhitespaceUTF8(getData(bufferedInputStream, DEFAULT_FILE_ENCODING));
-        } catch (IOException e) {
-            log.error("Ошибка импорта файла");
+            return getData(bufferedInputStream, "UTF-8");
         }
 
-        return null;
+        bufferedInputStream.reset();
+
+        return changeWhitespaceUTF8(getData(bufferedInputStream, DEFAULT_FILE_ENCODING));
     }
 
     protected String getData(InputStream inputStream, String encoding) throws IOException {
@@ -103,24 +117,25 @@ public class ImportTemplateService {
         return s.replaceAll("&amp;nbsp;", "&amp;#160;");
     }
 
-    public void processFile(TemplateXMLType type, ImportListener<String> listener, String fileName, String data) {
-        if (data == null){
-            listener.skip(fileName);
-
-            return;
-        }
+    public void processFile(TemplateXMLType type, DictionaryImportChildListener listener, String fileName, String data)
+            throws CriticalImportException {
+        TemplateXML templateXML = null;
 
         try {
-            TemplateXML templateXML = new TemplateXML(type, getName(fileName), data, DateUtil.getCurrentDate());
+            templateXML = new TemplateXML(type, getName(fileName), data, DateUtil.getCurrentDate());
             templateXML.setId(templateXMLBean.getTemplateId(templateXML));
 
-            templateXMLBean.save(templateXML);
-
-            listener.processed(fileName);
+            if (templateXML.getId() == null) {
+                templateXMLBean.insert(templateXML);
+                listener.inserted();
+            }else {
+                templateXMLBean.update(templateXML);
+                listener.updated();
+            }
         } catch (Exception e) {
-            log.error("Ошибка импорта файла", e);
+            log.error("Ошибка импорта файла {0}", fileName, new Event(e, EventCategory.IMPORT, templateXML));
 
-            listener.skip(fileName);
+            throw new CriticalImportException(e, "Ошибка импорта фала {0}", fileName);
         }
     }
 

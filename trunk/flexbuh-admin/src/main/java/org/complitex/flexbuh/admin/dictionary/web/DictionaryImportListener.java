@@ -1,7 +1,5 @@
 package org.complitex.flexbuh.admin.dictionary.web;
 
-import org.complitex.flexbuh.common.entity.dictionary.DictionaryType;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,21 +12,21 @@ public class DictionaryImportListener implements Serializable {
     private String criticalErrorMessage;
     private boolean criticalError = false;
 
-    private Map<DictionaryType, DictionaryImportChildListener> childListenerMap = new ConcurrentHashMap<>();
+    private Map<Enum, DictionaryImportChildListener> childListenerMap = new ConcurrentHashMap<>();
 
-    public DictionaryImportChildListener getChildListener(DictionaryType dictionaryType, boolean create){
-        DictionaryImportChildListener childListener = childListenerMap.get(dictionaryType);
+    public DictionaryImportChildListener getChildListener(Enum type, boolean create){
+        DictionaryImportChildListener childListener = childListenerMap.get(type);
 
         if (create && childListener == null){
             childListener = new DictionaryImportChildListener();
 
-            childListenerMap.put(dictionaryType, childListener);
+            childListenerMap.put(type, childListener);
         }
 
         return childListener;
     }
 
-    public boolean isEnded() {
+    public boolean isDone() {
         boolean childProcessed = true;
 
         for (DictionaryImportChildListener childListener : childListenerMap.values()){
@@ -56,8 +54,8 @@ public class DictionaryImportListener implements Serializable {
         childListenerMap.clear();
     }
 
-    public DictionaryType getProcessing(){
-        for (DictionaryType type : childListenerMap.keySet()){
+    public Enum getProcessingType(){
+        for (Enum type : childListenerMap.keySet()){
             if (DictionaryImportChildListener.Status.PROCESSING.equals(childListenerMap.get(type).getStatus())){
                 return type;
             }
