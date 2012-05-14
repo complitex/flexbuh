@@ -47,12 +47,12 @@ import static org.complitex.flexbuh.common.logging.EventKey.*;
 @AuthorizeInstantiation(SecurityRole.LOG_VIEW)
 public class LogList extends TemplatePage {
 
-	private final static Logger logger = LoggerFactory.getLogger(LogList.class);
+    private final static Logger logger = LoggerFactory.getLogger(LogList.class);
 
     private final static String IMAGE_ARROW_TOP = "images/arrow2top.gif";
     private final static String IMAGE_ARROW_BOTTOM = "images/arrow2bot.gif";
 
-	@EJB
+    @EJB
     private LogListBean logListBean;
 
     public LogList() {
@@ -155,7 +155,7 @@ public class LogList extends TemplatePage {
                     public String getIdValue(EventCategory object, int index) {
                         return String.valueOf(object.ordinal());
                     }
-				}));
+                }));
 
         //Level
         filterForm.add(new DropDownChoice<>("level_string", Arrays.asList(Log.LEVEL.values()),
@@ -203,22 +203,23 @@ public class LogList extends TemplatePage {
                 final Log log = item.getModelObject();
 
                 item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTime())), "dd.MM.yy HH:mm:ss"));
-				//item.add(LogManager.get().getLinkComponent("objectId", log));
-				item.add(new Label("objectId", log.get(OBJECT_ID)));
-				item.add(new Label("caller_class", getStringOrKey(log.getController())));
-				item.add(new Label("formatted_message", log.getDescription()));
-				item.add(new Label("login", log.get(LOGIN)));
-				item.add(new Label("module", getStringOrKey(log.getModuleName())));
-				item.add(new Label("model", getStringOrKey(log.get(MODEL_CLASS))));
-				item.add(new Label("category", getStringOrKey(log.get(CATEGORY))));
-				item.add(new Label("level_string", getStringOrKey(log.getLevel())));
+                //item.add(LogManager.get().getLinkComponent("objectId", log));
+                item.add(new Label("objectId", log.get(OBJECT_ID)));
+                item.add(new Label("caller_class", getStringOrKey(log.getController())));
 
+                String errorMessage =  log.get(ERROR_MESSAGE) != null ? " - "  + log.get(ERROR_MESSAGE) : "";
 
-					LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
-					logChangePanel.setVisible((log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT))
-                            && expandModel.contains(log.getId()));
-					item.add(logChangePanel);
+                item.add(new Label("formatted_message", log.getDescription() + errorMessage ));
+                item.add(new Label("login", log.get(LOGIN)));
+                item.add(new Label("module", getStringOrKey(log.getModuleName())));
+                item.add(new Label("model", getStringOrKey(log.get(MODEL_CLASS))));
+                item.add(new Label("category", getStringOrKey(log.get(CATEGORY))));
+                item.add(new Label("level_string", getStringOrKey(log.getLevel())));
 
+                LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
+                logChangePanel.setVisible((log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT))
+                        && expandModel.contains(log.getId()));
+                item.add(logChangePanel);
 
                 ContextImage expandImage = new ContextImage("expand_image",
                         expandModel.contains(log.getId()) ? IMAGE_ARROW_TOP : IMAGE_ARROW_BOTTOM);
@@ -235,11 +236,11 @@ public class LogList extends TemplatePage {
                         target.add(filterForm);
                     }
 
-					@Override
-					protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
 
-					}
-				};
+                    }
+                };
                 expandLink.setDefaultFormProcessing(false);
                 expandLink.setVisible(log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT));
                 expandLink.add(expandImage);
