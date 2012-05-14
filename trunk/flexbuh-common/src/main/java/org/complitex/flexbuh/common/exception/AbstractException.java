@@ -10,16 +10,24 @@ public abstract class AbstractException extends Exception{
     private boolean initial = false;
 
     public AbstractException(boolean initial, Throwable cause, String pattern, Object... arguments) {
-        super(MessageFormat.format(pattern, arguments), cause);
+        super(format(pattern, arguments), cause);
         this.initial = initial;
     }
 
     public AbstractException(Throwable cause, String pattern, Object... arguments) {
-        super(MessageFormat.format(pattern, arguments), cause);
+        super(format(pattern, arguments), cause);
     }
 
     public AbstractException(String pattern, Object... arguments) {
-        super(MessageFormat.format(pattern, arguments));
+        super(format(pattern, arguments));
+    }
+
+    protected static String  format(String pattern, Object... arguments){
+        try {
+            return MessageFormat.format(pattern, arguments);
+        } catch (Exception e) {
+            return pattern;
+        }
     }
 
     @Override

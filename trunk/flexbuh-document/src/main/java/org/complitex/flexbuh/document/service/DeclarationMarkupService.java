@@ -98,7 +98,13 @@ public class DeclarationMarkupService {
 
             if (XmlUtil.getParentById("StretchTable", inputElement) == null){
                 //type
-                Element schemaElement = XmlUtil.getElementByName(inputElement.getAttribute("id"), schema);
+                String inputElementId = inputElement.getAttribute("id");
+
+                if ("PNUM".equals(inputElementId)){
+                    continue; //todo what is PNUM?
+                }
+
+                Element schemaElement = XmlUtil.getElementByName(inputElementId, schema);
                 String type = schemaElement.getAttribute("type");
                 inputElement.setAttribute("schema", type);
 
@@ -244,8 +250,13 @@ public class DeclarationMarkupService {
                         Element spRownumElement = (Element) spRownumList.item(k);
 
                         if (spRownumElement != null){
-                            spRownumElement.setAttribute("wicket:id", "spRownum_" + index + "_" + j + "_" + k);
-                            spRownumElement.removeAttribute("id");
+                            if (spRownumElement.getElementsByTagName("input").getLength() == 0) {
+                                spRownumElement.setAttribute("wicket:id", "spRownum_" + index + "_" + j + "_" + k);
+                                spRownumElement.removeAttribute("id");
+                            }else {
+                                spRownumElement.setAttribute("type", "sp_rownum_input");
+                                spRownumElement.removeAttribute("id");
+                            }
                         }
                     }
 

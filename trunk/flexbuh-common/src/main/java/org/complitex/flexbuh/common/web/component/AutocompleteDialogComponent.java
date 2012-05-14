@@ -106,7 +106,8 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
         getParent().visitChildren(getClass(), new IVisitor<AutocompleteDialogComponent<T>, Void>() {
             @Override
             public void component(AutocompleteDialogComponent<T> component, IVisit<Void> visit) {
-                if (!AutocompleteDialogComponent.this.equals(component) && component.getId().contains(field.getPrefix())){
+                if (!AutocompleteDialogComponent.this.equals(component)
+                        && ((AutocompleteDialogComponent)component).getField().getPrefix().equals(field.getPrefix())){
                     component.updateModel(target, object);
                 }
             }
@@ -119,5 +120,9 @@ public abstract class AutocompleteDialogComponent<T extends Serializable> extend
 
     public String getAlias() {
         return alias;
+    }
+
+    public Field getField() {
+        return field;
     }
 }

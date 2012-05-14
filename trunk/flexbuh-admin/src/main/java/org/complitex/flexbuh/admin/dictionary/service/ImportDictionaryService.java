@@ -115,7 +115,7 @@ public class ImportDictionaryService{
         try {
             inputStream = FileUtil.getFileInputStream(dir, SUB_DIR, type.getFileName());
         } catch (Exception e) {
-            throw new CriticalImportException(e, "Ошибка чтения файла {}", type.getFileName());
+            throw new CriticalImportException(e, "Ошибка чтения файла {0}", type.getFileName());
         }
 
         //Создание объектов по xml
