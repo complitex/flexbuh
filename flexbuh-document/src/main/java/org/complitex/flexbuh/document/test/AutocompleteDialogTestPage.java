@@ -26,7 +26,7 @@ public class AutocompleteDialogTestPage extends TemplatePage{
 
         //Employee
 
-        EmployeeDialog employeeDialog = new EmployeeDialog("e1", getSessionId());
+        EmployeeDialog employeeDialog = new EmployeeDialog("e1", 1L, getSessionId());
         add(employeeDialog);
 
         form.add(new EmployeeAutocompleteDialog("autocomplete", getSessionId(), 1L,

@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.util.StringUtil;
@@ -35,7 +36,7 @@ public class EmployeeDialog extends Panel implements IAutocompleteDialog<Employe
     
     private Dialog dialog;
 
-    public EmployeeDialog(String id, Long sessionId) {
+    public EmployeeDialog(String id, final Long sessionId, final Long personProfileId) {
         super(id);
         
         dialog = new Dialog("dialog");
@@ -69,9 +70,12 @@ public class EmployeeDialog extends Panel implements IAutocompleteDialog<Employe
         final RadioGroup<Employee> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Employee> list = employeeBean.getEmployees(new FilterWrapper<>(new Employee(sessionId)));
-
-        ListView listView = new ListView<Employee>("employees", list) {
+        ListView listView = new ListView<Employee>("employees", new LoadableDetachableModel<List<? extends Employee>>() {
+            @Override
+            protected List<? extends Employee> load() {
+                return employeeBean.getEmployees(new FilterWrapper<>(new Employee(sessionId, personProfileId)));
+            }
+        }) {
             @Override
             protected void populateItem(ListItem<Employee> item) {
                 Employee employee = item.getModelObject();

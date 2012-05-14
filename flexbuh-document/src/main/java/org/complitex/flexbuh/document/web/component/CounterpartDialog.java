@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.web.component.AutocompleteDialogComponent;
@@ -33,7 +34,7 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
     
     private Dialog dialog;
 
-    public CounterpartDialog(String id, Long sessionId, Long personProfileId) {
+    public CounterpartDialog(String id, final Long sessionId, final Long personProfileId) {
         super(id);
         
         dialog = new Dialog("dialog");
@@ -68,9 +69,12 @@ public class CounterpartDialog extends Panel implements IAutocompleteDialog<Coun
         final RadioGroup<Counterpart> radioGroup = new RadioGroup<>("radio_group", model);
         form.add(radioGroup);
 
-        List<Counterpart> list = counterpartBean.getCounterparts(new FilterWrapper<>(new Counterpart(sessionId, personProfileId)));
-
-        ListView listView = new ListView<Counterpart>("counterparts", list) {
+        ListView listView = new ListView<Counterpart>("counterparts", new LoadableDetachableModel<List<? extends Counterpart>>() {
+            @Override
+            protected List<? extends Counterpart> load() {
+                return counterpartBean.getCounterparts(new FilterWrapper<>(new Counterpart(sessionId, personProfileId)));
+            }
+        }) {
             @Override
             protected void populateItem(ListItem<Counterpart> item) {
                 Counterpart counterpart = item.getModelObject();
