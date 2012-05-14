@@ -1,7 +1,7 @@
 <configuration debug="true" scan="true" scanPeriod="30 seconds">
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
-    <appender name="DB" class="ch.qos.logback.classic.db.FlexbuhDBAppender">
+    <appender name="DB" class="org.complitex.flexbuh.common.logging.FlexbuhDBAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
