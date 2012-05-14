@@ -205,7 +205,8 @@ public class DeclarationFormComponent extends Panel{
                                 container.add(counterpartDialog);
                                 break;
                             case FieldCode.EMPLOYEE_SPR_NAME:
-                                employeeDialog = new EmployeeDialog(wicketId, declaration.getSessionId());
+                                employeeDialog = new EmployeeDialog(wicketId, declaration.getSessionId(),
+                                        declaration.getPersonProfileId());
                                 container.add(employeeDialog);
                                 break;
                             
