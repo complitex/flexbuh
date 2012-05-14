@@ -4,22 +4,18 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.dictionary.service.ImportTemplateService;
 import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.template.TemplatePage;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +29,6 @@ import java.util.List;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ImportTemplate extends TemplatePage {
-
     private final static Logger log = LoggerFactory.getLogger(ImportTemplate.class);
 
     @EJB
@@ -41,12 +36,13 @@ public class ImportTemplate extends TemplatePage {
 
     private IModel<List<TemplateXMLType>> typeModel = new ListModel<>();
 
-    public ImportTemplate() {
+    private CheckBoxMultipleChoice<TemplateXMLType> templateXMLTypes;
 
+    private DictionaryImportListener listener = new DictionaryImportListener();
+
+    public ImportTemplate() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
-
-        container.add(new Dialog("dialog")); //fix: ajax timer don't work without jquery
 
         container.add(new FeedbackPanel("messages"));
 
@@ -54,75 +50,68 @@ public class ImportTemplate extends TemplatePage {
         container.add(form);
 
         //Dictionary types
-        final CheckBoxMultipleChoice<TemplateXMLType> dataFiles =
-                new CheckBoxMultipleChoice<>("dataFiles", typeModel, Arrays.asList(TemplateXMLType.values()),
-                        new IChoiceRenderer<TemplateXMLType>() {
+        templateXMLTypes = new CheckBoxMultipleChoice<>("dataFiles", typeModel,
+                Arrays.asList(TemplateXMLType.values()),
+                new IChoiceRenderer<TemplateXMLType>() {
 
-                            @Override
-                            public Object getDisplayValue(TemplateXMLType object) {
-                                return getString(object.name());
-                            }
+                    @Override
+                    public Object getDisplayValue(TemplateXMLType type) {
+                        String info = "";
 
-                            @Override
-                            public String getIdValue(TemplateXMLType object, int index) {
-                                return object.toString();
-                            }
-                        });
+                        DictionaryImportChildListener childListener = listener.getChildListener(type, false);
 
-        form.add(dataFiles);
+                        if (childListener != null && childListener.getStatus() != null){
+                            info += " (" + "всего: " + childListener.getTotal();
+                            info += ", " + "добавлено: " + childListener.getInserted();
+                            info += ", " + "обновлено: " + childListener.getUpdated();
+                            info += childListener.getErrorMessage() != null
+                                    ? ", ошибка: " + childListener.getErrorMessage() : "";
+                            info += ")";
+                        }
 
-        final AbstractImportListener importListener = new AbstractImportListener(){};
+                        return getString(type.name()) + info;
+                    }
+
+                    @Override
+                    public String getIdValue(TemplateXMLType object, int index) {
+                        return object.ordinal() + "";
+                    }
+                });
+        templateXMLTypes.setOutputMarkupId(true);
+        form.add(templateXMLTypes);
 
         //Кнопка импортировать
         Button process = new Button("process") {
             @Override
             public void onSubmit() {
-                log.debug("Submit process");
+                listener.clear();
 
-                log.debug("Selected objects: {}", typeModel.getObject());
-
-                for (TemplateXMLType type : typeModel.getObject()) {
-                    importTemplateService.process(type, importListener);
+                for (TemplateXMLType type : typeModel.getObject()){
+                    importTemplateService.process(type, listener.getChildListener(type, true));
                 }
 
-//                container.add(newTimer(importListener));
+                container.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
+                    @Override
+                    protected void onPostProcessTarget(AjaxRequestTarget target) {
+                        target.add(templateXMLTypes);
+
+                        if (listener.isDone()) {
+                            typeModel.getObject().clear();
+
+                            info(getStringFormat("complete"));
+                            stop();
+                        }else {
+                            info(getStringFormat("processing"));
+                        }
+                    }
+                });
             }
 
-//            @Override
-//            public boolean isVisible() {
-//                return importListener.isEnded();
-//            }
-        };
-        form.add(process);
-
-        //Ошибки
-        container.add(new Label("error", new LoadableDetachableModel<Object>() {
-            @Override
-            protected Object load() {
-                return null;//addressImportService.getErrorMessage();
-            }
-        }){
             @Override
             public boolean isVisible() {
-                return false;//addressImportService.isError();
-            }
-        });
-    }
-
-    private AjaxSelfUpdatingTimerBehavior newTimer(){
-
-        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
-            @Override
-            protected void onPostProcessTarget(AjaxRequestTarget target) {
-//                if (listener.isEnded()) {
-//                    typeModel.getObject().clear();
-//
-//                    info(getStringFormat("complete", 0, 0, 0));
-//                    stop();
-//                } else {
-//                    info(getStringFormat("processing", 0, 0, 0, 0));
-//                }
+                return listener == null || listener.isDone();
             }
         };
+        form.add(process);
     }
 }

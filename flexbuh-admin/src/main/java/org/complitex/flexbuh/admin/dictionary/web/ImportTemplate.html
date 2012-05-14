@@ -9,19 +9,14 @@
         <h1><wicket:message key="title"/></h1>
 
         <div wicket:id="container">
-            <div wicket:id="dialog"></div>
-
             <div wicket:id="messages"></div>
-            <ul>
-                <li wicket:id="error" class="feedbackPanelERROR"></li>
-            </ul>
 
             <form action="#" wicket:id="form">
-                <h2><wicket:message key="import"/></h2>
 				<span wicket:id="dataFiles"></span>
-                <br/>
 
-                <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
+                <div style="margin-top: 20px">
+                    <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
+                </div>
             </form>
         </div>
     </div>

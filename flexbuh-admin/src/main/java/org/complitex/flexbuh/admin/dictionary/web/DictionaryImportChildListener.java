@@ -2,10 +2,12 @@ package org.complitex.flexbuh.admin.dictionary.web;
 
 import java.io.Serializable;
 
+import static org.complitex.flexbuh.admin.dictionary.web.DictionaryImportChildListener.Status.*;
+
 /**
-* @author Anatoly A. Ivanov java@inheaven.ru
-*         Date: 12.05.12 14:57
-*/
+ * @author Anatoly A. Ivanov java@inheaven.ru
+ *         Date: 12.05.12 14:57
+ */
 public class DictionaryImportChildListener implements Serializable {
     public static enum Status {
         PROCESSING, PROCESSED, ERROR
@@ -30,7 +32,7 @@ public class DictionaryImportChildListener implements Serializable {
     }
 
     public void processing(){
-        status = Status.PROCESSING;
+        status = PROCESSING;
     }
 
     public void setTotal(int total) {
@@ -46,14 +48,14 @@ public class DictionaryImportChildListener implements Serializable {
     }
 
     public void processed(){
-        status = Status.PROCESSED;
+        status = PROCESSED;
     }
 
     public void error(String message){
         inserted = 0;
         updated = 0;
         errorMessage = message;
-        status = Status.ERROR;
+        status = ERROR;
     }
 
     public Status getStatus() {
