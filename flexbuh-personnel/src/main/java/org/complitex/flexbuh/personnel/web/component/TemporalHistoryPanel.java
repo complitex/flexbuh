@@ -3,11 +3,9 @@ package org.complitex.flexbuh.personnel.web.component;
 import com.google.common.collect.Maps;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -19,7 +17,13 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Pavel Sknar
@@ -29,7 +33,7 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
 
     private static final Logger log = LoggerFactory.getLogger(TemporalHistoryPanel.class);
 
-    private final static DateFormat HISTORY_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private final static DateFormat HISTORY_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy\u00A0HH:mm:ss");
 
     private static final String HISTORY_START_BUTTON     = "start";
     private static final String HISTORY_BACK_BUTTON      = "back";
