@@ -52,7 +52,7 @@ public class OrganizationEdit extends FormTemplatePage {
 
     private Logger log = LoggerFactory.getLogger(OrganizationEdit.class);
 
-    private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
+    //private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
 
     public final static String PARAM_ORGANIZATION_ID = "object_id";
     public final static String PARAM_ORGANIZATION_VERSION = "object_version";
@@ -86,6 +86,8 @@ public class OrganizationEdit extends FormTemplatePage {
     private TemporalDomainObjectUpdate<Organization> historyUpdate;
 
     private TemporalHistoryPanel<Organization> currentEnabledPanel;
+
+    private boolean inHistoryContainer = false;
 
     protected OrganizationEdit() {
         organization = new Organization();
@@ -210,7 +212,7 @@ public class OrganizationEdit extends FormTemplatePage {
                 }
 
                 target.add(form);
-                target.add(organizationHistoryPanel);
+                //target.add(organizationHistoryPanel);
                 //panel.update(target, organization);
                 Date currentDate;
                 if (organization.isDeleted()) {
@@ -312,6 +314,27 @@ public class OrganizationEdit extends FormTemplatePage {
         };
         organizationHistoryPanel.setOutputMarkupId(true);
         add(organizationHistoryPanel);
+
+        final WebMarkupContainer container = new WebMarkupContainer("container");
+
+        form.add(container);
+
+        form.add(new AjaxEventBehavior("onmouseover") {
+            protected void onEvent(final AjaxRequestTarget target) {
+                log.debug("focus on: form");
+                if (!inHistoryContainer && currentEnabledPanel != null && currentEnabledPanel.isVisible()) {
+                    currentEnabledPanel.setVisible(false);
+                    target.add(currentEnabledPanel);
+                }
+            }
+        });
+
+        form.add(new AjaxEventBehavior("onmouseout") {
+            protected void onEvent(final AjaxRequestTarget target) {
+                log.debug("focus off: form");
+                //outComponents.remove(TemporalHistoryPanel.this);
+            }
+        });
 
         /*
         add(new TemporalHistoryList<Organization>("organization_history", organization) {
@@ -474,6 +497,7 @@ public class OrganizationEdit extends FormTemplatePage {
         @Override
         protected void onEvent(AjaxRequestTarget target) {
             opened = !opened;
+            log.debug("Is opened: {}", opened);
         }
 
         public boolean isOpened() {
@@ -529,25 +553,23 @@ public class OrganizationEdit extends FormTemplatePage {
         historyPanel.setOutputMarkupId(true);
         historyPanel.setVisible(false);
         historyPanel.setOutputMarkupPlaceholderTag(true);
-        /*
+
         WebMarkupContainer container = new WebMarkupContainer(fieldName + "_container");
 
         container.add(new AjaxEventBehavior("onmouseover") {
             protected void onEvent(final AjaxRequestTarget target) {
-                if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
-                    currentEnabledPanel.setVisible(false);
-                    target.add(currentEnabledPanel);
-                }
-                historyPanel.setVisible(true);
-                currentEnabledPanel = historyPanel;
-                target.add(historyPanel);
+                inHistoryContainer = true;
+            }
+        }).add(new AjaxEventBehavior("onmouseout") {
+            protected void onEvent(final AjaxRequestTarget target) {
+                inHistoryContainer = false;
             }
         });
 
         container.add(field);
         container.add(historyPanel);
         form.add(container);
-        */
+
         field.add(new AjaxEventBehavior("onmouseover") {
             protected void onEvent(final AjaxRequestTarget target) {
                 if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
@@ -571,8 +593,8 @@ public class OrganizationEdit extends FormTemplatePage {
             }
         });
 
-        form.add(field);
-        form.add(historyPanel);
+        //form.add(field);
+        //form.add(historyPanel);
     }
 
     private String transformDatabaseField2ClassField(String databaseField) {
