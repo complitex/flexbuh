@@ -17,7 +17,8 @@ public class LogFilter extends AbstractFilter {
 
 	// event attributes
 	private Date timestmp;
-	private String caller_class;
+	private String logger_name;
+    private String caller_class;
 	private String formatted_message;
 	private Log.LEVEL level_string;
 
@@ -44,15 +45,23 @@ public class LogFilter extends AbstractFilter {
 		return timestmp != null? DateUtil.getEndOfDay(timestmp).getTime(): null;
 	}
 
-	public String getCaller_class() {
-		return caller_class;
-	}
+    public String getCaller_class2() {
+        return caller_class;
+    }
 
-	public void setCaller_class(String caller_class) {
-		this.caller_class = caller_class;
-	}
+    public void setCaller_class2(String caller_class) {
+        this.caller_class = caller_class;
+    }
 
-	public String getFormatted_message() {
+    public String getLogger_name() {
+        return logger_name;
+    }
+
+    public void setLogger_name(String logger_name) {
+        this.logger_name = logger_name;
+    }
+
+    public String getFormatted_message() {
 		return formatted_message;
 	}
 

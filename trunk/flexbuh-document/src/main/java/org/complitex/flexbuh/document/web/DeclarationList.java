@@ -311,7 +311,7 @@ public class DeclarationList extends TemplatePage{
                 pageParameters.set("id", declaration.getId());
 
                 item.add(new BookmarkablePageLinkPanel<>("name", declaration.getTemplateName() + " " + declaration.getName(),
-                        DeclarationFormPage.class, pageParameters, !declaration.isValidated() ? null : "color:#273540"));
+                        DeclarationEditPage.class, pageParameters, !declaration.isValidated() ? null : "color:#273540"));
 
                 //Date
                 item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()),
@@ -368,7 +368,7 @@ public class DeclarationList extends TemplatePage{
                                 }));
 
                         linkedItem.add(new BookmarkablePageLinkPanel<>("name", linkedDeclaration.getTemplateName()
-                                + " " + linkedDeclaration.getName(), DeclarationFormPage.class, pageParameters,
+                                + " " + linkedDeclaration.getName(), DeclarationEditPage.class, pageParameters,
                                 !linkedDeclaration.isValidated() ? null : "color:#273540"));
 
                         linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()),

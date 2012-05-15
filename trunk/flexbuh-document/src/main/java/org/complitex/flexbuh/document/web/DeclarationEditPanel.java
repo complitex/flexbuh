@@ -17,6 +17,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.util.ScriptUtil;
 import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.RadioSet;
@@ -46,12 +47,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.complitex.flexbuh.common.logging.EventCategory.CREATE;
+import static org.complitex.flexbuh.common.logging.EventCategory.EDIT;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.08.11 15:58
  */
-public class DeclarationFormComponent extends Panel{
-    private final static Logger log = LoggerFactory.getLogger(DeclarationFormComponent.class);
+public class DeclarationEditPanel extends Panel{
+    private final static Logger log = LoggerFactory.getLogger(DeclarationEditPanel.class);
 
     @EJB
     private TemplateXMLService templateService;
@@ -82,7 +86,7 @@ public class DeclarationFormComponent extends Panel{
     private CounterpartDialog counterpartDialog = null;
     private EmployeeDialog employeeDialog = null;
 
-    public DeclarationFormComponent(String id, Declaration declaration){
+    public DeclarationEditPanel(String id, Declaration declaration){
         super(id);
 
         //Declaration
@@ -107,7 +111,9 @@ public class DeclarationFormComponent extends Panel{
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка создания страницы", new Event(e, declaration.getId() != null ? EDIT:CREATE, declaration));
+
+            throw new WicketRuntimeException(e);
         }
     }
 
@@ -116,6 +122,9 @@ public class DeclarationFormComponent extends Panel{
             try {
                 commonTypes = templateService.getTemplateXSDDocument("common_types");
             } catch (CreateDocumentException e) {
+                log.error("Ошибка чтения common_types из базы данных",
+                        new Event(declaration.getId() != null ? EDIT:CREATE, declaration));
+
                 throw new WicketRuntimeException(e);
             }
         }
@@ -209,7 +218,7 @@ public class DeclarationFormComponent extends Panel{
                                         declaration.getPersonProfileId());
                                 container.add(employeeDialog);
                                 break;
-                            
+
                             default:
                                 container.add(new EmptyPanel(wicketId));
                         }
@@ -291,10 +300,10 @@ public class DeclarationFormComponent extends Panel{
                         autoFill(target);
 
                         //Auto fill linked
-                        getPage().visitChildren(DeclarationFormComponent.class, new IVisitor<DeclarationFormComponent, Void>() {
+                        getPage().visitChildren(DeclarationEditPanel.class, new IVisitor<DeclarationEditPanel, Void>() {
 
                             @Override
-                            public void component(DeclarationFormComponent component, IVisit visit) {
+                            public void component(DeclarationEditPanel component, IVisit visit) {
                                 component.autoFill(target);
 
                                 visit.dontGoDeeper();
@@ -484,7 +493,7 @@ public class DeclarationFormComponent extends Panel{
                 target.add((Component)autoFill);
             }
         } catch (EvaluatorException e){
-            log.warn(e.getLocalizedMessage());
+            log.warn("Ошибка автозаполнения", e);
         } catch (Exception e) {
             log.error("Ошибка автозаполнения", e);
         }

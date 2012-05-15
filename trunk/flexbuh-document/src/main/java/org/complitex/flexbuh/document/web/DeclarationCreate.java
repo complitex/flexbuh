@@ -16,6 +16,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.PersonType;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -23,6 +25,8 @@ import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationService;
 import org.complitex.flexbuh.document.web.component.DeclarationPeriodPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.Arrays;
@@ -33,6 +37,8 @@ import java.util.List;
  *         Date: 12.08.11 15:19
  */
 public class DeclarationCreate extends FormTemplatePage{
+    private final static Logger log = LoggerFactory.getLogger(DeclarationCreate.class);
+
     @EJB
     private DocumentBean documentBean;
 
@@ -184,7 +190,7 @@ public class DeclarationCreate extends FormTemplatePage{
             }
         });
 
-        form.add(new Button("submit"){
+        form.add(new Button("submit") {
             @Override
             public void onSubmit() {
                 //version
@@ -192,13 +198,15 @@ public class DeclarationCreate extends FormTemplatePage{
 
                 if (declaration.getHead().getCDocVer() == null) {
                     error(getStringFormat("error_not_version", declaration.getShortName()));
+                    log.error("Версия не найдена", new Event(EventCategory.CREATE, declaration));
 
                     return;
                 }
 
                 //check period
-                if (!declarationService.checkPeriod(declaration)){
+                if (!declarationService.checkPeriod(declaration)) {
                     error(getStringFormat("error_check_period", declaration.getShortName()));
+                    log.error("Период не найден", new Event(EventCategory.CREATE, declaration));
 
                     return;
                 }
@@ -210,11 +218,11 @@ public class DeclarationCreate extends FormTemplatePage{
                     declaration.setPersonProfileId(declaration.getPersonProfile().getId());
                     declaration.getHead().setTin(pp.getTin() != null ? pp.getTin() : 0);
                     declaration.setSessionId(pp.getSessionId());
-                }else {
+                } else {
                     declaration.setSessionId(getSessionId());
                 }
 
-                setResponsePage(new DeclarationFormPage(declaration));
+                setResponsePage(new DeclarationEditPage(declaration));
             }
         });
 

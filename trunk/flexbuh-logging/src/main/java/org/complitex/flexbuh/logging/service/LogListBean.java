@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Stateless
 public class LogListBean extends AbstractBean {
-	public static final String NS = LogListBean.class.getCanonicalName();
+    public static final String NS = LogListBean.class.getCanonicalName();
 
     public List<Log> getLogs(LogFilter filter){
         return sqlSession().selectList(NS + ".selectLogs", filter);
@@ -28,6 +28,10 @@ public class LogListBean extends AbstractBean {
 
     public List<String> getControllers(){
         return sqlSession().selectList(NS + ".selectControllers");
+    }
+
+    public List<String> getLoggerNames(){
+        return sqlSession().selectList(NS + ".selectLoggerNames");
     }
 
     public List<String> getModels(){

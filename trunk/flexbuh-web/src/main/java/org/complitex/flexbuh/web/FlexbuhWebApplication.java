@@ -17,12 +17,16 @@ public class FlexbuhWebApplication extends TemplateWebApplication{
 
         mountPage("login", Login.class);
 
-//        getDebugSettings().setComponentUseCheck(true);
-//        getDebugSettings().setLinePreciseReportingOnAddComponentEnabled(true);
-//        getDebugSettings().setLinePreciseReportingOnNewComponentEnabled(true);
-//        getDebugSettings().setOutputComponentPath(true);
-//        getDebugSettings().setOutputMarkupContainerClassName(true);
-//        getDebugSettings().setDevelopmentUtilitiesEnabled(true);
+        //Development mode
+        switch (getConfigurationType()){
+            case DEVELOPMENT:
+                //getResourceSettings().setResourceWatcher(new Nio2ModificationWatcher(this));
+                getDebugSettings().setLinePreciseReportingOnAddComponentEnabled(true);
+                getDebugSettings().setLinePreciseReportingOnNewComponentEnabled(true);
+                getDebugSettings().setOutputComponentPath(true);
+                getDebugSettings().setOutputMarkupContainerClassName(true);
+                break;
+        }
     }
 
     @Override

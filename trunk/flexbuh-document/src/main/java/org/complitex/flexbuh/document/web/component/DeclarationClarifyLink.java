@@ -3,7 +3,7 @@ package org.complitex.flexbuh.document.web.component;
 import org.apache.wicket.markup.html.link.Link;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationHead;
-import org.complitex.flexbuh.document.web.DeclarationFormPage;
+import org.complitex.flexbuh.document.web.DeclarationEditPage;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -39,6 +39,6 @@ public class DeclarationClarifyLink extends Link{
         newDeclaration.setPersonProfileId(declaration.getPersonProfileId());
         newDeclaration.setName(declaration.getName());
 
-        setResponsePage(new DeclarationFormPage(newDeclaration));
+        setResponsePage(new DeclarationEditPage(newDeclaration));
     }
 }
