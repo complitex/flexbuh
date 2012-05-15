@@ -44,15 +44,15 @@
     </sql>
 
     <select id="selectLogs" resultMap="logResultMap" parameterType="org.complitex.flexbuh.logging.service.LogFilter">
-        select le.event_id as id, `timestmp`, `caller_class`, `formatted_message`, `level_string`,
-          lep.`mapped_key`, lep.`mapped_value`, le.`logger_name`
+        select le.event_id as id, `timestmp`, `caller_class`, `logger_name`, `formatted_message`, `level_string`,
+        lep.`mapped_key`, lep.`mapped_value`, le.`logger_name`
         from (
-            select * from `logging_event` <include refid="logFilterWhere"/>
-            <if test="sortProperty != null and sortProperty != 'login' and sortProperty != 'module'
+        select * from `logging_event` <include refid="logFilterWhere"/>
+        <if test="sortProperty != null and sortProperty != 'login' and sortProperty != 'module'
                             and sortProperty != 'model' and sortProperty != 'objectId' and sortProperty != 'category'">
-                order by `${sortProperty}` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-                limit #{first}, #{count}
-            </if>
+            order by `${sortProperty}` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+            limit #{first}, #{count}
+        </if>
         ) as le
         left join `logging_event_property` as lep on le.event_id = lep.event_id
         <if test="sortProperty == 'login' or sortProperty == 'module' or sortProperty == 'model'
@@ -73,6 +73,11 @@
     <select id="selectControllers" resultType="string">
         select `caller_class` from `logging_event` where `caller_class` like 'org.complitex.flexbuh.%'
             group by `caller_class` order by `caller_class`
+    </select>
+
+    <select id="selectLoggerNames" resultType="string">
+        select `logger_name` from `logging_event` where `caller_class` like 'org.complitex.flexbuh.%'
+            group by `logger_name` order by `logger_name`
     </select>
 
     <select id="selectModels" resultType="string">

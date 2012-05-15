@@ -29,7 +29,7 @@ import java.util.Map;
  *         Date: 17.11.11 15:21
  */
 public class LogChangePanel extends Panel {
-    private final static Logger logger = LoggerFactory.getLogger(LogChangePanel.class);
+    private final static Logger log = LoggerFactory.getLogger(LogChangePanel.class);
 
     public LogChangePanel(String id, Log log){
         super(id);
@@ -40,12 +40,15 @@ public class LogChangePanel extends Panel {
         String newObject = log.get(EventKey.NEW_OBJECT);
 
         MapDifference<String, String> diff = Maps.difference(getFields(oldObject), getFields(newObject));
+
         for (Map.Entry<String, MapDifference.ValueDifference<String>> differenceEntry : diff.entriesDiffering().entrySet()) {
             diffs.add(new DiffObject(differenceEntry.getKey(), differenceEntry.getValue().leftValue(), differenceEntry.getValue().rightValue()));
         }
+
         for (Map.Entry<String, String> differenceEntry : diff.entriesOnlyOnLeft().entrySet()) {
             diffs.add(new DiffObject(differenceEntry.getKey(), differenceEntry.getValue(), ""));
         }
+
         for (Map.Entry<String, String> differenceEntry : diff.entriesOnlyOnRight().entrySet()) {
             diffs.add(new DiffObject(differenceEntry.getKey(), "", differenceEntry.getValue()));
         }
@@ -76,19 +79,20 @@ public class LogChangePanel extends Panel {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-            InputStream is = new ByteArrayInputStream(xmlObject.getBytes());
-
+            InputStream is = new ByteArrayInputStream(xmlObject.getBytes("UTF-8"));
 
             org.w3c.dom.Document doc = documentBuilder.parse(is);
+
             NodeList childNodes = doc.getDocumentElement().getChildNodes();
+
             for (int i = 0; i < childNodes.getLength(); i++) {
                 org.w3c.dom.Node node = childNodes.item(i);
-                if (!StringUtils.equals(node.getNodeName(), "#text")) {
+                if (!"#text".equals(node.getNodeName())) {
                     fields.put(node.getNodeName(), node.getTextContent());
                 }
             }
         } catch (Exception e) {
-            //todo Invalid byte 1 of 1-byte UTF-8 sequence
+            log.error("Ошибка разбора xml", e);
         }
 
         return fields;

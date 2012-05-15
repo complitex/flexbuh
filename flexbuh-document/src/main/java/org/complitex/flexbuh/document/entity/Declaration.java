@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.entity;
 
+import org.complitex.flexbuh.common.entity.ILongId;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.util.DateUtil;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
 @XmlRootElement(name = "DECLAR")
 @XmlSeeAlso(DeclarationValue.class)
 @XmlAccessorType(value = XmlAccessType.NONE)
-public class Declaration implements Serializable{
+public class Declaration implements ILongId, Serializable{
     @XmlElement(name = "DECLARHEAD")
     private DeclarationHead head = new DeclarationHead();
 

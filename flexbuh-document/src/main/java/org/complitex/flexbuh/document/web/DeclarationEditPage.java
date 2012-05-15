@@ -16,6 +16,7 @@ import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.entity.user.Share;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.service.user.ShareBean;
@@ -33,16 +34,23 @@ import org.complitex.flexbuh.document.web.component.DeclarationPeriodPanel;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.dialog.Dialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.complitex.flexbuh.common.logging.EventCategory.CREATE;
+import static org.complitex.flexbuh.common.logging.EventCategory.EDIT;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.08.11 15:25
  */
-public class DeclarationFormPage extends TemplatePage{
+public class DeclarationEditPage extends TemplatePage{
+    private final Logger log = LoggerFactory.getLogger(DeclarationEditPage.class);
+
     @EJB
     private DeclarationBean declarationBean;
 
@@ -59,25 +67,28 @@ public class DeclarationFormPage extends TemplatePage{
     private ShareBean shareBean;
 
     private Declaration declaration;
+    private Declaration oldDeclaration;
     
     private AddLinkedDeclarationDialog addLinkedDeclarationDialog;
 
-    public DeclarationFormPage(Declaration declaration){
+    public DeclarationEditPage(Declaration declaration){
         this.declaration = declaration;
 
         init();
     }
 
-    public DeclarationFormPage(PageParameters pageParameters) {
+    public DeclarationEditPage(PageParameters pageParameters) {
         Long id = pageParameters.get("id").toLongObject();
 
         declaration = declarationBean.getDeclaration(id);
+        oldDeclaration = declarationBean.getDeclaration(id);
 
         if (declaration != null){
             init();
         }else{
             //declaration not found
             error(getString("error_declaration_not_found"));
+            log.error("Документ не найден в базе данных", new Event(CREATE, declaration));
             setResponsePage(DeclarationList.class);
         }
     }
@@ -86,7 +97,7 @@ public class DeclarationFormPage extends TemplatePage{
     public void renderHead(IHeaderResponse response) {        
         super.renderHead(response);
         
-        response.renderCSSReference(new PackageResourceReference(DeclarationFormPage.class, "declaration.css"));
+        response.renderCSSReference(new PackageResourceReference(DeclarationEditPage.class, "declaration.css"));
     }
 
     private void init(){
@@ -94,7 +105,9 @@ public class DeclarationFormPage extends TemplatePage{
 
         //security check
         if (sessionId != null && !sessionId.equals(getSessionId()) && !shareBean.isExist(new Share(sessionId, getSessionId()))){
-            throw new UnauthorizedInstantiationException(DeclarationFormPage.class);
+            log.error("Доступ запрещен", new Event(EDIT, declaration));
+
+            throw new UnauthorizedInstantiationException(DeclarationEditPage.class);
         }
 
         final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
@@ -108,7 +121,7 @@ public class DeclarationFormPage extends TemplatePage{
         add(form);
 
         //Declaration
-        form.add(new DeclarationFormComponent("declaration", declaration));
+        form.add(new DeclarationEditPanel("declaration", declaration));
 
         form.add(new DeclarationPeriodPanel("period_panel", declaration));
 
@@ -137,7 +150,7 @@ public class DeclarationFormPage extends TemplatePage{
 
                 item.add(new Label("label", declaration.getTemplateName() + " " + declaration.getName()));
 
-                item.add(new DeclarationFormComponent("linked_declaration", declaration));
+                item.add(new DeclarationEditPanel("linked_declaration", declaration));
 
                 item.add(new DeclarationPeriodPanel("period_panel", declaration));
 
@@ -190,6 +203,9 @@ public class DeclarationFormPage extends TemplatePage{
                 pageParameters.add("period_year", declaration.getHead().getPeriodYear());
 
                 setResponsePage(DeclarationList.class, pageParameters);
+
+                log.info("Документ сохранен", new Event(declaration.getId() != null ? EDIT : CREATE, oldDeclaration,
+                        declaration));
             }
         });
 
@@ -220,6 +236,9 @@ public class DeclarationFormPage extends TemplatePage{
                     pageParameters.add("period_year", declaration.getHead().getPeriodYear());
 
                     setResponsePage(DeclarationList.class, pageParameters);
+
+                    log.info("Документ сохранен", new Event(declaration.getId() != null ? EDIT : CREATE, oldDeclaration,
+                            declaration));
                 }else {
                     profileDialog.setAutoOpen(true);
                 }

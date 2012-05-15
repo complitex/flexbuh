@@ -1,7 +1,7 @@
 package org.complitex.flexbuh.document.test;
 
 import org.apache.wicket.markup.html.WebPage;
-import org.complitex.flexbuh.document.web.DeclarationFormComponent;
+import org.complitex.flexbuh.document.web.DeclarationEditPanel;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -15,6 +15,6 @@ import java.io.IOException;
  */
 public class MarkupTestPage extends WebPage{
     public MarkupTestPage() throws TransformerException, JAXBException, IOException, SAXException, ParserConfigurationException {
-        add(new DeclarationFormComponent("component",  TransformationTestPage.getDeclaration()));
+        add(new DeclarationEditPanel("component",  TransformationTestPage.getDeclaration()));
     }
 }

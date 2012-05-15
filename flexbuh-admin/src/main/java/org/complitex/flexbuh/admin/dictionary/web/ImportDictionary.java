@@ -103,11 +103,7 @@ public class ImportDictionary extends TemplatePage {
                             info(getStringFormat("complete"));
                             stop();
                         } else {
-                            Enum dictionaryType = listener.getProcessingType();
-
-                            if (dictionaryType != null && dictionaryType instanceof DictionaryType) {
-                                info(getStringFormat("processing", ((DictionaryType)dictionaryType).getFileName()));
-                            }
+                            info(getStringFormat("processing"));
                         }
                     }
                 });

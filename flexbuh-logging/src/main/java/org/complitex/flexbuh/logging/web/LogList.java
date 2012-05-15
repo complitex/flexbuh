@@ -22,6 +22,7 @@ import org.apache.wicket.model.Model;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.logging.entity.Log;
@@ -109,8 +110,8 @@ public class LogList extends TemplatePage {
                 }));
 
 
-        //Controller Class
-        filterForm.add(new DropDownChoice<>("caller_class", logListBean.getControllers(),
+        //Logger Name
+        filterForm.add(new DropDownChoice<>("logger_name", logListBean.getLoggerNames(),
                 new IChoiceRenderer<String>() {
 
                     @Override
@@ -204,8 +205,8 @@ public class LogList extends TemplatePage {
 
                 item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTime())), "dd.MM.yy HH:mm:ss"));
                 //item.add(LogManager.get().getLinkComponent("objectId", log));
-                item.add(new Label("objectId", log.get(OBJECT_ID)));
-                item.add(new Label("caller_class", getStringOrKey(log.getController())));
+                item.add(new Label("objectId", StringUtil.emptyOnNull(log.get(OBJECT_ID))));
+                item.add(new Label("logger_name", getStringOrKey(log.getLoggerName())));
 
                 String errorMessage =  log.get(ERROR_MESSAGE) != null ? " - "  + log.get(ERROR_MESSAGE) : "";
 
@@ -253,7 +254,7 @@ public class LogList extends TemplatePage {
         filterForm.add(new OrderByBorder("header.timestmp", "timestmp", dataProvider));
         filterForm.add(new OrderByBorder("header.login", "login", dataProvider));
         filterForm.add(new OrderByBorder("header.module", "module", dataProvider));
-        filterForm.add(new OrderByBorder("header.caller_class", "caller_class", dataProvider));
+        filterForm.add(new OrderByBorder("header.logger_name", "logger_name", dataProvider));
         filterForm.add(new OrderByBorder("header.model", "model", dataProvider));
         filterForm.add(new OrderByBorder("header.objectId", "objectId", dataProvider));
         filterForm.add(new OrderByBorder("header.category", "category", dataProvider));
