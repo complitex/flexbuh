@@ -2,8 +2,6 @@ package org.complitex.flexbuh.personnel.web.component;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -20,7 +18,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.personnel.entity.*;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.web.DepartmentEdit;
@@ -63,11 +60,15 @@ public class DepartmentTreePanel extends Panel {
 
     private Department department;
 
+    private boolean enabled = true;
+
     @EJB
     private DepartmentBean departmentBean;
 
     public DepartmentTreePanel(String id, Organization organization) {
         super(id);
+        enabled = !organization.isDeleted();
+
         filter.setOrganizationId(organization.getId());
         //filter.setEntryIntoForceDate(organization.getEntryIntoForceDate());
         //filter.setCompletionDate(organization.getCompletionDate());
@@ -83,6 +84,8 @@ public class DepartmentTreePanel extends Panel {
 
     public DepartmentTreePanel(String id, Department department) {
         super(id);
+        enabled = !department.getOrganization().isDeleted();
+
         filter.setOrganizationId(department.getOrganization().getId());
         filter.setEntryIntoForceDate(department.getEntryIntoForceDate());
         filter.setCompletionDate(department.getCompletionDate());
@@ -269,7 +272,12 @@ public class DepartmentTreePanel extends Panel {
                 }
                 setResponsePage(DepartmentEdit.class, parameters);
             }
-        }.setVisible(isEnabledAction()));
+
+            @Override
+            public boolean isEnabled() {
+                return isEnabledAction();
+            }
+        }.setVisible(isVisibleAction()));
 
         add(new AjaxButton("delete") {
 
@@ -313,10 +321,23 @@ public class DepartmentTreePanel extends Panel {
             protected void onError(AjaxRequestTarget target, Form<?> form) {
 
             }
-        }.setVisible(isEnabledAction()));
+
+            @Override
+            public boolean isEnabled() {
+                return isEnabledAction();
+            }
+        }.setVisible(isVisibleAction()));
+
+        setOutputMarkupId(true);
     }
 
     private boolean isEnabledAction() {
+        log.debug("isEnabledAction\n\tenabled: {}\n\tdepartment: {}", enabled, department);
+        return enabled && (department == null ||
+                department.getId() != null && department.getCompletionDate() == null);
+    }
+
+    private boolean isVisibleAction() {
         return department == null || department.getId() != null;
     }
 
@@ -344,7 +365,9 @@ public class DepartmentTreePanel extends Panel {
 
 //    public void update(AjaxRequestTarget target, Organization organization) {
 
-    public void update(AjaxRequestTarget target, Date currentDate) {
+    public void updateState(Date currentDate, boolean enabled) {
+
+        this.enabled = enabled;
 
         if (oldFilter == null) {
             oldFilter = new DepartmentFilter();
@@ -374,6 +397,6 @@ public class DepartmentTreePanel extends Panel {
         provider.setRoots(new DepartmentIterator(departmentBean.getDepartments(filter)));
 
         log.debug("old filter: {}\n\tnew filter: {}", oldFilter, filter);
-        target.add(tree);
+        //target.add(this);
     }
 }
