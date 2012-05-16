@@ -50,7 +50,7 @@ import java.util.List;
 @AuthorizeInstantiation(SecurityRole.PERSONAL_MANAGER)
 public class OrganizationEdit extends FormTemplatePage {
 
-    private Logger log = LoggerFactory.getLogger(OrganizationEdit.class);
+    private final static Logger log = LoggerFactory.getLogger(OrganizationEdit.class);
 
     //private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
 
@@ -134,7 +134,10 @@ public class OrganizationEdit extends FormTemplatePage {
     }
 
     protected  void init() {
-        add(new Label("title", getString("title")));
+
+        boolean deleted = organizationBean.getOrganizationLastInHistory(organization.getId()).isDeleted();
+
+        add(new Label("title", deleted? getString("") : getString("title_edit")));
         add(new Label("header", getString("title")));
 
         messagesPanel = new FeedbackPanel("messages");
@@ -152,6 +155,7 @@ public class OrganizationEdit extends FormTemplatePage {
         if (organization.getId() == null) {
             panel.setVisible(false);
         }
+        panel.setEnabled(!deleted);
         panel.setOutputMarkupId(true);
         form.add(panel);
 
@@ -273,7 +277,7 @@ public class OrganizationEdit extends FormTemplatePage {
 		*/
 
         // Button update/create organization
-        form.add(new SaveOrganizationButton("submit"));
+        form.add(new SaveOrganizationButton("submit").setVisible(!deleted));
 
         // Button cancel changes and return to "Organizations list" page
         form.add(new Link("cancel") {
@@ -282,7 +286,8 @@ public class OrganizationEdit extends FormTemplatePage {
             public void onClick() {
                 setResponsePage(OrganizationList.class);
             }
-        });
+        }.add(new AttributeModifier("value", deleted ? getString("go_to_organization_list") : getString("cancel")))
+         .add(new AttributeModifier("class", deleted ? "btnBig": "btnMiddle")));
 
         /*
         IAjaxUpdate update =  new IAjaxUpdate() {
@@ -315,24 +320,12 @@ public class OrganizationEdit extends FormTemplatePage {
         organizationHistoryPanel.setOutputMarkupId(true);
         add(organizationHistoryPanel);
 
-        final WebMarkupContainer container = new WebMarkupContainer("container");
-
-        form.add(container);
-
         form.add(new AjaxEventBehavior("onmouseover") {
             protected void onEvent(final AjaxRequestTarget target) {
-                log.debug("focus on: form");
                 if (!inHistoryContainer && currentEnabledPanel != null && currentEnabledPanel.isVisible()) {
                     currentEnabledPanel.setVisible(false);
                     target.add(currentEnabledPanel);
                 }
-            }
-        });
-
-        form.add(new AjaxEventBehavior("onmouseout") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                log.debug("focus off: form");
-                //outComponents.remove(TemporalHistoryPanel.this);
             }
         });
 
@@ -478,11 +471,6 @@ public class OrganizationEdit extends FormTemplatePage {
             }
             return true;
         }
-
-        @Override
-        public boolean isVisible() {
-            return true;
-        }
     }
 
     private class ClickAjaxBehavior extends AjaxEventBehavior {
@@ -497,7 +485,6 @@ public class OrganizationEdit extends FormTemplatePage {
         @Override
         protected void onEvent(AjaxRequestTarget target) {
             opened = !opened;
-            log.debug("Is opened: {}", opened);
         }
 
         public boolean isOpened() {
@@ -558,6 +545,17 @@ public class OrganizationEdit extends FormTemplatePage {
 
         container.add(new AjaxEventBehavior("onmouseover") {
             protected void onEvent(final AjaxRequestTarget target) {
+                log.debug("mouse on container");
+                if (!inHistoryContainer) {
+                    log.debug("mouse on container first");
+                    if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
+                        currentEnabledPanel.setVisible(false);
+                        target.add(currentEnabledPanel);
+                    }
+                    historyPanel.setVisible(true);
+                    currentEnabledPanel = historyPanel;
+                    target.add(historyPanel);
+                }
                 inHistoryContainer = true;
             }
         }).add(new AjaxEventBehavior("onmouseout") {
@@ -570,17 +568,6 @@ public class OrganizationEdit extends FormTemplatePage {
         container.add(historyPanel);
         form.add(container);
 
-        field.add(new AjaxEventBehavior("onmouseover") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
-                    currentEnabledPanel.setVisible(false);
-                    target.add(currentEnabledPanel);
-                }
-                historyPanel.setVisible(true);
-                currentEnabledPanel = historyPanel;
-                target.add(historyPanel);
-            }
-        });
         field.add(new AttributeModifier("class", "") {
             @Override
             protected String newValue(String currentValue, String replacementValue) {
@@ -595,9 +582,5 @@ public class OrganizationEdit extends FormTemplatePage {
 
         //form.add(field);
         //form.add(historyPanel);
-    }
-
-    private String transformDatabaseField2ClassField(String databaseField) {
-        return StringUtils.remove(databaseField, '_');
     }
 }
