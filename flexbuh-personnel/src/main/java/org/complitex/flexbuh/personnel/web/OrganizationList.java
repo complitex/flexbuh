@@ -159,7 +159,8 @@ public class OrganizationList extends TemplatePage {
                 PageParameters pageParameters = new PageParameters();
 
                 pageParameters.set(PARAM_ORGANIZATION_ID, organization.getId());
-                item.add(new BookmarkablePageLinkPanel<Organization>("action_edit", getString("action_edit"),
+                item.add(new BookmarkablePageLinkPanel<Organization>("action",
+                        getString(organization.isDeleted()? "action_view": "action_edit"),
                         OrganizationEdit.class, pageParameters));
             }
 
