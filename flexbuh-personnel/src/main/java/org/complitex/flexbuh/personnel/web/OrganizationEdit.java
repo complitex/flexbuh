@@ -135,10 +135,13 @@ public class OrganizationEdit extends FormTemplatePage {
 
     protected  void init() {
 
-        boolean deleted = organizationBean.getOrganizationLastInHistory(organization.getId()).isDeleted();
+        Organization lastOrganization = organization.getId() == null? null:
+                organizationBean.getOrganizationLastInHistory(organization.getId());
 
-        add(new Label("title", deleted? getString("") : getString("title_edit")));
-        add(new Label("header", getString("title")));
+        boolean deleted = lastOrganization != null && lastOrganization.isDeleted();
+
+        add(new Label("title", deleted? getString("title_view") : getString("title_edit")));
+        add(new Label("header", deleted? getString("title_view") : getString("title_edit")));
 
         messagesPanel = new FeedbackPanel("messages");
         messagesPanel.setOutputMarkupId(true);
@@ -155,7 +158,7 @@ public class OrganizationEdit extends FormTemplatePage {
         if (organization.getId() == null) {
             panel.setVisible(false);
         }
-        panel.setEnabled(!deleted);
+        //panel.setEnabled(!deleted);
         panel.setOutputMarkupId(true);
         form.add(panel);
 
@@ -227,7 +230,8 @@ public class OrganizationEdit extends FormTemplatePage {
                     currentDate = new Date();
                 }
 
-                panel.update(target, currentDate);
+                panel.updateState(currentDate, isEnabledAction());
+                target.add(panel);
             }
         };
 
@@ -277,7 +281,7 @@ public class OrganizationEdit extends FormTemplatePage {
 		*/
 
         // Button update/create organization
-        form.add(new SaveOrganizationButton("submit").setVisible(!deleted));
+        form.add(new SaveOrganizationButton("submit").setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true));
 
         // Button cancel changes and return to "Organizations list" page
         form.add(new Link("cancel") {
@@ -471,6 +475,15 @@ public class OrganizationEdit extends FormTemplatePage {
             }
             return true;
         }
+
+        @Override
+        public boolean isEnabled() {
+            return isEnabledAction();
+        }
+    }
+
+    private boolean isEnabledAction() {
+        return organization.getId() == null || organization.getCompletionDate() == null;
     }
 
     private class ClickAjaxBehavior extends AjaxEventBehavior {

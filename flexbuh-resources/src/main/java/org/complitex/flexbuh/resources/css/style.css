@@ -474,6 +474,10 @@ ul {
     cursor: pointer;
 }
 
+.btnSmall[disabled="disabled"]{
+    cursor: default;
+}
+
 input.btnBig {
     background: url('../images/btn-big.gif') no-repeat #007AAE;
     width: 156px;
@@ -486,6 +490,11 @@ input.btnBig {
     cursor: pointer;
 }
 
+input.btnBig[disabled="disabled"]{
+    background: url('../images/btn-big-gray.gif') no-repeat #999999;
+    cursor: default;
+}
+
 input.btnMiddle {
     background: url('../images/btn-middle.gif') no-repeat #007AAE;
     width: 126px;
@@ -496,6 +505,11 @@ input.btnMiddle {
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
+}
+
+input.btnMiddle[disabled="disabled"]{
+    background: url('../images/btn-middle-gray.gif') no-repeat #999999;
+    cursor: default;
 }
 
 .btnLeft {
