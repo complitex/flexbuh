@@ -88,7 +88,7 @@ public class DeclarationEditPage extends TemplatePage{
         }else{
             //declaration not found
             error(getString("error_declaration_not_found"));
-            log.error("Документ не найден в базе данных", new Event(CREATE, declaration));
+            log.error("Документ не найден в базе данных", new Event(EDIT, declaration));
             setResponsePage(DeclarationList.class);
         }
     }
@@ -179,6 +179,8 @@ public class DeclarationEditPage extends TemplatePage{
         profileForm.add(new Button("submit"){
             @Override
             public void onSubmit() {
+                boolean isEdit = declaration.getId() != null;
+
                 PersonProfile personProfile = profileChoice.getModelObject();
 
                 declaration.setPersonProfileId(personProfile != null ? personProfile.getId() : null);
@@ -204,8 +206,7 @@ public class DeclarationEditPage extends TemplatePage{
 
                 setResponsePage(DeclarationList.class, pageParameters);
 
-                log.info("Документ сохранен", new Event(declaration.getId() != null ? EDIT : CREATE, oldDeclaration,
-                        declaration));
+                log.info("Документ сохранен", new Event(isEdit? EDIT : CREATE, oldDeclaration, declaration));
             }
         });
 
@@ -214,6 +215,8 @@ public class DeclarationEditPage extends TemplatePage{
             @Override
             public void onSubmit() {
                 Long selectedId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+
+                boolean isEdit = declaration.getId() != null;
 
                 //todo extract method
                 if ((selectedId != null && selectedId.equals(declaration.getPersonProfileId()))){
@@ -238,8 +241,7 @@ public class DeclarationEditPage extends TemplatePage{
                     setResponsePage(DeclarationList.class, pageParameters);
 
 
-                    log.info("Документ сохранен", new Event(declaration.getId() != null ? EDIT : CREATE, oldDeclaration,
-                            declaration));
+                    log.info("Документ сохранен", new Event(isEdit ? EDIT : CREATE, oldDeclaration, declaration));
                 }else {
                     profileDialog.setAutoOpen(true);
                 }
