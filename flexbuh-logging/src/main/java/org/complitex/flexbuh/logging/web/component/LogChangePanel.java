@@ -13,6 +13,8 @@ import org.complitex.flexbuh.common.logging.EventKey;
 import org.complitex.flexbuh.logging.entity.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,39 +37,43 @@ public class LogChangePanel extends Panel {
     public LogChangePanel(String id, Log log){
         super(id);
 
-        List<DiffObject> diffs = Lists.newArrayList();
+        List<DiffObject> diffObjects = Lists.newArrayList();
 
-        String oldObject = log.get(EventKey.OLD_OBJECT);
-        String newObject = log.get(EventKey.NEW_OBJECT);
+        MapDifference<String, String> diffMap = Maps.difference(
+                getFields(log.get(EventKey.OLD_OBJECT)),
+                getFields(log.get(EventKey.NEW_OBJECT)));
 
-        MapDifference<String, String> diff = Maps.difference(getFields(oldObject), getFields(newObject));
-
-        for (Map.Entry<String, MapDifference.ValueDifference<String>> differenceEntry : diff.entriesDiffering().entrySet()) {
-            diffs.add(new DiffObject(differenceEntry.getKey(), differenceEntry.getValue().leftValue(), differenceEntry.getValue().rightValue()));
+        for (Map.Entry<String, MapDifference.ValueDifference<String>> de : diffMap.entriesDiffering().entrySet()) {
+            diffObjects.add(new DiffObject(de.getKey(), de.getValue().leftValue(), de.getValue().rightValue()));
         }
 
-        for (Map.Entry<String, String> differenceEntry : diff.entriesOnlyOnLeft().entrySet()) {
-            diffs.add(new DiffObject(differenceEntry.getKey(), differenceEntry.getValue(), ""));
+        for (Map.Entry<String, String> de : diffMap.entriesOnlyOnLeft().entrySet()) {
+            diffObjects.add(new DiffObject(de.getKey(), de.getValue(), ""));
         }
 
-        for (Map.Entry<String, String> differenceEntry : diff.entriesOnlyOnRight().entrySet()) {
-            diffs.add(new DiffObject(differenceEntry.getKey(), "", differenceEntry.getValue()));
+        for (Map.Entry<String, String> de : diffMap.entriesOnlyOnRight().entrySet()) {
+            diffObjects.add(new DiffObject(de.getKey(), "", de.getValue()));
         }
 
-        //ListView<String> listView = new ListView<String>("log_diffs", DiffUtils.generateUnifiedDiff("", "", Collections.<String>emptyList(), patch, 0)) {
-        ListView<DiffObject> listView2 = new ListView<DiffObject>("diffs", diffs) {
+        Collections.sort(diffObjects, new Comparator<DiffObject>() {
+            @Override
+            public int compare(DiffObject o1, DiffObject o2) {
+                return o1.getFieldName().compareTo(o2.getFieldName());
+            }
+        });
 
+        ListView<DiffObject> listView = new ListView<DiffObject>("diffs", diffObjects) {
             @Override
             protected void populateItem(ListItem<DiffObject> item) {
                 DiffObject diff = item.getModelObject();
 
-                item.add(new Label("field_name", diff.fieldName));
-                item.add(new Label("old_value", diff.oldValue));
-                item.add(new Label("new_value", diff.newValue));
+                item.add(new Label("field_name", diff.getFieldName()));
+                item.add(new Label("old_value", diff.getOldValue()));
+                item.add(new Label("new_value", diff.getNewValue()));
             }
         };
 
-        add(listView2);
+        add(listView);
     }
 
     private Map<String, String> getFields(String xmlObject) {
@@ -83,12 +90,39 @@ public class LogChangePanel extends Panel {
 
             org.w3c.dom.Document doc = documentBuilder.parse(is);
 
-            NodeList childNodes = doc.getDocumentElement().getChildNodes();
+            NodeList propertyNodeList = doc.getDocumentElement().getChildNodes();
 
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                org.w3c.dom.Node node = childNodes.item(i);
-                if (!"#text".equals(node.getNodeName())) {
-                    fields.put(node.getNodeName(), node.getTextContent());
+            for (int i = 0; i < propertyNodeList.getLength(); i++) {
+                Node node = propertyNodeList.item(i);
+
+                if (node instanceof Element) {
+                    Element element = (Element) node;
+
+                    NodeList subNodeList = element.getChildNodes();
+
+                    int subLength = subNodeList.getLength();
+
+                    if (subLength > 3){
+                        for (int k = 0; k < subLength; ++k){
+                            Node subNode = subNodeList.item(k);
+
+                            if (subNode instanceof Element) {
+                                Element subElement = (Element) subNode;
+
+                                String id = ":";
+
+                                NodeList idNodeList = subElement.getElementsByTagName("id");
+                                if (idNodeList.getLength() > 0){
+                                    id = ":" + idNodeList.item(0).getTextContent().trim() + ":";
+                                }
+
+                                fields.put(element.getTagName() + id  + subElement.getTagName(),
+                                        subElement.getTextContent().trim());
+                            }
+                        }
+                    } else {
+                        fields.put(element.getTagName(), element.getTextContent().trim());
+                    }
                 }
             }
         } catch (Exception e) {
@@ -98,7 +132,7 @@ public class LogChangePanel extends Panel {
         return fields;
     }
 
-    private class DiffObject implements Serializable {
+    private static class DiffObject implements Serializable {
         private String fieldName;
         private String oldValue;
         private String newValue;
@@ -106,6 +140,30 @@ public class LogChangePanel extends Panel {
         private DiffObject(String fieldName, String oldValue, String newValue) {
             this.fieldName = fieldName;
             this.oldValue = oldValue;
+            this.newValue = newValue;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
+
+        public void setFieldName(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public String getOldValue() {
+            return oldValue;
+        }
+
+        public void setOldValue(String oldValue) {
+            this.oldValue = oldValue;
+        }
+
+        public String getNewValue() {
+            return newValue;
+        }
+
+        public void setNewValue(String newValue) {
             this.newValue = newValue;
         }
 

@@ -109,6 +109,10 @@ public class Declaration implements ILongId, Serializable{
         }
     }
 
+    public void clearXmlValues(){
+        xmlValues.clear();
+    }
+
     public List getXmlValues() {
         return xmlValues;
     }

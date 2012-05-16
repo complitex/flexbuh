@@ -79,7 +79,8 @@
                         #{date}, #{validated})
     </insert>
 
-    <insert id="insertDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue">
+    <insert id="insertDeclarationValue" parameterType="org.complitex.flexbuh.document.entity.DeclarationValue"
+            keyProperty="id" useGeneratedKeys="true">
         insert into `declaration_value` (`declaration_id`, `row_num`, `name`, `value`)
                 values (#{declarationId}, #{rowNum}, #{name}, #{value})
     </insert>
