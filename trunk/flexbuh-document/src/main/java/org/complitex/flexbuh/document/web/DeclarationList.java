@@ -35,6 +35,8 @@ import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
@@ -590,6 +592,8 @@ public class DeclarationList extends TemplatePage{
                 for (Long id : selectMap.keySet()){
                     if (selectMap.get(id).getObject()){
                         declarationBean.deleteDeclaration(id);
+
+                        log.info("Документ удален", new Event(EventCategory.REMOVE, Declaration.class, id));
                     }
                 }
             }

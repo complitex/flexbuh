@@ -55,6 +55,12 @@ public class Event implements Serializable {
         map.put(MODEL_CLASS, modelClass.getName());
     }
 
+    public Event(EventCategory category, Class modelClass, Long objectId) {
+        map.put(CATEGORY, category.name());
+        map.put(MODEL_CLASS, modelClass.getName());
+        map.put(OBJECT_ID, String.valueOf(objectId));
+    }
+
     public Map<String, String> getMap() {
         Map<String, String> m = new HashMap<>();
 

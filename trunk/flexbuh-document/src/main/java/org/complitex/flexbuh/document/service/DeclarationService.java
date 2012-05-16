@@ -72,6 +72,7 @@ public class DeclarationService {
         try {
             sortDeclarationValues(declaration);
 
+            //prepare xml value for jaxb marshal
             declaration.prepareXmlValues();
 
             JAXBContext context = JAXBContext.newInstance(Declaration.class, DeclarationValue.class);
@@ -89,6 +90,9 @@ public class DeclarationService {
             StringWriter writer = new StringWriter();
 
             m.marshal(declaration, writer);
+
+            //clear xml values
+            declaration.clearXmlValues();
 
             return writer.toString();
         } catch (Exception e) {

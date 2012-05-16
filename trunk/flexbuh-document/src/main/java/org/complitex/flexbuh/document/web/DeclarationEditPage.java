@@ -237,6 +237,7 @@ public class DeclarationEditPage extends TemplatePage{
 
                     setResponsePage(DeclarationList.class, pageParameters);
 
+
                     log.info("Документ сохранен", new Event(declaration.getId() != null ? EDIT : CREATE, oldDeclaration,
                             declaration));
                 }else {
