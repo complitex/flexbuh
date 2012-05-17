@@ -18,14 +18,18 @@ public class Event implements Serializable {
     private Map<EventKey, String> map = new HashMap<>();
     private Throwable throwable;
 
-    public Event(EventCategory category, ILongId oldObject, ILongId newObject){
+    public Event(EventCategory category, Object oldObject, Object newObject){
         map.put(CATEGORY, category.name());
 
-        ILongId object = newObject != null ? newObject : oldObject != null ? oldObject : null;
+        Object object = newObject != null ? newObject : oldObject != null ? oldObject : null;
 
         if (object != null) {
             map.put(MODEL_CLASS, object.getClass().getName());
-            map.put(OBJECT_ID, StringUtil.getString(object.getId()));
+
+            if (object instanceof ILongId) {
+                map.put(OBJECT_ID, StringUtil.getString(((ILongId)object).getId()));
+            }
+
             map.put(NEW_OBJECT, XmlUtil.getXStream().toXML(object));
         }
 
@@ -38,11 +42,11 @@ public class Event implements Serializable {
         }
     }
 
-    public Event(EventCategory category, ILongId newObject){
+    public Event(EventCategory category, Object newObject){
         this(category, null, newObject);
     }
 
-    public Event(Throwable throwable, EventCategory category, ILongId newObject){
+    public Event(Throwable throwable, EventCategory category, Object newObject){
         this(category, null, newObject);
         this.throwable = throwable;
     }

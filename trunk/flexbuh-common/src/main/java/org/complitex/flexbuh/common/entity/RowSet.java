@@ -11,7 +11,7 @@ import java.util.List;
  *         Date: 13.04.12 16:58
  */
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class RowSet<T>{
+public class RowSet<T> implements ILongId{
     @XmlElement(name = "header")
     private RowSetHeader header;
 
@@ -39,5 +39,10 @@ public class RowSet<T>{
 
     public void setRows(List<T> rows) {
         this.rows = rows;
+    }
+
+    @Override
+    public Long getId() {
+        return null;
     }
 }

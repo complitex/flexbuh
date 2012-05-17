@@ -8,7 +8,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -20,33 +19,30 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
+import org.complitex.flexbuh.common.entity.IProcessListener;
 import org.complitex.flexbuh.common.entity.PersonProfile;
-import org.complitex.flexbuh.common.logging.Event;
-import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.StringUtil;
-import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
-import org.complitex.flexbuh.document.service.ImportPersonProfileXMLService;
+import org.complitex.flexbuh.document.service.PersonProfileService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -63,7 +59,7 @@ public class PersonProfileList extends TemplatePage {
     private PersonProfileBean personProfileBean;
 
     @EJB
-    private ImportPersonProfileXMLService importUserProfileXMLService;
+    private PersonProfileService personProfileService;
 
     @EJB
     private ConfigBean configBean;
@@ -83,7 +79,10 @@ public class PersonProfileList extends TemplatePage {
 
     private void init() {
         add(new Label("title", new ResourceModel("title")));
-        add(new FeedbackPanel("messages"));
+
+        final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
+        feedbackPanel.setOutputMarkupId(true);
+        add(feedbackPanel);
 
         final Form filterForm = new Form("filter_form");
         filterForm.setOutputMarkupId(true);
@@ -161,41 +160,27 @@ public class PersonProfileList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                FileUpload fileUpload = uploadField.getFileUpload();
+                try {
+                    personProfileService.save(getSessionId(), uploadField.getFileUpload().getInputStream(),
+                            new IProcessListener<PersonProfile>() {
+                                @Override
+                                public void onSuccess(PersonProfile pp) {
+                                    getSession().info(getStringFormat("info_uploaded", pp.getName()));
+                                }
 
-                if (fileUpload != null) {
-                    final ThreadLocal<Boolean> error = new ThreadLocal<>();
-                    error.set(false);
-
-                    final AtomicInteger count = new AtomicInteger(0);
-
-                    try {
-                        importUserProfileXMLService.process(getSessionId(), new AbstractImportListener<PersonProfile>() {
-                            @Override
-                            public void processed(PersonProfile object) {
-                                count.incrementAndGet();
-                            }
-
-                            @Override
-                            public void error(String message) {
-                                error.set(true);
-                            }
-                        }, fileUpload.getClientFileName(), fileUpload.getInputStream());
-                    } catch (IOException e) {
-                        log.error("Ошибка загрузки профиля - ошибка чтения потока", e);
-                        getSession().error(getString("error_failed_import"));
-                    }
-
-                    if (!error.get()) {
-                        getSession().info(getStringFormat("info_profile_imported", count.get()));
-                    } else {
-                        getSession().error(getString("error_failed_import"));
-                    }
+                                @Override
+                                public void onError(PersonProfile pp, Exception e) {
+                                    getSession().error(getString("error_upload"));
+                                }
+                            });
+                } catch ( IOException e) {
+                    log.error("Ошибка загрузки профиля - ошибка чтения потока", e);
+                    getSession().error(getString("error_upload"));
                 }
 
-                uploadDialog.close(target);
+                target.add(feedbackPanel);
 
-                setResponsePage(PersonProfileList.class);
+                uploadDialog.close(target);
             }
 
             @Override
@@ -221,78 +206,17 @@ public class PersonProfileList extends TemplatePage {
         list.add(new SaveButton(id, "export", false) {
             @Override
             protected void onClick() {
-                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                final InputStream inputStream = personProfileService.getInputStream(getSessionId(),
+                        getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
 
-                try {
-                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
-
-                    //Log
-                    final List<PersonProfile> logPersonProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
-
-                    Long selectedPersonProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
-
-                    boolean selectedSet = false;
-
-                    for (int i = 0, personProfilesSize = personProfiles.size(); i < personProfilesSize; i++) {
-                        PersonProfile personProfile = personProfiles.get(i);
-                        personProfile.mergePhysicalNames();
-
-                        //num
-                        personProfile.setNum(i + 1);
-
-                        //selected
-                        if (personProfile.getId().equals(selectedPersonProfileId)) {
-                            personProfile.setSelected(true);
-                            selectedSet = true;
-                        } else {
-                            personProfile.setSelected(false);
-                        }
-
-                        //name
-                        if (personProfile.getName() == null || personProfile.getName().isEmpty()){
-                            personProfile.setName(personProfile.getProfileName());
-                        }
-
-                        //empty for null
-                        Field[] fields = PersonProfile.class.getDeclaredFields();
-
-                        for (Field field : fields){
-                            field.setAccessible(true);
-
-                            if (field.get(personProfile) == null) {
-                                if (Integer.class.equals(field.getType())){
-                                    field.set(personProfile, 0);
-                                }else if (String.class.equals(field.getType())){
-                                    field.set(personProfile, "");
-                                }else if (Date.class.equals(field.getType())){
-                                    field.set(personProfile, new Date(0));
-                                }
-                            }
-                        }
-
-                        //prepare opz format
-                        personProfile.setId(null);
-                        personProfile.setProfileName(null);
-                    }
-
-                    if (!selectedSet && !personProfiles.isEmpty()){
-                        personProfiles.get(0).setSelected(true);
-                    }
-
-                    XmlUtil.writeXml(PersonProfile.RS .class, new PersonProfile.RS(personProfiles), outputStream, "windows-1251");
-
-                    //Schedule request handler
+                if (inputStream != null){
                     getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
                             new AbstractResourceStreamWriter() {
                                 @Override
                                 public void write(final Response output) {
                                     try {
-                                        ByteStreams.copy(new ByteArrayInputStream(outputStream.toByteArray()),
-                                                ((HttpServletResponse) output.getContainerResponse()).getOutputStream());
-
-                                        for (PersonProfile pp : logPersonProfiles) {
-                                            log.info("Профиль выгружен", new Event(EventCategory.EXPORT, pp));
-                                        }
+                                        ByteStreams.copy(inputStream,((HttpServletResponse) output.getContainerResponse())
+                                                .getOutputStream());
                                     } catch (IOException e) {
                                         log.error("Ошибка экспорта профиля", e);
                                     }
@@ -303,9 +227,9 @@ public class PersonProfileList extends TemplatePage {
                                     return "application/xml";
                                 }
                             }, "SETTINGS.XML"));
-                } catch (Exception e) {
+
+                }else {
                     getSession().error(getString("error_export"));
-                    log.error("Ошибка экспорта профиля", e);
                 }
             }
         });
