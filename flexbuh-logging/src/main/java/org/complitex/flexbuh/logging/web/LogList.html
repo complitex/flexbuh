@@ -19,6 +19,7 @@
                 <tr>
                     <th></th>
                     <th class="center" wicket:id="header.timestmp"><wicket:message key="timestmp"/></th>
+                    <th class="center" wicket:id="header.session_id"><wicket:message key="session_id"/></th>
                     <th class="center" wicket:id="header.login"><wicket:message key="login"/></th>
                     <th class="center" wicket:id="header.module"><wicket:message key="module"/></th>
                     <th class="center" wicket:id="header.logger_name"><wicket:message key="logger_name"/></th>
@@ -38,6 +39,7 @@
                             <input type="text" wicket:id="timestmp" style="width: 80px"/>
                         </div>
                     </th>
+                    <th class="center"><input type="text" wicket:id="session_id"/></th>
                     <th class="center"><input type="text" wicket:id="login"/></th>
                     <th class="center"><select wicket:id="module"></select></th>
                     <th class="center"><select wicket:id="logger_name"></select></th>
@@ -61,6 +63,7 @@
                             </a>
                         </td>
                         <td><span wicket:id="timestmp"></span></td>
+                        <td><span wicket:id="session_id"></span></td>
                         <td><span wicket:id="login"></span></td>
                         <td><span wicket:id="module"></span></td>
                         <td><span wicket:id="logger_name"></span></td>

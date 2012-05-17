@@ -5,6 +5,8 @@ import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.web.component.NoCacheLink;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.service.DeclarationService;
@@ -34,33 +36,38 @@ public class DeclarationPdfLink extends NoCacheLink {
 
     @Override
     public void onClick() {
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        declarationService.writePdf(declaration, outputStream);
+            declarationService.writePdf(declaration, outputStream);
 
-        getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
-                new AbstractResourceStreamWriter(){
+            getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                    new AbstractResourceStreamWriter(){
 
-                    @Override
-                    public void write(Response output) {
-                        output.write(outputStream.toByteArray());
-                    }
+                        @Override
+                        public void write(Response output) {
+                            output.write(outputStream.toByteArray());
+                        }
 
-                    @Override
-                    public Bytes length() {
-                        return Bytes.bytes(outputStream.size());
-                    }
+                        @Override
+                        public Bytes length() {
+                            return Bytes.bytes(outputStream.size());
+                        }
 
-                    @Override
-                    public String getContentType() {
-                        return "application/pdf";
-                    }
+                        @Override
+                        public String getContentType() {
+                            return "application/pdf";
+                        }
 
-                    @Override
-                    public Time lastModifiedTime() {
-                        return Time.now();
-                    }
-                }, declaration.getFileName() + ".pdf"));
+                        @Override
+                        public Time lastModifiedTime() {
+                            return Time.now();
+                        }
+                    }, declaration.getFileName() + ".pdf"));
 
+            log.info("Печатная форма документа выгружена", new Event(EventCategory.EXPORT, declaration));
+        } catch (Exception e) {
+            log.error("Ошибка выгрузки печатной формы документа", e);
+        }
     }
 }

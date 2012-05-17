@@ -44,4 +44,12 @@ public class StringUtil {
     public static double getDouble(String s){
         return isDecimal(s) ? Double.parseDouble(s) : 0;
     }
+
+    public static String getLastPacketName(String s){
+        if (s == null){
+            return "";
+        }
+
+        return s.substring(s.lastIndexOf('.') + 1);
+    }
 }

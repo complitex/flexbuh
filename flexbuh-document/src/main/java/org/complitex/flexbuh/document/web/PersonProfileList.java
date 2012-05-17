@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import com.google.common.io.ByteStreams;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -15,12 +16,12 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.AbstractImportListener;
 import org.complitex.flexbuh.common.service.ConfigBean;
@@ -40,7 +41,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -149,60 +152,50 @@ public class PersonProfileList extends TemplatePage {
 
         add(uploadDialog);
 
-        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
-
         Form fileUploadForm = new Form("upload_form");
+
+        final FileUploadField uploadField = new FileUploadField("upload_field");
+        fileUploadForm.add(uploadField);
 
         fileUploadForm.add(new AjaxButton("upload") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<FileUpload> fileUploads = fileUploadModel.getObject();
+                FileUpload fileUpload = uploadField.getFileUpload();
 
-                try {
-                    for (FileUpload fileUpload : fileUploads){
-                        if (fileUpload != null) {
-                            try {
+                if (fileUpload != null) {
+                    final ThreadLocal<Boolean> error = new ThreadLocal<>();
+                    error.set(false);
 
-                                final ThreadLocal<Boolean> error = new ThreadLocal<>();
-                                error.set(false);
+                    final AtomicInteger count = new AtomicInteger(0);
 
-                                final AtomicInteger count = new AtomicInteger(0);
-
-                                importUserProfileXMLService.process(getSessionId(), new AbstractImportListener<PersonProfile>() {
-                                    @Override
-                                    public void processed(PersonProfile object) {
-                                        count.incrementAndGet();
-                                    }
-
-                                    @Override
-                                    public void error(String message) {
-                                        error.set(true);
-                                    }
-                                }, fileUpload.getClientFileName(), fileUpload.getInputStream());
-
-                                if (error.get()) {
-                                    log.error("Failed import");
-                                    getSession().error(getString("error_failed_import"));
-                                } else {
-                                    getSession().info(getStringFormat("info_profile_imported", count.get()));
-                                }
-                            } catch (Exception e) {
-                                log.error("Failed import", e);
-                                getSession().error(getString("error_failed_import"));
+                    try {
+                        importUserProfileXMLService.process(getSessionId(), new AbstractImportListener<PersonProfile>() {
+                            @Override
+                            public void processed(PersonProfile object) {
+                                count.incrementAndGet();
                             }
-                        }
+
+                            @Override
+                            public void error(String message) {
+                                error.set(true);
+                            }
+                        }, fileUpload.getClientFileName(), fileUpload.getInputStream());
+                    } catch (IOException e) {
+                        log.error("Ошибка загрузки профиля - ошибка чтения потока", e);
+                        getSession().error(getString("error_failed_import"));
                     }
 
-                    uploadDialog.close(target);
-
-                    setResponsePage(PersonProfileList.class);
-
-                    info("Документы успешно загружены");
-                } catch (Exception e) {
-                    log.error("Ошибка загрузки файла", e);
-                    error("Ошибка загрузки файла");
+                    if (!error.get()) {
+                        getSession().info(getStringFormat("info_profile_imported", count.get()));
+                    } else {
+                        getSession().error(getString("error_failed_import"));
+                    }
                 }
+
+                uploadDialog.close(target);
+
+                setResponsePage(PersonProfileList.class);
             }
 
             @Override
@@ -212,8 +205,6 @@ public class PersonProfileList extends TemplatePage {
         });
 
         uploadDialog.add(fileUploadForm);
-
-        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 
     @Override
@@ -230,79 +221,92 @@ public class PersonProfileList extends TemplatePage {
         list.add(new SaveButton(id, "export", false) {
             @Override
             protected void onClick() {
-                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
-                        new AbstractResourceStreamWriter() {
-                            @Override
-                            public void write(Response output) {
-                                try {
-                                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
+                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-                                    Long selectedPersonProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
+                try {
+                    List<PersonProfile> personProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
+                    //Log
+                    final List<PersonProfile> logPersonProfiles = personProfileBean.getAllPersonProfiles(getSessionId());
 
-                                    boolean selectedSet = false;
+                    Long selectedPersonProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
-                                    for (int i = 0, personProfilesSize = personProfiles.size(); i < personProfilesSize; i++) {
-                                        PersonProfile personProfile = personProfiles.get(i);
-                                        personProfile.mergePhysicalNames();
+                    boolean selectedSet = false;
 
-                                        //num
-                                        personProfile.setNum(i + 1);
+                    for (int i = 0, personProfilesSize = personProfiles.size(); i < personProfilesSize; i++) {
+                        PersonProfile personProfile = personProfiles.get(i);
+                        personProfile.mergePhysicalNames();
 
-                                        //selected
-                                        if (personProfile.getId().equals(selectedPersonProfileId)) {
-                                            personProfile.setSelected(true);
-                                            selectedSet = true;
-                                        } else {
-                                            personProfile.setSelected(false);
-                                        }
+                        //num
+                        personProfile.setNum(i + 1);
 
-                                        //name
-                                        if (personProfile.getName() == null || personProfile.getName().isEmpty()){
-                                            personProfile.setName(personProfile.getProfileName());
-                                        }
+                        //selected
+                        if (personProfile.getId().equals(selectedPersonProfileId)) {
+                            personProfile.setSelected(true);
+                            selectedSet = true;
+                        } else {
+                            personProfile.setSelected(false);
+                        }
 
-                                        //empty for null
-                                        Field[] fields = PersonProfile.class.getDeclaredFields();
+                        //name
+                        if (personProfile.getName() == null || personProfile.getName().isEmpty()){
+                            personProfile.setName(personProfile.getProfileName());
+                        }
 
-                                        for (Field field : fields){
-                                            field.setAccessible(true);
+                        //empty for null
+                        Field[] fields = PersonProfile.class.getDeclaredFields();
 
-                                            if (field.get(personProfile) == null) {
-                                                if (Integer.class.equals(field.getType())){
-                                                    field.set(personProfile, 0);
-                                                }else if (String.class.equals(field.getType())){
-                                                    field.set(personProfile, "");
-                                                }else if (Date.class.equals(field.getType())){
-                                                    field.set(personProfile, new Date(0));
-                                                }
-                                            }
-                                        }
+                        for (Field field : fields){
+                            field.setAccessible(true);
 
-                                        //prepare opz format
-                                        personProfile.setId(null);
-                                        personProfile.setProfileName(null);
-                                    }
-
-                                    if (!selectedSet && !personProfiles.isEmpty()){
-                                        personProfiles.get(0).setSelected(true);
-                                    }
-
-                                    //Write xml
-                                    OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
-
-                                    XmlUtil.writeXml(PersonProfile.RS .class, new PersonProfile.RS(personProfiles), os, "windows-1251");
-                                } catch (Exception e) {
-                                    log.error("Ошибка экспорта профиля", e);
-                                    log.error("Cannot export person profile to xml: {}", new Object[]{e, EventCategory.EXPORT});
+                            if (field.get(personProfile) == null) {
+                                if (Integer.class.equals(field.getType())){
+                                    field.set(personProfile, 0);
+                                }else if (String.class.equals(field.getType())){
+                                    field.set(personProfile, "");
+                                }else if (Date.class.equals(field.getType())){
+                                    field.set(personProfile, new Date(0));
                                 }
                             }
+                        }
 
-                            @Override
-                            public String getContentType() {
-                                return "application/xml";
-                            }
-                        }, "SETTINGS.XML"));
+                        //prepare opz format
+                        personProfile.setId(null);
+                        personProfile.setProfileName(null);
+                    }
+
+                    if (!selectedSet && !personProfiles.isEmpty()){
+                        personProfiles.get(0).setSelected(true);
+                    }
+
+                    XmlUtil.writeXml(PersonProfile.RS .class, new PersonProfile.RS(personProfiles), outputStream, "windows-1251");
+
+                    //Schedule request handler
+                    getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                            new AbstractResourceStreamWriter() {
+                                @Override
+                                public void write(final Response output) {
+                                    try {
+                                        ByteStreams.copy(new ByteArrayInputStream(outputStream.toByteArray()),
+                                                ((HttpServletResponse) output.getContainerResponse()).getOutputStream());
+
+                                        for (PersonProfile pp : logPersonProfiles) {
+                                            log.info("Профиль выгружен", new Event(EventCategory.EXPORT, pp));
+                                        }
+                                    } catch (IOException e) {
+                                        log.error("Ошибка экспорта профиля", e);
+                                    }
+                                }
+
+                                @Override
+                                public String getContentType() {
+                                    return "application/xml";
+                                }
+                            }, "SETTINGS.XML"));
+                } catch (Exception e) {
+                    getSession().error(getString("error_export"));
+                    log.error("Ошибка экспорта профиля", e);
+                }
             }
         });
 

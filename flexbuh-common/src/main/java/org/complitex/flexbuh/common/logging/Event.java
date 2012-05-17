@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.logging;
 
 import org.complitex.flexbuh.common.entity.ILongId;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.util.XmlUtil;
 
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class Event implements Serializable {
 
         if (object != null) {
             map.put(MODEL_CLASS, object.getClass().getName());
-            map.put(OBJECT_ID, String.valueOf(object.getId()));
+            map.put(OBJECT_ID, StringUtil.getString(object.getId()));
             map.put(NEW_OBJECT, XmlUtil.getXStream().toXML(object));
         }
 

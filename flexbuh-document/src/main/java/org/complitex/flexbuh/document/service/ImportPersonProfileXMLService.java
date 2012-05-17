@@ -53,14 +53,14 @@ public class ImportPersonProfileXMLService extends ImportXMLService<PersonProfil
 
                 listener.processed(personProfile);
 
-                log.debug("Импорт профиля", new Event(EventCategory.IMPORT, personProfile));
+                log.info("Профиль загружен", new Event(EventCategory.IMPORT, personProfile));
             }
 
             listener.completed();
-        } catch (Throwable th) {
-            log.warn("Cancel import user profile: " + name, th);
+        } catch (Exception e) {
+            log.error("Ошибка загрузки профиля", e);
 
-            listener.error(th.getLocalizedMessage());
+            listener.error(e.getMessage());
         }
     }
 }
