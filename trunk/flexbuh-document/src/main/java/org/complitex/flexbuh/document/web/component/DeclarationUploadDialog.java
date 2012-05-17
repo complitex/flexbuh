@@ -9,6 +9,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.common.template.TemplatePanel;
@@ -91,6 +93,7 @@ public class DeclarationUploadDialog extends TemplatePanel {
                         if (!declarationService.checkPeriod(declaration) || documentVersion == null
                                 || periodDate.before(documentVersion.getBeginDate())
                                 || periodDate.after(documentVersion.getEndDate())){
+                            log.error("Ошибка загрузки документа - не корректный период");
                             error(getStringFormat("error_period_date", declaration.getTemplateName(),
                                     head.getPeriodMonth(), head.getPeriodYear(),
                                     documentVersion.getCDocVer(), documentVersion.getBeginDate(),
@@ -123,14 +126,16 @@ public class DeclarationUploadDialog extends TemplatePanel {
                         declarationFilter.getPeriods().clear();
                         declarationFilter.getPeriods().add(new Period(head.getPeriodMonth(), head.getPeriodType(),
                                 head.getPeriodYear()));
+
+                        log.info("Документ загружен", new Event(EventCategory.IMPORT, declaration));
                     } catch (NumberFormatException e) {
                         error(getStringFormat("error_filename", fileName));
 
-                        log.error("Ошибка загрузки файла");
+                        log.error("Ошибка загрузки документа - неверное название файла", e);
                     } catch (Exception e) {
                         error(getStringFormat("error_upload", fileName));
 
-                        log.error("Ошибка загрузки файла", e);
+                        log.error("Ошибка загрузки документа", e);
                     }
                 }
 

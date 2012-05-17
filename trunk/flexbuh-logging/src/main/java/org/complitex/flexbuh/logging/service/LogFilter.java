@@ -23,6 +23,7 @@ public class LogFilter extends AbstractFilter {
 	private Log.LEVEL level_string;
 
 	// event properties
+    private String session_id;
 	private String login;
 	private String module;
 	private String model;
@@ -116,4 +117,20 @@ public class LogFilter extends AbstractFilter {
 	public void setCategory(EventCategory category) {
 		this.category = category;
 	}
+
+    public String getCaller_class() {
+        return caller_class;
+    }
+
+    public void setCaller_class(String caller_class) {
+        this.caller_class = caller_class;
+    }
+
+    public String getSession_id() {
+        return session_id;
+    }
+
+    public void setSession_id(String session_id) {
+        this.session_id = session_id;
+    }
 }

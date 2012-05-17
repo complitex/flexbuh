@@ -1,9 +1,10 @@
 package org.complitex.flexbuh.document.web.component;
 
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.time.Time;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.web.component.NoCacheLink;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.exception.DeclarationParseException;
@@ -53,10 +54,10 @@ public class DeclarationXmlLink extends NoCacheLink {
 
             getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
                     stringResourceStream, declaration.getFileName() + ".xml"));
+
+            log.info("Документ выгружен", new Event(EventCategory.EXPORT, declaration));
         } catch (DeclarationParseException e) {
-            log.error("Ошибка генерации xml документа");
-            
-            throw new WicketRuntimeException(e);
+            log.error("Ошибка выгрузки документа", e);
         }
     }
 }

@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.complitex.flexbuh.common.logging.EventKey.*;
+import static org.complitex.flexbuh.common.util.StringUtil.getLastPacketName;
 
 /**
  * @author Pavel Sknar
@@ -91,6 +92,9 @@ public class LogList extends TemplatePage {
         DatePicker<Date> timestmp = new DatePicker<>("timestmp");
         filterForm.add(timestmp);
 
+        //SessionId
+        filterForm.add(new TextField<String>("session_id"));
+
         //Login
         filterForm.add(new TextField<String>("login"));
 
@@ -100,7 +104,7 @@ public class LogList extends TemplatePage {
 
                     @Override
                     public Object getDisplayValue(String object) {
-                        return getStringOrKey(object);
+                        return getLastPacketName(object);
                     }
 
                     @Override
@@ -116,7 +120,7 @@ public class LogList extends TemplatePage {
 
                     @Override
                     public Object getDisplayValue(String object) {
-                        return getStringOrKey(object);
+                        return getLastPacketName(object);
                     }
 
                     @Override
@@ -131,7 +135,7 @@ public class LogList extends TemplatePage {
 
                     @Override
                     public Object getDisplayValue(String object) {
-                        return getStringOrKey(object);
+                        return getLastPacketName(object);
                     }
 
                     @Override
@@ -149,7 +153,7 @@ public class LogList extends TemplatePage {
 
                     @Override
                     public Object getDisplayValue(EventCategory object) {
-                        return getStringOrKey(object.name());
+                        return object.name();
                     }
 
                     @Override
@@ -164,7 +168,7 @@ public class LogList extends TemplatePage {
 
                     @Override
                     public Object getDisplayValue(Log.LEVEL object) {
-                        return getStringOrKey(object.name());
+                        return object.name();
                     }
 
                     @Override
@@ -204,18 +208,20 @@ public class LogList extends TemplatePage {
                 final Log log = item.getModelObject();
 
                 item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTime())), "dd.MM.yy HH:mm:ss"));
-                //item.add(LogManager.get().getLinkComponent("objectId", log));
+
                 item.add(new Label("objectId", StringUtil.emptyOnNull(log.get(OBJECT_ID))));
-                item.add(new Label("logger_name", getStringOrKey(log.getLoggerName())));
+
+                item.add(new Label("logger_name", getLastPacketName(log.getLoggerName())));
 
                 String errorMessage =  log.get(ERROR_MESSAGE) != null ? " - "  + log.get(ERROR_MESSAGE) : "";
 
                 item.add(new Label("formatted_message", log.getDescription() + errorMessage ));
                 item.add(new Label("login", log.get(LOGIN)));
-                item.add(new Label("module", getStringOrKey(log.getModuleName())));
-                item.add(new Label("model", getStringOrKey(log.get(MODEL_CLASS))));
-                item.add(new Label("category", getStringOrKey(log.get(CATEGORY))));
-                item.add(new Label("level_string", getStringOrKey(log.getLevel())));
+                item.add(new Label("session_id", log.get(SESSION_ID)));
+                item.add(new Label("module", getLastPacketName(log.getModuleName())));
+                item.add(new Label("model", getLastPacketName(log.get(MODEL_CLASS))));
+                item.add(new Label("category", log.get(CATEGORY)));
+                item.add(new Label("level_string", log.getLevel()));
 
                 LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
                 logChangePanel.setVisible((log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT))
@@ -252,6 +258,7 @@ public class LogList extends TemplatePage {
 
         //Сортировка
         filterForm.add(new OrderByBorder("header.timestmp", "timestmp", dataProvider));
+        filterForm.add(new OrderByBorder("header.session_id", "session_id", dataProvider));
         filterForm.add(new OrderByBorder("header.login", "login", dataProvider));
         filterForm.add(new OrderByBorder("header.module", "module", dataProvider));
         filterForm.add(new OrderByBorder("header.logger_name", "logger_name", dataProvider));

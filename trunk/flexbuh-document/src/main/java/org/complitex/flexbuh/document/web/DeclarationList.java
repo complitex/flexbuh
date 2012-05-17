@@ -439,8 +439,12 @@ public class DeclarationList extends TemplatePage{
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                 try {
-                    declarationService.writeXmlZip(declarationBean.getDeclarations(getSelectedDeclarationIds()), outputStream);
+                    declarationService.writeXmlZip(declarationBean.getDeclarations(selectedDeclarations), outputStream);
+
+                    log.info("Документы выгружены, {0}", selectedDeclarations,
+                            new Event(EventCategory.EXPORT, Declaration.class));
                 } catch (DeclarationZipException e) {
+                    log.error("Ошибка выгрузки документов", e);
                     error(getString("error_download_xml_zip"));
                 }
 
@@ -484,7 +488,11 @@ public class DeclarationList extends TemplatePage{
 
                 try {
                     declarationService.writePdfZip(declarationBean.getDeclarations(selectedDeclarationIds), outputStream);
+
+                    log.info("Документы в печатной форме выгружены: {0} ", selectedDeclarationIds,
+                            new Event(EventCategory.EXPORT, Declaration.class));
                 } catch (DeclarationZipException e) {
+                    log.error("Ошибка выгрузки документов в печатной форме", e);
                     error(getString("error_download_pdf_zip"));
                 }
 
