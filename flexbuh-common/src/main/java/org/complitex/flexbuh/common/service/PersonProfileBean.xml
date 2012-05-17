@@ -40,7 +40,8 @@
         <result column="tax_inspection_name" property="taxInspectionName"/>
     </resultMap>
 
-    <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertPersonProfile" parameterType="org.complitex.flexbuh.common.entity.PersonProfile"
+            keyProperty="id" useGeneratedKeys="true">
         insert into `person_profile`
           (`session_id`, `person_type`, `c_sti`, `c_sti_tin`, `tin`, `name`, `last_name`, `first_name`, `middle_name`,
             `profile_name`, `num_pdv_svd`, `ipn`, `kved`, `koatuu`, `contract_date`, `contract_number`, `zip_code`,
