@@ -10,60 +10,73 @@
         <result column="level_string" property="level"/>
         <result column="logger_name" property="loggerName"/>
 
-        <collection property="eventProperties" ofType="org.complitex.flexbuh.common.logging.EventProperty">
-            <result column="mapped_key" property="mappedKey"/>
-            <result column="mapped_value" property="mappedValue"/>
-        </collection>
+        <collection property="eventProperties" resultMap="eventPropertyResultMap" select="selectEventProperty" column="id"/>
     </resultMap>
 
-    <sql id="logFilterPropertyWhere">
-        <where>
-            <if test="login != null">lep2.`mapped_key` = 'LOGIN' and lep2.`mapped_value` like CONCAT('%',#{login},'%')</if>
-            <if test="model != null">or lep2.`mapped_key` = 'MODEL' and lep2.`mapped_value` = #{model}</if>
-            <if test="objectId != null">or lep2.`mapped_key` = 'OBJECT_ID' and lep2.`mapped_value` = #{objectId}</if>
-            <if test="category != null">or lep2.`mapped_key` = 'CATEGORY' and lep2.`mapped_value` = #{category.value}</if>
-        </where>
-    </sql>
+    <resultMap id="eventPropertyResultMap" type="org.complitex.flexbuh.common.logging.EventProperty">
+        <result column="mapped_key" property="mappedKey"/>
+        <result column="mapped_value" property="mappedValue"/>
+    </resultMap>
 
     <sql id="logFilterWhere">
         <where>
-
-
             <if test="afterTime != null">and `timestmp` > #{afterTime}</if>
             <if test="beforeTime != null">and #{beforeTime} > `timestmp`</if>
-            <choose>
-                <when test="caller_class != null">and `caller_class` = #{caller_class}</when>
-                <otherwise>and `caller_class` like 'org.complitex.flexbuh.%'</otherwise>
-            </choose>
+            <if test="logger_name != null">and `logger_name` = #{logger_name} </if>
             <if test="formatted_message != null">and `formatted_message` like CONCAT('%',#{formatted_message},'%')</if>
             <if test="level_string != null">and `level_string` = #{level_string}</if>
-            <if test="module != null">
-                and `logger_name` like CONCAT(#{module},'%')
-            </if>
+            <if test="module != null">and `logger_name` like CONCAT(#{module},'%')</if>
+            and `level_string` != 'DEBUG'
+
+            <if test="session_id != null">and lep.`mapped_key` = 'SESSION_ID' and lep.`mapped_value` = #{session_id}</if>
+            <if test="login != null">and lep.`mapped_key` = 'LOGIN' and lep.`mapped_value` like CONCAT('%',#{login},'%')</if>
+            <if test="model != null">and lep.`mapped_key` = 'MODEL' and lep.`mapped_value` = #{model}</if>
+            <if test="objectId != null">and lep.`mapped_key` = 'OBJECT_ID' and lep.`mapped_value` = #{objectId}</if>
+            <if test="category != null">and lep.`mapped_key` = 'CATEGORY' and lep.`mapped_value` = #{category.value}</if>
         </where>
     </sql>
 
     <select id="selectLogs" resultMap="logResultMap" parameterType="org.complitex.flexbuh.logging.service.LogFilter">
-        select le.event_id as id, `timestmp`, `caller_class`, `logger_name`, `formatted_message`, `level_string`,
-        lep.`mapped_key`, lep.`mapped_value`, le.`logger_name`
-        from (
-        select * from `logging_event` <include refid="logFilterWhere"/>
-        <if test="sortProperty != null and sortProperty != 'login' and sortProperty != 'module'
-                            and sortProperty != 'model' and sortProperty != 'objectId' and sortProperty != 'category'">
-            order by `${sortProperty}` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-            limit #{first}, #{count}
-        </if>
-        ) as le
-        left join `logging_event_property` as lep on le.event_id = lep.event_id
-        <if test="sortProperty == 'login' or sortProperty == 'module' or sortProperty == 'model'
-			or sortProperty == 'objectId' or sortProperty == 'category'">
-            left join `logging_event_property` as lep1 on (le.event_id = lep1.event_id and lep1.`mapped_key` = #{sortProperty})
-            order by lep1.`mapped_value` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        </if>
+        select distinct le.`event_id` as id, `timestmp`, `caller_class`, `logger_name`, `formatted_message`, `level_string`
+        from `logging_event` as le
+        left join `logging_event_property` as lep on (le.event_id = lep.event_id)
+        left join `logging_event_property` as lep1 on (le.event_id = lep1.event_id and lep1.`mapped_key` = #{sortProperty})
+        <include refid="logFilterWhere"/>
+        <choose>
+            <when test="sortProperty == 'timestmp'">
+                order by `timestmp` ${asc}
+            </when>
+            <when test="sortProperty == 'logger_name'">
+                order by `logger_name` ${asc}
+            </when>
+            <when test="sortProperty == 'formatted_message'">
+                order by `formatted_message` ${asc}
+            </when>
+            <when test="sortProperty == 'level_string'">
+                order by `level_string` ${asc}
+            </when>
+            <when test="sortProperty == 'module'">
+                order by SUBSTRING_INDEX(`logger_name`, '.', 4) ${asc}
+            </when>
+            <when test="sortProperty == 'SESSION_ID'
+                or sortProperty == 'LOGIN'
+                or sortProperty == 'MODEL_CLASS'
+                or sortProperty == 'OBJECT_ID'
+                or sortProperty == 'CATEGORY'">
+                order by lep1.`mapped_value` ${asc}
+            </when>
+        </choose>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectEventProperty" resultMap="eventPropertyResultMap" parameterType="long">
+        select * from `logging_event_property` where `event_id` = #{id}
     </select>
 
     <select id="selectLogsCount" resultType="int">
-        select count(*) from `logging_event` <include refid="logFilterWhere"/>
+        select count(distinct le.`event_id`) from `logging_event` le
+        left join `logging_event_property` as lep on (le.event_id = lep.event_id)
+        <include refid="logFilterWhere"/>
     </select>
 
     <select id="selectModules" resultType="string">
@@ -81,7 +94,7 @@
     </select>
 
     <select id="selectModels" resultType="string">
-        select `mapped_value` from `logging_event_property` where `mapped_key` = 'MODEL' and `mapped_value` is not null
+        select `mapped_value` from `logging_event_property` where `mapped_key` = 'MODEL_CLASS' and `mapped_value` is not null
             group by `mapped_value` order by `mapped_value`
     </select>
 </mapper>

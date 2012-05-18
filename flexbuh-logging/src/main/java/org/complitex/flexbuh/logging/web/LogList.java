@@ -258,13 +258,13 @@ public class LogList extends TemplatePage {
 
         //Сортировка
         filterForm.add(new OrderByBorder("header.timestmp", "timestmp", dataProvider));
-        filterForm.add(new OrderByBorder("header.session_id", "session_id", dataProvider));
-        filterForm.add(new OrderByBorder("header.login", "login", dataProvider));
+        filterForm.add(new OrderByBorder("header.session_id", "SESSION_ID", dataProvider));
+        filterForm.add(new OrderByBorder("header.login", "LOGIN", dataProvider));
         filterForm.add(new OrderByBorder("header.module", "module", dataProvider));
         filterForm.add(new OrderByBorder("header.logger_name", "logger_name", dataProvider));
-        filterForm.add(new OrderByBorder("header.model", "model", dataProvider));
-        filterForm.add(new OrderByBorder("header.objectId", "objectId", dataProvider));
-        filterForm.add(new OrderByBorder("header.category", "category", dataProvider));
+        filterForm.add(new OrderByBorder("header.model", "MODEL_CLASS", dataProvider));
+        filterForm.add(new OrderByBorder("header.objectId", "OBJECT_ID", dataProvider));
+        filterForm.add(new OrderByBorder("header.category", "CATEGORY", dataProvider));
         filterForm.add(new OrderByBorder("header.level_string", "level_string", dataProvider));
         filterForm.add(new OrderByBorder("header.formatted_message", "formatted_message", dataProvider));
 
