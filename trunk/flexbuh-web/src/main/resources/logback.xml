@@ -3,7 +3,7 @@
 
     <appender name="DB" class="org.complitex.flexbuh.common.logging.FlexbuhDBAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
 
         <connectionSource class="ch.qos.logback.core.db.JNDIConnectionSource">
@@ -59,7 +59,7 @@
         <appender-ref ref="DB"/>
     </logger>
 
-    <!--<logger name="org.complitex.flexbuh" level="DEBUG">
+    <logger name="org.complitex.flexbuh" level="DEBUG">
         <appender-ref ref="FLEXBUH_DEBUG"/>
-    </logger>-->
+    </logger>
 </configuration>

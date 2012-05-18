@@ -32,6 +32,10 @@ public class AbstractFilter implements Serializable{
         this.count = count;
     }
 
+    public String getAsc(){
+        return ascending ? "asc" : "desc";
+    }
+
     public Long getSessionId() {
         return sessionId;
     }

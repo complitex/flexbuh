@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.logging.web.component;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
@@ -10,6 +11,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.complitex.flexbuh.common.logging.EventKey;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.logging.entity.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Pavel Sknar
@@ -116,8 +115,8 @@ public class LogChangePanel extends Panel {
                                     id = ":" + idNodeList.item(0).getTextContent().trim() + ":";
                                 }
 
-                                fields.put(element.getTagName() + id  + subElement.getTagName(),
-                                        subElement.getTextContent().trim());
+                                fields.put(element.getTagName() + id  + StringUtil.getLastPacketName(subElement.getTagName()),
+                                        getString(subElement));
                             }
                         }
                     } else {
@@ -130,6 +129,30 @@ public class LogChangePanel extends Panel {
         }
 
         return fields;
+    }
+
+    private String getString(Node node){
+        NodeList childNodeList = node.getChildNodes();
+
+        int childLength = childNodeList.getLength();
+
+        if (childLength > 3){
+            List<String> list = new ArrayList<>();
+
+            for (int i = 0; i < childLength; ++i){
+                Node childNode = childNodeList.item(i);
+
+                if (childNode instanceof Element){
+                    Element childElement = (Element) childNode;
+
+                    list.add(childElement.getTagName() + ": " + childElement.getTextContent().trim());
+                }
+            }
+
+            return Joiner.on(", ").join(list);
+        }
+
+        return node.getTextContent().trim();
     }
 
     private static class DiffObject implements Serializable {
