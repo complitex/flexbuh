@@ -1,16 +1,14 @@
 package org.complitex.flexbuh.logging.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -19,6 +17,7 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -277,5 +276,24 @@ public class LogList extends TemplatePage {
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
+
+        //Авто обновление
+        filterForm.add(new CheckBox("auto_update", Model.of(Boolean.FALSE)){
+            AjaxSelfUpdatingTimerBehavior timer;
+
+            @Override
+            public void onSelectionChanged() {
+                if ("on".equals(getInput()) || "true".equals(getInput())){
+                    filterForm.add(timer = new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)));
+                }else {
+                    timer.stop();
+                }
+            }
+
+            @Override
+            protected boolean wantOnSelectionChangedNotifications() {
+                return true;
+            }
+        });
     }
 }

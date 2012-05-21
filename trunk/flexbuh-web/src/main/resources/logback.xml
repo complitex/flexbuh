@@ -59,7 +59,9 @@
         <appender-ref ref="DB"/>
     </logger>
 
-    <logger name="org.complitex.flexbuh" level="DEBUG">
+    <!--significantly reduces the performance of template imports-->
+
+    <!--<logger name="org.complitex.flexbuh" level="DEBUG">
         <appender-ref ref="FLEXBUH_DEBUG"/>
-    </logger>
+    </logger>-->
 </configuration>
