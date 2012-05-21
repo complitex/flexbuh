@@ -16,9 +16,9 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -67,12 +67,10 @@ public class LogList extends TemplatePage {
         add(new FeedbackPanel("messages"));
 
         //Фильтр модель
-        LogFilter filterObject = new LogFilter();
-
-        final IModel<LogFilter> filterModel = new CompoundPropertyModel<>(filterObject);
+        final IModel<LogFilter> filterModel = Model.of(new LogFilter());
 
         //Фильтр форма
-        final Form<LogFilter> filterForm = new Form<>("filter_form", filterModel);
+        final Form<LogFilter> filterForm = new Form<>("filter_form");
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -89,17 +87,18 @@ public class LogList extends TemplatePage {
         filterForm.add(filter_reset);
 
         //Date
-        DatePicker<Date> timestmp = new DatePicker<>("timestmp");
+        DatePicker<Date> timestmp = new DatePicker<>("timestmp", new PropertyModel<Date>(filterModel, "timestmp"));
         filterForm.add(timestmp);
 
         //SessionId
-        filterForm.add(new TextField<String>("session_id"));
+        filterForm.add(new TextField<>("session_id", new PropertyModel<Long>(filterModel, "sessionId")));
 
         //Login
-        filterForm.add(new TextField<String>("login"));
+        filterForm.add(new TextField<>("login", new PropertyModel<String>(filterModel, "login")));
 
         //Module
-        filterForm.add(new DropDownChoice<>("module", logListBean.getModules(),
+        filterForm.add(new DropDownChoice<>("module", new PropertyModel<String>(filterModel, "module"),
+                logListBean.getModules(),
                 new IChoiceRenderer<String>() {
 
                     @Override
@@ -115,7 +114,9 @@ public class LogList extends TemplatePage {
 
 
         //Logger Name
-        filterForm.add(new DropDownChoice<>("logger_name", logListBean.getLoggerNames(),
+        filterForm.add(new DropDownChoice<>("logger_name",
+                new PropertyModel<String>(filterModel, "loggerName"),
+                logListBean.getLoggerNames(),
                 new IChoiceRenderer<String>() {
 
                     @Override
@@ -130,7 +131,9 @@ public class LogList extends TemplatePage {
                 }).setNullValid(true));
 
         //Model Class
-        filterForm.add(new DropDownChoice<>("model", logListBean.getModels(),
+        filterForm.add(new DropDownChoice<>("model_class",
+                new PropertyModel<String>(filterModel, "modelClass"),
+                logListBean.getModels(),
                 new IChoiceRenderer<String>() {
 
                     @Override
@@ -145,10 +148,12 @@ public class LogList extends TemplatePage {
                 }).setNullValid(true));
 
         //Object Id
-        filterForm.add(new TextField<String>("objectId"));
+        filterForm.add(new TextField<>("object_id", new PropertyModel<String>(filterModel, "objectId")));
 
         //Category
-        filterForm.add(new DropDownChoice<>("category", Arrays.asList(EventCategory.values()),
+        filterForm.add(new DropDownChoice<>("event_category",
+                new PropertyModel<EventCategory>(filterModel, "eventCategory"),
+                Arrays.asList(EventCategory.values()),
                 new IChoiceRenderer<EventCategory>() {
 
                     @Override
@@ -163,7 +168,9 @@ public class LogList extends TemplatePage {
                 }).setNullValid(true));
 
         //Level
-        filterForm.add(new DropDownChoice<>("level_string", Arrays.asList(Log.LEVEL.values()),
+        filterForm.add(new DropDownChoice<>("level",
+                new PropertyModel<Log.LEVEL>(filterModel, "level"),
+                Arrays.asList(Log.LEVEL.values()),
                 new IChoiceRenderer<Log.LEVEL>() {
 
                     @Override
@@ -178,7 +185,7 @@ public class LogList extends TemplatePage {
                 }).setNullValid(true));
 
         //Description
-        filterForm.add(new TextField<String>("formatted_message"));
+        filterForm.add(new TextField<>("formatted_message", new PropertyModel<String>(filterModel, "formattedMessage")));
 
         //Модель данных списка элементов журнала событий
         final DataProvider<Log> dataProvider = new DataProvider<Log>() {
@@ -207,21 +214,21 @@ public class LogList extends TemplatePage {
             protected void populateItem(Item<Log> item) {
                 final Log log = item.getModelObject();
 
-                item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTime())), "dd.MM.yy HH:mm:ss"));
+                item.add(DateLabel.forDatePattern("timestmp", new Model<>(new Date(log.getTimestmp())), "dd.MM.yy HH:mm:ss"));
 
-                item.add(new Label("objectId", StringUtil.emptyOnNull(log.get(OBJECT_ID))));
+                item.add(new Label("object_id", StringUtil.emptyOnNull(log.get(OBJECT_ID))));
 
                 item.add(new Label("logger_name", getLastPacketName(log.getLoggerName())));
 
                 String errorMessage =  log.get(ERROR_MESSAGE) != null ? " - "  + log.get(ERROR_MESSAGE) : "";
 
-                item.add(new Label("formatted_message", log.getDescription() + errorMessage ));
+                item.add(new Label("formatted_message", log.getFormattedMessage() + errorMessage ));
                 item.add(new Label("login", log.get(LOGIN)));
                 item.add(new Label("session_id", log.get(SESSION_ID)));
                 item.add(new Label("module", getLastPacketName(log.getModuleName())));
-                item.add(new Label("model", getLastPacketName(log.get(MODEL_CLASS))));
-                item.add(new Label("category", log.get(CATEGORY)));
-                item.add(new Label("level_string", log.getLevel()));
+                item.add(new Label("model_class", getLastPacketName(log.get(MODEL_CLASS))));
+                item.add(new Label("event_category", log.get(CATEGORY)));
+                item.add(new Label("level", log.getLevel()));
 
                 LogChangePanel logChangePanel = new LogChangePanel("log_changes", log);
                 logChangePanel.setVisible((log.containsKey(OLD_OBJECT) || log.containsKey(NEW_OBJECT))
@@ -262,10 +269,10 @@ public class LogList extends TemplatePage {
         filterForm.add(new OrderByBorder("header.login", "LOGIN", dataProvider));
         filterForm.add(new OrderByBorder("header.module", "module", dataProvider));
         filterForm.add(new OrderByBorder("header.logger_name", "logger_name", dataProvider));
-        filterForm.add(new OrderByBorder("header.model", "MODEL_CLASS", dataProvider));
-        filterForm.add(new OrderByBorder("header.objectId", "OBJECT_ID", dataProvider));
-        filterForm.add(new OrderByBorder("header.category", "CATEGORY", dataProvider));
-        filterForm.add(new OrderByBorder("header.level_string", "level_string", dataProvider));
+        filterForm.add(new OrderByBorder("header.model_class", "MODEL_CLASS", dataProvider));
+        filterForm.add(new OrderByBorder("header.object_id", "OBJECT_ID", dataProvider));
+        filterForm.add(new OrderByBorder("header.event_category", "CATEGORY", dataProvider));
+        filterForm.add(new OrderByBorder("header.level", "level_string", dataProvider));
         filterForm.add(new OrderByBorder("header.formatted_message", "formatted_message", dataProvider));
 
         //Постраничная навигация
