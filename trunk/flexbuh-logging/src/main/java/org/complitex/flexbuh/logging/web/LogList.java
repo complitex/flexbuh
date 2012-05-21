@@ -111,7 +111,7 @@ public class LogList extends TemplatePage {
                     public String getIdValue(String object, int index) {
                         return object;
                     }
-                }));
+                }).setNullValid(true));
 
 
         //Logger Name
@@ -127,7 +127,7 @@ public class LogList extends TemplatePage {
                     public String getIdValue(String object, int index) {
                         return object;
                     }
-                }));
+                }).setNullValid(true));
 
         //Model Class
         filterForm.add(new DropDownChoice<>("model", logListBean.getModels(),
@@ -142,7 +142,7 @@ public class LogList extends TemplatePage {
                     public String getIdValue(String object, int index) {
                         return object;
                     }
-                }));
+                }).setNullValid(true));
 
         //Object Id
         filterForm.add(new TextField<String>("objectId"));
@@ -160,7 +160,7 @@ public class LogList extends TemplatePage {
                     public String getIdValue(EventCategory object, int index) {
                         return String.valueOf(object.ordinal());
                     }
-                }));
+                }).setNullValid(true));
 
         //Level
         filterForm.add(new DropDownChoice<>("level_string", Arrays.asList(Log.LEVEL.values()),
@@ -175,7 +175,7 @@ public class LogList extends TemplatePage {
                     public String getIdValue(Log.LEVEL object, int index) {
                         return String.valueOf(object.ordinal());
                     }
-                }));
+                }).setNullValid(true));
 
         //Description
         filterForm.add(new TextField<String>("formatted_message"));
