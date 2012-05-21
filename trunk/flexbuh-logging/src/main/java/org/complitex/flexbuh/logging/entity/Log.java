@@ -19,9 +19,8 @@ public class Log extends DomainObject {
 
     private final static Pattern MODULE_PATTERN = Pattern.compile("(org\\.complitex\\.flexbuh\\.\\w+)\\.(.+)");
 
-	private long time;
-    private String controller;
-    private String description;
+	private long timestmp;
+    private String formattedMessage;
 	private String level;
     private String loggerName;
 
@@ -54,44 +53,28 @@ public class Log extends DomainObject {
         return map.containsKey(key.name());
     }
 
-	public long getTime() {
-		return time;
-	}
-
-	public void setTime(long time) {
-		this.time = time;
-	}
-
-	public String getController() {
-		return controller;
-	}
-
-	public void setController(String controller) {
-		this.controller = controller;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getLevel() {
-		return level;
-	}
-
-	public void setLevel(String level) {
-		this.level = level;
-	}
-
-    public List<EventProperty> getEventProperties() {
-        return eventProperties;
+    public long getTimestmp() {
+        return timestmp;
     }
 
-    public void setEventProperties(List<EventProperty> eventProperties) {
-        this.eventProperties = eventProperties;
+    public void setTimestmp(long timestmp) {
+        this.timestmp = timestmp;
+    }
+
+    public String getFormattedMessage() {
+        return formattedMessage;
+    }
+
+    public void setFormattedMessage(String formattedMessage) {
+        this.formattedMessage = formattedMessage;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 
     public String getLoggerName() {
@@ -100,5 +83,21 @@ public class Log extends DomainObject {
 
     public void setLoggerName(String loggerName) {
         this.loggerName = loggerName;
+    }
+
+    public Map<String, String> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, String> map) {
+        this.map = map;
+    }
+
+    public List<EventProperty> getEventProperties() {
+        return eventProperties;
+    }
+
+    public void setEventProperties(List<EventProperty> eventProperties) {
+        this.eventProperties = eventProperties;
     }
 }

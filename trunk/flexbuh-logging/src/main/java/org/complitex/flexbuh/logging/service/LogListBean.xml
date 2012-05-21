@@ -4,9 +4,8 @@
 <mapper namespace="org.complitex.flexbuh.logging.service.LogListBean">
     <resultMap id="logResultMap" type="org.complitex.flexbuh.logging.entity.Log">
         <id column="id" property="id"/>
-        <result column="timestmp" property="time"/>
-        <result column="caller_class" property="controller"/>
-        <result column="formatted_message" property="description"/>
+        <result column="timestmp" property="timestmp"/>
+        <result column="formatted_message" property="formattedMessage"/>
         <result column="level_string" property="level"/>
         <result column="logger_name" property="loggerName"/>
 
@@ -34,22 +33,22 @@
         <where>
             <if test="afterTime != null">and `timestmp` > #{afterTime}</if>
             <if test="beforeTime != null">and #{beforeTime} > `timestmp`</if>
-            <if test="logger_name != null">and `logger_name` = #{logger_name} </if>
-            <if test="formatted_message != null">and `formatted_message` like CONCAT('%',#{formatted_message},'%')</if>
-            <if test="level_string != null">and `level_string` = #{level_string}</if>
+            <if test="loggerName != null">and `logger_name` = #{loggerName} </if>
+            <if test="formattedMessage != null">and `formatted_message` like CONCAT('%',#{formattedMessage},'%')</if>
+            <if test="level != null">and `level_string` = #{level}</if>
             <if test="module != null">and `logger_name` like CONCAT(#{module},'%')</if>
             and `level_string` != 'DEBUG'
 
-            <if test="session_id != null">and lep_session_id.`mapped_value` = #{session_id}</if>
+            <if test="sessionId != null">and lep_session_id.`mapped_value` = #{sessionId}</if>
             <if test="login != null">and lep_login.`mapped_value` like CONCAT('%',#{login},'%')</if>
-            <if test="model != null">and lep_model.`mapped_value` = #{model}</if>
+            <if test="modelClass != null">and lep_model.`mapped_value` = #{modelClass}</if>
             <if test="objectId != null">and lep_objectId.`mapped_value` = #{objectId}</if>
-            <if test="category != null">and lep_category.`mapped_value` = #{category.name}</if>
+            <if test="eventCategory != null">and lep_category.`mapped_value` = #{eventCategory.name}</if>
         </where>
     </sql>
 
     <select id="selectLogs" resultMap="logResultMap" parameterType="org.complitex.flexbuh.logging.service.LogFilter">
-        select distinct le.`event_id` as id, `timestmp`, `caller_class`, `logger_name`, `formatted_message`, `level_string`
+        select distinct le.`event_id` as id, `timestmp`, `logger_name`, `formatted_message`, `level_string`
         <include refid="logFilterFromWhere"/>
         <choose>
             <when test="sortProperty == 'timestmp'">
