@@ -101,7 +101,7 @@ public class LogChangePanel extends Panel {
 
                     int subLength = subNodeList.getLength();
 
-                    if (subLength > 3){
+                    if (subLength > 2){
                         for (int k = 0; k < subLength; ++k){
                             Node subNode = subNodeList.item(k);
 
@@ -136,7 +136,7 @@ public class LogChangePanel extends Panel {
 
         int childLength = childNodeList.getLength();
 
-        if (childLength > 3){
+        if (childLength > 2){
             List<String> list = new ArrayList<>();
 
             for (int i = 0; i < childLength; ++i){
