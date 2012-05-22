@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import com.google.common.io.ByteStreams;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -25,12 +26,10 @@ import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.IProcessListener;
 import org.complitex.flexbuh.common.logging.Event;
-import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.StringUtil;
-import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
@@ -44,7 +43,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import static org.complitex.flexbuh.common.entity.PersonProfile.SELECTED_PERSON_PROFILE_ID;
@@ -234,33 +234,29 @@ public class EmployeeList extends TemplatePage{
         list.add(new SaveButton(id, "export", false) {
             @Override
             protected void onClick() {
-                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
-                        new AbstractResourceStreamWriter() {
-                            @Override
-                            public void write(Response output) {
-                                try {
-                                    List<Employee> employees = employeeBean.getAllEmployees(getSessionId());
+                final InputStream inputStream = employeeService.getInputStream(getSessionId());
 
-                                    //jaxb preprocess, set not null values
-                                    for (Employee employee : employees){
-                                        if (employee.getHtin() == null){
-                                            employee.setHtin(0);
-                                        }
+                if (inputStream != null) {
+                    getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                            new AbstractResourceStreamWriter() {
+                                @Override
+                                public void write(Response output) {
+                                    try {
+                                        ByteStreams.copy(inputStream, ((HttpServletResponse) output.getContainerResponse())
+                                                .getOutputStream());
+                                    } catch (IOException e) {
+                                        log.error("Ошибка экспорта профиля", e);
                                     }
-
-                                    OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
-
-                                    XmlUtil.writeXml(EmployeeRowSet.class, new EmployeeRowSet(employees, true), os, "windows-1251");
-                                } catch (Exception e) {
-                                    log.error("Cannot export employee to xml: {}", new Object[]{e, EventCategory.EXPORT});
                                 }
-                            }
 
-                            @Override
-                            public String getContentType() {
-                                return "application/xml";
-                            }
-                        }, EmployeeRowSet.FILE_NAME));
+                                @Override
+                                public String getContentType() {
+                                    return "application/xml";
+                                }
+                            }, EmployeeRowSet.FILE_NAME));
+                }else {
+                    error(getString("error_export"));
+                }
             }
         });
 

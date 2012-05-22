@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web;
 
+import com.google.common.io.ByteStreams;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -28,7 +29,6 @@ import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
-import org.complitex.flexbuh.common.util.XmlUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Counterpart;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -223,26 +223,29 @@ public class CounterpartList extends TemplatePage{
         list.add(new SaveButton(id, "export", false) {
             @Override
             protected void onClick() {
-                getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
-                        new AbstractResourceStreamWriter() {
-                            @Override
-                            public void write(Response output) {
-                                try {
-                                    List<Counterpart> counterparts = counterpartBean.getAllCounterparts(getSessionId());
+                final InputStream inputStream = counterpartService.getInputStream(getSessionId());
 
-                                    OutputStream os = ((HttpServletResponse) output.getContainerResponse()).getOutputStream();
-
-                                    XmlUtil.writeXml(CounterpartRowSet.class, new CounterpartRowSet(counterparts, true), os, "windows-1251");
-                                } catch (Exception e) {
-                                    log.error("Cannot export counterpart to xml: {}", new Object[]{e, EventCategory.EXPORT});
+                if (inputStream != null) {
+                    getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
+                            new AbstractResourceStreamWriter() {
+                                @Override
+                                public void write(Response output) {
+                                    try {
+                                        ByteStreams.copy(inputStream, ((HttpServletResponse) output.getContainerResponse())
+                                                .getOutputStream());
+                                    } catch (IOException e) {
+                                        log.error("Ошибка выгрузки контрагентов", e);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public String getContentType() {
-                                return "application/xml";
-                            }
-                        }, CounterpartRowSet.FILE_NAME));
+                                @Override
+                                public String getContentType() {
+                                    return "application/xml";
+                                }
+                            }, CounterpartRowSet.FILE_NAME));
+                }else{
+                    error(getString("error_export"));
+                }
             }
         });
 

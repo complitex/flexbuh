@@ -230,7 +230,7 @@ public class PersonProfileList extends TemplatePage {
                             }, "SETTINGS.XML"));
 
                 }else {
-                    getSession().error(getString("error_export"));
+                    error(getString("error_export"));
                 }
             }
         });
