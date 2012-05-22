@@ -10,7 +10,6 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -18,17 +17,15 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
-import org.complitex.flexbuh.common.entity.ApplicationConfig;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
+import org.complitex.flexbuh.common.entity.IProcessListener;
 import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.service.ConfigBean;
-import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
 import org.complitex.flexbuh.common.util.XmlUtil;
@@ -37,12 +34,14 @@ import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Counterpart;
 import org.complitex.flexbuh.document.entity.CounterpartRowSet;
 import org.complitex.flexbuh.document.service.CounterpartBean;
+import org.complitex.flexbuh.document.service.CounterpartService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -57,10 +56,7 @@ public class CounterpartList extends TemplatePage{
     private CounterpartBean counterpartBean;
 
     @EJB
-    private PersonProfileBean personProfileBean;
-
-    @EJB
-    private ConfigBean configBean;
+    private CounterpartService counterpartService;
 
     private Dialog uploadDialog;
 
@@ -68,11 +64,14 @@ public class CounterpartList extends TemplatePage{
 
     public CounterpartList() {
         add(new Label("title", getString("title")));
-        add(new FeedbackPanel("messages"));
+        final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
+        feedbackPanel.setOutputMarkupId(true);
+        add(feedbackPanel);
 
         final CompoundPropertyModel<Counterpart> filterModel = new CompoundPropertyModel<>(new Counterpart(getSessionId()));
 
         final Form<Counterpart> filterForm = new Form<>("filter_form", filterModel);
+        filterForm.setOutputMarkupId(true);
         add(filterForm);
 
         filterForm.add(new TextField<>("hk")); //ИНН
@@ -159,37 +158,41 @@ public class CounterpartList extends TemplatePage{
         uploadDialog.setTitle(getString("upload_title"));
         uploadDialog.setWidth(500);
         uploadDialog.setHeight(100);
-
         add(uploadDialog);
 
-        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
-
         Form fileUploadForm = new Form("upload_form");
+        final FileUploadField fileUploadField = new FileUploadField("upload_field");
+        fileUploadForm.add(fileUploadField);
 
         fileUploadForm.add(new AjaxButton("upload") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<FileUpload> fileUploads = fileUploadModel.getObject();
-
-                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
-
-                int count = 0;
-
                 try {
-                    for (FileUpload fileUpload : fileUploads){
-                        count += counterpartBean.save(getSessionId(), personProfileId, fileUpload.getInputStream());
-                    }
+                    Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
-                    uploadDialog.close(target);
+                    counterpartService.save(getSessionId(), personProfileId,
+                            fileUploadField.getFileUpload().getInputStream(),
+                            new IProcessListener<Counterpart>() {
+                                @Override
+                                public void onSuccess(Counterpart object) {
+                                    info(getStringFormat("info_upload", object.getHname()));
+                                }
 
-                    setResponsePage(CounterpartList.class);
-
-                    getSession().info(getStringFormat("info_counterparts_loaded", count));
-                } catch (Exception e) {
-                    log.error("Ошибка загрузки файла", e);
-                    getSession().error("Ошибка загрузки файла");
+                                @Override
+                                public void onError(Counterpart object, Exception e) {
+                                    error(getStringFormat("error_upload", e.getMessage()));
+                                }
+                            }
+                    );
+                } catch (IOException e) {
+                    log.error("Ошибка загрузки контрагентов", e);
+                    error("Ошибка загрузки контрагентов");
                 }
+
+                uploadDialog.close(target);
+                target.add(feedbackPanel);
+                target.add(filterForm);
             }
 
             @Override
@@ -199,15 +202,11 @@ public class CounterpartList extends TemplatePage{
         });
 
         uploadDialog.add(fileUploadForm);
-
-        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         List<ToolbarButton> list = new ArrayList<>();
-
-        final Long sessionId = getSessionId();
 
         list.add(new UploadButton(id, true){
             @Override
@@ -264,7 +263,12 @@ public class CounterpartList extends TemplatePage{
             protected void onClick() {
                 for (Long id : selectMap.keySet()){
                     if (selectMap.get(id).getObject()){
+                        Counterpart counterpart = counterpartBean.getCounterpart(id);
+
                         counterpartBean.delete(id);
+
+                        info(getStringFormat("info_deleted", counterpart.getHname()));
+                        log.info("Контрагент удален", new Event(EventCategory.REMOVE, counterpart));
                     }
                 }
             }
@@ -276,9 +280,5 @@ public class CounterpartList extends TemplatePage{
         });
 
         return list;
-    }
-
-    private String getIsoCodeSystemLocale() {
-        return configBean.getString(ApplicationConfig.SYSTEM_LOCALE, true);
     }
 }

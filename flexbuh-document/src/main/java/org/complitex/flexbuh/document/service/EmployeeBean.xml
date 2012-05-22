@@ -54,7 +54,8 @@
           from `employee` e where e.`session_id` = #{sessionId}
     </select>
 
-    <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee">
+    <insert id="insertEmployee" parameterType="org.complitex.flexbuh.document.entity.Employee"
+            keyProperty="id" useGeneratedKeys="true">
         insert into `employee` (`session_id`, `person_profile_id`, `htin`, `last_name`, `first_name`, `middle_name`,
          `hbirthday`, `hdate_in`, `hdate_out`)
           values (#{sessionId}, #{personProfileId}, #{htin}, #{lastName}, #{firstName}, #{middleName},

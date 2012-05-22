@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -19,15 +18,14 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
-import org.complitex.flexbuh.common.entity.PersonProfile;
+import org.complitex.flexbuh.common.entity.IProcessListener;
+import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.service.ConfigBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.*;
@@ -38,6 +36,7 @@ import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.document.entity.Employee;
 import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.complitex.flexbuh.document.service.EmployeeBean;
+import org.complitex.flexbuh.document.service.EmployeeService;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -48,21 +47,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.util.*;
 
+import static org.complitex.flexbuh.common.entity.PersonProfile.SELECTED_PERSON_PROFILE_ID;
+import static org.complitex.flexbuh.common.logging.EventCategory.REMOVE;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 17.11.11 16:05
  */
 public class EmployeeList extends TemplatePage{
-    private final static Logger log = LoggerFactory.getLogger(CounterpartList.class);
+    private final static Logger log = LoggerFactory.getLogger(EmployeeList.class);
 
     @EJB
     private EmployeeBean employeeBean;
 
     @EJB
-    private PersonProfileBean personProfileBean;
+    private EmployeeService employeeService;
 
     @EJB
-    private ConfigBean configBean;
+    private PersonProfileBean personProfileBean;
 
     private Dialog uploadDialog;
 
@@ -70,11 +72,15 @@ public class EmployeeList extends TemplatePage{
 
     public EmployeeList() {
         add(new Label("title", getString("title")));
-        add(new FeedbackPanel("messages"));
+
+        final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
+        feedbackPanel.setOutputMarkupId(true);
+        add(feedbackPanel);
 
         final CompoundPropertyModel<Employee> filterModel = new CompoundPropertyModel<>(new Employee(getSessionId()));
 
         final Form<Employee> filterForm = new Form<>("filter_form", filterModel);
+        filterForm.setOutputMarkupId(true);
         add(filterForm);
 
         filterForm.add(new TextField<>("htin")); //Идентификационный номер
@@ -109,7 +115,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public int size() {
-                filterModel.getObject().setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+                filterModel.getObject().setPersonProfileId(getPreferenceLong(SELECTED_PERSON_PROFILE_ID));
 
                 return employeeBean.getEmployeesCount(FilterWrapper.of(filterModel.getObject()));
             }
@@ -164,34 +170,38 @@ public class EmployeeList extends TemplatePage{
 
         add(uploadDialog);
 
-        final IModel<List<FileUpload>> fileUploadModel = new ListModel<>();
-
         Form fileUploadForm = new Form("upload_form");
+
+        final FileUploadField fileUploadField = new FileUploadField("upload_field");
+        fileUploadForm.add(fileUploadField);
 
         fileUploadForm.add(new AjaxButton("upload") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<FileUpload> fileUploads = fileUploadModel.getObject();
-
-                Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
-
-                int count = 0;
+                Long personProfileId = getPreferenceLong(SELECTED_PERSON_PROFILE_ID);
 
                 try {
-                    for (FileUpload fileUpload : fileUploads){
-                        count += employeeBean.save(getSessionId(), personProfileId, fileUpload.getInputStream());
-                    }
+                    employeeService.save(getSessionId(), personProfileId, fileUploadField.getFileUpload().getInputStream(),
+                            new IProcessListener<Employee>() {
+                                @Override
+                                public void onSuccess(Employee object) {
+                                    info(getStringFormat("info_upload", object.getHname()));
+                                }
 
-                    uploadDialog.close(target);
-
-                    setResponsePage(EmployeeList.class);
-
-                    getSession().info(getStringFormat("info_employee_loaded", count));
+                                @Override
+                                public void onError(Employee object, Exception e) {
+                                    error(getStringFormat("error_upload", e.getMessage()));
+                                }
+                            });
                 } catch (Exception e) {
-                    log.error("Ошибка загрузки файла", e);
-                    getSession().error("Ошибка загрузки файла");
+                    log.error("Ошибка загрузки сотрудников", e);
+                    error("Ошибка загрузки сотрудников");
                 }
+
+                uploadDialog.close(target);
+                target.add(feedbackPanel);
+                target.add(filterForm);
             }
 
             @Override
@@ -201,8 +211,6 @@ public class EmployeeList extends TemplatePage{
         });
 
         uploadDialog.add(fileUploadForm);
-
-        fileUploadForm.add(new FileUploadField("upload_field", fileUploadModel));
     }
 
     @Override
@@ -219,7 +227,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
+                return getPreferenceLong(SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
@@ -264,7 +272,7 @@ public class EmployeeList extends TemplatePage{
 
             @Override
             public boolean isVisible() {
-                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
+                return getPreferenceLong(SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
@@ -273,14 +281,19 @@ public class EmployeeList extends TemplatePage{
             protected void onClick() {
                 for (Long id : selectMap.keySet()){
                     if (selectMap.get(id).getObject()){
+                        Employee employee = employeeBean.getEmployee(id);
+
                         employeeBean.delete(id);
+
+                        info(getStringFormat("info_deleted", employee.getHname()));
+                        log.info("Сотрудник удален", new Event(REMOVE, employee));
                     }
                 }
             }
 
             @Override
             public boolean isVisible() {
-                return getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID) != null;
+                return getPreferenceLong(SELECTED_PERSON_PROFILE_ID) != null;
             }
         });
 
