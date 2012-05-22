@@ -58,12 +58,13 @@
         select count(*) <include refid="selectCounterpartsFromWhere"/>
     </select>
 
-    <insert id="insertCounterpart">
+    <insert id="insertCounterpart" parameterType="org.complitex.flexbuh.document.entity.Counterpart"
+            keyProperty="id" useGeneratedKeys="true">
         insert into `counterpart` (`session_id`, `person_profile_id`, `hk`, `hname`, `hloc`, `htel`, `hnspdv`)
           values (#{sessionId}, #{personProfileId}, #{hk}, #{hname}, #{hloc}, #{htel}, #{hnspdv})
     </insert>
 
-    <update id="updateCounterpart">
+    <update id="updateCounterpart" parameterType="org.complitex.flexbuh.document.entity.Counterpart">
         update `counterpart` set `hk` = #{hk}, `hname` = #{hname}, `hloc` = #{hloc}, `htel` = #{htel}, `hnspdv` = #{hnspdv}
           where `id` = #{id}
     </update>

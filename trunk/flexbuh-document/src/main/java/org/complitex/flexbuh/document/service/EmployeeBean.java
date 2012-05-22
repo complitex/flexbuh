@@ -5,15 +5,11 @@ import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.service.FIOBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Employee;
-import org.complitex.flexbuh.document.entity.EmployeeRowSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -62,29 +58,5 @@ public class EmployeeBean extends AbstractBean{
 
     public void delete(Long id){
         sqlSession().delete("deleteEmployee", id);
-    }
-
-    public int save(Long sessionId, Long personProfileId, InputStream inputStream) {
-        try {
-            EmployeeRowSet employeeRowSet = (EmployeeRowSet) JAXBContext
-                    .newInstance(EmployeeRowSet.class)
-                    .createUnmarshaller()
-                    .unmarshal(inputStream);
-
-            if (employeeRowSet != null && employeeRowSet.getEmployees() != null) {
-                for (Employee employee : employeeRowSet.getEmployees()){
-                    employee.setSessionId(sessionId);
-                    employee.setPersonProfileId(personProfileId);
-
-                    save(employee);
-                }
-
-                return employeeRowSet.getEmployees().size();
-            }
-        } catch (JAXBException e) {
-            log.error("Ошибка импорта контрагентов", e);
-        }
-
-        return 0;
     }
 }

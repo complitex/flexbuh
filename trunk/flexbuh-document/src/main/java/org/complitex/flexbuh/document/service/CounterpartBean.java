@@ -4,15 +4,11 @@ import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
 import org.complitex.flexbuh.document.entity.Counterpart;
-import org.complitex.flexbuh.document.entity.CounterpartRowSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -56,29 +52,5 @@ public class CounterpartBean extends AbstractBean{
 
     public void delete(Long id){
         sqlSession().delete("deleteCounterpart", id);
-    }
-
-    public int save(Long sessionId, Long personProfileId, InputStream inputStream) {
-        try {
-            CounterpartRowSet counterpartRowSet = (CounterpartRowSet) JAXBContext
-                    .newInstance(CounterpartRowSet.class)
-                    .createUnmarshaller()
-                    .unmarshal(inputStream);
-
-            if (counterpartRowSet != null && counterpartRowSet.getCounterparts() != null) {
-                for (Counterpart counterpart : counterpartRowSet.getCounterparts()){
-                    counterpart.setSessionId(sessionId);
-                    counterpart.setPersonProfileId(personProfileId);
-
-                    save(counterpart);
-                }
-
-                return counterpartRowSet.getCounterparts().size();
-            }
-        } catch (JAXBException e) {
-            log.error("Ошибка импорта контрагентов", e);
-        }
-
-        return 0;
     }
 }

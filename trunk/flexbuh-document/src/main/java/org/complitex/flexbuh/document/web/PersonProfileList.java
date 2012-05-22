@@ -175,10 +175,11 @@ public class PersonProfileList extends TemplatePage {
                             });
                 } catch ( IOException e) {
                     log.error("Ошибка загрузки профиля - ошибка чтения потока", e);
-                    getSession().error(getString("error_upload"));
+                    error(getString("error_upload"));
                 }
 
                 target.add(feedbackPanel);
+                target.add(filterForm);
 
                 uploadDialog.close(target);
             }
