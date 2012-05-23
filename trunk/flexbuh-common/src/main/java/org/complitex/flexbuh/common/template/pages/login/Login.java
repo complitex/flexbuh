@@ -27,7 +27,7 @@ public final class Login extends WebPage {
     }
 
     public Login(PageParameters pageParameters) {
-        init(true);
+        init(!pageParameters.get("error").isNull());
     }
 
     private void init(boolean isError) {
