@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.complitex.flexbuh.common.logging.EventKey;
-import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.logging.entity.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
+
+import static org.complitex.flexbuh.common.util.StringUtil.getLastPacketName;
 
 /**
  * @author Pavel Sknar
@@ -67,8 +68,8 @@ public class LogChangePanel extends Panel {
                 DiffObject diff = item.getModelObject();
 
                 item.add(new Label("field_name", diff.getFieldName()));
-                item.add(new Label("old_value", diff.getOldValue()));
-                item.add(new Label("new_value", diff.getNewValue()));
+                item.add(new Label("old_value", diff.getOldValue()).setEscapeModelStrings(false));
+                item.add(new Label("new_value", diff.getNewValue()).setEscapeModelStrings(false));
             }
         };
 
@@ -115,12 +116,12 @@ public class LogChangePanel extends Panel {
                                     id = ":" + idNodeList.item(0).getTextContent().trim() + ":";
                                 }
 
-                                fields.put(element.getTagName() + id  + StringUtil.getLastPacketName(subElement.getTagName()),
+                                fields.put(element.getTagName() + id  + getLastPacketName(subElement.getTagName()),
                                         getString(subElement));
                             }
                         }
                     } else {
-                        fields.put(element.getTagName(), element.getTextContent().trim());
+                        fields.put(element.getTagName(), "<code>" + element.getTextContent().trim() + "</code>");
                     }
                 }
             }
@@ -145,14 +146,15 @@ public class LogChangePanel extends Panel {
                 if (childNode instanceof Element){
                     Element childElement = (Element) childNode;
 
-                    list.add(childElement.getTagName() + ": " + childElement.getTextContent().trim());
+                    list.add(getLastPacketName(childElement.getTagName()) + ": <code>" +
+                            childElement.getTextContent().trim() + "</code>" );
                 }
             }
 
             return Joiner.on(", ").join(list);
         }
 
-        return node.getTextContent().trim();
+        return "<code>" + node.getTextContent().trim() + "</code>";
     }
 
     private static class DiffObject implements Serializable {
