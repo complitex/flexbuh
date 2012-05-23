@@ -2,6 +2,7 @@ package org.complitex.flexbuh.common.logging;
 
 import ch.qos.logback.classic.db.DBAppender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
 
 import java.sql.Connection;
 import java.util.HashMap;
@@ -44,7 +45,10 @@ public class FlexbuhDBAppender extends DBAppender {
         boolean hasThrowable = event.getThrowableProxy() != null;
 
         if (hasThrowable) {
-            mergedMap.put(EventKey.ERROR_MESSAGE.name(), event.getThrowableProxy().getMessage());
+            String message = event.getThrowableProxy().getMessage();
+
+            mergedMap.put(EventKey.ERROR_MESSAGE.name(), (message != null ? message + " - Причина: " : "") +
+                    getInitialCause(event.getThrowableProxy()));
         }
 
         insertProperties(mergedMap, connection, eventId);
@@ -52,5 +56,13 @@ public class FlexbuhDBAppender extends DBAppender {
         if (hasThrowable){
             insertThrowable(event.getThrowableProxy(), connection, eventId);
         }
+    }
+
+    private String getInitialCause(IThrowableProxy t){
+        while (t.getCause() != null){
+            t = t.getCause();
+        }
+
+        return t.getMessage();
     }
 }

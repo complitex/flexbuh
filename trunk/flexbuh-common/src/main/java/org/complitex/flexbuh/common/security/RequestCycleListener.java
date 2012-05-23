@@ -7,7 +7,6 @@ import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.IPageClassRequestHandler;
 import org.apache.wicket.request.handler.RenderPageRequestHandler;
-import org.complitex.flexbuh.common.exception.CauseMessageException;
 import org.complitex.flexbuh.common.service.TemplateSession;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -60,8 +59,8 @@ public class RequestCycleListener implements IRequestCycleListener {
 
         pageClass = pageClass != null && !ExceptionErrorPage.class.equals(pageClass) ? pageClass : getClass();
 
-        LoggerFactory.getLogger(pageClass).error("Необработанная ошибка",
-                new CauseMessageException(true, exception, "{0}", cycle.getRequest().getClientUrl().toString()));
+        LoggerFactory.getLogger(pageClass).error("Необработанная ошибка по адресу: " + cycle.getRequest().getClientUrl(),
+                exception);
     }
 
     @Override
