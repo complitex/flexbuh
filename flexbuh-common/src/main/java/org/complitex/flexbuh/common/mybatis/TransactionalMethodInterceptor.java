@@ -23,7 +23,7 @@ public class TransactionalMethodInterceptor {
     private static final Class<?>[] CAUSE_TYPES = new Class[]{ Throwable.class };
     private static final Class<?>[] MESSAGE_CAUSE_TYPES = new Class[]{ String.class, Throwable.class };
 
-    @EJB(beanName = "SqlSessionFactoryBean")
+    @EJB
     private SqlSessionFactoryBean sqlSessionFactoryBean;
 
     @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})

@@ -5,7 +5,6 @@ import org.complitex.flexbuh.common.exception.AbstractException;
 import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.xml.LSInputImpl;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -43,7 +42,7 @@ public class TemplateXMLService {
     @EJB
     private DeclarationService declarationService;
 
-    public Document getTemplate(String templateName, Declaration declaration) throws CreateDocumentException {
+    public Document getTemplate(String templateName, Declaration declaration){
         try {
             TemplateXML xsl = templateXMLBean.getTemplateXML(XSL, templateName);
 
@@ -53,7 +52,9 @@ public class TemplateXMLService {
 
             return declarationService.getDocument(declaration, xsl);
         } catch (Exception e) {
-            throw new CreateDocumentException(e);
+            log.error("Ошибка загрузки шаблона", e);
+
+            throw new RuntimeException(e);
         }
     }
 
@@ -66,11 +67,13 @@ public class TemplateXMLService {
         return documentBuilder.parse(new InputSource(new StringReader(data)));
     }
 
-    public Document getTemplateXSDDocument(String templateName) throws CreateDocumentException {
+    public Document getTemplateXSDDocument(String templateName){
         try {
             return createDocument(templateXMLBean.getTemplateXML(XSD, templateName).getData());
         } catch (Exception e) {
-            throw new CreateDocumentException(e);
+            log.error("Шаблон документа не найден");
+
+            throw new RuntimeException(e);
         }
     }
 

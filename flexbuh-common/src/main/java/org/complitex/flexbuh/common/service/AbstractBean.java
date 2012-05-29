@@ -14,7 +14,7 @@ import javax.interceptor.Interceptors;
  */
 @Interceptors(TransactionalMethodInterceptor.class)
 public abstract class AbstractBean {
-    @EJB(beanName = "SqlSessionFactoryBean")
+    @EJB
     private SqlSessionFactoryBean sqlSessionFactoryBean;
 
     protected SqlSessionManager getSqlSessionManager() {

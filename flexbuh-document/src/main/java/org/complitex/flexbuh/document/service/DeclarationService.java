@@ -9,7 +9,6 @@ import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.service.dictionary.DocumentTermBean;
 import org.complitex.flexbuh.common.util.ZipUtil;
 import org.complitex.flexbuh.document.entity.*;
-import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.complitex.flexbuh.document.exception.DeclarationParseException;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.fop.FopConfiguration;
@@ -70,7 +69,13 @@ public class DeclarationService {
 
     public String getString(Declaration declaration, String encoding, boolean validate) throws DeclarationParseException {
         try {
-            sortDeclarationValues(declaration);
+            List<String> names = getTemplateXSDNames(declaration);
+
+            //sort
+            sortDeclarationValues(declaration, names);
+
+            //remove redundant
+            clearRedundantDeclarationValue(declaration, names);
 
             //prepare xml value for jaxb marshal
             declaration.prepareXmlValues();
@@ -135,33 +140,50 @@ public class DeclarationService {
         ruleService.check(declaration);
     }
 
-    public void sortDeclarationValues(Declaration declaration) {
-        try {
-            Document document = templateXMLService.getTemplateXSDDocument(declaration.getTemplateName());
+    public void sortDeclarationValues(Declaration declaration, List<String> names) {
+        List<DeclarationValue> sortedDeclarationValues = new ArrayList<>();
 
-            List<DeclarationValue> sortedDeclarationValues = new ArrayList<>();
+        for (String name : names){
+            for (DeclarationValue declarationValue : declaration.getDeclarationValues()) {
+                if (name.equals(declarationValue.getName())) {
+                    sortedDeclarationValues.add(declarationValue);
 
-            NodeList nodeList = document.getElementsByTagName("xs:element");
-
-            for (int i=0, size = nodeList.getLength(); i < size; ++i){
-                Element element = (Element) nodeList.item(i);
-                String name = element.getAttribute("name");
-
-                for (DeclarationValue declarationValue : declaration.getDeclarationValues()) {
-                    if (name.equals(declarationValue.getName())) {
-                        sortedDeclarationValues.add(declarationValue);
-
-                        if (!name.contains("XXXX")) {
-                            break;
-                        }
+                    if (!name.contains("XXXX")) {
+                        break;
                     }
                 }
             }
-
-            declaration.setDeclarationValues(sortedDeclarationValues);
-        } catch (CreateDocumentException e) {
-            log.error("Ошибка сортировки списка значений", e);
         }
+
+        declaration.setDeclarationValues(sortedDeclarationValues);
+    }
+
+    public void clearRedundantDeclarationValue(Declaration declaration, List<String> names){
+        List<DeclarationValue> declarationValues = declaration.getDeclarationValues();
+
+        for (int i = 0, declarationValuesSize = declarationValues.size(); i < declarationValuesSize; i++) {
+            DeclarationValue declarationValue = declarationValues.get(i);
+
+            if (!names.contains(declarationValue.getName())){
+                declaration.removeDeclarationValue(declarationValue.getName());
+
+                i--;
+            }
+        }
+    }
+
+    public List<String> getTemplateXSDNames(Declaration declaration){
+
+        List<String> names = new ArrayList<>();
+
+        NodeList nodeList = templateXMLService.getTemplateXSDDocument(declaration.getTemplateName())
+                .getElementsByTagName("xs:element");
+
+        for (int i=0, size = nodeList.getLength(); i < size; ++i){
+            names.add(((Element) nodeList.item(i)).getAttribute("name"));
+        }
+
+        return names;
     }
 
     public String getString(Declaration declaration, TemplateXML xsl) throws DeclarationParseException{
@@ -198,6 +220,8 @@ public class DeclarationService {
 
             return documentBuilder.parse(new InputSource(new StringReader(xml)));
         } catch (Exception e) {
+            log.error("Ошибка преобразования документа по шаблону", e);
+
             throw new DeclarationParseException("Ошибка преобразования документа по шаблону", e);
         }
     }
