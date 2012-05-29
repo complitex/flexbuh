@@ -42,7 +42,6 @@ public class TaxInspectionDialog extends Panel {
         dialog = new Dialog("dialog");
         dialog.setWidth(875);
         dialog.setHeight(525);
-        dialog.setTitle(getString("title"));
         add(dialog);
 
         //Фильтр модель

@@ -18,7 +18,7 @@ import java.io.Reader;
  * @author Artem
  */
 @Startup
-@Singleton(name = "SqlSessionFactoryBean")
+@Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class SqlSessionFactoryBean {
     private static final Logger log = LoggerFactory.getLogger(SqlSessionFactoryBean.class);

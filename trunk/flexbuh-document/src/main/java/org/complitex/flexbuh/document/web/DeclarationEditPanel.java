@@ -24,7 +24,6 @@ import org.complitex.flexbuh.common.web.component.RadioSet;
 import org.complitex.flexbuh.document.entity.Declaration;
 import org.complitex.flexbuh.document.entity.DeclarationValue;
 import org.complitex.flexbuh.document.entity.Rule;
-import org.complitex.flexbuh.document.exception.CreateDocumentException;
 import org.complitex.flexbuh.document.service.DeclarationFillService;
 import org.complitex.flexbuh.document.service.DeclarationMarkupService;
 import org.complitex.flexbuh.document.service.RuleService;
@@ -121,7 +120,7 @@ public class DeclarationEditPanel extends Panel{
         if (commonTypes == null){
             try {
                 commonTypes = templateService.getTemplateXSDDocument("common_types");
-            } catch (CreateDocumentException e) {
+            } catch (Exception e) {
                 log.error("Ошибка чтения common_types из базы данных",
                         new Event(declaration.getId() != null ? EDIT:CREATE, declaration));
 
