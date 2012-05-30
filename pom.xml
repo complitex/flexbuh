@@ -153,7 +153,7 @@
             <dependency>
                 <groupId>org.wicketstuff</groupId>
                 <artifactId>wicketstuff-javaee-inject</artifactId>
-                <version>1.5.4</version>
+                <version>1.5.5</version>
             </dependency>
             <dependency>
                 <groupId>wicket-tree</groupId>
@@ -170,12 +170,12 @@
             <dependency>
                 <groupId>org.odlabs.wiquery</groupId>
                 <artifactId>wiquery-core</artifactId>
-                <version>1.5.4</version>
+                <version>1.5.6</version>
             </dependency>
             <dependency>
                 <groupId>org.odlabs.wiquery</groupId>
                 <artifactId>wiquery-jquery-ui</artifactId>
-                <version>1.5.4</version>
+                <version>1.5.6</version>
             </dependency>
 
             <!-- Java EE API -->
@@ -185,31 +185,18 @@
                 <version>6.0</version>
             </dependency>
 
-            <!-- slf4j logging -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.6.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-jdk14</artifactId>
-                <version>1.6.1</version>
-            </dependency>
-
             <!-- MyBatis -->
             <dependency>
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
             </dependency>
 
             <!--Google Guava-->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>11.0.2</version>
+                <version>12.0</version>
             </dependency>
 
             <!--Apache-->
@@ -247,7 +234,7 @@
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>5.14</version>
+                <version>5.14.10</version>
                 <scope>test</scope>
             </dependency>
 

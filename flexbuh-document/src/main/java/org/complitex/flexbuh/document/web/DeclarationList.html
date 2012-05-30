@@ -41,12 +41,10 @@
                         <span wicket:id="selected_count" style="font-weight: normal; color: #273540"></span>
                     </th>
                     <th></th>
-                    <th>
-                        <span wicket:id="header.name"><wicket:message key="name"/></span>
-                    </th>
-                    <th>
-                        <span wicket:id="header.date"><wicket:message key="date"/></span>
-                    </th>
+                    <th><span wicket:id="header.date"><wicket:message key="date"/></span></th>
+                    <th><span wicket:id="header.name"><wicket:message key="name"/></span></th>
+                    <th><span><wicket:message key="version"/></span></th>
+
                     <th class="center">
                         <input class="btnSmall" wicket:id="reset" type="submit" wicket:message="value:reset"/>
                     </th>
@@ -54,8 +52,9 @@
                 <tr>
                     <th class="center"><input type="checkbox" wicket:id="select_all_period"/></th>
                     <th></th>
-                    <th><input type="text" wicket:id="name"/></th>
                     <th><input wicket:id="date" size="10"/></th>
+                    <th><input type="text" wicket:id="name"/></th>
+                    <th><input type="text" size="3"/></th>
 
                     <th class="center">
                         <input class="btnSmall default" type="submit" tabindex="0" wicket:message="value:filter"/>
@@ -66,8 +65,9 @@
                     <tr>
                         <td><input type="checkbox" wicket:id="select"/></td>
                         <td><a href="#" wicket:id="expand">[<span wicket:id="label"></span>]</a></td>
-                        <td><span wicket:id="name"></span></td>
                         <td><span wicket:id="date"></span></td>
+                        <td><span wicket:id="name"></span></td>
+                        <td><span wicket:id="version"></span></td>
                         <td>
                             <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
                             <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
@@ -80,8 +80,10 @@
                     <tr wicket:id="linked_declarations">
                         <td><input type="checkbox" wicket:id="select"/></td>
                         <td></td>
-                        <td style="padding-left: 40px;"><span wicket:id="name"></span></td>
                         <td><span wicket:id="date"></span></td>
+                        <td style="padding-left: 40px;"><span wicket:id="name"></span></td>
+                        <td><span wicket:id="version"></span></td>
+
                         <td>
                             <a href="#" wicket:id="action_xml"><wicket:message key="action_xml"/></a>
                             <a href="#" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
