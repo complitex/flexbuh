@@ -20,63 +20,63 @@
     <form action="#" wicket:id="form">
         <table class="tbForm">
             <tr>
-                <th><wicket:message key="profile_name"/> </th>
+                <th><wicket:message key="profile_name"/><strong class="blue">*</strong>:</th>
                 <td><input type="text" maxlength="255" wicket:id="profile_name" style="width: 277px"/></td>
             </tr>
             <tr>
-                <th><wicket:message key="person_type"/> </th>
+                <th><wicket:message key="person_type"/>:</th>
                 <td><select wicket:id="person_type" style="width: 277px"></select></td>
             </tr>
             <tr>
-                <th><wicket:message key="c_sti"/> </th>
+                <th><wicket:message key="c_sti"/>:</th>
                 <td>
                     <a href="#" wicket:id="sti_link"><span wicket:id="sti_label"></span></a>
                 </td>
             </tr>
             <tr>
-                <th><wicket:message key="c_sti_tin"/> </th>
+                <th><wicket:message key="c_sti_tin"/>:</th>
                 <td><input wicket:id="c_sti_tin" size="40"/></td>
             </tr>
             <tr>
-                <th style="width: 240px"><span wicket:id="tin_label"></span></th>
+                <th style="width: 250px"><span wicket:id="tin_label"></span>:</th>
                 <td><input type="text" maxlength="45" wicket:id="tin" size="40"/></td>
             </tr>
             <tr wicket:id="name_container">
-                <th style="width: 240px"><span wicket:id="name_label"></span></th>
+                <th style="width: 240px"><span wicket:id="name_label"></span>:</th>
                 <td><input type="text" maxlength="255" wicket:id="name" size="40"/></td>
             </tr>
             <wicket:container wicket:id="physical_name_container">
                 <tr>
-                    <th><wicket:message key="last_name"/></th>
+                    <th><wicket:message key="last_name"/>:</th>
                     <td><input wicket:id="last_name"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="first_name"/></th>
+                    <th><wicket:message key="first_name"/>:</th>
                     <td><input wicket:id="first_name"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="middle_name"/></th>
+                    <th><wicket:message key="middle_name"/>:</th>
                     <td><input wicket:id="middle_name"/></td>
                 </tr>
             </wicket:container>
             <tr>
-                <th><wicket:message key="ipn"/> </th>
+                <th><wicket:message key="ipn"/>:</th>
                 <td><input type="text" maxlength="45" wicket:id="ipn" size="40"/></td>
             </tr>
             <tr>
-                <th><wicket:message key="num_pdv_svd"/> </th>
+                <th><wicket:message key="num_pdv_svd"/>:</th>
                 <td><input type="text" maxlength="45" wicket:id="num_pdv_svd" size="40"/></td>
             </tr>
             <tr>
-                <th><wicket:message key="kved"/> </th>
+                <th><wicket:message key="kved"/>:</th>
                 <td><input type="text" maxlength="45" wicket:id="kved" size="40"/></td>
             </tr>
             <tr>
-                <th><wicket:message key="koatuu"/> </th>
+                <th><wicket:message key="koatuu"/>:</th>
                 <td><input type="text" maxlength="45" wicket:id="koatuu" size="40"/></td>
             </tr>
             <tr wicket:id="contract_container">
-                <th><wicket:message key="contract"/> </th>
+                <th><wicket:message key="contract"/>:</th>
                 <td>
                     <input type="text" maxlength="45" wicket:id="contract_date" style="width: 111px"/>
                     <input type="text" maxlength="45" wicket:id="contract_number"/>
@@ -91,23 +91,23 @@
 
             <table class="tbForm">
                 <tr>
-                    <th><wicket:message key="zip_code"/> </th>
+                    <th><wicket:message key="zip_code"/>:</th>
                     <td><input type="text" maxlength="45" wicket:id="zip_code" size="40"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="address"/> </th>
+                    <th><wicket:message key="address"/>:</th>
                     <td><input type="text" maxlength="1000" wicket:id="address" size="40"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="phone"/> </th>
+                    <th><wicket:message key="phone"/>:</th>
                     <td><input type="text" maxlength="255" wicket:id="phone" size="40"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="fax"/> </th>
+                    <th><wicket:message key="fax"/>:</th>
                     <td><input type="text" maxlength="45" wicket:id="fax" size="40"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="email"/> </th>
+                    <th><wicket:message key="email"/>:</th>
                     <td><input type="text" maxlength="255" wicket:id="email" size="40"/></td>
                 </tr>
             </table>
@@ -122,11 +122,10 @@
 
             <table class="tbForm">
                 <tr>
-                    <th><wicket:message key="d_inn"/> </th>
-                    <td><input type="text" maxlength="45" wicket:id="d_inn" size="40"/></td>
+                    <td colspan="2"><wicket:message key="director"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="last_name"/></th>
+                    <th><wicket:message key="last_name"/>:</th>
                     <td><input wicket:id="d_last_name" size="40"/></td>
                 </tr>
                 <tr>
@@ -134,24 +133,31 @@
                     <td><input wicket:id="d_first_name"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="middle_name"/></th>
+                    <th><wicket:message key="middle_name"/>:</th>
                     <td><input wicket:id="d_middle_name"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="b_inn"/> </th>
-                    <td><input type="text" maxlength="45" wicket:id="b_inn" size="40"/></td>
+                    <th><wicket:message key="d_inn"/>:</th>
+                    <td><input type="text" maxlength="45" wicket:id="d_inn" size="40"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="last_name"/></th>
+                    <td colspan="2"><wicket:message key="accountant"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="last_name"/>:</th>
                     <td><input wicket:id="b_last_name"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="first_name"/></th>
+                    <th><wicket:message key="first_name"/>:</th>
                     <td><input wicket:id="b_first_name"/></td>
                 </tr>
                 <tr>
-                    <th><wicket:message key="middle_name"/></th>
+                    <th><wicket:message key="middle_name"/>:</th>
                     <td><input wicket:id="b_middle_name"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="b_inn"/>:</th>
+                    <td><input type="text" maxlength="45" wicket:id="b_inn" size="40"/></td>
                 </tr>
             </table>
         </fieldset>
