@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import org.complitex.flexbuh.common.entity.AbstractFilter;
+import org.complitex.flexbuh.common.entity.ShowMode;
 
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class OrganizationFilter extends AbstractFilter {
     private String juridicalAddress;
 
     private List<Long> organizationIds;
+
+    private ShowMode showMode;
 
     public String getName() {
         return name;
@@ -75,5 +78,13 @@ public class OrganizationFilter extends AbstractFilter {
 
     public void setOrganizationIds(List<Long> organizationIds) {
         this.organizationIds = organizationIds;
+    }
+
+    public ShowMode getShowMode() {
+        return showMode;
+    }
+
+    public void setShowMode(ShowMode showMode) {
+        this.showMode = showMode;
     }
 }

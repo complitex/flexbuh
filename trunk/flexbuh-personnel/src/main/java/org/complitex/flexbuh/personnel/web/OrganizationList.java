@@ -16,11 +16,9 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.entity.ShowMode;
 import org.complitex.flexbuh.common.entity.organization.OrganizationBase;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -31,8 +29,8 @@ import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddOrganizationButton;
 import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
+import org.complitex.flexbuh.common.template.toolbar.search.CollapsibleSearchToolbarButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
-import org.complitex.flexbuh.common.web.component.IAjaxUpdate;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.personnel.entity.Organization;
@@ -40,7 +38,7 @@ import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.OrganizationTypeBean;
 import org.complitex.flexbuh.personnel.web.component.OrganizationTypeAutoCompleteTextField;
-import org.complitex.flexbuh.personnel.web.component.TemporalObjectEditDialog;
+import org.complitex.flexbuh.common.web.component.search.ShowModePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,18 +69,21 @@ public class OrganizationList extends TemplatePage {
     @EJB
     private UserBean userBean;
 
+    OrganizationFilter filter;
+
     private Map<Long, IModel<Boolean>> selectMap = Maps.newHashMap();
+
+    private ShowModePanel showModePanel;
 
     public OrganizationList() {
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
         //Фильтр
-        OrganizationFilter filterObject = new OrganizationFilter();
-        initFilter(filterObject);
-        final IModel<OrganizationFilter> filterModel = new Model<OrganizationFilter>(filterObject);
+        filter = new OrganizationFilter();
+        initFilter(filter);
 
-        final Form filterForm = new Form("filter_form");
+        final Form<OrganizationFilter> filterForm = new Form<>("filter_form", new CompoundPropertyModel<>(filter));
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -92,27 +93,27 @@ public class OrganizationList extends TemplatePage {
             public void onClick() {
                 filterForm.clearInput();
 
-                OrganizationFilter filterObject = new OrganizationFilter();
-                initFilter(filterObject);
+                filter = new OrganizationFilter();
+                initFilter(filter);
 
-                filterModel.setObject(filterObject);
+                filterForm.setModel(new CompoundPropertyModel<>(filter));
             }
         };
         filterForm.add(filterReset);
 
-        filterForm.add(new OrganizationTypeAutoCompleteTextField("type", new PropertyModel<String>(filterModel, "type")));
-        filterForm.add(new TextField<String>("name", new PropertyModel<String>(filterModel, "name")));
-        filterForm.add(new TextField<String>("phone", new PropertyModel<String>(filterModel, "phone")));
-        filterForm.add(new TextField<String>("email", new PropertyModel<String>(filterModel, "email")));
-        filterForm.add(new TextField<String>("physical_address", new PropertyModel<String>(filterModel, "physicalAddress")));
-        filterForm.add(new TextField<String>("juridical_address", new PropertyModel<String>(filterModel, "juridicalAddress")));
+        filterForm.add(getShowModePanel());
+        filterForm.add(new OrganizationTypeAutoCompleteTextField("type"));
+        filterForm.add(new TextField<String>("name"));
+        filterForm.add(new TextField<String>("phone"));
+        filterForm.add(new TextField<String>("email"));
+        filterForm.add(new TextField<String>("physicalAddress"));
+        filterForm.add(new TextField<String>("juridicalAddress"));
 
         //Модель
         final DataProvider<Organization> dataProvider = new DataProvider<Organization>() {
 
             @Override
             protected Iterable<? extends Organization> getData(int first, int count) {
-                OrganizationFilter filter = filterModel.getObject();
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
@@ -123,7 +124,7 @@ public class OrganizationList extends TemplatePage {
 
             @Override
             protected int getSize() {
-                return organizationBean.getOrganizationsCount(filterModel.getObject());
+                return organizationBean.getOrganizationsCount(filter);
             }
         };
         dataProvider.setSort("name", SortOrder.ASCENDING);
@@ -192,7 +193,15 @@ public class OrganizationList extends TemplatePage {
 
     }
 
+    private ShowModePanel getShowModePanel() {
+        if (showModePanel == null) {
+            showModePanel = new ShowModePanel("showModePanel");
+        }
+        return showModePanel;
+    }
+
     private void initFilter(OrganizationFilter filter) {
+        filter.setShowMode(ShowMode.ALL);
         if (getTemplateWebApplication().hasAnyRole(SecurityRole.ADMIN_MODULE_EDIT)) {
             return;
         }
@@ -230,6 +239,8 @@ public class OrganizationList extends TemplatePage {
                 }
             });
         }
+
+        list.add(new CollapsibleSearchToolbarButton(id, getShowModePanel()));
 
         return list;
     }
