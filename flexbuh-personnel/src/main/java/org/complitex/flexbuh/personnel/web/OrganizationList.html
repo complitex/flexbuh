@@ -24,6 +24,15 @@
     <div wicket:id="messages"></div>
 
     <form action="#" wicket:id="filter_form">
+        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%">
+            <tr>
+                <td align="left">
+                    <div>
+                        <span wicket:id="showModePanel"></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
         <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
             <tr>
@@ -68,8 +77,8 @@
                 <th><input type="text" wicket:id="name"/></th>
                 <th><input type="text" wicket:id="phone"/></th>
                 <th><input type="text" wicket:id="email"/></th>
-                <th><input type="text" wicket:id="physical_address"/></th>
-                <th><input type="text" wicket:id="juridical_address"/></th>
+                <th><input type="text" wicket:id="physicalAddress"/></th>
+                <th><input type="text" wicket:id="juridicalAddress"/></th>
                 <th class="center">
                     <input class="btnSmall default" type="submit" tabindex="0" wicket:message="value:filter"/>
                 </th>

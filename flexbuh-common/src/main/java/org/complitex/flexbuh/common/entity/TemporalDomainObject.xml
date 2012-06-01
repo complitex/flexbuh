@@ -39,6 +39,10 @@
         #{currentDate} >= `entry_into_force_date` and (`completion_date` > #{currentDate} or `completion_date` is null)
     </sql>
 
+    <sql id="inactiveConstraint">
+        `deleted` is true
+    </sql>
+
     <sql id="dateConstraint">
         (#{currentDate} >= `entry_into_force_date` and (`completion_date` > #{currentDate} or `completion_date` is null) or
         `deleted` is true or

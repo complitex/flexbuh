@@ -80,6 +80,17 @@
     </sql>
 
     <sql id="filter">
+        <choose>
+            <when test="filter != null and filter.showMode != null and filter.showMode.toString() == 'ACTIVE'">
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+            </when>
+            <when test="filter != null and filter.showMode != null and filter.showMode.toString() == 'INACTIVE'">
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.inactiveConstraint"/>
+            </when>
+            <otherwise>
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+            </otherwise>
+        </choose>
         <if test="filter != null">
             <if test="filter.name != null"> and `name` like concat('%', #{filter.name}, '%')</if>
             <if test="filter.type != null"> and `type` like #{filter.type}</if>
@@ -98,17 +109,8 @@
     </sql>
 
     <sql id="filter_order_limit">
+        <include refid="filter" />
         <if test="filter != null">
-            <if test="filter.name != null"> and `name` like concat('%', #{filter.name}, '%')</if>
-            <if test="filter.type != null"> and `type` like #{filter.type}</if>
-            <if test="filter.phone != null"> and `phone` like concat('%', #{filter.phone}, '%')</if>
-            <if test="filter.email != null"> and `email` like concat('%', #{filter.email}, '%')</if>
-            <if test="filter.physicalAddress != null">
-                and <include refid="physicalAddress"/> like concat('%', #{filter.physicalAddress}, '%')
-            </if>
-            <if test="filter.juridicalAddress != null">
-                and <include refid="juridicalAddress"/> like concat('%', #{filter.juridicalAddress}, '%')
-            </if>
             order by ${filter.sortProperty}
             <choose><when test="filter.ascending">asc</when><otherwise>desc</otherwise></choose>
             limit #{filter.first}, #{filter.count}
@@ -192,13 +194,11 @@
         <include refid="physicalAddress"/> as `physical_address`,
         <include refid="juridicalAddress"/> as `juridical_address`
         from `organization` where
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
         <include refid="filter_order_limit"/>
     </select>
 
     <select id="selectCurrentOrganizationsCount" parameterType="map" resultType="int">
         select count(distinct id) from `organization` where
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
         <include refid="filter"/>
     </select>
     
