@@ -82,4 +82,8 @@ public class DeclarationStringModel extends AbstractDeclarationModel<String>{
     public String getField() {
         return field;
     }
+
+    protected DeclarationValue getDeclarationValue() {
+        return declarationValue;
+    }
 }

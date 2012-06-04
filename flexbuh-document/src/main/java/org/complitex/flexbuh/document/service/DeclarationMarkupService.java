@@ -147,10 +147,10 @@ public class DeclarationMarkupService {
                             if (!sprNameSet.contains(sprName)){
                                 Element sprDivElement = template.createElement("div");
                                 sprDivElement.setAttribute("wicket:id", "dialog_" + sprName);
-                                
+
                                 containerElement.insertBefore(sprDivElement, containerElement.getFirstChild());
-                                
-                                sprNameSet.add(sprName);                                
+
+                                sprNameSet.add(sprName);
                             }
 
                             break;
@@ -250,11 +250,14 @@ public class DeclarationMarkupService {
                         Element spRownumElement = (Element) spRownumList.item(k);
 
                         if (spRownumElement != null){
-                            if (spRownumElement.getElementsByTagName("input").getLength() == 0) {
+                            NodeList spRownumInputList = spRownumElement.getElementsByTagName("input");
+
+                            if (spRownumInputList.getLength() == 0) {
                                 spRownumElement.setAttribute("wicket:id", "spRownum_" + index + "_" + j + "_" + k);
                                 spRownumElement.removeAttribute("id");
                             }else {
-                                spRownumElement.setAttribute("type", "sp_rownum_input");
+                                Element spRownumInput = (Element) spRownumInputList.item(0);
+                                spRownumInput.setAttribute("field", "rownum_input");
                                 spRownumElement.removeAttribute("id");
                             }
                         }

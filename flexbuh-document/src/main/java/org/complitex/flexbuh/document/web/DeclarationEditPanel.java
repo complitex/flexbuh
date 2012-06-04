@@ -16,7 +16,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.complitex.flexbuh.common.entity.dictionary.FieldCode;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.util.ScriptUtil;
 import org.complitex.flexbuh.common.util.XmlUtil;
@@ -32,6 +31,7 @@ import org.complitex.flexbuh.document.web.behavior.RestrictionBehavior;
 import org.complitex.flexbuh.document.web.component.*;
 import org.complitex.flexbuh.document.web.model.DeclarationBooleanModel;
 import org.complitex.flexbuh.document.web.model.DeclarationChoiceModel;
+import org.complitex.flexbuh.document.web.model.DeclarationRownumModel;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 import org.mozilla.javascript.EvaluatorException;
 import org.slf4j.Logger;
@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.complitex.flexbuh.common.entity.dictionary.FieldCode.COUNTERPART_SPR_NAME;
+import static org.complitex.flexbuh.common.entity.dictionary.FieldCode.EMPLOYEE_SPR_NAME;
 import static org.complitex.flexbuh.common.logging.EventCategory.CREATE;
 import static org.complitex.flexbuh.common.logging.EventCategory.EDIT;
 
@@ -177,8 +179,6 @@ public class DeclarationEditPanel extends Panel{
                         checkBox.setOutputMarkupId(true);
 
                         parent.add(checkBox);
-                    }else if ("sp_rownum_input".endsWith(type)){
-                        //todo add auto update text field
                     }
                 }
 
@@ -207,12 +207,12 @@ public class DeclarationEditPanel extends Panel{
                         parent.add(new RowNumLabel(wicketId, letter, parent, stretchTable));
                     }else if (wicketId.contains("dialog")){
                         switch (wicketId.replace("dialog_", "")){
-                            case FieldCode.COUNTERPART_SPR_NAME:
+                            case COUNTERPART_SPR_NAME:
                                 counterpartDialog = new CounterpartDialog(wicketId, declaration.getSessionId(),
                                         declaration.getPersonProfileId());
                                 container.add(counterpartDialog);
                                 break;
-                            case FieldCode.EMPLOYEE_SPR_NAME:
+                            case EMPLOYEE_SPR_NAME:
                                 employeeDialog = new EmployeeDialog(wicketId, declaration.getSessionId(),
                                         declaration.getPersonProfileId());
                                 container.add(employeeDialog);
@@ -237,7 +237,7 @@ public class DeclarationEditPanel extends Panel{
 
                             if (declaration.getId() != null) {
                                 for (int i = 0, count = getRowCount(stretchTable.getFirstStretchRow()) - 1; i < count; ++i){
-                                    addRow(i + 2, stretchTable, null);
+                                    addRow(++nextId, stretchTable, null);
                                 }
                             }
                         }
@@ -248,9 +248,11 @@ public class DeclarationEditPanel extends Panel{
     }
 
     private void addTextInput(Integer rowNum, WebMarkupContainer container, String schema, String id, String mask, String field) {
-        DeclarationStringModel model = new DeclarationStringModel(rowNum, id, schema, mask, field, declaration);
+        DeclarationStringModel model = "rownum_input".equals(field)
+                ? new DeclarationRownumModel(rowNum, id, schema, mask, field, declaration)
+                : new DeclarationStringModel(rowNum, id, schema, mask, field, declaration);
 
-        IDeclarationStringComponent declarationStringComponent = null;
+        IDeclarationStringComponent declarationStringComponent;
         RestrictionBehavior restrictionBehavior = null;
 
         //Rule
@@ -263,7 +265,25 @@ public class DeclarationEditPanel extends Panel{
             log.error("Ошибка создания проверки данных", e);
         }
 
-        if (field == null || field.isEmpty()){
+        if (COUNTERPART_SPR_NAME.equals(field)) {
+            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, declaration.getSessionId(),
+                    declaration.getPersonProfileId(), model, counterpartDialog);
+            container.add(component);
+
+            //restriction
+            component.getAutocompleteField().add(restrictionBehavior);
+
+            declarationStringComponent = component;
+        } else if (EMPLOYEE_SPR_NAME.equals(field)) {
+            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, declaration.getSessionId(),
+                    declaration.getPersonProfileId(), model, employeeDialog);
+            container.add(component);
+
+            //restriction
+            component.getAutocompleteField().add(restrictionBehavior);
+
+            declarationStringComponent = component;
+        }else {
             final DeclarationTextField textField = new DeclarationTextField(id, model);
             textField.setOutputMarkupId(true);
             container.add(textField);
@@ -313,43 +333,22 @@ public class DeclarationEditPanel extends Panel{
                     target.add(textField);
                 }
             });
-
-        } else if (field.equals(FieldCode.COUNTERPART_SPR_NAME)) {
-            CounterpartAutocompleteDialog component = new CounterpartAutocompleteDialog(id, declaration.getSessionId(),
-                    declaration.getPersonProfileId(), model, counterpartDialog);
-            container.add(component);
-
-            //restriction
-            component.getAutocompleteField().add(restrictionBehavior);
-
-            declarationStringComponent = component;
-        } else if (field.equals(FieldCode.EMPLOYEE_SPR_NAME)) {
-            EmployeeAutocompleteDialog component = new EmployeeAutocompleteDialog(id, declaration.getSessionId(),
-                    declaration.getPersonProfileId(), model, employeeDialog);
-            container.add(component);
-
-            //restriction
-            component.getAutocompleteField().add(restrictionBehavior);
-
-            declarationStringComponent = component;
         }
 
-        if (declarationStringComponent != null) {
-            //add maps
-            if (id.contains("XXXX")) {
-                List<IDeclarationStringComponent> textFields = multiRowTextFieldMap.get(id);
+        //add maps
+        if (id.contains("XXXX")) {
+            List<IDeclarationStringComponent> textFields = multiRowTextFieldMap.get(id);
 
-                if (textFields == null) {
-                    textFields = new ArrayList<>();
-                    multiRowTextFieldMap.put(id, textFields);
-                }
-
-                textFields.add(declarationStringComponent);
-            } else if (!mask.isEmpty()) {
-                maskTextFieldMap.put(model.getMaskName(), declarationStringComponent);
-            } else {
-                simpleTextFieldMap.put(id, declarationStringComponent);
+            if (textFields == null) {
+                textFields = new ArrayList<>();
+                multiRowTextFieldMap.put(id, textFields);
             }
+
+            textFields.add(declarationStringComponent);
+        } else if (!mask.isEmpty()) {
+            maskTextFieldMap.put(model.getMaskName(), declarationStringComponent);
+        } else {
+            simpleTextFieldMap.put(id, declarationStringComponent);
         }
     }
 

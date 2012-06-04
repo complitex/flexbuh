@@ -320,7 +320,8 @@ public class DeclarationList extends TemplatePage{
                         DateUtil.isCurrentDay(declaration.getDate()) ? "HH:mm" : "dd.MM.yyyy HH:mm"));
 
                 //Version
-                item.add(new Label("version", declaration.getHead().getCDocType() + ""));
+                Integer version = declaration.getHead().getCDocType();
+                item.add(new Label("version",  version != null && version > 0 ? version.toString() : ""));
 
                 //Action
                 item.add(new DeclarationXmlLink("action_xml", declaration));
@@ -379,7 +380,9 @@ public class DeclarationList extends TemplatePage{
                         linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()),
                                 DateUtil.isCurrentDay(linkedDeclaration.getDate()) ? "HH:mm" : "dd.MM.yyyy HH:mm"));
 
-                        linkedItem.add(new Label("version", declaration.getHead().getCDocType() + ""));
+                        //Version
+                        Integer version = declaration.getHead().getCDocType();
+                        linkedItem.add(new Label("version",  version != null && version > 0 ? version.toString() : ""));
 
                         linkedItem.add(new DeclarationXmlLink("action_xml", linkedDeclaration));
                         linkedItem.add(new DeclarationPdfLink("action_pdf", linkedDeclaration));
