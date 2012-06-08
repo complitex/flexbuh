@@ -75,11 +75,16 @@ dir.eachFile { file ->
         return
     }
     def name = file.name
-    if (! (name =~ /\d\d\d\d_\d\d_\d\d(_\d+)?\.sql/)) {
+    if (! (name =~ /\d\d\d\d_\d\d_\d\d(_\d+)?\.(sql)|(pls)/)) {
         println "Unsupported file ${file}"
         return
     }
-    def sqlPos = name.lastIndexOf(".sql");
+    def sqlPos;
+    if (name.endsWith(".sql")) {
+        sqlPos = name.lastIndexOf(".sql");
+    } else if (name.endsWith(".pls")) {
+        sqlPos = name.lastIndexOf(".pls");
+    }
     name = name.substring(0, sqlPos)
 
     def ver = new Version(number : 0)

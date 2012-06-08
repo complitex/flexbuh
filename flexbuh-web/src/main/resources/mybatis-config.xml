@@ -59,6 +59,7 @@
 
 		<mapper resource="org/complitex/flexbuh/logging/service/LogListBean.xml"/>
 
+		<mapper resource="org/complitex/flexbuh/common/service/AddressBean.xml"/>
 		<mapper resource="org/complitex/flexbuh/common/service/CityTypeBean.xml"/>
 		<mapper resource="org/complitex/flexbuh/common/service/StreetTypeBean.xml"/>
 

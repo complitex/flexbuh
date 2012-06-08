@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.common.service.AddressBean">
+    <resultMap id="addressResultMap" type="org.complitex.flexbuh.common.entity.Address">
+
+        <id column="id" property="id"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="country" property="country"/>
+        <result column="region" property="region" />
+        <result column="area" property="area" />
+        <result column="city" property="city" />
+        <result column="city_type" property="cityType" />
+        <result column="street" property="street" />
+        <result column="street_type" property="streetType" />
+        <result column="building" property="building" />
+        <result column="apartment" property="apartment" />
+    </resultMap>
+
+    <resultMap id="address1ResultMap" type="org.complitex.flexbuh.common.entity.Address">
+
+        <id column="address1_id" property="id"/>
+        <result column="address1_zip_code" property="zipCode"/>
+        <result column="address1_country" property="country"/>
+        <result column="address1_region" property="region" />
+        <result column="address1_area" property="area" />
+        <result column="address1_city" property="city" />
+        <result column="address1_city_type" property="cityType" />
+        <result column="address1_street" property="street" />
+        <result column="address1_street_type" property="streetType" />
+        <result column="address1_building" property="building" />
+        <result column="address1_apartment" property="apartment" />
+    </resultMap>
+
+    <resultMap id="address2ResultMap" type="org.complitex.flexbuh.common.entity.Address">
+
+        <id column="address2_id" property="id"/>
+        <result column="address2_zip_code" property="zipCode"/>
+        <result column="address2_country" property="country"/>
+        <result column="address2_region" property="region" />
+        <result column="address2_area" property="area" />
+        <result column="address2_city" property="city" />
+        <result column="address2_city_type" property="cityType" />
+        <result column="address2_street" property="street" />
+        <result column="address2_street_type" property="streetType" />
+        <result column="address2_building" property="building" />
+        <result column="address2_apartment" property="apartment" />
+    </resultMap>
+    
+    <sql id="columns">
+        `zip_code`, `country`, `region`, `area`, `city`, `city_type`, `street`, `street_type`, `building`, `apartment`
+    </sql>
+
+    <sql id="address1Columns">
+        address1.`id` as `address1_id`, address1.`zip_code` as `address1_zip_code`, address1.`country` as `address1_country`,
+        address1.`region` as `address1_region`, address1.`area` as `address1_area`, address1.`city` as `address1_city`,
+        address1.`city_type` as `address1_city_type`, address1.`street` as `address1_street`,
+        address1.`street_type` as `address1_street_type`, address1.`building` as `address1_building`, 
+        address1.`apartment` as `address1_apartment`
+    </sql>
+    
+    <sql id="address2Columns">
+        address2.`id` as `address2_id`, address2.`zip_code` as `address2_zip_code`, address2.`country` as `address2_country`,
+        address2.`region` as `address2_region`, address2.`area` as `address2_area`, address2.`city` as `address2_city`,
+        address2.`city_type` as `address2_city_type`, address2.`street` as `address2_street`,
+        address2.`street_type` as `address2_street_type`, address2.`building` as `address2_building`, 
+        address2.`apartment` as `address2_apartment`
+    </sql>
+
+    <sql id="properties">
+        #{zipCode}, #{country}, #{region}, #{area}, #{city}, #{cityType}, #{street}, #{streetType}, #{building}, #{apartment}
+    </sql>
+
+    <sql id="concat_address">
+        concat_ws(', ',
+        `zip_code`, `country`, `region`, `area`,
+        nullif(concat_ws(' ', `city_type`, `city`), ''),
+        nullif(concat_ws(' ', `street_type`, `street`), ''),
+        `building`, `apartment`)
+    </sql>
+
+    <sql id="concat_address1">
+        concat_ws(', ',
+        address1.`zip_code`, address1.`country`, address1.`region`, address1.`area`,
+        nullif(concat_ws(' ', address1.`city_type`, address1.`city`), ''),
+        nullif(concat_ws(' ', address1.`street_type`, address1.`street`), ''),
+        address1.`building`, address1.`apartment`)
+    </sql>
+
+    <sql id="concat_address2">
+        concat_ws(', ',
+        address2.`zip_code`, address2.`country`, address2.`region`, address2.`area`,
+        nullif(concat_ws(' ', address2.`city_type`, address2.`city`), ''),
+        nullif(concat_ws(' ', address2.`street_type`, address2.`street`), ''),
+        address2.`building`, address2.`apartment`)
+    </sql>
+
+    <select id="getAddressExist" parameterType="org.complitex.flexbuh.common.entity.Address" resultMap="addressResultMap">
+        select * from `address` where
+          <choose><when test="zipCode != null">`zip_code` like #{zipCode}</when><otherwise>`zip_code` is null</otherwise></choose>
+          and
+          <choose><when test="country != null">`country` like #{country}</when><otherwise>`country` is null</otherwise></choose>
+          and
+          <choose><when test="region != null">`region` like #{region}</when><otherwise>`region` is null</otherwise></choose>
+          and
+          <choose><when test="area != null">`area` like #{area}</when><otherwise>`area` is null</otherwise></choose>
+          and
+          <choose><when test="cityType != null">`city_type` like #{cityType}</when><otherwise>`city_type` is null</otherwise></choose>
+          and
+          <choose><when test="city != null">`city` like #{city}</when><otherwise>`city` is null</otherwise></choose>
+          and
+          <choose><when test="streetType != null">`street_type` like #{streetType}</when><otherwise>`street_type` is null</otherwise></choose>
+          and
+          <choose><when test="street != null">`street` like #{street}</when><otherwise>`street` is null</otherwise></choose>
+          and
+          <choose><when test="building != null">`building` like #{building}</when><otherwise>`building` is null</otherwise></choose>
+          and
+          <choose><when test="apartment != null">`apartment` like #{apartment}</when><otherwise>`apartment` is null</otherwise></choose>
+    </select>
+
+    <insert id="insertAddress" parameterType="org.complitex.flexbuh.common.entity.Address">
+        insert into `address` (<include refid="columns"/>) values (<include refid="properties"/>);
+    </insert>
+
+    <update id="updateAddress" parameterType="org.complitex.flexbuh.common.entity.Address">
+        update `address` set `zip_code`=#{zipCode}, `country`=#{country}, `region`=#{region}, `area`=#{area},
+          `city`=#{city}, `city_type`=#{cityType}, `street`=#{street}, `street_type`=#{streetType}, `building`=#{building},
+          `apartment`=#{apartment}
+        where `id` = #{id}
+    </update>
+
+</mapper>

@@ -27,12 +27,29 @@
         <groovy src="genUpdatesList.groovy">
             <arg value="${version}"/>
         </groovy>
-        <foreach  list="${result}" delimiter=":" target="sql.run"
+        <foreach  list="${result}" delimiter=":" target="db.script.run"
 				  param="sql.script" inheritall="true" />
+    </target>
+    
+    <target name="db.script.run">
+        <condition property="db.script.target" value="sql.run" else="plsql.run">
+            <contains string="${sql.script}" substring=".sql"/>
+        </condition>
+        <antcall target="${db.script.target}"/>
     </target>
 
     <target name="sql.run">
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
+            <classpath>
+                <pathelement location="${jdbc}"/>
+            </classpath>
+
+            <transaction src="${sql.script}"/>
+        </sql>
+    </target>
+    
+    <target name="plsql.run">
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}" delimiter="/">
             <classpath>
                 <pathelement location="${jdbc}"/>
             </classpath>

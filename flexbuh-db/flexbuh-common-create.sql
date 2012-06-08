@@ -13,6 +13,26 @@ CREATE TABLE `update` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Обновление базы данных';
 
 -- ------------------------------
+-- Address
+-- ------------------------------
+DROP TABLE IF EXISTS `address`;
+
+CREATE TABLE  `address` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор адреса',
+  `zip_code` VARCHAR(45) COMMENT 'Почтовый индекс',
+  `country` VARCHAR(45) COMMENT 'Страна',
+  `region` VARCHAR(45) COMMENT 'Регион',
+  `area` VARCHAR(45) COMMENT 'Район',
+  `city` VARCHAR(45) COMMENT 'Селение',
+  `city_type` VARCHAR(45) COMMENT 'Тип селения (город/деревня/поселок)',
+  `street` VARCHAR(45) COMMENT 'Улица',
+  `street_type` VARCHAR(45) COMMENT 'Тип улицы (проспект/бульвар)',
+  `building` VARCHAR(45) COMMENT 'Дом',
+  `apartment` VARCHAR(45) COMMENT 'Квартира',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Адрес';
+
+-- ------------------------------
 -- PersonProfile
 -- ------------------------------
 DROP TABLE IF EXISTS `person_profile`;
@@ -137,29 +157,12 @@ CREATE TABLE  `organization` (
   `email` VARCHAR(45) NOT NULL COMMENT 'E-mail',
   `http_address` VARCHAR(255) COMMENT 'Официальный веб адрес организации',
 
-  `physical_address_zip_code` VARCHAR(45) COMMENT 'Физический адрес : почтовый индекс',
-  `physical_address_country` VARCHAR(45) COMMENT 'Физический адрес : страна',
-  `physical_address_region` VARCHAR(45) COMMENT 'Физический адрес : регион',
-  `physical_address_area` VARCHAR(45) COMMENT 'Физический адрес : район',
-  `physical_address_city` VARCHAR(45) COMMENT 'Физический адрес : селение',
-  `physical_address_city_type` VARCHAR(45) COMMENT 'Физический адрес : тип селения (город/деревня/поселок)',
-  `physical_address_street` VARCHAR(45) COMMENT 'Физический адрес : улица',
-  `physical_address_street_type` VARCHAR(45) COMMENT 'Физический адрес : тип улицы',
-  `physical_address_building` VARCHAR(45) COMMENT 'Физический адрес : дом',
-  `physical_address_apartment` VARCHAR(45) COMMENT 'Физический адрес : квартира',
+  `physical_address_id` BIGINT (20) NOT NULL COMMENT 'Идентификатор физического адреса организации',
+  `juridical_address_id` BIGINT (20) NOT NULL COMMENT 'Идентификатор юридического адреса организации',
 
-  `juridical_address_zip_code` VARCHAR(45) COMMENT 'Юридический адрес : почтовый индекс',
-  `juridical_address_country` VARCHAR(45) COMMENT 'Юридический адрес : страна',
-  `juridical_address_region` VARCHAR(45) COMMENT 'Юридический адрес : регион',
-  `juridical_address_area` VARCHAR(45) COMMENT 'Юридический адрес : район',
-  `juridical_address_city` VARCHAR(45) COMMENT 'Юридический адрес : селение',
-  `juridical_address_city_type` VARCHAR(45) COMMENT 'Юридический адрес : тип селения (город/деревня/поселок)',
-  `juridical_address_street` VARCHAR(45) COMMENT 'Юридический адрес : улица',
-  `juridical_address_street_type` VARCHAR(45) COMMENT 'Юридический адрес : тип улицы',
-  `juridical_address_building` VARCHAR(45) COMMENT 'Юридический адрес : дом',
-  `juridical_address_apartment` VARCHAR(45) COMMENT 'Юридический адрес : квартира',
-
-  PRIMARY KEY (`id`, `version`)
+  PRIMARY KEY (`id`, `version`),
+  CONSTRAINT `fk_organization__physical_address` FOREIGN KEY (`physical_address_id`) REFERENCES `address` (`id`),
+  CONSTRAINT `fk_organization__juridical_address` FOREIGN KEY (`juridical_address_id`) REFERENCES `address` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Организация';
 
 -- ------------------------------

@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
+import org.complitex.flexbuh.common.service.AddressBean;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
@@ -30,6 +31,9 @@ public class OrganizationBean extends AbstractBean {
     @EJB
     private OrganizationTypeBean organizationTypeBean;
 
+    @EJB
+    private AddressBean addressBean;
+
     @Transactional
     public void save(Organization organization, Locale locale) {
         if (organization.getId() != null) {
@@ -41,6 +45,8 @@ public class OrganizationBean extends AbstractBean {
 
     @Transactional
     public void create(Organization organization, Locale locale) {
+        organization.setPhysicalAddress(addressBean.create(organization.getPhysicalAddress()));
+        organization.setJuridicalAddress(addressBean.create(organization.getJuridicalAddress()));
         organization.setVersion(1L);
         organizationTypeBean.create(organization.getType(), locale);
         sqlSession().insert(NS + ".insertOrganization", organization);
@@ -48,6 +54,8 @@ public class OrganizationBean extends AbstractBean {
 
     @Transactional
     public void update(Organization organization, Locale locale) {
+        organization.setPhysicalAddress(addressBean.create(organization.getPhysicalAddress()));
+        organization.setJuridicalAddress(addressBean.create(organization.getJuridicalAddress()));
         organizationTypeBean.create(organization.getType(), locale);
         sqlSession().update(NS + ".updateOrganizationNullCompletionDate", organization);
         sqlSession().update(NS + ".updateOrganization", organization);
