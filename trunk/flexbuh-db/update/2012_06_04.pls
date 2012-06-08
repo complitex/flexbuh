@@ -218,10 +218,10 @@ BEGIN
           END WHILE;
   CLOSE organizationCursor;
 END;/
-ALTER TABLE `organization` DROP FOREIGN KEY `fk_organization__physical_address`;/
-ALTER TABLE `organization` DROP FOREIGN KEY `fk_organization__juridical_address`;/
+-- ALTER TABLE `organization` DROP FOREIGN KEY `fk_organization__physical_address`;/
+-- ALTER TABLE `organization` DROP FOREIGN KEY `fk_organization__juridical_address`;/
 
-DROP TABLE IF EXISTS `address`;/
+-- DROP TABLE IF EXISTS `address`;/
 
 CREATE TABLE  `address` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор адреса',
@@ -238,7 +238,7 @@ CREATE TABLE  `address` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Адрес';/
 
-ALTER TABLE `organization` drop column `physical_address_id`, drop column `juridical_address_id`;/
+-- ALTER TABLE `organization` drop column `physical_address_id`, drop column `juridical_address_id`;/
 
 ALTER TABLE `organization`
 add column `physical_address_id` BIGINT (20) COMMENT 'Идентификатор физического адреса организации',
