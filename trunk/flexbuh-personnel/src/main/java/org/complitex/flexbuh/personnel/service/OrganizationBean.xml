@@ -13,70 +13,24 @@
         <result column="email" property="email"/>
         <result column="http_address" property="httpAddress"/>
         
-        <association property="physicalAddress" javaType="org.complitex.flexbuh.common.entity.Address">
-            <result column="physical_address_zip_code" property="zipCode"/>
-            <result column="physical_address_country" property="country"/>
-            <result column="physical_address_region" property="region" />
-            <result column="physical_address_area" property="area" />
-            <result column="physical_address_city" property="city" />
-            <result column="physical_address_city_type" property="cityType" />
-            <result column="physical_address_street" property="street" />
-            <result column="physical_address_street_type" property="streetType" />
-            <result column="physical_address_building" property="building" />
-            <result column="physical_address_apartment" property="apartment" />
-        </association>
+        <association property="physicalAddress" resultMap="org.complitex.flexbuh.common.service.AddressBean.address1ResultMap"/>
 
-        <association property="juridicalAddress" javaType="org.complitex.flexbuh.common.entity.Address">
-            <result column="juridical_address_zip_code" property="zipCode"/>
-            <result column="juridical_address_country" property="country"/>
-            <result column="juridical_address_region" property="region" />
-            <result column="juridical_address_area" property="area" />
-            <result column="juridical_address_city" property="city" />
-            <result column="juridical_address_city_type" property="cityType" />
-            <result column="juridical_address_street" property="street" />
-            <result column="juridical_address_street_type" property="streetType" />
-            <result column="juridical_address_building" property="building" />
-            <result column="juridical_address_apartment" property="apartment" />
-        </association>
+        <association property="juridicalAddress" resultMap="org.complitex.flexbuh.common.service.AddressBean.address2ResultMap"/>
 
     </resultMap>
 
     <sql id="columns">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
-        `name`, `type`, `phone`, `fax`, `email`, `http_address`,
-        `physical_address_zip_code`, `physical_address_country`, `physical_address_region`, `physical_address_area`,
-        `physical_address_city`, `physical_address_city_type`, `physical_address_street`, `physical_address_street_type`,
-        `physical_address_building`, `physical_address_apartment`,
-        `juridical_address_zip_code`, `juridical_address_country`, `juridical_address_region`, `juridical_address_area`,
-        `juridical_address_city`, `juridical_address_city_type`, `juridical_address_street`, `juridical_address_street_type`,
-        `juridical_address_building`, `juridical_address_apartment`
+        `name`, `type`, `phone`, `fax`, `email`, `http_address`
+        <if test="physicalAddress != null">, `physical_address_id`</if>
+        <if test="juridicalAddress != null">, `juridical_address_id`</if>
     </sql>
 
     <sql id="properties">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
-         #{name}, #{type}, #{phone}, #{fax}, #{email}, #{httpAddress},
-         #{physicalAddress.zipCode}, #{physicalAddress.country}, #{physicalAddress.region}, #{physicalAddress.area},
-         #{physicalAddress.city}, #{physicalAddress.cityType}, #{physicalAddress.street}, #{physicalAddress.streetType},
-         #{physicalAddress.building}, #{physicalAddress.apartment},
-         #{juridicalAddress.zipCode}, #{juridicalAddress.country}, #{juridicalAddress.region}, #{juridicalAddress.area},
-         #{juridicalAddress.city}, #{juridicalAddress.cityType}, #{juridicalAddress.street}, #{juridicalAddress.streetType},
-         #{juridicalAddress.building}, #{juridicalAddress.apartment}
-    </sql>
-
-    <sql id="physicalAddress">
-        concat_ws(', ',
-        `physical_address_zip_code`, `physical_address_country`, `physical_address_region`, `physical_address_area`,
-        nullif(concat_ws(' ', `physical_address_city_type`, `physical_address_city`), ''),
-        nullif(concat_ws(' ', `physical_address_street_type`, `physical_address_street`), ''),
-        `physical_address_building`, `physical_address_apartment`)
-    </sql>
-
-    <sql id="juridicalAddress">
-        concat_ws(', ',
-        `juridical_address_zip_code`, `juridical_address_country`, `juridical_address_region`, `juridical_address_area`,
-        nullif(concat_ws(' ', `juridical_address_city_type`, `juridical_address_city`), ''),
-        nullif(concat_ws(' ', `juridical_address_street_type`, `juridical_address_street`), ''),
-        `juridical_address_building`, `juridical_address_apartment`)
+         #{name}, #{type}, #{phone}, #{fax}, #{email}, #{httpAddress}
+        <if test="physicalAddress != null">, #{physicalAddress.id}</if>
+        <if test="juridicalAddress != null">, #{juridicalAddress.id}</if>
     </sql>
 
     <sql id="filter">
@@ -96,14 +50,14 @@
             <if test="filter.type != null"> and `type` like #{filter.type}</if>
             <if test="filter.phone != null"> and `phone` like concat('%', #{filter.phone}, '%')</if>
             <if test="filter.email != null"> and `email` like concat('%', #{filter.email}, '%')</if>
-            <if test="filter.organizationIds != null"> and `id` in (
+            <if test="filter.organizationIds != null"> and o.`id` in (
                 <foreach collection="filter.organizationIds" separator="," item="item">#{item}</foreach>)
             </if>
             <if test="filter.physicalAddress != null">
-                and <include refid="physicalAddress"/> like concat('%', #{filter.physicalAddress}, '%')
+                and <include refid="org.complitex.flexbuh.common.service.AddressBean.concat_address1"/> like concat('%', #{filter.physicalAddress}, '%')
             </if>
             <if test="filter.juridicalAddress != null">
-                and <include refid="juridicalAddress"/> like concat('%', #{filter.juridicalAddress}, '%')
+                and <include refid="org.complitex.flexbuh.common.service.AddressBean.concat_address2"/> like concat('%', #{filter.juridicalAddress}, '%')
             </if>
         </if>
     </sql>
@@ -171,16 +125,34 @@
     </update>
 
     <select id="selectCurrentOrganizationById" parameterType="map" resultMap="organizationResultMap">
-        select * from `organization` where `id` = #{id} and
+        select o.*,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
+        from `organization` o
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where o.`id` = #{id} and
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
     </select>
 
     <select id="selectOrganizationByIdAndVersion" parameterType="map" resultMap="organizationResultMap">
-        select * from `organization` where `id` = #{id} and `version` = #{version}
+        select o.*,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
+        from `organization`o
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where o.`id` = #{id} and o.`version` = #{version}
     </select>
 
     <select id="selectOrganizationHistory" parameterType="map" resultMap="organizationResultMap">
-        select * from `organization` where `id` = #{id}
+        select o.*,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
+        from `organization`
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where o.`id` = #{id}
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectHistoryFilter"/>
     </select>
 
@@ -191,24 +163,45 @@
 
     <select id="selectCurrentOrganizations" parameterType="map" resultMap="organizationResultMap">
         select *,
-        <include refid="physicalAddress"/> as `physical_address`,
-        <include refid="juridicalAddress"/> as `juridical_address`
-        from `organization` where
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.concat_address1"/> as `physical_address`,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.concat_address2"/> as `juridical_address`
+        from `organization`
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where
         <include refid="filter_order_limit"/>
     </select>
 
     <select id="selectCurrentOrganizationsCount" parameterType="map" resultType="int">
-        select count(distinct id) from `organization` where
+        select count(distinct o.id)
+        from `organization` o
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where
         <include refid="filter"/>
     </select>
     
     <select id="selectOrganizationLastInHistory" parameterType="long" resultMap="organizationResultMap">
-        select * from `organization` where `id` = #{id} and `version` =
+        select o.*,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
+        from `organization` o
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where o.`id` = #{id} and `version` =
         (select max(`version`) from `organization` where `id` = #{id})
     </select>
 
     <select id="selectOrganizationPreviewInHistoryByField" parameterType="map" resultMap="organizationResultMap">
-        select * from `organization` where `id` = #{id} and `version` = (select max(o1.`version`) from `organization` o1
+        select o.*,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
+        from `organization` o
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where o.`id` = #{id} and `version` = (select max(o1.`version`) from `organization` o1
         inner join `organization` o2 on o1.`id` = o2.`id`
             where o1.id = #{id} and
             (o1.`version` = o2.`version` + 1 and
@@ -219,7 +212,13 @@
     </select>
 
     <select id="selectOrganizationNextInHistoryByField" parameterType="map" resultMap="organizationResultMap">
-        select * from `organization` where `id` = #{id} and `version` = (select min(o1.`version`) from `organization` o1
+        select o.*,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
+        from `organization` o
+        left join `address` address1 on address1.`id` = `physical_address_id`
+        left join `address` address2 on address2.`id` = `juridical_address_id`
+        where o.`id` = #{id} and `version` = (select min(o1.`version`) from `organization` o1
         inner join `organization` o2 on o1.`id` = o2.`id`
             where o1.id = #{id} and
             (o1.`version` = o2.`version` + 1 and

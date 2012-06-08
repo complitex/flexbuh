@@ -27,7 +27,7 @@ public class Personnel extends TemporalDomainObject {
     private Address registrationAddress;
 
     // Адрес фактического проживания
-    private String actualAddress;
+    private Address actualAddress;
 
     // Медицинский полис
     private String medicalPolicy;
@@ -131,11 +131,11 @@ public class Personnel extends TemporalDomainObject {
         this.registrationAddress = registrationAddress;
     }
 
-    public String getActualAddress() {
+    public Address getActualAddress() {
         return actualAddress;
     }
 
-    public void setActualAddress(String actualAddress) {
+    public void setActualAddress(Address actualAddress) {
         this.actualAddress = actualAddress;
     }
 

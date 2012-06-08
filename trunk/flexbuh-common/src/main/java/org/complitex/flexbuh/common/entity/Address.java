@@ -2,6 +2,7 @@ package org.complitex.flexbuh.common.entity;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.util.StringUtil;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 27.02.12 11:51
  */
-public class Address implements Serializable {
+public class Address extends DomainObject {
     private String zipCode;
     private String country;
     private String region;
@@ -108,6 +109,10 @@ public class Address implements Serializable {
 
         return addField(", ", zipCode, country, region, area, addField(" ", cityType, city),
                 addField(" ", streetType, street), building, apartment);
+    }
+
+    public boolean isEmptyAddress() {
+        return EqualsBuilder.reflectionEquals(this, new Address(), Lists.newArrayList("id"));
     }
 
     private String addField(String delimiter, String... args) {
