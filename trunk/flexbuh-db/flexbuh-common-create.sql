@@ -107,21 +107,12 @@ CREATE TABLE  `user` (
   `birthday` DATE COMMENT 'День рождения',
   `email` VARCHAR(45) NOT NULL COMMENT 'E-mail',
   `phone` VARCHAR(255) COMMENT 'Телефоны',
-  `zip_code` VARCHAR(45) COMMENT 'Почтовый индекс',
-  `country` VARCHAR(45) COMMENT 'Страна',
-  `region` VARCHAR(45) COMMENT 'Регион',
-  `area` VARCHAR(45) COMMENT 'Район',
-  `city` VARCHAR(45) COMMENT 'Селение',
-  `city_type` VARCHAR(45) COMMENT 'Тип селения (город/деревня/поселок)',
-  `street` VARCHAR(45) COMMENT 'Улица',
-  `street_type` VARCHAR(45) COMMENT 'Тип улицы',
-  `building` VARCHAR(45) COMMENT 'Дом',
-  `apartment` VARCHAR(45) COMMENT 'Квартира',
-
+  `address_id` BIGINT (20) COMMENT 'Идентификатор адреса пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_session` (`session_id`),
   UNIQUE KEY `unique_key_login` (`login`),
-  CONSTRAINT `fk_user__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
+  CONSTRAINT `fk_user__session` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
+  CONSTRAINT `fk_user__address` FOREIGN KEY (`address_id`) REFERENCES `address` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Пользователь';
 
 -- ------------------------------
