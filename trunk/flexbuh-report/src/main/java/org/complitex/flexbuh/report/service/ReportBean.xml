@@ -56,11 +56,11 @@
     </insert>
 
     <update id="updateReport" parameterType="org.complitex.flexbuh.report.entity.Report">
-        update `report`  set `name` = #{name}, `markup` = #{markup}
+        update `report`  set `name` = #{name}, `markup` = #{markup} where `id` = #{id}
     </update>
 
     <update id="updateReportSql" parameterType="org.complitex.flexbuh.report.entity.ReportSql">
-        update `report_sql` set `sql` = #{sql} where `report_id` = #{reportId}
+        update `report_sql` set `sql` = #{sql} where `id` = #{id}
     </update>
 
     <delete id="deleteReport" parameterType="long">
