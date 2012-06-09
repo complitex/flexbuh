@@ -64,5 +64,7 @@
 		<mapper resource="org/complitex/flexbuh/common/service/StreetTypeBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/common/service/FIOBean.xml"/>
+
+        <mapper resource="org/complitex/flexbuh/report/service/ReportBean.xml"/>
     </mappers>
 </configuration>

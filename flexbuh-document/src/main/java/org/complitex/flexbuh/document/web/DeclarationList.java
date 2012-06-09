@@ -478,7 +478,7 @@ public class DeclarationList extends TemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "declaration_xml_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
+                        }, "declaration_xml_" + DateUtil.getStringDate(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
             }
         });
 
@@ -526,7 +526,7 @@ public class DeclarationList extends TemplatePage{
                             public Time lastModifiedTime() {
                                 return Time.now();
                             }
-                        }, "declaration_pdf_" + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
+                        }, "declaration_pdf_" + DateUtil.getStringDate(DateUtil.getCurrentDate()).replace(".", "") + ".zip"));
             }
         });
 

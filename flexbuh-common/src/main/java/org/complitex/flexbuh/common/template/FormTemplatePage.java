@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.common.template;
 
 import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
@@ -12,6 +13,10 @@ public class FormTemplatePage extends TemplatePage {
     private static final String UNFOCUSABLE_CSS_CLASS = "form-template-page-unfocusable";
 
     public FormTemplatePage() {
+    }
+
+    public FormTemplatePage(PageParameters parameters) {
+        super(parameters);
     }
 
     @Override

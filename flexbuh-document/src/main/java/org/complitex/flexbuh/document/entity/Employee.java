@@ -104,7 +104,7 @@ public class Employee extends SessionObject{
 
     @XmlElement(name = "HBIRTHDAY")
     public String getHbirthdayString(){
-        return DateUtil.getString(hbirthday);
+        return DateUtil.getStringDate(hbirthday);
     }
 
     public void setHbirthdayString(String hbirthdayString) {
@@ -113,7 +113,7 @@ public class Employee extends SessionObject{
 
     @XmlElement(name = "HDATE_IN")
     public String getHdateInString(){
-        return DateUtil.getString(hdateIn);
+        return DateUtil.getStringDate(hdateIn);
     }
 
     public void setHdateInString(String hdateInString) {
@@ -122,7 +122,7 @@ public class Employee extends SessionObject{
 
     @XmlElement(name = "HDATE_OUT")
     public String getHdateOutString(){
-        return DateUtil.getString(hdateOut);
+        return DateUtil.getStringDate(hdateOut);
     }
 
     public void setHdateOutString(String hdateOutString) {

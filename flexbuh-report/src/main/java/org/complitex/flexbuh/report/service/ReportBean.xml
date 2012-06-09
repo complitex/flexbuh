@@ -5,6 +5,7 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="markup" property="markup"/>
+        <result column="updated" property="updated"/>
         <collection property="reportSqlList" select="selectReportSql" column="id"/>
     </resultMap>
 
@@ -24,11 +25,25 @@
 
     <select id="selectReportList" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper"
             resultMap="reportResultMap">
-
+        select * from `report`
+        <where>
+            <if test="object.name != null">`name` like concat('%',#{object.name},'%')</if>
+            <if test="object.updated != null">date(`updated`) = date(#{object.updated})</if>
+        </where>
+        <choose>
+            <when test="sortProperty == 'name'">order by `name` ${asc}</when>
+            <when test="sortProperty == 'updated'">order by `updated` ${asc}</when>
+            <otherwise>order by `id` ${asc}</otherwise>
+        </choose>
+        limit #{first}, #{count}
     </select>
 
-    <select id="selectReportCount" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultType="int">
-
+    <select id="selectReportListCount" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultType="int">
+        select count(*) from `report`
+        <where>
+            <if test="object.name != null">`name` like concat('%',#{object.name},'%')</if>
+            <if test="object.updated != null">date(`updated`) = date(#{object.updated})</if>
+        </where>
     </select>
 
     <insert id="insertReport" parameterType="org.complitex.flexbuh.report.entity.Report" keyProperty="id"

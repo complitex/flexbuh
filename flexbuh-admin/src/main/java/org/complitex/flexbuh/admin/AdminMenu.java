@@ -6,6 +6,7 @@ import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.ResourceTemplateMenu;
 import org.complitex.flexbuh.common.template.pages.ConfigEdit;
 import org.complitex.flexbuh.logging.web.LogList;
+import org.complitex.flexbuh.report.web.ReportList;
 
 /**
  * @author Pavel Sknar
@@ -17,5 +18,6 @@ public class AdminMenu extends ResourceTemplateMenu {
         add("config", ConfigEdit.class);
         add("user_list", UserList.class);
         add("log_list", LogList.class);
+        add("reports", ReportList.class);
     }
 }

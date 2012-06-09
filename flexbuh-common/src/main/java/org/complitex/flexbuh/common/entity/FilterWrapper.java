@@ -49,6 +49,10 @@ public class FilterWrapper<T extends Serializable> implements Serializable{
         return this;
     }
 
+    public String getAsc(){
+        return ascending ? "asc" : "desc";
+    }
+
     public Map<String, Object> getMap() {
         return map;
     }
