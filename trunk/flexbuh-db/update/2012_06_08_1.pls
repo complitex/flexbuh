@@ -129,4 +129,4 @@ drop column `street_type`,
 drop column `building`,
 drop column `apartment`;/
 
-INSERT INTO `update` (`date`) VALUES ('2012-06-08');/
+INSERT INTO `update` (`date`, `date_version`) VALUES ('2012-06-08', '1');/
