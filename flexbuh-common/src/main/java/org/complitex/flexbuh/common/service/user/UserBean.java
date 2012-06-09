@@ -6,10 +6,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.common.service.AddressBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import java.security.Principal;
@@ -53,6 +55,9 @@ public class UserBean extends AbstractBean {
     @Resource
     private SessionContext  sessionContext;
 
+    @EJB
+    private AddressBean addressBean;
+
     public User getCurrentUser() {
         Principal principal = sessionContext.getCallerPrincipal();
         return principal != null? getUser(principal.getName()): null;
@@ -69,6 +74,7 @@ public class UserBean extends AbstractBean {
 
     @Transactional
     public void create(User user) {
+        user.setAddress(addressBean.create(user.getAddress()));
         user.setPassword(DigestUtils.md5Hex(user.getPassword())); //md5 password
 
         sqlSession().insert(NS + ".insertUser", user);
@@ -84,6 +90,8 @@ public class UserBean extends AbstractBean {
 
     @Transactional
     public void update(User user) {
+        user.setAddress(addressBean.create(user.getAddress()));
+
         User dbUser = (User) sqlSession().selectOne(NS + ".selectUserById", user.getId());
         if (user.getPassword() != null) {
             user.setPassword(DigestUtils.md5Hex(user.getPassword()));

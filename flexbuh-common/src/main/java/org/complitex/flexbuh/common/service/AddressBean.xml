@@ -118,7 +118,7 @@
           <choose><when test="apartment != null">`apartment` like #{apartment}</when><otherwise>`apartment` is null</otherwise></choose>
     </select>
 
-    <insert id="insertAddress" parameterType="org.complitex.flexbuh.common.entity.Address">
+    <insert id="insertAddress" parameterType="org.complitex.flexbuh.common.entity.Address" keyProperty="id" useGeneratedKeys="true">
         insert into `address` (<include refid="columns"/>) values (<include refid="properties"/>);
     </insert>
 
