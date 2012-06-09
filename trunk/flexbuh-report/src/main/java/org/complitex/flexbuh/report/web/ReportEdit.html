@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="form">
+        <div>
+            <label>
+                <wicket:message key="name"/>
+                <input type="text" wicket:id="name"/>
+            </label>
+        </div>
+        <div>
+            <textarea rows="20" wicket:id="markup" style="width: 100%"></textarea>
+        </div>
+        <div>
+            <div wicket:id="report_sql_list">
+                <textarea rows="20" wicket:id="sql" style="width: 100%"></textarea>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px">
+            <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+            <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>

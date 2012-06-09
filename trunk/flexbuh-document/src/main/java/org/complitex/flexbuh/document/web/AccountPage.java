@@ -168,7 +168,7 @@ public class AccountPage extends FormTemplatePage{
                 accountService.writeAccountZip(getSessionId(), outputStream);
 
                 String fileName = "flexbuh_" + TemplateSession.get().getLogin() + "_" +getSessionId() + "_"
-                        + DateUtil.getString(DateUtil.getCurrentDate()).replace(".", "") + ".zip";
+                        + DateUtil.getStringDate(DateUtil.getCurrentDate()).replace(".", "") + ".zip";
 
                 getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
                         new AbstractResourceStreamWriter() {

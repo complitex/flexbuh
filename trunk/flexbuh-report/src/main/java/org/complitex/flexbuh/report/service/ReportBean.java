@@ -30,7 +30,7 @@ public class ReportBean extends AbstractBean{
     }
 
     public Integer getReportListCount(FilterWrapper<Report> filterWrapper){
-        return sqlSession().selectOne(NS + ".selectReportList", filterWrapper);
+        return sqlSession().selectOne(NS + ".selectReportListCount", filterWrapper);
     }
 
     public void save(final Report report){

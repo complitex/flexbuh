@@ -11,8 +11,42 @@ import java.util.Locale;
  *         Date: 14.01.2010 0:30:49
  */
 public class DateUtil {
-    private static final SimpleDateFormat DATE_FORMAT_FULL = new SimpleDateFormat("dd.MM.yyyy");
-    private static final SimpleDateFormat DATE_FORMAT_SMALL = new SimpleDateFormat("dd.MM.yy");
+    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_FULL_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_SMALL_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_DATETIME_THREAD_LOCAL = new ThreadLocal<>();
+
+    public static SimpleDateFormat getDateFormatFull(){
+        SimpleDateFormat simpleDateFormat = DATE_FORMAT_FULL_THREAD_LOCAL.get();
+
+        if (simpleDateFormat == null){
+            simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            DATE_FORMAT_FULL_THREAD_LOCAL.set(simpleDateFormat);
+        }
+
+        return simpleDateFormat;
+    }
+
+    public static SimpleDateFormat getDateFormatSmall(){
+        SimpleDateFormat simpleDateFormat = DATE_FORMAT_SMALL_THREAD_LOCAL.get();
+
+        if (simpleDateFormat == null){
+            simpleDateFormat = new SimpleDateFormat("dd.MM.yy");
+            DATE_FORMAT_SMALL_THREAD_LOCAL.set(simpleDateFormat);
+        }
+
+        return simpleDateFormat;
+    }
+
+    public static SimpleDateFormat getDateFormatDateTime(){
+        SimpleDateFormat simpleDateFormat = DATE_FORMAT_DATETIME_THREAD_LOCAL.get();
+
+        if (simpleDateFormat == null){
+            simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            DATE_FORMAT_DATETIME_THREAD_LOCAL.set(simpleDateFormat);
+        }
+
+        return simpleDateFormat;
+    }
 
     public static Date getCurrentDate() {
         return Calendar.getInstance().getTime();
@@ -144,14 +178,14 @@ public class DateUtil {
         Date date = null;
 
         try {
-            date = DATE_FORMAT_FULL.parse(s);
+            date = getDateFormatFull().parse(s);
         } catch (ParseException e) {
             //ups
         }
 
         if (date == null) {
             try {
-                date = DATE_FORMAT_SMALL.parse(s);
+                date = getDateFormatSmall().parse(s);
             } catch (ParseException e) {
                 //ups
             }
@@ -178,7 +212,11 @@ public class DateUtil {
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static String getString(Date date){
-        return date != null ? DATE_FORMAT_FULL.format(date) : "";
+    public static String getStringDate(Date date){
+        return date != null ? getDateFormatFull().format(date) : "";
+    }
+
+    public static String getStringDateTime(Date date){
+        return date != null ? getDateFormatDateTime().format(date) : "";
     }
 }

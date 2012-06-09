@@ -187,7 +187,7 @@ public class LogList extends TemplatePage {
         filterForm.add(new TextField<>("formatted_message", new PropertyModel<String>(filterModel, "formattedMessage")));
 
         //Модель данных списка элементов журнала событий
-        final DataProvider<Log> dataProvider = new DataProvider<Log>() {
+        DataProvider<Log> dataProvider = new DataProvider<Log>() {
 
             @Override
             protected Iterable<? extends Log> getData(int first, int count) {

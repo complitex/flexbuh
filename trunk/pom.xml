@@ -77,46 +77,44 @@
                 <artifactId>flexbuh-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-document</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-personnel</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-admin</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-logging</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-images</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.complitex.flexbuh</groupId>
                 <artifactId>flexbuh-resources</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.complitex.flexbuh</groupId>
+                <artifactId>flexbuh-report</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -167,9 +165,9 @@
                 <version>6.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-            	<groupId>org.wicketstuff</groupId>
-            	<artifactId>wicketstuff-tinymce</artifactId>
-            	<version>1.5.5</version>
+                <groupId>org.wicketstuff</groupId>
+                <artifactId>wicketstuff-tinymce</artifactId>
+                <version>1.5.5</version>
             </dependency>
 
             <!--WiQuery-->
@@ -281,18 +279,18 @@
 
             <!--itext-->
             <dependency>
-                  <groupId>com.itextpdf</groupId>
-                  <artifactId>itextpdf</artifactId>
-                  <version>5.2.0</version>
-                  <type>jar</type>
-                </dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>itextpdf</artifactId>
+                <version>5.2.0</version>
+                <type>jar</type>
+            </dependency>
 
-                <dependency>
-                  <groupId>com.itextpdf.tool</groupId>
-                  <artifactId>xmlworker</artifactId>
-                  <version>1.1.2</version>
-                  <type>jar</type>
-                </dependency>
+            <dependency>
+                <groupId>com.itextpdf.tool</groupId>
+                <artifactId>xmlworker</artifactId>
+                <version>1.1.2</version>
+                <type>jar</type>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

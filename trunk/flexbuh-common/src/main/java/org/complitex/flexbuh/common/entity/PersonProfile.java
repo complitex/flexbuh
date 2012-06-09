@@ -25,7 +25,7 @@ public class PersonProfile extends SessionObject {
 
         @Override
         public String marshal(Date v) throws Exception {
-            return DateUtil.getString(v);
+            return DateUtil.getStringDate(v);
         }
     }
 
