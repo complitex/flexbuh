@@ -14,18 +14,7 @@
         <result column="email" property="email"/>
         <result column="phone" property="phone"/>
 
-        <association property="address" javaType="org.complitex.flexbuh.common.entity.Address">
-            <result column="zip_code" property="zipCode"/>
-            <result column="country" property="country"/>
-            <result column="region" property="region" />
-            <result column="area" property="area" />
-            <result column="city" property="city" />
-            <result column="city_type" property="cityType" />
-            <result column="street" property="street" />
-            <result column="street_type" property="streetType" />
-            <result column="building" property="building" />
-            <result column="apartment" property="apartment" />
-        </association>
+        <association property="address" resultMap="org.complitex.flexbuh.common.service.AddressBean.address1ResultMap"/>
 
         <collection property="roles" ofType="string">
             <result column="group_name"/>
@@ -35,7 +24,8 @@
 
     <sql id="userColumns">
         uc.*,
-        gc.`group_name` as `group_name`
+        gc.`group_name` as `group_name`,
+        <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>
     </sql>
 
     <sql id="userFilter">
@@ -61,10 +51,9 @@
 
     <insert id="insertUser" parameterType="org.complitex.flexbuh.common.entity.user.User" keyProperty="id" useGeneratedKeys="true">
         insert into `user` (`login`, `password`, `session_id`, `first_name`, `middle_name`, `last_name`, `birthday`,
-        `email`, `phone`, `zip_code`, `country`, `region`, `area`, `city`, `city_type`, `street`, `street_type`, `building`, `apartment`)
+        `email`, `phone`<if test="address != null">, `address_id`</if>)
         values (#{login}, #{password}, #{sessionId}, #{firstName}, #{middleName}, #{lastName}, #{birthday},
-        #{email}, #{phone}, #{address.zipCode}, #{address.country}, #{address.region}, #{address.area}, #{address.city},
-        #{address.cityType}, #{address.street}, #{address.streetType}, #{address.building}, #{address.apartment})
+        #{email}, #{phone}<if test="address != null">, #{address.id}</if>)
     </insert>
 
     <update id="updateUser" parameterType="org.complitex.flexbuh.common.entity.user.User">
@@ -72,11 +61,9 @@
         <set>
             <if test="password != null"> `password` = #{password},</if>
             <if test="sessionId != null"> `session_id` = #{sessionId},</if>
+            <choose><when test="address != null"> `address_id` = #{address.id},</when><otherwise>`address_id`=null,</otherwise></choose>
             `first_name` = #{firstName}, `middle_name` = #{middleName}, `last_name` = #{lastName}, `birthday` = #{birthday},
-            `email` = #{email}, `phone` = #{phone}, `zip_code` = #{address.zipCode}, `country` = #{address.country},
-            `region` = #{address.region}, `area` = #{address.area}, `city` = #{address.city}, `city_type` = #{address.cityType},
-            `street` = #{address.street}, `street_type` = #{address.streetType}, `building` = #{address.building},
-            `apartment` = #{address.apartment}
+            `email` = #{email}, `phone` = #{phone}
         </set>
         where id = #{id}
     </update>
@@ -89,6 +76,7 @@
         limit #{first}, #{count}
         ) as uc
         left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `address` address1 on address1.`id` = uc.`address_id`
     </select>
 
     <select id="selectUsersCount" resultType="int" parameterType="org.complitex.flexbuh.common.service.user.UserFilter">
@@ -100,6 +88,7 @@
         select <include refid="userColumns"/>
         from `user` uc
         left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `address` address1 on address1.`id` = uc.`address_id`
         where uc.`session_id` = #{sessionId}
     </select>
 
@@ -107,6 +96,7 @@
         select <include refid="userColumns"/>
         from `user` uc
         left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `address` address1 on address1.`id` = uc.`address_id`
         where uc.`id` = #{id}
         order by gc.`group_name`
     </select>
@@ -115,6 +105,7 @@
         select <include refid="userColumns"/>
         from `user` uc
         left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `address` address1 on address1.`id` = uc.`address_id`
         where uc.`login` = #{login}
         order by gc.`group_name`
     </select>
@@ -135,6 +126,7 @@
     <select id="selectSharedUsers" parameterType="long" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
             left join `usergroup` gc on uc.`login` = gc.`login`
+            left join `address` address1 on address1.`id` = uc.`address_id`
             left join `share` s on (s.`shared_to_session_id` = uc.`session_id`)
         where s.`session_id` = #{sessionId}
     </select>
@@ -142,6 +134,7 @@
     <select id="findUser" parameterType="string" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
             left join `usergroup` gc on uc.`login` = gc.`login`
+            left join `address` address1 on address1.`id` = uc.`address_id`
         where  upper(uc.`login`) = upper(#{s}) or  upper(uc.`email`) = upper(#{s})
           or upper(concat_ws(' ', uc.last_name, uc.first_name, uc.middle_name)) = upper(#{s})
     </select>
