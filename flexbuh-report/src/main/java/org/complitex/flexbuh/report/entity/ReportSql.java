@@ -36,4 +36,6 @@ public class ReportSql implements ILongId, Serializable {
     public void setSql(String sql) {
         this.sql = sql;
     }
+
+
 }
