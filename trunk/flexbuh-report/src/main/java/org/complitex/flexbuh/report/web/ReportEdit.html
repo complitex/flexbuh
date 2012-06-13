@@ -15,24 +15,37 @@
     <form action="#" wicket:id="form">
         <div>
             <label>
-                <wicket:message key="name"/>
+                <strong><wicket:message key="name"/>:</strong>
                 <input type="text" wicket:id="name"/>
             </label>
         </div>
-        <div>
+
+        <div style="margin-top: 10px">
             <textarea rows="20" wicket:id="markup" style="width: 100%"></textarea>
         </div>
-        <div>
+
+        <div style="float: right;">
+            <code>html ${column_label}</code>
+        </div>
+
+        <div wicket:id="sql_container" style="margin-top: 10px">
             <div wicket:id="report_sql_list">
-                <textarea rows="20" wicket:id="sql" style="width: 100%"></textarea>
+                <textarea rows="10" wicket:id="sql" style="width: 100%"></textarea>
+            </div>
+            <div style="float: right;">
+                <a href="#" wicket:id="add"><wicket:message key="add"/></a>
+                <a href="#" wicket:id="remove"><wicket:message key="remove"/></a>
             </div>
         </div>
 
         <div style="margin-top: 30px">
             <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
-            <input type="submit" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+            <input type="submit" class="btnMiddle" wicket:message="value:back" wicket:id="cancel"/>
+            <input type="submit" style="margin-left: 30px" class="btnSmall" wicket:message="value:preview" wicket:id="preview"/>
         </div>
     </form>
+
+    <div wicket:id="preview" style="margin-top: 30px; border-top: 1px dotted; padding-top: 20px;"></div>
 </wicket:extend>
 </body>
 </html>

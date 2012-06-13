@@ -1,6 +1,9 @@
 package org.complitex.flexbuh.report.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -9,6 +12,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
@@ -16,6 +20,7 @@ import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.report.entity.Report;
 import org.complitex.flexbuh.report.entity.ReportSql;
 import org.complitex.flexbuh.report.service.ReportBean;
+import org.complitex.flexbuh.report.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wicket.contrib.tinymce.TinyMceBehavior;
@@ -25,6 +30,7 @@ import wicket.contrib.tinymce.settings.*;
 import javax.ejb.EJB;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static wicket.contrib.tinymce.settings.Button.*;
 import static wicket.contrib.tinymce.settings.TinyMCESettings.Position.after;
@@ -38,8 +44,14 @@ import static wicket.contrib.tinymce.settings.TinyMCESettings.Toolbar.*;
 public class ReportEdit extends FormTemplatePage{
     private final static Logger log = LoggerFactory.getLogger(ReportEdit.class);
 
+    private Pattern pattern = Pattern.compile("delete\\W|drop\\W|alter\\W|update\\W|create\\W|insert\\W",
+            Pattern.CASE_INSENSITIVE);
+
     @EJB
     private ReportBean reportBean;
+
+    @EJB
+    private ReportService reportService;
 
     public ReportEdit() {
         init(null);
@@ -68,16 +80,25 @@ public class ReportEdit extends FormTemplatePage{
             report.setReportSqlList(reportSqlList);
         }
 
+        //Form
         Form form = new Form<>("form");
         add(form);
 
+        //Name
         form.add(new TextField<>("name", new PropertyModel<>(report, "name")).setRequired(true));
 
+        //Markup
         TextArea markup = new TextArea<>("markup", new PropertyModel<>(report, "markup"));
         markup.setRequired(true);
         markup.add(new TinyMceBehavior(getSettings()));
         form.add(markup);
 
+        //Sql container
+        final WebMarkupContainer sqlContainer = new WebMarkupContainer("sql_container");
+        sqlContainer.setOutputMarkupId(true);
+        form.add(sqlContainer);
+
+        //Sql list
         ListView reportSqlList = new ListView<ReportSql>("report_sql_list",
                 new LoadableDetachableModel<List<? extends ReportSql>>() {
                     @Override
@@ -86,19 +107,99 @@ public class ReportEdit extends FormTemplatePage{
                     }
                 }) {
             @Override
-            protected void populateItem(ListItem<ReportSql> item) {
-                item.add(new TextArea<>("sql", new PropertyModel<>(item.getModel(), "sql")));
+            protected void populateItem(final ListItem<ReportSql> item) {
+                TextArea sql = new TextArea<>("sql", new PropertyModel<>(item.getModel(), "sql"));
+                sql.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        //todo
+                    }
+                });
+
+                item.add(sql);
             }
         };
         reportSqlList.setReuseItems(true);
-        form.add(reportSqlList);
+        sqlContainer.add(reportSqlList);
 
+        //Add sql
+        sqlContainer.add(new AjaxSubmitLink("add") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                report.getReportSqlList().add(new ReportSql());
+
+                target.add(sqlContainer);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //no error
+            }
+
+            @Override
+            public boolean isVisible() {
+                return report.getReportSqlList().size() < 12;
+            }
+        }.setDefaultFormProcessing(false));
+
+        //Remove sql
+        sqlContainer.add(new AjaxSubmitLink("remove") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                report.getReportSqlList().remove(report.getReportSqlList().size() - 1);
+
+                target.add(sqlContainer);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //no error
+            }
+
+            @Override
+            public boolean isVisible() {
+                return report.getReportSqlList().size() > 1;
+            }
+        }.setDefaultFormProcessing(false));
+
+        final Label preview = new Label("preview", Model.of("")){
+            @Override
+            public boolean isVisible() {
+                return !getDefaultModelObject().toString().isEmpty();
+            }
+        };
+        preview.setOutputMarkupPlaceholderTag(true);
+        preview.setOutputMarkupId(true);
+        preview.setEscapeModelStrings(false);
+        add(preview);
+
+        //Preview
+        form.add(new TinyMceAjaxButton("preview"){
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                if (validateSql(report)) {
+                    preview.setDefaultModelObject(reportService.fillMarkup(report));
+                }
+
+                target.add(feedbackPanel);
+                target.add(preview);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(feedbackPanel);
+            }
+        });
+
+        //Submit
         form.add(new TinyMceAjaxButton("submit") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                reportBean.save(report);
+                if (validateSql(report)) {
+                    reportBean.save(report);
 
-                info(getStringFormat("saved", DateUtil.getCurrentDate()));
+                    ReportEdit.this.info(getStringFormat("saved", DateUtil.getCurrentDate()));
+                }
 
                 target.add(feedbackPanel);
             }
@@ -109,12 +210,27 @@ public class ReportEdit extends FormTemplatePage{
             }
         });
 
+        //Back
         form.add(new org.apache.wicket.markup.html.form.Button("cancel"){
             @Override
             public void onSubmit() {
                 setResponsePage(ReportList.class);
             }
         });
+    }
+
+    private boolean validateSql(Report report){
+        for (ReportSql reportSql : report.getReportSqlList()){
+            String sql = reportSql.getSql();
+
+            if (sql != null && pattern.matcher(sql).find()){
+                ReportEdit.this.error(getString("error_illegal_sql"));
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private TinyMCESettings getSettings(){
