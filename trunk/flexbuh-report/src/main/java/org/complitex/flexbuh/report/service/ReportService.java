@@ -2,6 +2,10 @@ package org.complitex.flexbuh.report.service;
 
 import org.complitex.flexbuh.report.entity.Report;
 import org.complitex.flexbuh.report.entity.ReportSql;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -18,7 +22,7 @@ public class ReportService {
     private ReportBean reportBean;
 
     public String fillMarkup(Report report){
-        String s = report.getMarkup();
+        String html = report.getMarkup();
 
         for (ReportSql reportSql : report.getReportSqlList()){
             List<Map<String, String>> list = reportBean.getSqlList(reportSql);
@@ -31,13 +35,50 @@ public class ReportService {
                 Map<String, String> map = list.get(0);
 
                 for (String key : map.keySet()){
-                    s = s.replace("${" + key + "}", map.get(key));
+                    html = html.replace(param(key), map.get(key));
                 }
             }else {
-                //todo table view
+                html = fillList(list, html);
             }
         }
 
-        return s;
+        return html;
+    }
+
+    private String fillList(List<Map<String, String>> list, String html){
+        Document document = Jsoup.parse(html);
+
+        Elements elements = document.getElementsByClass("list");
+
+        for (Element element : elements){
+            String listInnerMarkup = element.html();
+
+            boolean found = false;
+            for (String key : list.get(0).keySet()){
+                if (listInnerMarkup.contains(param(key))){
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found){
+                element.empty();
+
+                for (Map<String, String> map : list){
+                    String row = listInnerMarkup;
+
+                    for (String key : map.keySet()){
+                        row = row.replace(param(key), map.get(key));
+                    }
+                    element.append(row);
+                }
+            }
+        }
+
+        return document.outerHtml();
+    }
+
+    private String param(String key){
+        return "${" + key + "}";
     }
 }

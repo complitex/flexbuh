@@ -13,14 +13,17 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
  *         Date: 08.09.11 18:09
  */
 public class BookmarkablePageLinkPanel <T> extends Panel {
-
     public <C extends Page> BookmarkablePageLinkPanel(String id, String label, Class<C> page, PageParameters parameters) {
         super(id);
         Link link = new BookmarkablePageLink<T>("link", page, parameters);
         link.add(new Label("label", label));
         add(link);
     }
-    
+
+    public <C extends Page> BookmarkablePageLinkPanel(String id, String label, Class<C> page, final Long objectId){
+        this(id, label, page, new PageParameters(){{add("id", objectId);}});
+    }
+
     public <C extends Page> BookmarkablePageLinkPanel(String id, String label, Class<C> page, PageParameters parameters, final String style) {
         super(id);
         Link link = new BookmarkablePageLink<T>("link", page, parameters);
