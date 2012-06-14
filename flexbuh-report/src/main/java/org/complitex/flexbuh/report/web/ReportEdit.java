@@ -292,6 +292,17 @@ public class ReportEdit extends FormTemplatePage{
         settings.addCustomSetting("skin: \"o2k7\"");
         settings.addCustomSetting("skin_variant : \"silver\"");
 
+        //custom tag
+        settings.addCustomSetting("extended_valid_elements : \"list\"");
+        settings.addCustomSetting("custom_elements: \"list\"");
+
+        //html editor size
+        settings.addCustomSetting("theme_advanced_source_editor_width: 800");
+        settings.addCustomSetting("theme_advanced_source_editor_height: 600");
+
+        //cleanup
+        settings.addCustomSetting("verify_html : false");
+
         return settings;
     }
 }

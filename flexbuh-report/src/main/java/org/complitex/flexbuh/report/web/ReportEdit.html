@@ -24,13 +24,13 @@
             <textarea rows="20" wicket:id="markup" style="width: 100%"></textarea>
         </div>
 
-        <div style="float: right;">
-            <code>html ${column_label}</code>
+        <div style="float: right; font-size: 12px">
+            Параметр: <code>${column_label}</code>, список: <code>&lsaquo;tbody class="list"&rsaquo;...&lsaquo;/tbody&rsaquo;</code>
         </div>
 
         <div wicket:id="sql_container" style="margin-top: 10px">
             <div wicket:id="report_sql_list">
-                <textarea rows="10" wicket:id="sql" style="width: 100%"></textarea>
+                <textarea rows="5" wicket:id="sql" style="width: 100%"></textarea>
             </div>
             <div style="float: right;">
                 <a href="#" wicket:id="add"><wicket:message key="add"/></a>

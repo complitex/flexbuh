@@ -19,6 +19,7 @@ import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.util.DateUtil;
+import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.report.entity.Report;
@@ -100,6 +101,10 @@ public class ReportList extends TemplatePage{
                 link.add(new Label("name", report.getName()));
 
                 item.add(new Label("updated", DateUtil.getStringDateTime(report.getUpdated())));
+
+                item.add(new BookmarkablePageLinkPanel<>("view", getString("view"), ReportView.class, report.getId()));
+                item.add(new BookmarkablePageLinkPanel<>("html", getString("html"), ReportHtml.class, report.getId()));
+                item.add(new ReportPdfLink("pdf", report.getId()));
             }
         };
         form.add(dataView);
