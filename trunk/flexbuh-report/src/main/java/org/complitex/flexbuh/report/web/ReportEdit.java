@@ -216,7 +216,7 @@ public class ReportEdit extends FormTemplatePage{
             public void onSubmit() {
                 setResponsePage(ReportList.class);
             }
-        });
+        }.setDefaultFormProcessing(false));
     }
 
     private boolean validateSql(Report report){
