@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.report.web;
 
+import com.lowagie.text.pdf.BaseFont;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.util.lang.Bytes;
@@ -15,6 +16,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.ejb.EJB;
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -22,6 +24,8 @@ import java.io.ByteArrayOutputStream;
  */
 public class ReportPdfLink extends NoCacheLink{
     private final static Logger log = LoggerFactory.getLogger(ReportPdfLink.class);
+
+    private final static String FONT = "org/complitex/flexbuh/report/font/LiberationSans-Regular.ttf";
 
     @EJB
     private ReportService reportService;
@@ -49,14 +53,31 @@ public class ReportPdfLink extends NoCacheLink{
             html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                     + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
                     + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
-                    + "<html><body>"
+                    + "<html>"
+                    + "<head>"
+                    + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>"
+                    +"<style type=\"text/css\">"
+                    + "body {\n" +
+                    "    font-family: Liberation Sans;\n" +
+//                    "    font-size: 6.8pt;\n" +
+//                    "    line-height: 1.17;\n" +
+                    "}"
+                    + "</style>"
+                    + "</head>"
+                    + "<body>"
                     + html
                     + "</body></html>";
 
             ITextRenderer renderer = new ITextRenderer();
-            renderer.getFontResolver().addFont("c:/LiberationSans-Regular.ttf", "UTF-8", true);
+
+            //Cyrillic font
+            URL url = getClass().getClassLoader().getResource(FONT);
+            if (url != null) {
+                renderer.getFontResolver().addFont(url.getFile(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            }
 
             renderer.setDocumentFromString(html);
+
             renderer.layout();
             renderer.createPDF(outputStream);
             outputStream.close();
