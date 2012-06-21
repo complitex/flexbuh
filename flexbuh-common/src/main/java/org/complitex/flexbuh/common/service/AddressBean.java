@@ -23,7 +23,7 @@ public class AddressBean extends AbstractBean {
      */
     @Transactional
     public Address create(Address address) {
-        if (address.isEmptyAddress()) {
+        if (address == null || address.isEmptyAddress()) {
             return null;
         }
         Address existAddress = getAddressExist(address);
