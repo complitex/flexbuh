@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.time.Time;
@@ -42,7 +43,7 @@ public class DeclarationPdfLink extends NoCacheLink {
             declarationService.writePdf(declaration, outputStream);
 
             getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(
-                    new AbstractResourceStreamWriter(){
+                    new AbstractResourceStreamWriter() {
 
                         @Override
                         public void write(Response output) {
@@ -63,7 +64,12 @@ public class DeclarationPdfLink extends NoCacheLink {
                         public Time lastModifiedTime() {
                             return Time.now();
                         }
-                    }, declaration.getFileName() + ".pdf"));
+                    }, declaration.getFileName() + ".pdf") {
+                {
+                    setContentDisposition(ContentDisposition.INLINE);
+                }
+
+            });
 
             log.info("Печатная форма документа выгружена", new Event(EventCategory.EXPORT, declaration));
         } catch (Exception e) {
