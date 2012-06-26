@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.report.service;
 
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.report.entity.Report;
 import org.complitex.flexbuh.report.entity.ReportSql;
 import org.jsoup.Jsoup;
@@ -68,7 +69,7 @@ public class ReportService {
                     String row = listInnerMarkup;
 
                     for (String key : map.keySet()){
-                        row = row.replace(param(key), map.get(key));
+                        row = row.replace(param(key), StringUtil.emptyOnNull(map.get(key)));
                     }
                     element.append(row);
                 }
