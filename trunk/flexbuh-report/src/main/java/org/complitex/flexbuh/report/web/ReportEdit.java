@@ -3,6 +3,7 @@ package org.complitex.flexbuh.report.web;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -15,6 +16,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.report.entity.Report;
@@ -41,6 +43,7 @@ import static wicket.contrib.tinymce.settings.TinyMCESettings.Toolbar.*;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 08.06.12 18:35
  */
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ReportEdit extends FormTemplatePage{
     private final static Logger log = LoggerFactory.getLogger(ReportEdit.class);
 
