@@ -135,6 +135,12 @@ public class Declaration implements ILongId, Serializable{
         return getDeclarationValue(null, name);
     }
 
+    public String getValue(String name){
+        DeclarationValue declarationValue = getDeclarationValue(name);
+
+        return declarationValue != null ? declarationValue.getValue() : "";
+    }
+
     //todo use map to improve performance
     public DeclarationValue getDeclarationValue(Integer rowNum, String name){
         for (DeclarationValue declarationValue : declarationValues){

@@ -59,7 +59,7 @@ public class DeclarationEditPage extends TemplatePage{
 
     @EJB
     private DocumentBean documentBean;
-    
+
     @EJB
     private PersonProfileBean personProfileBean;
 
@@ -68,7 +68,7 @@ public class DeclarationEditPage extends TemplatePage{
 
     private Declaration declaration;
     private Declaration oldDeclaration;
-    
+
     private AddLinkedDeclarationDialog addLinkedDeclarationDialog;
 
     public DeclarationEditPage(Declaration declaration){
@@ -94,9 +94,9 @@ public class DeclarationEditPage extends TemplatePage{
     }
 
     @Override
-    public void renderHead(IHeaderResponse response) {        
+    public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        
+
         response.renderCSSReference(new PackageResourceReference(DeclarationEditPage.class, "declaration.css"));
     }
 
@@ -159,12 +159,12 @@ public class DeclarationEditPage extends TemplatePage{
         };
         listView.setReuseItems(true);
         accordion.add(listView);
-        
+
         //Профиль
         final Dialog profileDialog = new Dialog("profile_dialog");
         profileDialog.setTitle(getString("profile_dialog_title"));
         add(profileDialog);
-        
+
         Form profileForm = new Form("profile_form");
         profileDialog.add(profileForm);
 
@@ -223,7 +223,7 @@ public class DeclarationEditPage extends TemplatePage{
                     PersonProfile personProfile = personProfileBean.getPersonProfile(selectedId);
 
                     declaration.getHead().setTin(personProfile != null && personProfile.getTin() != null
-                                            ? personProfile.getTin() : 0);
+                            ? personProfile.getTin() : 0);
 
                     declarationService.validateAndSave(declaration);
 
@@ -251,7 +251,12 @@ public class DeclarationEditPage extends TemplatePage{
         form.add(new Button("cancel"){
             @Override
             public void onSubmit() {
-                setResponsePage(DeclarationList.class);
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("period_type", declaration.getHead().getPeriodType());
+                pageParameters.add("period_month", declaration.getHead().getPeriodMonth());
+                pageParameters.add("period_year", declaration.getHead().getPeriodYear());
+
+                setResponsePage(DeclarationList.class, pageParameters);
             }
         }.setDefaultFormProcessing(false));
 
@@ -283,11 +288,11 @@ public class DeclarationEditPage extends TemplatePage{
 
                 filter.getObject().setParentCDoc(declaration.getHead().getCDoc());
                 filter.getObject().setParentCDocSub(declaration.getHead().getCDocSub());
-                
+
                 return documentBean.getDocumentsCount(filter) > 0;
             }
         });
-        
+
         return list;
     }
 }

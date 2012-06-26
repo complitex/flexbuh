@@ -319,6 +319,10 @@ public class DeclarationList extends TemplatePage{
                 item.add(DateLabel.forDatePattern("date", new Model<>(declaration.getDate()),
                         DateUtil.isCurrentDay(declaration.getDate()) ? "HH:mm" : "dd.MM.yyyy HH:mm"));
 
+                //HFILL HNUM
+                item.add(new Label("hfill",  declaration.getValue("HFILL")));
+                item.add(new Label("hnum",  declaration.getValue("HNUM")));
+
                 //Version
                 Integer version = declaration.getHead().getCDocType();
                 item.add(new Label("version",  version != null && version > 0 ? version.toString() : ""));
@@ -379,6 +383,10 @@ public class DeclarationList extends TemplatePage{
 
                         linkedItem.add(DateLabel.forDatePattern("date", new Model<>(linkedDeclaration.getDate()),
                                 DateUtil.isCurrentDay(linkedDeclaration.getDate()) ? "HH:mm" : "dd.MM.yyyy HH:mm"));
+
+                        //HFILL HNUM
+                        linkedItem.add(new Label("hfill",  linkedDeclaration.getValue("HFILL")));
+                        linkedItem.add(new Label("hnum",  linkedDeclaration.getValue("HNUM")));
 
                         //Version
                         Integer version = declaration.getHead().getCDocType();
