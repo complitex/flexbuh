@@ -235,10 +235,8 @@ public class DeclarationEditPanel extends Panel{
                         if (openWicketId.contains("repeater") && tbody != null){
                             parent = tbody;
 
-                            if (declaration.getId() != null) {
-                                for (int i = 0, count = getRowCount(stretchTable.getFirstStretchRow()) - 1; i < count; ++i){
-                                    addRow(++nextId, stretchTable, null);
-                                }
+                            for (int i = 0, count = getRowCount(stretchTable.getFirstStretchRow()) - 1; i < count; ++i){
+                                addRow(++nextId, stretchTable, null);
                             }
                         }
                     }

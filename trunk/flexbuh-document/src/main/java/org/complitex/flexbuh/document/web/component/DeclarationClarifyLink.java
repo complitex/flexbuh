@@ -2,7 +2,8 @@ package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.markup.html.link.Link;
 import org.complitex.flexbuh.document.entity.Declaration;
-import org.complitex.flexbuh.document.entity.DeclarationHead;
+import org.complitex.flexbuh.document.entity.DeclarationValue;
+import org.complitex.flexbuh.document.util.DeclarationUtil;
 import org.complitex.flexbuh.document.web.DeclarationEditPage;
 
 /**
@@ -20,24 +21,22 @@ public class DeclarationClarifyLink extends Link{
 
     @Override
     public void onClick() {
-        Declaration newDeclaration = new Declaration();
+        Declaration newDeclaration = DeclarationUtil.copy(declaration);
 
-        DeclarationHead head = declaration.getHead();
-        DeclarationHead newHead = newDeclaration.getHead();
-
-        newHead.setCDoc(head.getCDoc());
-        newHead.setCDocSub(head.getCDocSub());
-        newHead.setCDocVer(head.getCDocVer());
-        newHead.setPeriodMonth(head.getPeriodMonth());
-        newHead.setPeriodType(head.getPeriodType());
-        newHead.setPeriodYear(head.getPeriodYear());
-        newHead.setTin(head.getTin());
-        newHead.setCDocStan(head.getCDocStan());
-        newHead.setCDocType(head.getCDocType() + 1);
+        newDeclaration.getHead().setCDocType(declaration.getHead().getCDocType() + 1);
+        newDeclaration.getHead().setCDocStan(3);
 
         newDeclaration.setSessionId(declaration.getSessionId());
         newDeclaration.setPersonProfileId(declaration.getPersonProfileId());
         newDeclaration.setName(declaration.getName());
+
+        //Уточняющий радио баттон
+        if (newDeclaration.getDeclarationValue("HZ") != null || newDeclaration.getDeclarationValue("HZN") != null){
+            newDeclaration.removeDeclarationValue("HZ");
+            newDeclaration.removeDeclarationValue("HZN");
+
+            newDeclaration.addDeclarationValue(new DeclarationValue("HZU", "1"));
+        }
 
         setResponsePage(new DeclarationEditPage(newDeclaration));
     }
