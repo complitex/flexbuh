@@ -3,7 +3,6 @@ package org.complitex.flexbuh.personnel.web.component;
 import com.google.common.collect.Maps;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -17,13 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Pavel Sknar
@@ -160,30 +153,30 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
 
     private T getPreviousModification(T object) {
         return object.getId() != null && object.getVersion() != null && object.getVersion() > 1?
-                getTemporalDomainObjectPreviousInHistory(object): null;
+                getTDObjectPreviousInHistory(object): null;
     }
 
     private T getNextModification(T object) {
         return object.getId() != null && object.getVersion() != null && object.getCompletionDate() != null?
-                getTemporalDomainObjectNextInHistory(object): null;
+                getTDObjectNextInHistory(object): null;
     }
 
     private T getStartModification(T object) {
         return object.getId() != null && object.getVersion() != null && object.getVersion() != 1?
-                getTemporalDomainObjectStartInHistory(object): null;
+                getTDObjectStartInHistory(object): null;
     }
 
     private T getEndModification(T object) {
         if (object.getId() != null && object.getVersion() != null &&
                 (object.getVersion() != 1 || object.getCompletionDate() != null)) {
-            T endOrganization = getTemporalDomainObjectLastInHistory(object);
+            T endOrganization = getTDObjectLastInHistory(object);
             return endOrganization.getVersion() > object.getVersion() ? endOrganization: null;
         }
         return null;
     }
 
-    protected abstract T getTemporalDomainObjectPreviousInHistory(T object);
-    protected abstract T getTemporalDomainObjectNextInHistory(T object);
-    protected abstract T getTemporalDomainObjectStartInHistory(T object);
-    protected abstract T getTemporalDomainObjectLastInHistory(T object);
+    protected abstract T getTDObjectPreviousInHistory(T object);
+    protected abstract T getTDObjectNextInHistory(T object);
+    protected abstract T getTDObjectStartInHistory(T object);
+    protected abstract T getTDObjectLastInHistory(T object);
 }

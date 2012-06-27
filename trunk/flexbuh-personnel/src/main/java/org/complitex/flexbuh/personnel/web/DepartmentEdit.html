@@ -16,11 +16,25 @@
         <table class="tbForm">
             <tr>
                 <th><wicket:message key="name"/> </th>
-                <td><input type="text" maxlength="45" wicket:id="name" style="width: 277px"/></td>
+                <td>
+                    <div wicket:id="name_container">
+                        <div style="float: left;">
+                            <input type="text" maxlength="45" wicket:id="name" style="width: 277px"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="name_history"></div>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <th><wicket:message key="code"/> </th>
-                <td><input type="text" maxlength="45" wicket:id="code" style="width: 277px"/></td>
+                <td>
+                    <div wicket:id="code_container">
+                        <div style="float: left;">
+                            <input type="text" maxlength="45" wicket:id="code" style="width: 277px"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="code_history"></div>
+                    </div>
+                </td>
             </tr>
             <!--
             <tr>
@@ -37,6 +51,7 @@
         <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
         <input type="button" class="btnMiddle" wicket:id="cancel"/>
     </form>
+    <div wicket:id="department_history" class="history_buttons_page_center"/>
 </wicket:extend>
 </body>
 </html>

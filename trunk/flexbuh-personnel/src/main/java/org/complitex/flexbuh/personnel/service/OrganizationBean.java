@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.service.AddressBean;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
@@ -22,7 +23,7 @@ import java.util.Map;
  *         Date: 16.02.12 17:54
  */
 @Stateless
-public class OrganizationBean extends AbstractBean {
+public class OrganizationBean extends TemporalDomainObjectBean<Organization> {
 
     public static final String NS = OrganizationBean.class.getName();
 
@@ -34,29 +35,33 @@ public class OrganizationBean extends AbstractBean {
     @EJB
     private AddressBean addressBean;
 
+    public OrganizationBean() {
+        super(NS);
+    }
+
     @Transactional
-    public void save(Organization organization, Locale locale) {
+    public void save(Organization organization) {
         if (organization.getId() != null) {
-            update(organization, locale);
+            update(organization);
         } else {
-            create(organization, locale);
+            create(organization);
         }
     }
 
     @Transactional
-    public void create(Organization organization, Locale locale) {
+    public void create(Organization organization) {
         organization.setPhysicalAddress(addressBean.create(organization.getPhysicalAddress()));
         organization.setJuridicalAddress(addressBean.create(organization.getJuridicalAddress()));
         organization.setVersion(1L);
-        organizationTypeBean.create(organization.getType(), locale);
+        organizationTypeBean.create(organization.getType());
         sqlSession().insert(NS + ".insertOrganization", organization);
     }
 
     @Transactional
-    public void update(Organization organization, Locale locale) {
+    public void update(Organization organization) {
         organization.setPhysicalAddress(addressBean.create(organization.getPhysicalAddress()));
         organization.setJuridicalAddress(addressBean.create(organization.getJuridicalAddress()));
-        organizationTypeBean.create(organization.getType(), locale);
+        organizationTypeBean.create(organization.getType());
         sqlSession().update(NS + ".updateOrganizationNullCompletionDate", organization);
         sqlSession().update(NS + ".updateOrganization", organization);
     }
@@ -73,22 +78,6 @@ public class OrganizationBean extends AbstractBean {
             organization.setCompletionDate(new Date());
         }
         sqlSession().update(NS + ".deleteOrganization", organization);
-    }
-
-    public Organization getOrganization(Long id) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("id", id);
-        params.put("currentDate", new Date());
-
-        return sqlSession().selectOne(NS + ".selectCurrentOrganizationById", params);
-    }
-
-    public Organization getOrganization(long id, long version) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("id", id);
-        params.put("version", version);
-
-        return sqlSession().selectOne(NS + ".selectOrganizationByIdAndVersion", params);
     }
 
     public List<Organization> getOrganizations(OrganizationFilter filter) {
@@ -122,27 +111,4 @@ public class OrganizationBean extends AbstractBean {
 
         return sqlSession().selectOne(NS + ".selectOrganizationHistoryCount", params);
     }
-
-    public Organization getOrganizationLastInHistory(Long id) {
-        return sqlSession().selectOne(NS + ".selectOrganizationLastInHistory", id);
-    }
-
-    public Organization getOrganizationPreviewInHistoryByField(Long id, Long version, String fieldName) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("id", id);
-        params.put("version", version);
-        params.put("fieldName", fieldName);
-
-        return sqlSession().selectOne(NS + ".selectOrganizationPreviewInHistoryByField", params);
-    }
-
-    public Organization getOrganizationNextInHistoryByField(Long id, Long version, String fieldName) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("id", id);
-        params.put("version", version);
-        params.put("fieldName", fieldName);
-
-        return sqlSession().selectOne(NS + ".selectOrganizationNextInHistoryByField", params);
-    }
-
 }

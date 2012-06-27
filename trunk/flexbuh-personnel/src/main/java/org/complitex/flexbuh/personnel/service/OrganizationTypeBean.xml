@@ -8,38 +8,25 @@
     </resultMap>
     
     <insert id="insertOrganizationType" parameterType="org.complitex.flexbuh.personnel.entity.OrganizationType" keyProperty="id" useGeneratedKeys="true">
-        insert into `organization_type` (`name_ru`, `name_uk`)
-        	values (#{nameRu}, #{nameUk})
+        insert into `organization_type` (`name`)
+        	values (#{name})
     </insert>
 
     <sql id="selectOrganizationTypesWhere">
         <where>
-            <choose>
-                <when test="locale.getLanguage().equals('ru')">`name_ru` like concat(#{startName}, '%')</when>
-                <otherwise>`name_uk` like concat(#{startName}, '%')</otherwise>
-            </choose>
+            `name` like concat(#{object.name}, '%')
         </where>
     </sql>
 
-    <select id="selectOrganizationTypes" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultMap="organizationTypeResultMap">
+    <select id="selectOrganizationTypes" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultMap="organizationTypeResultMap">
         select * from `organization_type` <include refid="selectOrganizationTypesWhere"/>
-        order by
-        <choose><when test="locale.getLanguage().equals('ru')">`name_ru`</when><otherwise>`name_uk`</otherwise></choose>
-        <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-        limit #{first}, #{count}
+        order by ${sortProperty}
+            <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+            <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
     </select>
 
-    <sql id="selectOrganizationTypeWhere">
-        <where>
-            <choose>
-                <when test="locale.getLanguage().equals('ru')">`name_ru` like #{startName}</when>
-                <otherwise>`name_uk` like #{startName}</otherwise>
-            </choose>
-        </where>
-    </sql>
-
-    <select id="isOrganizationTypeExist" parameterType="org.complitex.flexbuh.common.entity.NameFilter" resultType="boolean">
-        select count(*) > 0 from `organization_type` <include refid="selectOrganizationTypeWhere"/>
+    <select id="isOrganizationTypeExist" parameterType="string" resultType="boolean">
+        select count(*) > 0 from `organization_type` where `name` like #{startName}
     </select>
     
 </mapper>

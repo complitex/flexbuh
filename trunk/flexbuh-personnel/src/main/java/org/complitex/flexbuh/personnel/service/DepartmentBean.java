@@ -16,9 +16,13 @@ import java.util.Map;
  *         Date: 01.03.12 15:49
  */
 @Stateless
-public class DepartmentBean extends AbstractBean {
+public class DepartmentBean extends TemporalDomainObjectBean<Department> {
 
     public static final String NS = DepartmentBean.class.getName();
+
+    public DepartmentBean() {
+        super(NS);
+    }
 
     @Transactional
     public void save(Department department) {
@@ -60,14 +64,6 @@ public class DepartmentBean extends AbstractBean {
                 update(childDepartment);
             }
         }
-    }
-
-    public Department getDepartment(Long id) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("id", id);
-        params.put("currentDate", new Date());
-
-        return (Department) sqlSession().selectOne(NS + ".selectCurrentDepartmentById", params);
     }
 
     public List<Department> getDepartments(DepartmentFilter filter) {

@@ -41,7 +41,7 @@ public class DepartmentEntityTestPage extends WebPage {
         organization.setName("test organization");
         organization.setEmail("test@test.ru");
         organization.setEntryIntoForceDate(new Date());
-        organizationBean.create(organization, getLocale());
+        organizationBean.create(organization);
 
         Department department = new Department();
         department.setOrganization(organization);
@@ -61,7 +61,7 @@ public class DepartmentEntityTestPage extends WebPage {
         departmentBean.update(department);
         log.debug("update department: {}", department);
 
-        log.debug("Select department by id: {}", departmentBean.getDepartment(department.getId()));
+        log.debug("Select department by id: {}", departmentBean.getTDObject(department.getId()));
         log.debug("Select all departments: {}", departmentBean.getDepartments(null));
 
         OrganizationFilter filter = new OrganizationFilter();

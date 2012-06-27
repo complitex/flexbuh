@@ -230,7 +230,7 @@ public class OrganizationList extends TemplatePage {
                     for (Map.Entry<Long, IModel<Boolean>> select : selectMap.entrySet()) {
                         if (select.getValue().getObject()) {
                             Long id = select.getKey();
-                            Organization organization = organizationBean.getOrganization(id);
+                            Organization organization = organizationBean.getTDObject(id);
                             organizationBean.deleteOrganization(organization);
 
                             log.debug("Удаление организации", new Event(EventCategory.REMOVE, organization, null));

@@ -310,7 +310,7 @@ public class DepartmentTreePanel extends Panel {
             }
 
             private Department getDepartmentById(Long departmentId) throws ObjectNotFoundException {
-                Department department = departmentBean.getDepartment(departmentId);
+                Department department = departmentBean.getTDObject(departmentId);
                 if (department != null) {
                     return department;
                 }
