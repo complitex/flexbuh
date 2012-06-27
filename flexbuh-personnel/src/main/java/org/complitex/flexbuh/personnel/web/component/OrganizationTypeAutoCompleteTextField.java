@@ -34,7 +34,12 @@ public class OrganizationTypeAutoCompleteTextField extends AutoCompleteTextField
     }
 
     @Override
-    protected List<OrganizationType> getLocalizedDomainObjects(String input, Locale locale) {
-        return organizationTypeBean.getOrganizationTypes(input, locale);
+    protected List<OrganizationType> getDomainObjects(String input, Locale locale) {
+        return organizationTypeBean.getOrganizationTypes(input);
+    }
+
+    @Override
+    protected String getDomainObjectName(OrganizationType object, Locale locale) {
+        return object.getName();
     }
 }

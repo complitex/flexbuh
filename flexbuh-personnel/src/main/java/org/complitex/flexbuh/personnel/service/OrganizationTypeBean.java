@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.service;
 
+import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.LocalizedDomainObject;
 import org.complitex.flexbuh.personnel.entity.OrganizationType;
 import org.complitex.flexbuh.personnel.entity.OrganizationTypeFilter;
@@ -22,27 +23,17 @@ public class OrganizationTypeBean extends AbstractBean {
     public static final int SIZE = 10;
 
     @Transactional
-    public void create(String type, Locale locale) {
-        if (type != null && !isOrganizationTypeExist(type, locale)) {
-            OrganizationType organizationType = new OrganizationType();
-            setName(organizationType, type, locale);
-            sqlSession().insert(NS + ".insertOrganizationType", organizationType);
+    public void create(String type) {
+        if (type != null && !isOrganizationTypeExist(type)) {
+            sqlSession().insert(NS + ".insertOrganizationType", type);
         }
     }
 
-    public List<OrganizationType> getOrganizationTypes(String start, Locale locale) {
-        return sqlSession().selectList(NS + ".selectOrganizationTypes", new OrganizationTypeFilter(0, SIZE, locale, start));
+    public List<OrganizationType> getOrganizationTypes(String start) {
+        return sqlSession().selectList(NS + ".selectOrganizationTypes", FilterWrapper.of(new OrganizationType(start), 0, SIZE));
     }
 
-    public boolean isOrganizationTypeExist(String start, Locale locale) {
-        return (Boolean)sqlSession().selectOne(NS + ".isOrganizationTypeExist", new OrganizationTypeFilter(0, SIZE, locale, start));
-    }
-
-    private void setName(LocalizedDomainObject ldo, String name, Locale locale) {
-        if (locale.getLanguage().equals("ru")) {
-            ldo.setNameRu(name);
-            return;
-        }
-        ldo.setNameUk(name);
+    public boolean isOrganizationTypeExist(String start) {
+        return (Boolean)sqlSession().selectOne(NS + ".isOrganizationTypeExist", start);
     }
 }

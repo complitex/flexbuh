@@ -2,12 +2,10 @@ package org.complitex.flexbuh.personnel.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -16,7 +14,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.common.entity.Address;
@@ -27,10 +24,10 @@ import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
-import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
+import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
 import org.complitex.flexbuh.personnel.web.component.*;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
@@ -39,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.MessageFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +44,7 @@ import java.util.List;
  *         Date: 05.03.12 16:55
  */
 @AuthorizeInstantiation(SecurityRole.PERSONAL_MANAGER)
-public class OrganizationEdit extends FormTemplatePage {
+public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
     private final static Logger log = LoggerFactory.getLogger(OrganizationEdit.class);
 
@@ -85,10 +81,6 @@ public class OrganizationEdit extends FormTemplatePage {
 
     private TemporalDomainObjectUpdate<Organization> historyUpdate;
 
-    private TemporalHistoryPanel<Organization> currentEnabledPanel;
-
-    private boolean inHistoryContainer = false;
-
     protected OrganizationEdit() {
         organization = new Organization();
         organization.setJuridicalAddress(new Address());
@@ -112,9 +104,9 @@ public class OrganizationEdit extends FormTemplatePage {
         Long version = pageParameters.get(PARAM_ORGANIZATION_VERSION).toOptionalLong();
 
         if (version != null) {
-            organization = organizationBean.getOrganization(id, version);
+            organization = organizationBean.getTDObject(id, version);
         } else {
-            organization = organizationBean.getOrganization(id);
+            organization = organizationBean.getTDObject(id);
         }
 
 
@@ -136,7 +128,7 @@ public class OrganizationEdit extends FormTemplatePage {
     protected  void init() {
 
         Organization lastOrganization = organization.getId() == null? null:
-                organizationBean.getOrganizationLastInHistory(organization.getId());
+                organizationBean.getTDObjectLastInHistory(organization.getId());
 
         boolean deleted = lastOrganization != null && lastOrganization.isDeleted();
 
@@ -219,7 +211,7 @@ public class OrganizationEdit extends FormTemplatePage {
                 }
 
                 target.add(form);
-                //target.add(organizationHistoryPanel);
+                target.add(organizationHistoryPanel);
                 //panel.update(target, organization);
                 Date currentDate;
                 if (organization.isDeleted()) {
@@ -310,20 +302,14 @@ public class OrganizationEdit extends FormTemplatePage {
 
         organizationHistoryPanel =
                 new TemporalHistoryIncrementalPanel<Organization>("organization_history", organization, historyUpdate) {
-
-            @Override
-            protected Organization getTemporalDomainObject(long id, long version) {
-                return organizationBean.getOrganization(id, version);
-            }
-
-            @Override
-            protected Organization getTemporalDomainObjectLastInHistory(Organization object) {
-                return organizationBean.getOrganizationLastInHistory(object.getId());
-            }
-        };
+                    @Override
+                    protected TemporalDomainObjectBean<Organization> getTDObjectBean() {
+                        return organizationBean;
+                    }
+                };
         organizationHistoryPanel.setOutputMarkupId(true);
         add(organizationHistoryPanel);
-
+        /*
         form.add(new AjaxEventBehavior("onmouseover") {
             protected void onEvent(final AjaxRequestTarget target) {
                 if (!inHistoryContainer && currentEnabledPanel != null && currentEnabledPanel.isVisible()) {
@@ -332,6 +318,7 @@ public class OrganizationEdit extends FormTemplatePage {
                 }
             }
         });
+        */
 
         /*
         add(new TemporalHistoryList<Organization>("organization_history", organization) {
@@ -372,11 +359,11 @@ public class OrganizationEdit extends FormTemplatePage {
         boolean createOrganization = true;
         Organization oldOrganization = null;
         if (organization.getId() != null) {
-            oldOrganization = organizationBean.getOrganization(organization.getId());
+            oldOrganization = organizationBean.getTDObject(organization.getId());
             createOrganization = false;
         }
         organization.setEntryIntoForceDate(new Date()); // TODO modification by current date
-        organizationBean.save(organization, getLocale());
+        organizationBean.save(organization);
         if (createOrganization) {
             log.debug("Создание организации", new Event(EventCategory.CREATE, organization));
         } else {
@@ -522,78 +509,23 @@ public class OrganizationEdit extends FormTemplatePage {
         }
     }
 
-    private void addHistoryFieldToForm(Form<Organization> form, final String fieldName,
-                                       final Component field) {
-        final TemporalHistoryPanel<Organization> historyPanel =
-            new TemporalHistoryPanel<Organization>(fieldName + "_history",
-                    organization, historyUpdate) {
+    @Override
+    protected Organization getTDObject() {
+        return organization;
+    }
 
-            @Override
-            protected Organization getTemporalDomainObjectPreviousInHistory(Organization object) {
-                return organizationBean.getOrganizationPreviewInHistoryByField(object.getId(),
-                        object.getVersion(), fieldName);
-            }
+    @Override
+    protected Organization getOldTDObject() {
+        return oldOrganization;
+    }
 
-            @Override
-            protected Organization getTemporalDomainObjectNextInHistory(Organization object) {
-                return organizationBean.getOrganizationNextInHistoryByField(object.getId(),
-                        object.getVersion(), fieldName);
-            }
+    @Override
+    protected TemporalDomainObjectUpdate<Organization> getTDObjectUpdate() {
+        return historyUpdate;
+    }
 
-            @Override
-            protected Organization getTemporalDomainObjectStartInHistory(Organization object) {
-                return organizationBean.getOrganization(object.getId(), 1);
-            }
-
-            @Override
-            protected Organization getTemporalDomainObjectLastInHistory(Organization organization) {
-                return organizationBean.getOrganizationLastInHistory(organization.getId());
-            }
-        };
-        historyPanel.setOutputMarkupId(true);
-        historyPanel.setVisible(false);
-        historyPanel.setOutputMarkupPlaceholderTag(true);
-
-        WebMarkupContainer container = new WebMarkupContainer(fieldName + "_container");
-
-        container.add(new AjaxEventBehavior("onmouseover") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                log.debug("mouse on container");
-                if (!inHistoryContainer) {
-                    log.debug("mouse on container first");
-                    if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
-                        currentEnabledPanel.setVisible(false);
-                        target.add(currentEnabledPanel);
-                    }
-                    historyPanel.setVisible(true);
-                    currentEnabledPanel = historyPanel;
-                    target.add(historyPanel);
-                }
-                inHistoryContainer = true;
-            }
-        }).add(new AjaxEventBehavior("onmouseout") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                inHistoryContainer = false;
-            }
-        });
-
-        container.add(field);
-        container.add(historyPanel);
-        form.add(container);
-
-        field.add(new AttributeModifier("class", "") {
-            @Override
-            protected String newValue(String currentValue, String replacementValue) {
-                if (oldOrganization == null) {
-                    return "";
-                }
-                PropertyModel<String> propertyModel1 = new PropertyModel<>(oldOrganization, field.getId());
-                PropertyModel<String> propertyModel2 = new PropertyModel<>(organization, field.getId());
-                return StringUtils.equals(propertyModel1.getObject(), propertyModel2.getObject()) ? "" : "edited";
-            }
-        });
-
-        //form.add(field);
-        //form.add(historyPanel);
+    @Override
+    protected TemporalDomainObjectBean<Organization> getTDObjectBean() {
+        return organizationBean;
     }
 }

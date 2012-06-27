@@ -9,10 +9,10 @@
         <result column="code" property="code"/>
 
         <association property="organization" column="{id=organization_id, currentDate=current_date}"
-                     select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentOrganizationById"/>
+                     select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentTDObjectById"/>
 
         <association property="masterDepartment" column="{id=master_id, currentDate=current_date}"
-                     select="selectCurrentDepartmentById"/>
+                     select="selectCurrentTDObjectById"/>
 
         <collection property="childDepartments" column="{masterId=id, currentDate=current_date}"
                     select="selectCurrentChildDepartmentsByMasterId"/>
@@ -112,7 +112,7 @@
 
     </update>
 
-    <select id="selectCurrentDepartmentById" parameterType="map" resultMap="departmentResultMap">
+    <select id="selectCurrentTDObjectById" parameterType="map" resultMap="departmentResultMap">
         select *, #{currentDate} as `current_date` from `department` where `id` = #{id} and
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
     </select>
@@ -120,6 +120,10 @@
     <select id="selectCurrentChildDepartmentsByMasterId" parameterType="map" resultMap="departmentResultMap">
         select *, #{currentDate} as `current_date` from `department` where `master_id` = #{masterId} and
          <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+    </select>
+
+    <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="departmentResultMap">
+        select *, `entry_into_force_date` as `current_date` from `department` where `id` = #{id} and `version` = #{version}
     </select>
 
     <select id="selectCurrentDepartments" parameterType="org.complitex.flexbuh.personnel.entity.DepartmentFilter" resultMap="departmentResultMap">
@@ -136,6 +140,39 @@
     <select id="selectCurrentDepartmentsCount" parameterType="org.complitex.flexbuh.personnel.entity.DepartmentFilter" resultMap="departmentResultMap">
         select *, #{currentDate} as `current_date` from `department` where
         <include refid="filter"/>
+    </select>
+
+    <select id="selectTDObjectLastInHistory" parameterType="long" resultMap="departmentResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `department`d
+        where d.`id` = #{id} and `version` =
+        (select max(`version`) from `department` where `id` = #{id})
+    </select>
+
+    <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="departmentResultMap">
+        select d.*, `entry_into_force_date` as `current_date` from `department` d
+        where d.`id` = #{id} and `version` = (select max(d1.`version`) from `department` d1
+        inner join `department` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null) or (d1.`version` = 1 and d2.`version` = 1))
+              and #{version} > d1.`version`)
+        order by `version`
+    </select>
+
+    <select id="selectTDObjectNextInHistoryByField" parameterType="map" resultMap="departmentResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `department` d
+        where d.`id` = #{id} and `version` = (select min(d1.`version`) from `department` d1
+        inner join `department` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null or
+              d1.`deleted` or d1.`completion_date` is null))
+            and d1.`version` > #{version})
+        order by `version`
     </select>
 
 </mapper>

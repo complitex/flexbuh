@@ -1,26 +1,35 @@
 package org.complitex.flexbuh.personnel.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.datetime.PatternDateConverter;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.convert.IConverter;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.personnel.entity.Department;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
+import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
 import org.complitex.flexbuh.personnel.web.component.DepartmentTreePanel;
-import org.odlabs.wiquery.ui.datepicker.DatePicker;
+import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
+import org.complitex.flexbuh.personnel.web.component.TemporalHistoryIncrementalPanel;
+import org.complitex.flexbuh.personnel.web.component.TemporalHistoryPanel;
+import org.complitex.flexbuh.personnel.web.component.TemporalObjectEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +42,7 @@ import java.util.Date;
  *         Date: 26.03.12 18:48
  */
 @AuthorizeInstantiation(SecurityRole.PERSONAL_MANAGER)
-public class DepartmentEdit extends FormTemplatePage {
+public class DepartmentEdit extends TemporalObjectEdit<Department> {
 
     private final static Logger log = LoggerFactory.getLogger(DepartmentEdit.class);
 
@@ -50,9 +59,15 @@ public class DepartmentEdit extends FormTemplatePage {
 
     private Department department;
 
+    private Department oldDepartment = null;
+
     private DepartmentTreePanel panel;
 
-    private Form form;
+    private Form<Department> form;
+
+    private TemporalHistoryIncrementalPanel<Department> departmentHistoryPanel;
+
+    private TemporalDomainObjectUpdate<Department> historyUpdate;
 
     private DepartmentEdit() {
     }
@@ -95,7 +110,7 @@ public class DepartmentEdit extends FormTemplatePage {
         Long id = pageParameters.get(PARAM_DEPARTMENT_ID).toOptionalLong();
         if (id != null) {
             log.debug("Start load department");
-            department = departmentBean.getDepartment(id);
+            department = departmentBean.getTDObject(id);
             log.debug("Loaded department: {}", department);
             if (department != null) {
                 init();
@@ -108,7 +123,7 @@ public class DepartmentEdit extends FormTemplatePage {
 
         id = pageParameters.get(PARAM_MASTER_DEPARTMENT_ID).toOptionalLong();
         if (id != null) {
-            Department masterDepartment = departmentBean.getDepartment(id);
+            Department masterDepartment = departmentBean.getTDObject(id);
             if (masterDepartment != null) {
                 this.department = new Department();
                 this.department.setOrganization(masterDepartment.getOrganization());
@@ -124,7 +139,7 @@ public class DepartmentEdit extends FormTemplatePage {
 
         id = pageParameters.get(OrganizationEdit.PARAM_ORGANIZATION_ID).toOptionalLong();
         if (id != null) {
-            Organization organization = organizationBean.getOrganization(id);
+            Organization organization = organizationBean.getTDObject(id);
             if (organization != null) {
                 this.department = new Department();
                 this.department.setOrganization(organization);
@@ -144,13 +159,9 @@ public class DepartmentEdit extends FormTemplatePage {
 
         add(new FeedbackPanel("messages"));
 
-        form = new Form("form");
+        form = new Form<>("form", new CompoundPropertyModel<>(department));
         form.setOutputMarkupId(true);
         add(form);
-
-        // Название отдела
-        form.add(new TextField<>("name", new PropertyModel<String>(department, "name")));
-        form.add(new TextField<>("code", new PropertyModel<String>(department, "code")));
 
         // Дата создания подразделения
         /*
@@ -195,6 +206,51 @@ public class DepartmentEdit extends FormTemplatePage {
                 setResponsePage(OrganizationList.class);
             }
         }.add(new AttributeModifier("value", department.getId() == null ? getString("cancel") : getString("go_to_organization"))));
+
+        historyUpdate = new TemporalDomainObjectUpdate<Department>() {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                super.onUpdate(target);
+
+                oldDepartment = department;
+                department = getObject();
+                form.setModel(new CompoundPropertyModel<>(department));
+
+                target.add(form);
+                target.add(departmentHistoryPanel);
+                //panel.update(target, organization);
+                Date currentDate;
+                if (department.isDeleted()) {
+                    currentDate = department.getCompletionDate();
+                } else if (department.getCompletionDate() != null) {
+                    currentDate = department.getEntryIntoForceDate();
+                } else {
+                    currentDate = new Date();
+                }
+
+                panel.updateState(currentDate, isEnabledAction());
+                target.add(panel);
+            }
+        };
+
+        historyUpdate.setObject(department);
+
+        // Название отдела
+        addHistoryFieldToForm(form, "name", new TextField<>("name"));
+        addHistoryFieldToForm(form, "code", new TextField<>("code"));
+
+        departmentHistoryPanel = new TemporalHistoryIncrementalPanel<Department>("department_history", department, historyUpdate) {
+            @Override
+            protected TemporalDomainObjectBean<Department> getTDObjectBean() {
+                return departmentBean;
+            }
+        };
+        departmentHistoryPanel.setOutputMarkupId(true);
+        add(departmentHistoryPanel);
+    }
+
+    private boolean isEnabledAction() {
+        return department.getId() == null || department.getCompletionDate() == null;
     }
 
     private class SaveDepartmentButton extends Button {
@@ -226,6 +282,12 @@ public class DepartmentEdit extends FormTemplatePage {
                 form.add(panel);
             }
 
+            if (newObject) {
+                log.debug("Создание подразделения", new Event(EventCategory.CREATE, department));
+            } else {
+                log.debug("Редактирование подразделения", new Event(EventCategory.CREATE, oldDepartment, department));
+            }
+
             /*
             PageParameters parameters = new PageParameters();
             parameters.set(PARAM_DEPARTMENT_ID, department.getId());
@@ -240,5 +302,25 @@ public class DepartmentEdit extends FormTemplatePage {
             }
             return true;
         }
+    }
+
+    @Override
+    protected Department getTDObject() {
+        return department;
+    }
+
+    @Override
+    protected Department getOldTDObject() {
+        return oldDepartment;
+    }
+
+    @Override
+    protected TemporalDomainObjectUpdate<Department> getTDObjectUpdate() {
+        return historyUpdate;
+    }
+
+    @Override
+    protected TemporalDomainObjectBean<Department> getTDObjectBean() {
+        return departmentBean;
     }
 }

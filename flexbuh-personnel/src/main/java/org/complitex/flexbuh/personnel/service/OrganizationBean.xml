@@ -124,7 +124,7 @@
 
     </update>
 
-    <select id="selectCurrentOrganizationById" parameterType="map" resultMap="organizationResultMap">
+    <select id="selectCurrentTDObjectById" parameterType="map" resultMap="organizationResultMap">
         select o.*,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
@@ -135,7 +135,7 @@
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
     </select>
 
-    <select id="selectOrganizationByIdAndVersion" parameterType="map" resultMap="organizationResultMap">
+    <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="organizationResultMap">
         select o.*,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
@@ -183,7 +183,7 @@
         <include refid="filter"/>
     </select>
     
-    <select id="selectOrganizationLastInHistory" parameterType="long" resultMap="organizationResultMap">
+    <select id="selectTDObjectLastInHistory" parameterType="long" resultMap="organizationResultMap">
         select o.*,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
@@ -194,7 +194,7 @@
         (select max(`version`) from `organization` where `id` = #{id})
     </select>
 
-    <select id="selectOrganizationPreviewInHistoryByField" parameterType="map" resultMap="organizationResultMap">
+    <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="organizationResultMap">
         select o.*,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>
@@ -211,7 +211,7 @@
         order by `version`
     </select>
 
-    <select id="selectOrganizationNextInHistoryByField" parameterType="map" resultMap="organizationResultMap">
+    <select id="selectTDObjectNextInHistoryByField" parameterType="map" resultMap="organizationResultMap">
         select o.*,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>

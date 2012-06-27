@@ -179,8 +179,7 @@ DROP TABLE IF EXISTS `organization_type`;
 
 CREATE TABLE `organization_type` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `name_uk` VARCHAR(255),
-  `name_ru` VARCHAR(255),
+  `name` VARCHAR(255),
   PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;

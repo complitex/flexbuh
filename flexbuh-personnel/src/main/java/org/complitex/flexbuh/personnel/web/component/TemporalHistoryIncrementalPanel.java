@@ -1,6 +1,8 @@
 package org.complitex.flexbuh.personnel.web.component;
 
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
+import org.complitex.flexbuh.personnel.entity.Department;
+import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
 
 /**
  * @author Pavel Sknar
@@ -13,20 +15,29 @@ public abstract class TemporalHistoryIncrementalPanel<T extends TemporalDomainOb
     }
 
     @Override
-    protected T getTemporalDomainObjectPreviousInHistory(T object) {
+    protected T getTDObjectPreviousInHistory(T object) {
         return getTemporalDomainObject(object.getId(), object.getVersion() - 1);
     }
 
     @Override
-    protected T getTemporalDomainObjectNextInHistory(T object) {
+    protected T getTDObjectNextInHistory(T object) {
         return getTemporalDomainObject(object.getId(), object.getVersion() + 1);
     }
 
     @Override
-    protected T getTemporalDomainObjectStartInHistory(T object) {
+    protected T getTDObjectStartInHistory(T object) {
         return getTemporalDomainObject(object.getId(), 1);
     }
 
-    protected abstract T getTemporalDomainObject(long id, long version);
+    @Override
+    protected T getTDObjectLastInHistory(T object) {
+        return getTDObjectBean().getTDObjectLastInHistory(object.getId());
+    }
+
+    protected T getTemporalDomainObject(long id, long version) {
+        return getTDObjectBean().getTDObject(id, version);
+    }
+
+    protected abstract TemporalDomainObjectBean<T> getTDObjectBean();
 
 }
