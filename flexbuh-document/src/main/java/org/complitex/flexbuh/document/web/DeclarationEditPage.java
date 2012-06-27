@@ -240,7 +240,6 @@ public class DeclarationEditPage extends TemplatePage{
 
                     setResponsePage(DeclarationList.class, pageParameters);
 
-
                     log.info("Документ сохранен", new Event(isEdit ? EDIT : CREATE, oldDeclaration, declaration));
                 }else {
                     profileDialog.setAutoOpen(true);
