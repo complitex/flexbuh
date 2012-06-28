@@ -75,7 +75,7 @@
         <include refid="userFilter"/>
         limit #{first}, #{count}
         ) as uc
-        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `usergroup` gc on uc.`login` = gc.`login` and gc.`group_name` != 'AUTHORIZED'
         left join `address` address1 on address1.`id` = uc.`address_id`
     </select>
 
@@ -87,7 +87,7 @@
     <select id="selectUserBySessionId" parameterType="long" resultMap="userResultMap">
         select <include refid="userColumns"/>
         from `user` uc
-        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `usergroup` gc on uc.`login` = gc.`login` and gc.`group_name` != 'AUTHORIZED'
         left join `address` address1 on address1.`id` = uc.`address_id`
         where uc.`session_id` = #{sessionId}
     </select>
@@ -95,7 +95,7 @@
     <select id="selectUserById" parameterType="long" resultMap="userResultMap">
         select <include refid="userColumns"/>
         from `user` uc
-        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `usergroup` gc on uc.`login` = gc.`login` and gc.`group_name` != 'AUTHORIZED'
         left join `address` address1 on address1.`id` = uc.`address_id`
         where uc.`id` = #{id}
         order by gc.`group_name`
@@ -104,7 +104,7 @@
     <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
         select <include refid="userColumns"/>
         from `user` uc
-        left join `usergroup` gc on uc.`login` = gc.`login`
+        left join `usergroup` gc on uc.`login` = gc.`login` and gc.`group_name` != 'AUTHORIZED'
         left join `address` address1 on address1.`id` = uc.`address_id`
         where uc.`login` = #{login}
         order by gc.`group_name`
@@ -125,7 +125,7 @@
 
     <select id="selectSharedUsers" parameterType="long" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
-            left join `usergroup` gc on uc.`login` = gc.`login`
+            left join `usergroup` gc on uc.`login` = gc.`login` and gc.`group_name` != 'AUTHORIZED'
             left join `address` address1 on address1.`id` = uc.`address_id`
             left join `share` s on (s.`shared_to_session_id` = uc.`session_id`)
         where s.`session_id` = #{sessionId}
@@ -133,7 +133,7 @@
 
     <select id="findUser" parameterType="string" resultMap="userResultMap">
         select <include refid="userColumns"/> from `user` uc
-            left join `usergroup` gc on uc.`login` = gc.`login`
+            left join `usergroup` gc on uc.`login` = gc.`login` and gc.`group_name` != 'AUTHORIZED'
             left join `address` address1 on address1.`id` = uc.`address_id`
         where  upper(uc.`login`) = upper(#{s}) or  upper(uc.`email`) = upper(#{s})
           or upper(concat_ws(' ', uc.last_name, uc.first_name, uc.middle_name)) = upper(#{s})

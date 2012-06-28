@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.complitex.flexbuh.common.entity.user.User;
 import org.complitex.flexbuh.common.mybatis.Transactional;
+import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.common.service.AddressBean;
 import org.slf4j.Logger;
@@ -79,10 +80,13 @@ public class UserBean extends AbstractBean {
 
         sqlSession().insert(NS + ".insertUser", user);
 
-        //сохранение привилегий
+        // сохранение привилегий
         Map<String, String> newRole = Maps.newHashMap();
+        // минимальные привилегии
         newRole.put("login", user.getLogin());
-        for(String role : user.getRoles()){
+        newRole.put("role", SecurityRole.AUTHORIZED);
+        sqlSession().insert(NS + ".insertUserRole", newRole);
+        for(String role : user.getRoles()) {
             newRole.put("role", role);
             sqlSession().insert(NS + ".insertUserRole", newRole);
         }

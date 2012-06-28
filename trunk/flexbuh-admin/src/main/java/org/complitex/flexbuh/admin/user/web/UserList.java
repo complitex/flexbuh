@@ -162,7 +162,7 @@ public class UserList extends TemplatePage {
      */
     private String getDisplayRoleNames(User user) {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            return getString("blocked");
+            return "";
         }
 
         StringBuilder sb = new StringBuilder();
