@@ -68,19 +68,24 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `position`;
 
 CREATE TABLE `position` (
-  `id` BIGINT(20) NOT NULL,d
+  `id` BIGINT(20) NOT NULL,
   `version` BIGINT(20) NOT NULL,
   `deleted` BOOLEAN,
   `entry_into_force_date` DATETIME NOT NULL,
   `completion_date` DATETIME,
   `name` VARCHAR(255) NOT NULL,
   `code` VARCHAR(255),
-  `payment_id` BIGINT
-  `schedule_id` BIGINT(20),
+  `payment_id` BIGINT,
   `description` VARCHAR(1000),
+  `schedule_id` BIGINT(20),
+  `organization_id` BIGINT(20),
+  `department_id` BIGINT(20),
+  `master_position_id` BIGINT(20),
   PRIMARY KEY (`id`, `version`),
-  KEY `key_position__schedule_id` (`schedule_id`),
-  CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`)
+  CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
+  CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
+  CONSTRAINT `fk_position__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
+  CONSTRAINT `fk_position__master_position` FOREIGN KEY (`master_position_id`) REFERENCES `position` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -133,10 +138,6 @@ CREATE TABLE `personnel` (
   `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
   `comment` VARCHAR(1000),
   PRIMARY KEY (`id`),
-  KEY `key_personnel__department_id` (`department_id`),
-  KEY `key_personnel__position_id` (`position_id`),
-  KEY `key_personnel__schedule_id` (`schedule_id`),
-  KEY `key_personnel__payment_id` (`payment_id`),
   CONSTRAINT `fk_personnel__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `fk_personnel__position` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
   CONSTRAINT `fk_personnel__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
