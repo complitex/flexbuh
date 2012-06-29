@@ -38,6 +38,13 @@ ul.tree {
 	border: 1px solid #DDDDDD;
 }
 
+input, select
+{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
 #Header {
     height: 85px;
     vertical-align: top;
