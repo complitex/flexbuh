@@ -67,11 +67,11 @@ public class DocumentBean extends AbstractBean implements ICrudBean<Document>{
         return sqlSession().selectList(NS + ".selectLinkedDocuments", filter);
     }
 
-    public List<Document> getJuridicalDocuments(){
-        return sqlSession().selectList(NS + ".selectJuridicalDocuments");
+    public List<Document> getJuridicalDocuments(String filter){
+        return sqlSession().selectList(NS + ".selectJuridicalDocuments", filter);
     }
 
-    public List<Document> getPhysicalDocuments(){
-        return sqlSession().selectList(NS + ".selectPhysicalDocuments");
+    public List<Document> getPhysicalDocuments(String filter){
+        return sqlSession().selectList(NS + ".selectPhysicalDocuments", filter);
     }
 }

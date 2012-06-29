@@ -10,7 +10,7 @@
         <result property="parentCDoc" column="parent_c_doc"/>
         <result property="parentCDocSub" column="parent_c_doc_sub"/>
     </resultMap>
-    
+
     <resultMap id="linkedDocumentResultMap" type="org.complitex.flexbuh.common.entity.dictionary.Document" extends="documentResultMap">
         <collection property="documentVersions" ofType="org.complitex.flexbuh.common.entity.dictionary.DocumentVersion"
                     column="{cDoc=c_doc, cDocSub=c_doc_sub}"
@@ -71,12 +71,18 @@
         order by d.`c_doc`, d.c_doc_sub
     </select>
 
-    <select id="selectJuridicalDocuments" resultMap="linkedDocumentResultMap">
-        select * from `document` where `c_doc` like 'J%' order by `c_doc`, `c_doc_sub`
+    <select id="selectJuridicalDocuments" resultMap="linkedDocumentResultMap" parameterType="string">
+        select * from `document` where `c_doc` like 'J%'
+          and (#{filter} = '' or upper(concat(`c_doc`, `c_doc_sub`)) like upper(concat(#{filter},'%'))
+            or upper(`name_uk`) like upper(concat('%', #{filter}, '%')))
+        order by `c_doc`, `c_doc_sub`
     </select>
 
-    <select id="selectPhysicalDocuments" resultMap="linkedDocumentResultMap">
-        select * from `document` where `c_doc` like 'F%' order by `c_doc`, `c_doc_sub`
+    <select id="selectPhysicalDocuments" resultMap="linkedDocumentResultMap" parameterType="string">
+        select * from `document` where `c_doc` like 'F%'
+            and (#{filter} = '' or upper(concat(`c_doc`, `c_doc_sub`)) like upper(concat(#{filter},'%'))
+             or upper(`name_uk`) like upper(concat('%', #{filter}, '%')))
+        order by `c_doc`, `c_doc_sub`
     </select>
 
     <select id="selectDocumentId" parameterType="org.complitex.flexbuh.common.entity.dictionary.Document"
