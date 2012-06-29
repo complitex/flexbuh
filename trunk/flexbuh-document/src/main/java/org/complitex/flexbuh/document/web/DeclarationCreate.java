@@ -157,6 +157,10 @@ public class DeclarationCreate extends FormTemplatePage{
         document.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
+                declaration.getHead().setPeriodMonth(null);
+                declaration.getHead().setPeriodType(null);
+                declaration.getHead().setPeriodYear(null);
+
                 target.add(periodPanel);
             }
         });
@@ -167,8 +171,12 @@ public class DeclarationCreate extends FormTemplatePage{
         filter.add(new AjaxFormComponentUpdatingBehavior("onkeyup") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
+                declaration.setDocument(null);
+                declaration.getHead().setPeriodMonth(null);
+                declaration.getHead().setPeriodType(null);
+                declaration.getHead().setPeriodYear(null);
+
                 target.add(document);
-                target.add(periodPanel);
             }
         });
 

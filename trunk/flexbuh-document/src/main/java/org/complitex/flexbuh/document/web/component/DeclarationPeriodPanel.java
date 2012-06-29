@@ -104,14 +104,17 @@ public class DeclarationPeriodPanel extends Panel {
 
                             return Ordering.natural().sortedCopy(months);
                         }else {
-                            switch (declaration.getHead().getPeriodType()){
-                                case 1: return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-                                case 2: return Arrays.asList(3, 6, 9, 12);
-                                case 3: return Arrays.asList(6);
-                                case 4: return Arrays.asList(9);
-                                case 5: return Arrays.asList(12);
-                                default: return Collections.emptyList();
+                            if (declaration.getHead().getPeriodType() != null) {
+                                switch (declaration.getHead().getPeriodType()){
+                                    case 1: return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+                                    case 2: return Arrays.asList(3, 6, 9, 12);
+                                    case 3: return Arrays.asList(6);
+                                    case 4: return Arrays.asList(9);
+                                    case 5: return Arrays.asList(12);
+                                }
                             }
+
+                            return Collections.emptyList();
                         }
                     }
                 }, new IChoiceRenderer<Integer>() {

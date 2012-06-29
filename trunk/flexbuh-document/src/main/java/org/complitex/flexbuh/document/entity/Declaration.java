@@ -272,10 +272,10 @@ public class Declaration implements ILongId, Serializable{
     public void setDocument(Document document) {
         this.document = document;
 
-        head.setCDoc(document.getCDoc());
-        head.setCDocSub(document.getCDocSub());
+        head.setCDoc(document != null ? document.getCDoc() : null);
+        head.setCDocSub(document != null ? document.getCDocSub() : null);
 
-        name = document.getNameUk();
+        name = document != null ? document.getNameUk() : null;
     }
 
     public void updateVersion(){
