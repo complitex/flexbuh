@@ -4,10 +4,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -124,6 +121,11 @@ public class DeclarationCreate extends FormTemplatePage{
         periodPanel.setOutputMarkupId(true);
         form.add(periodPanel);
 
+        //Фильтр
+        final TextField<String> filter = new TextField<>("filter", Model.of(""));
+        filter.setConvertEmptyInputStringToNull(false);
+        form.add(filter);
+
         //Отчетный документ
         final DropDownChoice document = new DropDownChoice<>("document",
                 new PropertyModel<Document>(declaration, "document"),
@@ -132,9 +134,9 @@ public class DeclarationCreate extends FormTemplatePage{
                     protected List<Document> load() {
                         switch (person.getModelObject()) {
                             case PHYSICAL_PERSON:
-                                return documentBean.getPhysicalDocuments();
+                                return documentBean.getPhysicalDocuments(filter.getModelObject());
                             default:
-                                return documentBean.getJuridicalDocuments();
+                                return documentBean.getJuridicalDocuments(filter.getModelObject());
                         }
                     }
                 },
@@ -160,6 +162,15 @@ public class DeclarationCreate extends FormTemplatePage{
         });
         document.add(new AjaxIndicatorAppender());
         form.add(document);
+
+        //Updating Filter
+        filter.add(new AjaxFormComponentUpdatingBehavior("onkeyup") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(document);
+                target.add(periodPanel);
+            }
+        });
 
         person.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
