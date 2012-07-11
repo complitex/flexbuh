@@ -22,6 +22,6 @@ public class FormTemplatePage extends TemplatePage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.renderCSSReference(new PackageResourceReference(FormTemplatePage.class, "FormTemplatePage.js"));
+        response.renderJavaScriptReference(new PackageResourceReference(FormTemplatePage.class, "FormTemplatePage.js"));
     }
 }
