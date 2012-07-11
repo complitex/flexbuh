@@ -12,6 +12,7 @@ import org.complitex.flexbuh.common.entity.template.TemplateXMLType;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.TemplateXMLBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.slf4j.Logger;
@@ -32,10 +33,10 @@ public class TemplateXMLList extends TemplatePage {
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
 	@EJB
-    TemplateXMLBean templateXMLBean;
+    private TemplateXMLBean templateXMLBean;
 
 	public TemplateXMLList(PageParameters parameters) {
-        final TemplateXMLType type = TemplateXMLType.valueOf(parameters.get("type").toString().toUpperCase());
+        final TemplateXMLType type = parameters.get("type").toEnum(TemplateXMLType.class);
 
         add(new Label("title", getString("title_" + type.name())));
 
@@ -62,9 +63,17 @@ public class TemplateXMLList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<TemplateXML> item) {
+                TemplateXML templateXML = item.getModelObject();
 
-                item.add(new Label("file_name", item.getModelObject().getName()));
-                item.add(new Label("upload_date", getStringDate(item.getModelObject().getUploadDate())));
+                item.add(new Label("file_name", templateXML.getName()));
+                item.add(new Label("upload_date", getStringDate(templateXML.getUploadDate())));
+
+
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("type", type);
+                pageParameters.add("name", templateXML.getName());
+
+                item.add(new BookmarkablePageLinkPanel<>("edit", getString("edit"), TemplateXMLEdit.class, pageParameters));
             }
         };
         form.add(dataView);
