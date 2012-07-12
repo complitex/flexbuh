@@ -485,7 +485,10 @@ public class DeclarationEditPanel extends Panel{
             }
 
             if (autoFill != null && !value.equals(autoFill.getValue())) {
-                autoFill.getDeclarationModel().setObject(value);
+                //Decimal2
+                String converted = autoFill.getConverter(String.class).convertToObject(value, getLocale());
+
+                autoFill.getDeclarationModel().setObject(converted);
                 target.add((Component)autoFill);
             }
         } catch (EvaluatorException e){

@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.document.web.component;
 
+import org.apache.wicket.util.convert.IConverter;
 import org.complitex.flexbuh.document.web.model.DeclarationStringModel;
 
 /**
@@ -10,4 +11,6 @@ public interface IDeclarationStringComponent{
     DeclarationStringModel getDeclarationModel();
     
     String getValue();
+
+    <C> IConverter<C> getConverter(Class<C> classType);
 }
