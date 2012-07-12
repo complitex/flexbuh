@@ -39,6 +39,18 @@ public class DeclarationTextField extends CssStyleTextField<String> implements I
                 case "DGdecimal2":
                 case "Decimal2Column":
                     return (IConverter<C>) new DecimalConverter(2);
+                case "DGdecimal3":
+                case "Decimal3Column":
+                    return (IConverter<C>) new DecimalConverter(3);
+                case "DGdecimal4":
+                case "Decimal4Column":
+                    return (IConverter<C>) new DecimalConverter(4);
+                case "DGdecimal5":
+                case "Decimal5Column":
+                    return (IConverter<C>) new DecimalConverter(5);
+                case "DGdecimal6":
+                case "Decimal6Column":
+                    return (IConverter<C>) new DecimalConverter(6);
             }
         }
 

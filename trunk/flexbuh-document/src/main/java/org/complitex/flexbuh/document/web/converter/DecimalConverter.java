@@ -14,7 +14,7 @@ public class DecimalConverter implements IConverter<String>{
     private DecimalFormat decimalFormat;
     
     public DecimalConverter(int scale) {
-        String pattern = "#.";
+        String pattern = "0.";
         
         for (int i = 0; i < scale; ++i){
             pattern += "0";
