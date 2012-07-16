@@ -6,12 +6,14 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Currency;
 import org.complitex.flexbuh.common.security.SecurityRole;
@@ -117,6 +119,14 @@ public class CurrencyList extends TemplatePage {
 
                 item.add(new Label("name_uk", currency.getNameUk()));
                 item.add(new Label("name_ru", currency.getNameRu()));
+
+
+                //edit
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("id", currency.getId());
+                pageParameters.add("type", "currency");
+
+                item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
             }
         };
         filterForm.add(dataView);
