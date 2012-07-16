@@ -11,8 +11,6 @@
                      handler="org.complitex.flexbuh.common.entity.PersonTypeHandler"/>
     </typeHandlers>
 
-    <objectFactory type="org.complitex.flexbuh.common.service.TemporalEntityObjectFactory"/>
-
     <environments default="local">
         <environment id="local">
             <transactionManager type="MANAGED"/>

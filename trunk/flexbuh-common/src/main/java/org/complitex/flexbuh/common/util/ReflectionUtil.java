@@ -1,7 +1,10 @@
 package org.complitex.flexbuh.common.util;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -24,5 +27,21 @@ public class ReflectionUtil {
                 }
             }
         }
+    }
+
+    public static List<Field> getAllFields(Class _class){
+        List<Field> list = new ArrayList<>();
+
+        Class c = _class;
+
+        while (!c.equals(Object.class)){
+            Collections.addAll(list, c.getDeclaredFields());
+
+            c = c.getSuperclass();
+        }
+
+        Collections.reverse(list);
+
+        return list;
     }
 }
