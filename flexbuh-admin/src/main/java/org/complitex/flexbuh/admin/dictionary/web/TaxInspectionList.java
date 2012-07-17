@@ -133,7 +133,7 @@ public class TaxInspectionList extends TemplatePage {
                 //edit
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("id", taxInspection.getId());
-                pageParameters.add("type", "region");
+                pageParameters.add("type", "tax_inspection");
 
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
             }
