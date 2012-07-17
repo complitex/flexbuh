@@ -19,6 +19,8 @@ import org.complitex.flexbuh.common.entity.dictionary.Currency;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.CurrencyBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -27,7 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -146,4 +150,17 @@ public class CurrencyList extends TemplatePage {
 	private String getStringDate(Date date) {
 		return date != null? DATE_FORMAT.format(date): "";
 	}
+
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        return Arrays.asList(new AddDocumentButton(id) {
+            @Override
+            protected void onClick() {
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("type", "currency");
+
+                setResponsePage(DictionaryEdit.class, pageParameters);
+            }
+        });
+    }
 }

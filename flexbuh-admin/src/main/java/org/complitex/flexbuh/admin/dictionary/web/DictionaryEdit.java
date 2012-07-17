@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.admin.dictionary.web;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
@@ -9,11 +10,11 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.admin.dictionary.service.DictionaryFactory;
+import org.complitex.flexbuh.common.annotation.Display;
 import org.complitex.flexbuh.common.entity.dictionary.AbstractDictionary;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -38,7 +39,7 @@ public class DictionaryEdit extends FormTemplatePage {
 
     public <T extends AbstractDictionary> DictionaryEdit(PageParameters parameters) {
         final String entityName = parameters.get("type").toString();
-        final Long id = parameters.get("id").toLongObject();
+        final Long id = parameters.get("id").toOptionalLong();
 
         final Class<T> entityClass = DictionaryFactory.getEntity(entityName);
         final ICrudBean<T> bean = DictionaryFactory.getCrudBean(entityName);
@@ -78,17 +79,30 @@ public class DictionaryEdit extends FormTemplatePage {
                 Class type = field.getType();
 
                 //label
-                item.add(new Label("label", field.getName()));
+                Label label;
+                item.add(label = new Label("label", getStringOrKey(field.getName())));
+
+                final Component component;
 
                 //input
-                if (String.class.equals(type) || Integer.class.equals(type) || Long.class.equals(type)){
+                if (String.class.equals(type) || Integer.class.equals(type) || Long.class.equals(type)
+                        || Boolean.class.equals(type)){
                     //noinspection unchecked
-                    item.add(new TextField<>("field", new PropertyModel<>(object, field.getName()), type));
+                    item.add(component = new TextField<>("field", new PropertyModel<>(object, field.getName()), type));
                 }else if (Date.class.equals(type)){
-                    item.add(DateTextField.forDatePattern("field", new PropertyModel<Date>(object, field.getName()),
+                    item.add(component = DateTextField.forDatePattern("field", new PropertyModel<Date>(object, field.getName()),
                             "dd.MM.yyyy HH:mm:ss"));
                 }else {
-                    item.add(new EmptyPanel("field"));
+                    item.add(component = new TextField("field").setEnabled(false));
+                }
+
+                //display
+                Display display = field.getAnnotation(Display.class);
+
+                if (display != null){
+                    component.setEnabled(display.enable());
+                    component.setVisible(display.visible());
+                    label.setVisible(display.visible());
                 }
             }
         };
@@ -102,21 +116,22 @@ public class DictionaryEdit extends FormTemplatePage {
                     bean.update(object);
 
                     log.info("Запись справочника обновлена", new Event(EventCategory.EDIT, oldObject, object));
-                    info(getString("inserted"));
+                    getSession().info(getString("updated"));
                 }else {
                     bean.insert(object);
 
                     log.info("Запись справочника сохранена", new Event(EventCategory.EDIT, object));
-                    info(getString("updated"));
+                    getSession().info(getString("inserted"));
                 }
+
+                setResponsePage(DictionaryPages.getListPage(entityName));
             }
         });
 
         form.add(new Button("cancel"){
             @Override
             public void onSubmit() {
-                //todo back to page?
-
+                setResponsePage(DictionaryPages.getListPage(entityName));
             }
         });
     }

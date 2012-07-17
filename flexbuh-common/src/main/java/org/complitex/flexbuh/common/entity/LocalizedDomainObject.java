@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.common.entity;
 
+import org.complitex.flexbuh.common.annotation.Display;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -15,6 +17,8 @@ import java.util.Locale;
 public abstract class LocalizedDomainObject extends DomainObject {
     @XmlElement(name = "NAME")
     private String nameUk;
+
+    @Display(visible = false)
     private String nameRu;
 
     public String getName(Locale locale){
