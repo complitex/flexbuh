@@ -3,6 +3,7 @@ package org.complitex.flexbuh.common.entity.dictionary;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.RowSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 
 /**
@@ -16,9 +17,11 @@ public class Currency extends AbstractPeriodDictionary {
     @XmlSeeAlso(Currency.class)
     public static final class RS extends RowSet<Currency> {}
 
+    @NotNull
     @XmlElement(name = "C_CURRN_N")
     private Integer codeNumber;
 
+    @NotNull
     @XmlElement(name = "C_CURRN_C")
     private String codeString;
 

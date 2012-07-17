@@ -2,6 +2,7 @@ package org.complitex.flexbuh.common.entity.dictionary;
 
 import org.complitex.flexbuh.common.entity.RowSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 
 /**
@@ -15,6 +16,7 @@ public class Region extends AbstractPeriodDictionary {
     @XmlSeeAlso(Region.class)
     public final static class RS extends RowSet<Region>{}
 
+    @NotNull
     @XmlElement(name = "CODE")
 	private Integer code;
 
