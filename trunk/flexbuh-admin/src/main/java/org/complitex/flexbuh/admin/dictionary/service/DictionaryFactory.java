@@ -13,36 +13,36 @@ import java.util.Map;
  *         Date: 16.07.12 16:30
  */
 public class DictionaryFactory {
-    private final static  Map<String, Class<? extends AbstractDictionary>> entity = new HashMap<>();
-    private final static Map<String, Class<? extends ICrudBean<?>>> bean = new HashMap<>();
+    private final static  Map<String, Class<? extends AbstractDictionary>> ENTITY = new HashMap<>();
+    private final static Map<String, Class<? extends ICrudBean<?>>> BEAN = new HashMap<>();
 
     static {
         //Entity
-        entity.put("currency", Currency.class);
-        entity.put("document", Document.class);
-        entity.put("document_term", DocumentTerm.class);
-        entity.put("document_version", DocumentVersion.class);
-        entity.put("field_code", FieldCode.class);
-        entity.put("region", Region.class);
-        entity.put("tax_inspection", TaxInspection.class);
+        ENTITY.put("currency", Currency.class);
+        ENTITY.put("document", Document.class);
+        ENTITY.put("document_term", DocumentTerm.class);
+        ENTITY.put("document_version", DocumentVersion.class);
+        ENTITY.put("field_code", FieldCode.class);
+        ENTITY.put("region", Region.class);
+        ENTITY.put("tax_inspection", TaxInspection.class);
 
         //Bean
-        bean.put("currency", CurrencyBean.class);
-        bean.put("document", DocumentBean.class);
-        bean.put("document_term", DocumentTermBean.class);
-        bean.put("document_version", DocumentVersionBean.class);
-        bean.put("field_code", FieldCodeBean.class);
-        bean.put("region", RegionBean.class);
-        bean.put("tax_inspection", TaxInspectionBean.class);
+        BEAN.put("currency", CurrencyBean.class);
+        BEAN.put("document", DocumentBean.class);
+        BEAN.put("document_term", DocumentTermBean.class);
+        BEAN.put("document_version", DocumentVersionBean.class);
+        BEAN.put("field_code", FieldCodeBean.class);
+        BEAN.put("region", RegionBean.class);
+        BEAN.put("tax_inspection", TaxInspectionBean.class);
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends AbstractDictionary> Class<T> getEntity(String entityName){
-        return (Class<T>) entity.get(entityName);
+        return (Class<T>) ENTITY.get(entityName);
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends AbstractDictionary> ICrudBean<T> getCrudBean(String entityName){
-        return (ICrudBean<T>) EjbUtil.getBean(bean.get(entityName));
+        return (ICrudBean<T>) EjbUtil.getBean(BEAN.get(entityName));
     }
 }

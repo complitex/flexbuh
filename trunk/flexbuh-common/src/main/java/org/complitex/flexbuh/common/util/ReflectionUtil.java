@@ -2,7 +2,7 @@ package org.complitex.flexbuh.common.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -35,12 +35,10 @@ public class ReflectionUtil {
         Class c = _class;
 
         while (!c.equals(Object.class)){
-            Collections.addAll(list, c.getDeclaredFields());
+            list.addAll(0, Arrays.asList(c.getDeclaredFields()));
 
             c = c.getSuperclass();
         }
-
-        Collections.reverse(list);
 
         return list;
     }

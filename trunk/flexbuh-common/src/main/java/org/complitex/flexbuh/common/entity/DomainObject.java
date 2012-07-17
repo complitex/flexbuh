@@ -1,5 +1,7 @@
 package org.complitex.flexbuh.common.entity;
 
+import org.complitex.flexbuh.common.annotation.Display;
+
 import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 
@@ -8,6 +10,7 @@ import java.io.Serializable;
  *         Date: 08.08.11 16:43
  */
 public abstract class DomainObject implements ILongId, Serializable {
+    @Display(enable = false)
 	private Long id;
 
 	@XmlElement(name = "FB_ID")

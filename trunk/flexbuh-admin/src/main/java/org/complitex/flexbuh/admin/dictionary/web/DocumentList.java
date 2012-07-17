@@ -8,17 +8,21 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
+import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
@@ -29,6 +33,7 @@ import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -36,25 +41,25 @@ import java.util.Date;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class DocumentList extends TemplatePage {
-	private final static Logger log = LoggerFactory.getLogger(DocumentList.class);
+    private final static Logger log = LoggerFactory.getLogger(DocumentList.class);
 
-	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
 
-	@EJB
-	DocumentBean documentBean;
+    @EJB
+    DocumentBean documentBean;
 
-	public DocumentList() {
+    public DocumentList() {
 
-		add(new FeedbackPanel("messages"));
+        add(new FeedbackPanel("messages"));
 
-		//Фильтр модель
+        //Фильтр модель
         final IModel<Document> filterModel = new CompoundPropertyModel<>(new Document());
-		
-		final Form<Document> filterForm = new Form<>("filter_form", filterModel);
+
+        final Form<Document> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
-		Link filter_reset = new Link("filter_reset") {
+        Link filter_reset = new Link("filter_reset") {
 
             @Override
             public void onClick() {
@@ -64,13 +69,13 @@ public class DocumentList extends TemplatePage {
         };
         filterForm.add(filter_reset);
 
-		//Document type
+        //Document type
         filterForm.add(new TextField<String>("cDoc"));
 
-		//Sub document type
+        //Sub document type
         filterForm.add(new TextField<String>("cDocSub"));
 
-		//Может подаваться в отчетном периоде более одного раза
+        //Может подаваться в отчетном периоде более одного раза
         filterForm.add(new DropDownChoice<>("cntSet", Arrays.asList(Boolean.TRUE, Boolean.FALSE),
                 new IChoiceRenderer<Boolean>() {
 
@@ -85,28 +90,28 @@ public class DocumentList extends TemplatePage {
                     }
                 }));
 
-		//Parent document type
+        //Parent document type
         filterForm.add(new TextField<String>("parentCDoc"));
 
-		//Parent sub document type
+        //Parent sub document type
         filterForm.add(new TextField<String>("parentCDocSub"));
 
-		//Begin date
+        //Begin date
         DatePicker<Date> beginDate = new DatePicker<>("beginDate");
         filterForm.add(beginDate);
 
-		//End date
+        //End date
         DatePicker<Date> endDate = new DatePicker<>("endDate");
         filterForm.add(endDate);
 
-		//Ukrainian name
+        //Ukrainian name
         filterForm.add(new TextField<String>("nameUk"));
 
-		//Модель
+        //Модель
         final DataProvider<Document> dataProvider = new DataProvider<Document>() {
             @Override
             protected Iterable<? extends Document> getData(int first, int count) {
-				FilterWrapper<Document> filter = FilterWrapper.of(filterModel.getObject());
+                FilterWrapper<Document> filter = FilterWrapper.of(filterModel.getObject());
 
                 filter.setFirst(first);
                 filter.setCount(count);
@@ -124,7 +129,7 @@ public class DocumentList extends TemplatePage {
         dataProvider.setSort("c_doc", SortOrder.ASCENDING);
         dataProvider.setSort("c_doc_sub", SortOrder.ASCENDING);
 
-		//Таблица
+        //Таблица
         DataView<Document> dataView = new DataView<Document>("dictionaries", dataProvider, 1) {
 
             @Override
@@ -141,25 +146,45 @@ public class DocumentList extends TemplatePage {
                 item.add(new Label("end_date", getStringDate(document.getEndDate())));
 
                 item.add(new Label("name_uk", document.getNameUk()));
+
+                //edit
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("id", document.getId());
+                pageParameters.add("type", "document");
+
+                item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
             }
         };
         filterForm.add(dataView);
 
-		//Сортировка
+        //Сортировка
         filterForm.add(new OrderByBorder("header.c_doc", "c_doc", dataProvider));
         filterForm.add(new OrderByBorder("header.c_doc_sub", "c_doc_sub", dataProvider));
         filterForm.add(new OrderByBorder("header.parent_c_doc", "parent_c_doc", dataProvider));
         filterForm.add(new OrderByBorder("header.parent_c_doc_sub", "parent_c_doc_sub", dataProvider));
         filterForm.add(new OrderByBorder("header.cnt_set", "cnt_set", dataProvider));
-		filterForm.add(new OrderByBorder("header.begin_date", "begin_date", dataProvider));
-		filterForm.add(new OrderByBorder("header.end_date", "end_date", dataProvider));
-		filterForm.add(new OrderByBorder("header.name_uk", "name_uk", dataProvider));
+        filterForm.add(new OrderByBorder("header.begin_date", "begin_date", dataProvider));
+        filterForm.add(new OrderByBorder("header.end_date", "end_date", dataProvider));
+        filterForm.add(new OrderByBorder("header.name_uk", "name_uk", dataProvider));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
-	}
+    }
 
-	private String getStringDate(Date date) {
-		return date != null? DATE_FORMAT.format(date): "";
-	}
+    private String getStringDate(Date date) {
+        return date != null? DATE_FORMAT.format(date): "";
+    }
+
+    @Override
+        protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+            return Arrays.asList(new AddDocumentButton(id) {
+                @Override
+                protected void onClick() {
+                    PageParameters pageParameters = new PageParameters();
+                    pageParameters.add("type", "document");
+
+                    setResponsePage(DictionaryEdit.class, pageParameters);
+                }
+            });
+        }
 }

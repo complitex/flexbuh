@@ -2,6 +2,7 @@ package org.complitex.flexbuh.common.entity.dictionary;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.complitex.flexbuh.common.annotation.Display;
 
 import javax.xml.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class TaxInspection extends AbstractPeriodDictionary {
 	private Integer tSti;
 
     @XmlTransient
+    @Display(visible = false)
     private String nameRajRu;
 
     @XmlElement(name = "NAME_RAJ")
