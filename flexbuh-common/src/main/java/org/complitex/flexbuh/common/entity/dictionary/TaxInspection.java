@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.annotation.Display;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 
 /**
@@ -13,15 +14,19 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TaxInspection extends AbstractPeriodDictionary {
+    @NotNull
     @XmlElement(name = "C_STI")
 	private Integer cSti;
 
+    @NotNull
     @XmlElement(name = "C_REG")
 	private Integer cReg;
 
+    @NotNull
     @XmlElement(name = "C_RAJ")
 	private Integer cRaj;
 
+    @NotNull
     @XmlElement(name = "T_STI")
 	private Integer tSti;
 

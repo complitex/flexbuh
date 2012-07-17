@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.admin.dictionary.web;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
@@ -11,6 +10,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.admin.dictionary.service.DictionaryFactory;
@@ -25,6 +26,7 @@ import org.complitex.flexbuh.common.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +44,7 @@ public class DictionaryEdit extends FormTemplatePage {
         final Long id = parameters.get("id").toOptionalLong();
 
         final Class<T> entityClass = DictionaryFactory.getEntity(entityName);
-        final ICrudBean<T> bean = DictionaryFactory.getCrudBean(entityName);
+        ICrudBean<T> bean = DictionaryFactory.getCrudBean(entityName);
 
         final T object;
         final T oldObject;
@@ -67,11 +69,15 @@ public class DictionaryEdit extends FormTemplatePage {
         Form form = new Form("form");
         add(form);
 
-        //scan field
-        List<Field> fields = ReflectionUtil.getAllFields(entityClass);
 
         //create input text field
-        ListView listView = new ListView<Field>("fields", fields) {
+        ListView listView = new ListView<Field>("fields",
+                new LoadableDetachableModel<List<? extends Field>>() {
+                    @Override
+                    protected List<? extends Field> load() {
+                        return  ReflectionUtil.getAllFields(entityClass);
+                    }
+                }) {
             @Override
             protected void populateItem(ListItem<Field> item) {
                 Field field = item.getModelObject();
@@ -82,36 +88,46 @@ public class DictionaryEdit extends FormTemplatePage {
                 Label label;
                 item.add(label = new Label("label", getStringOrKey(field.getName())));
 
-                final Component component;
+                final TextField textField;
 
                 //input
                 if (String.class.equals(type) || Integer.class.equals(type) || Long.class.equals(type)
                         || Boolean.class.equals(type)){
                     //noinspection unchecked
-                    item.add(component = new TextField<>("field", new PropertyModel<>(object, field.getName()), type));
+                    item.add(textField = new TextField<>("field", new PropertyModel<>(object, field.getName()), type));
+                    textField.setLabel(Model.of(getStringOrKey(field.getName())));
                 }else if (Date.class.equals(type)){
-                    item.add(component = DateTextField.forDatePattern("field", new PropertyModel<Date>(object, field.getName()),
+                    item.add(textField = DateTextField.forDatePattern("field", new PropertyModel<Date>(object, field.getName()),
                             "dd.MM.yyyy HH:mm:ss"));
                 }else {
-                    item.add(component = new TextField("field").setEnabled(false));
+                    item.add(textField = new TextField("field"));
+                    textField.setEnabled(false);
                 }
 
                 //display
                 Display display = field.getAnnotation(Display.class);
-
                 if (display != null){
-                    component.setEnabled(display.enable());
-                    component.setVisible(display.visible());
+                    textField.setEnabled(display.enable());
+                    textField.setVisible(display.visible());
                     label.setVisible(display.visible());
+                }
+
+                //required
+                NotNull notNull = field.getAnnotation(NotNull.class);
+                if (notNull != null){
+                    textField.setRequired(true);
                 }
             }
         };
+        listView.setReuseItems(true);
         form.add(listView);
 
         //save results
         form.add(new Button("submit"){
             @Override
             public void onSubmit() {
+                ICrudBean<T> bean = DictionaryFactory.getCrudBean(entityName);
+
                 if (id != null){
                     bean.update(object);
 
@@ -133,6 +149,6 @@ public class DictionaryEdit extends FormTemplatePage {
             public void onSubmit() {
                 setResponsePage(DictionaryPages.getListPage(entityName));
             }
-        });
+        }.setDefaultFormProcessing(false));
     }
 }

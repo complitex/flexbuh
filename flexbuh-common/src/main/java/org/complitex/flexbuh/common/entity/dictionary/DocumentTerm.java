@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.complitex.flexbuh.common.entity.RowSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
@@ -20,25 +21,32 @@ public class DocumentTerm extends AbstractPeriodDictionary {
     @XmlSeeAlso(DocumentTerm.class)
     public final static class RS extends RowSet<DocumentTerm>{}
 
+    @NotNull
     @XmlElement(name = "C_DOC")
 	private String cDoc;
 
+    @NotNull
     @XmlElement(name = "C_DOC_SUB")
 	private String cDocSub;
 
+    @NotNull
     @XmlElement(name = "C_DOC_VER")
 	private Integer cDocVer;
 
+    @NotNull
     @XmlJavaTypeAdapter(DateAdapter.class)
     @XmlElement(name = "D_TERM")
 	private Date dateTerm;
 
+    @NotNull
     @XmlElement(name = "PERIOD_MONTH")
 	private Integer periodMonth;
 
+    @NotNull
     @XmlElement(name = "PERIOD_TYPE")
 	private Integer periodType;
 
+    @NotNull
     @XmlElement(name = "PERIOD_YEAR")
 	private Integer periodYear;
 

@@ -2,6 +2,7 @@ package org.complitex.flexbuh.common.entity;
 
 import org.complitex.flexbuh.common.annotation.Display;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -15,6 +16,7 @@ import java.util.Locale;
 @XmlType
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class LocalizedDomainObject extends DomainObject {
+    @NotNull
     @XmlElement(name = "NAME")
     private String nameUk;
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.RowSet;
 import org.complitex.flexbuh.common.util.DateUtil;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 import java.util.*;
 
@@ -18,12 +19,15 @@ public class Document extends AbstractPeriodDictionary {
     @XmlSeeAlso(Document.class)
     public final static class RS extends RowSet<Document> {}
 
+    @NotNull
     @XmlElement(name = "C_DOC")
 	private String cDoc;
 
+    @NotNull
     @XmlElement(name = "C_DOC_SUB")
 	private String cDocSub;
 
+    @NotNull
     @XmlElement(name = "C_DOC_CNT_SET")
 	private Boolean cntSet; // Может подаваться в отчетном периоде более одного раза
 

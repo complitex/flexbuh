@@ -2,6 +2,7 @@ package org.complitex.flexbuh.common.entity.dictionary;
 
 import org.complitex.flexbuh.common.entity.RowSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 
 /**
@@ -15,12 +16,15 @@ public class DocumentVersion extends AbstractPeriodDictionary implements Compara
     @XmlSeeAlso(DocumentVersion.class)
     public static final class RS extends RowSet<DocumentVersion>{}
 
+    @NotNull
     @XmlElement(name = "C_DOC")
     private String cDoc;
 
+    @NotNull
     @XmlElement(name = "C_DOC_SUB")
     private String cDocSub;
 
+    @NotNull
     @XmlElement(name = "C_DOC_VER")
     private Integer cDocVer;
 
