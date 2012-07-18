@@ -16,6 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Currency;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.CurrencyBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -114,7 +116,7 @@ public class CurrencyList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<Currency> item) {
-                Currency currency = item.getModelObject();
+                final Currency currency = item.getModelObject();
 
                 item.add(new Label("code_number", Integer.toString(currency.getCodeNumber())));
                 item.add(new Label("code_string", currency.getCodeString()));
@@ -130,7 +132,18 @@ public class CurrencyList extends TemplatePage {
                 pageParameters.add("id", currency.getId());
                 pageParameters.add("type", "currency");
 
+                //delete
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        currencyBean.delete(currency.getId());
+
+                        info(getStringFormat("deleted", currency.getNameUk()));
+                        log.info("Объект удален", new Event(EventCategory.REMOVE, currency));
+                    }
+                });
             }
         };
         filterForm.add(dataView);

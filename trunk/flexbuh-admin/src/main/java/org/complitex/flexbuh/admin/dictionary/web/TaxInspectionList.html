@@ -5,68 +5,73 @@
 
 <body>
 <wicket:extend>
-	<div>
-		<h1><wicket:message key="title"/></h1>
-		<div id="messages" wicket:id="messages"></div>
+    <div>
+        <h1><wicket:message key="title"/></h1>
+        <div id="messages" wicket:id="messages"></div>
 
-		<form id="filter_form" action="#" wicket:id="filter_form">
-			<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
-				<thead>
-					<tr>
-						<th class="center" wicket:id="header.c_sti"><wicket:message key="code"/></th>
-						<th class="center" wicket:id="header.c_reg"><wicket:message key="region_code"/></th>
-						<th class="center" wicket:id="header.c_raj"><wicket:message key="area_code"/></th>
-						<th class="center" wicket:id="header.t_sti"><wicket:message key="tax_inspection_type_code"/></th>
-						<th class="center" wicket:id="header.begin_date"><wicket:message key="begin_date"/></th>
-						<th class="center" wicket:id="header.end_date"><wicket:message key="end_date"/></th>
-						<th class="center" wicket:id="header.name_uk"><wicket:message key="name_uk"/></th>
-						<th class="center" wicket:id="header.name_raj_uk"><wicket:message key="area_name_uk"/></th>
-						<th class="center">
-							<input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
-						</th>
-					</tr>
-					<tr>
-						<th class="center"><input type="text" wicket:id="cSti"/></th>
-						<th class="center"><input type="text" wicket:id="cReg"/></th>
-						<th class="center"><input type="text" wicket:id="cRaj"/></th>
-						<th class="center"><input type="text" wicket:id="tSti"/></th>
-						<th class="center">
-							<div style="width:102px">
-								<input type="text" wicket:id="beginDate" style="width: 80px"/>
-							</div>
-						</th>
-						<th class="center">
-							<div style="width:102px">
-								<input type="text" wicket:id="endDate" style="width: 80px"/>
-							</div>
-						</th>
-						<th class="center"><input type="text" wicket:id="nameUk"/></th>
-						<th class="center"><input type="text" wicket:id="nameRajUk"/></th>
+        <form id="filter_form" action="#" wicket:id="filter_form">
+            <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                <thead>
+                <tr>
+                    <th class="center" wicket:id="header.c_sti"><wicket:message key="code"/></th>
+                    <th class="center" wicket:id="header.c_reg"><wicket:message key="region_code"/></th>
+                    <th class="center" wicket:id="header.c_raj"><wicket:message key="area_code"/></th>
+                    <th class="center" wicket:id="header.t_sti"><wicket:message key="tax_inspection_type_code"/></th>
+                    <th class="center" wicket:id="header.begin_date"><wicket:message key="begin_date"/></th>
+                    <th class="center" wicket:id="header.end_date"><wicket:message key="end_date"/></th>
+                    <th class="center" wicket:id="header.name_uk"><wicket:message key="name_uk"/></th>
+                    <th class="center" wicket:id="header.name_raj_uk"><wicket:message key="area_name_uk"/></th>
+                    <th class="center">
+                        <input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="center"><input type="text" wicket:id="cSti"/></th>
+                    <th class="center"><input type="text" wicket:id="cReg"/></th>
+                    <th class="center"><input type="text" wicket:id="cRaj"/></th>
+                    <th class="center"><input type="text" wicket:id="tSti"/></th>
+                    <th class="center">
+                        <div style="width:102px">
+                            <input type="text" wicket:id="beginDate" style="width: 80px"/>
+                        </div>
+                    </th>
+                    <th class="center">
+                        <div style="width:102px">
+                            <input type="text" wicket:id="endDate" style="width: 80px"/>
+                        </div>
+                    </th>
+                    <th class="center"><input type="text" wicket:id="nameUk"/></th>
+                    <th class="center"><input type="text" wicket:id="nameRajUk"/></th>
 
-						<th class="center">
-							<input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
-						</th>
-					</tr>
-				</thead>
-				<tbody >
-					<tr wicket:id="dictionaries">
-						<td><span wicket:id="code"></span></td>
-						<td><span wicket:id="region_code"></span></td>
-						<td><span wicket:id="area_code"></span></td>
-						<td><span wicket:id="tax_inspection_type_code"></span></td>
-						<td><span wicket:id="begin_date"></span></td>
-						<td><span wicket:id="end_date"></span></td>
-						<td><span wicket:id="name_uk"></span></td>
-						<td><span wicket:id="area_name_uk"></span></td>
-                        <td><a href="#" wicket:id="edit"><wicket:message key="edit"/></a></td>
-					</tr>
-				</tbody>
-			</table>
-			<div>
-				<span wicket:id="paging"></span>
-			</div>
-		</form>
-	</div>
+                    <th class="center">
+                        <input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
+                    </th>
+                </tr>
+                </thead>
+                <tbody >
+                <tr wicket:id="dictionaries">
+                    <td><span wicket:id="code"></span></td>
+                    <td><span wicket:id="region_code"></span></td>
+                    <td><span wicket:id="area_code"></span></td>
+                    <td><span wicket:id="tax_inspection_type_code"></span></td>
+                    <td><span wicket:id="begin_date"></span></td>
+                    <td><span wicket:id="end_date"></span></td>
+                    <td><span wicket:id="name_uk"></span></td>
+                    <td><span wicket:id="area_name_uk"></span></td>
+                    <td>
+                        <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
+                        <a href="#" wicket:id="delete" onclick="return confirm('Удалить?')">
+                            <wicket:message key="delete"/>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div>
+                <span wicket:id="paging"></span>
+            </div>
+        </form>
+    </div>
 </wicket:extend>
 </body>
 </html>

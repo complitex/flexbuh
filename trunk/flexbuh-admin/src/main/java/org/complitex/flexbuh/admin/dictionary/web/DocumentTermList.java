@@ -18,6 +18,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentTerm;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentTermBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -150,7 +152,7 @@ public class DocumentTermList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<DocumentTerm> item) {
-                DocumentTerm documentTerm = item.getModelObject();
+                final DocumentTerm documentTerm = item.getModelObject();
 
                 item.add(new Label("type", documentTerm.getCDoc()));
                 item.add(new Label("sub_type", documentTerm.getCDocSub()));
@@ -168,6 +170,18 @@ public class DocumentTermList extends TemplatePage {
                 pageParameters.add("type", "document_term");
 
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
+
+                //delete
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        documentTermBean.delete(documentTerm.getId());
+
+                        info(getStringFormat("deleted", documentTerm.getTemplateName()));
+                        log.info("Объект удален", new Event(EventCategory.REMOVE, documentTerm));
+                    }
+                });
             }
         };
         filterForm.add(dataView);

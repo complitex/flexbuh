@@ -50,4 +50,8 @@
             resultType="long">
         select `id` from `region` where `code` = #{code}
     </select>
+
+    <delete id="deleteRegion" parameterType="long">
+        delete from `region` where `id` = #{id}
+    </delete>
 </mapper>

@@ -40,7 +40,7 @@ public class DocumentTermBean extends AbstractBean implements ICrudBean<Document
 
     @Override
     public void delete(Long id) {
-
+        sqlSession().delete(NS + ".deleteDocumentTerm", id);
     }
 
     public DocumentTerm getDocumentTerm(Long id) {
