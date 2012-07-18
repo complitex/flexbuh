@@ -87,4 +87,8 @@
         select `id` from `tax_inspection` where `c_sti` = #{cSti} and `c_raj` = #{cRaj} and `c_reg` = #{cReg}
           and `t_sti` = #{tSti}
     </select>
+
+    <delete id="deleteTaxInspection" parameterType="long">
+        delete from `tax_inspection` where `id` = #{id}
+    </delete>
 </mapper>

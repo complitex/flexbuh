@@ -5,75 +5,80 @@
 
 <body>
 <wicket:extend>
-	<div>
-		<h1><wicket:message key="title"/></h1>
-		<div id="messages" wicket:id="messages"></div>
+    <div>
+        <h1><wicket:message key="title"/></h1>
+        <div id="messages" wicket:id="messages"></div>
 
-		<form id="filter_form" action="#" wicket:id="filter_form">
-			<table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
-				<thead>
-					<tr>
-						<th class="center" wicket:id="header.c_doc"><wicket:message key="document_type"/></th>
-						<th class="center" wicket:id="header.c_doc_sub"><wicket:message key="document_sub_type"/></th>
-						<th class="center" wicket:id="header.c_doc_ver"><wicket:message key="version"/></th>
-						<th class="center" wicket:id="header.date_term"><wicket:message key="date_term"/></th>
-						<th class="center" wicket:id="header.period_year"><wicket:message key="period_year"/></th>
-						<th class="center" wicket:id="header.period_month"><wicket:message key="period_month"/></th>
-						<th class="center" wicket:id="header.period_type"><wicket:message key="period_type"/></th>
-						<th class="center" wicket:id="header.begin_date"><wicket:message key="begin_date"/></th>
-						<th class="center" wicket:id="header.end_date"><wicket:message key="end_date"/></th>
-						<th class="center">
-							<input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
-						</th>
-					</tr>
-					<tr>
-						<th class="center"><input type="text" wicket:id="cDoc"/></th>
-						<th class="center"><input type="text" wicket:id="cDocSub"/></th>
-						<th class="center"><input type="text" wicket:id="cDocVer"/></th>
-						<th class="center">
-							<div style="width:102px">
-								<input type="text" wicket:id="dateTerm" style="width: 80px"/>
-							</div>
-						</th>
-						<th class="center"><input type="text" wicket:id="periodYear"/></th>
-						<th class="center"><select wicket:id="periodMonth"></select></th>
-						<th class="center"><select wicket:id="periodType"></select></th>
-						<th class="center">
-							<div style="width:102px">
-								<input type="text" wicket:id="beginDate" style="width: 80px"/>
-							</div>
-						</th>
-						<th class="center">
-							<div style="width:102px">
-								<input type="text" wicket:id="endDate" style="width: 80px"/>
-							</div>
-						</th>
+        <form id="filter_form" action="#" wicket:id="filter_form">
+            <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                <thead>
+                <tr>
+                    <th class="center" wicket:id="header.c_doc"><wicket:message key="document_type"/></th>
+                    <th class="center" wicket:id="header.c_doc_sub"><wicket:message key="document_sub_type"/></th>
+                    <th class="center" wicket:id="header.c_doc_ver"><wicket:message key="version"/></th>
+                    <th class="center" wicket:id="header.date_term"><wicket:message key="date_term"/></th>
+                    <th class="center" wicket:id="header.period_year"><wicket:message key="period_year"/></th>
+                    <th class="center" wicket:id="header.period_month"><wicket:message key="period_month"/></th>
+                    <th class="center" wicket:id="header.period_type"><wicket:message key="period_type"/></th>
+                    <th class="center" wicket:id="header.begin_date"><wicket:message key="begin_date"/></th>
+                    <th class="center" wicket:id="header.end_date"><wicket:message key="end_date"/></th>
+                    <th class="center">
+                        <input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="center"><input type="text" wicket:id="cDoc"/></th>
+                    <th class="center"><input type="text" wicket:id="cDocSub"/></th>
+                    <th class="center"><input type="text" wicket:id="cDocVer"/></th>
+                    <th class="center">
+                        <div style="width:102px">
+                            <input type="text" wicket:id="dateTerm" style="width: 80px"/>
+                        </div>
+                    </th>
+                    <th class="center"><input type="text" wicket:id="periodYear"/></th>
+                    <th class="center"><select wicket:id="periodMonth"></select></th>
+                    <th class="center"><select wicket:id="periodType"></select></th>
+                    <th class="center">
+                        <div style="width:102px">
+                            <input type="text" wicket:id="beginDate" style="width: 80px"/>
+                        </div>
+                    </th>
+                    <th class="center">
+                        <div style="width:102px">
+                            <input type="text" wicket:id="endDate" style="width: 80px"/>
+                        </div>
+                    </th>
 
-						<th class="center">
-							<input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
-						</th>
-					</tr>
-				</thead>
-				<tbody >
-					<tr wicket:id="dictionaries">
-						<td><span wicket:id="type"></span></td>
-						<td><span wicket:id="sub_type"></span></td>
-						<td><span wicket:id="version"></span></td>
-						<td><span wicket:id="date_term"></span></td>
-						<td><span wicket:id="period_year"></span></td>
-						<td><span wicket:id="period_month"></span></td>
-						<td><span wicket:id="period_type"></span></td>
-						<td><span wicket:id="begin_date"></span></td>
-						<td><span wicket:id="end_date"></span></td>
-                        <td><a href="#" wicket:id="edit"><wicket:message key="edit"/></a></td>
-					</tr>
-				</tbody>
-			</table>
-			<div>
-				<span wicket:id="paging"></span>
-			</div>
-		</form>
-	</div>
+                    <th class="center">
+                        <input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
+                    </th>
+                </tr>
+                </thead>
+                <tbody >
+                <tr wicket:id="dictionaries">
+                    <td><span wicket:id="type"></span></td>
+                    <td><span wicket:id="sub_type"></span></td>
+                    <td><span wicket:id="version"></span></td>
+                    <td><span wicket:id="date_term"></span></td>
+                    <td><span wicket:id="period_year"></span></td>
+                    <td><span wicket:id="period_month"></span></td>
+                    <td><span wicket:id="period_type"></span></td>
+                    <td><span wicket:id="begin_date"></span></td>
+                    <td><span wicket:id="end_date"></span></td>
+                    <td>
+                        <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
+                        <a href="#" wicket:id="delete" onclick="return confirm('Удалить?')">
+                            <wicket:message key="delete"/>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div>
+                <span wicket:id="paging"></span>
+            </div>
+        </form>
+    </div>
 </wicket:extend>
 </body>
 </html>

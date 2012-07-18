@@ -18,6 +18,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Document;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -134,7 +136,7 @@ public class DocumentList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<Document> item) {
-                Document document = item.getModelObject();
+                final Document document = item.getModelObject();
 
                 item.add(new Label("type", document.getCDoc()));
                 item.add(new Label("sub_type", document.getCDocSub()));
@@ -153,6 +155,18 @@ public class DocumentList extends TemplatePage {
                 pageParameters.add("type", "document");
 
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
+
+                //delete
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        documentBean.delete(document.getId());
+
+                        info(getStringFormat("deleted", document.getNameUk()));
+                        log.info("Объект удален", new Event(EventCategory.REMOVE, document));
+                    }
+                });
             }
         };
         filterForm.add(dataView);
@@ -176,15 +190,15 @@ public class DocumentList extends TemplatePage {
     }
 
     @Override
-        protected List<? extends ToolbarButton> getToolbarButtons(String id) {
-            return Arrays.asList(new AddDocumentButton(id) {
-                @Override
-                protected void onClick() {
-                    PageParameters pageParameters = new PageParameters();
-                    pageParameters.add("type", "document");
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        return Arrays.asList(new AddDocumentButton(id) {
+            @Override
+            protected void onClick() {
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("type", "document");
 
-                    setResponsePage(DictionaryEdit.class, pageParameters);
-                }
-            });
-        }
+                setResponsePage(DictionaryEdit.class, pageParameters);
+            }
+        });
+    }
 }

@@ -16,6 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.Region;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.RegionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -107,7 +109,7 @@ public class RegionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<Region> item) {
-                Region region = item.getModelObject();
+                final Region region = item.getModelObject();
 
                 item.add(new Label("code", Integer.toString(region.getCode())));
                 item.add(new Label("begin_date", getStringDate(region.getBeginDate())));
@@ -120,6 +122,18 @@ public class RegionList extends TemplatePage {
                 pageParameters.add("type", "region");
 
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
+
+                //delete
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        regionBean.delete(region.getId());
+
+                        info(getStringFormat("deleted", region.getNameUk()));
+                        log.info("Объект удален", new Event(EventCategory.REMOVE, region));
+                    }
+                });
             }
         };
         filterForm.add(dataView);

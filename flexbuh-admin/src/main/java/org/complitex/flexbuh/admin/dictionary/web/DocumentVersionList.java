@@ -16,6 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.DocumentVersion;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.DocumentVersionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -115,7 +117,7 @@ public class DocumentVersionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<DocumentVersion> item) {
-                DocumentVersion documentVersion = item.getModelObject();
+                final DocumentVersion documentVersion = item.getModelObject();
 
                 item.add(new Label("type", documentVersion.getCDoc()));
                 item.add(new Label("sub_type", documentVersion.getCDocSub()));
@@ -130,6 +132,18 @@ public class DocumentVersionList extends TemplatePage {
                 pageParameters.add("type", "document_version");
 
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
+
+                //delete
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        documentVersionBean.delete(documentVersion.getId());
+
+                        info(getStringFormat("deleted", documentVersion.getNameUk()));
+                        log.info("Объект удален", new Event(EventCategory.REMOVE, documentVersion));
+                    }
+                });
             }
         };
         filterForm.add(dataView);

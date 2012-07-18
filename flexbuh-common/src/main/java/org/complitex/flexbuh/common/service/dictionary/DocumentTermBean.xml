@@ -68,4 +68,8 @@
     <update id="updateDocumentTerm" parameterType="org.complitex.flexbuh.common.entity.dictionary.DocumentTerm">
         update `document_term` set `upload_date` = #{uploadDate}, `date_term` = #{dateTerm} where `id` = #{id}
     </update>
+
+    <delete id="deleteDocumentTerm" parameterType="long">
+        delete from `document_term` where `id` = #{id}
+    </delete>
 </mapper>

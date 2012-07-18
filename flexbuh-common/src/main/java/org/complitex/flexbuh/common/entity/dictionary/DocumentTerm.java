@@ -23,114 +23,118 @@ public class DocumentTerm extends AbstractPeriodDictionary {
 
     @NotNull
     @XmlElement(name = "C_DOC")
-	private String cDoc;
+    private String cDoc;
 
     @NotNull
     @XmlElement(name = "C_DOC_SUB")
-	private String cDocSub;
+    private String cDocSub;
 
     @NotNull
     @XmlElement(name = "C_DOC_VER")
-	private Integer cDocVer;
+    private Integer cDocVer;
 
     @NotNull
     @XmlJavaTypeAdapter(DateAdapter.class)
     @XmlElement(name = "D_TERM")
-	private Date dateTerm;
+    private Date dateTerm;
 
     @NotNull
     @XmlElement(name = "PERIOD_MONTH")
-	private Integer periodMonth;
+    private Integer periodMonth;
 
     @NotNull
     @XmlElement(name = "PERIOD_TYPE")
-	private Integer periodType;
+    private Integer periodType;
 
     @NotNull
     @XmlElement(name = "PERIOD_YEAR")
-	private Integer periodYear;
+    private Integer periodYear;
 
-	public String getCDoc() {
-		return cDoc;
-	}
+    public String getTemplateName(){
+        return cDoc + cDocSub + String.format("%02d", cDocVer);
+    }
 
-	public void setCDoc(String cDoc) {
-		this.cDoc = cDoc;
-	}
+    public String getCDoc() {
+        return cDoc;
+    }
 
-	public String getCDocSub() {
-		return cDocSub;
-	}
+    public void setCDoc(String cDoc) {
+        this.cDoc = cDoc;
+    }
 
-	public void setCDocSub(String cDocSub) {
-		this.cDocSub = cDocSub;
-	}
+    public String getCDocSub() {
+        return cDocSub;
+    }
 
-	public Integer getCDocVer() {
-		return cDocVer;
-	}
+    public void setCDocSub(String cDocSub) {
+        this.cDocSub = cDocSub;
+    }
 
-	public void setCDocVer(Integer cDocVer) {
-		this.cDocVer = cDocVer;
-	}
+    public Integer getCDocVer() {
+        return cDocVer;
+    }
 
-	public Date getDateTerm() {
-		return dateTerm;
-	}
+    public void setCDocVer(Integer cDocVer) {
+        this.cDocVer = cDocVer;
+    }
 
-	public void setDateTerm(Date dateTerm) {
-		this.dateTerm = dateTerm;
-	}
+    public Date getDateTerm() {
+        return dateTerm;
+    }
 
-	public Integer getPeriodMonth() {
-		return periodMonth;
-	}
+    public void setDateTerm(Date dateTerm) {
+        this.dateTerm = dateTerm;
+    }
 
-	public void setPeriodMonth(Integer periodMonth) {
-		this.periodMonth = periodMonth;
-	}
+    public Integer getPeriodMonth() {
+        return periodMonth;
+    }
 
-	public Integer getPeriodType() {
-		return periodType;
-	}
+    public void setPeriodMonth(Integer periodMonth) {
+        this.periodMonth = periodMonth;
+    }
 
-	public void setPeriodType(Integer periodType) {
-		this.periodType = periodType;
-	}
+    public Integer getPeriodType() {
+        return periodType;
+    }
 
-	public Integer getPeriodYear() {
-		return periodYear;
-	}
+    public void setPeriodType(Integer periodType) {
+        this.periodType = periodType;
+    }
 
-	public void setPeriodYear(Integer periodYear) {
-		this.periodYear = periodYear;
-	}
+    public Integer getPeriodYear() {
+        return periodYear;
+    }
 
-	@Override
-	public boolean validate() {
-		return super.validate() &&
-				StringUtils.isNotEmpty(cDoc)
-				&& StringUtils.isNotEmpty(cDocSub)
-				&& cDocVer != null && cDocVer > 0
-				&& dateTerm != null
-				&& periodMonth != null && periodMonth > 0
-				&& periodType != null && periodType > 0
-				&& periodYear != null && periodYear > 0;
-	}
+    public void setPeriodYear(Integer periodYear) {
+        this.periodYear = periodYear;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).
-				append("documentType", cDoc).
-				append("documentSubType", cDocSub).
-				append("documentVersion", cDocVer).
-				append("dateTerm", dateTerm).
-				append("periodMonth", periodMonth).
-				append("periodType", periodType).
-				append("periodYear", periodYear).
-				append("beginDate", getBeginDate()).
-				append("endDate", getEndDate()).
-				append("uploadDate", getUploadDate())
+    @Override
+    public boolean validate() {
+        return super.validate() &&
+                StringUtils.isNotEmpty(cDoc)
+                && StringUtils.isNotEmpty(cDocSub)
+                && cDocVer != null && cDocVer > 0
+                && dateTerm != null
+                && periodMonth != null && periodMonth > 0
+                && periodType != null && periodType > 0
+                && periodYear != null && periodYear > 0;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).
+                append("documentType", cDoc).
+                append("documentSubType", cDocSub).
+                append("documentVersion", cDocVer).
+                append("dateTerm", dateTerm).
+                append("periodMonth", periodMonth).
+                append("periodType", periodType).
+                append("periodYear", periodYear).
+                append("beginDate", getBeginDate()).
+                append("endDate", getEndDate()).
+                append("uploadDate", getUploadDate())
                 .toString();
-	}
+    }
 }

@@ -16,6 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.entity.FilterWrapper;
 import org.complitex.flexbuh.common.entity.dictionary.TaxInspection;
+import org.complitex.flexbuh.common.logging.Event;
+import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.dictionary.TaxInspectionBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
@@ -118,7 +120,7 @@ public class TaxInspectionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<TaxInspection> item) {
-                TaxInspection taxInspection = item.getModelObject();
+                final TaxInspection taxInspection = item.getModelObject();
 
                 item.add(new Label("code", Integer.toString(taxInspection.getCSti())));
                 item.add(new Label("region_code", Integer.toString(taxInspection.getCReg())));
@@ -136,6 +138,18 @@ public class TaxInspectionList extends TemplatePage {
                 pageParameters.add("type", "tax_inspection");
 
                 item.add(new BookmarkablePageLink<>("edit", DictionaryEdit.class, pageParameters));
+
+                //delete
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        taxInspectionBean.delete(taxInspection.getId());
+
+                        info(getStringFormat("deleted", taxInspection.getNameUk()));
+                        log.info("Объект удален", new Event(EventCategory.REMOVE, taxInspection));
+                    }
+                });
             }
         };
         filterForm.add(dataView);

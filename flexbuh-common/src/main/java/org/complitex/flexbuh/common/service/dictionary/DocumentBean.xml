@@ -89,4 +89,8 @@
             resultType="long">
         select `id` from `document` where `c_doc` = #{cDoc} and `c_doc_sub` = #{cDocSub}
     </select>
+
+    <delete id="deleteDocument" parameterType="long">
+        delete from `document` where `id` = #{id}
+    </delete>
 </mapper>
