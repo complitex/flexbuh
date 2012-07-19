@@ -3,6 +3,7 @@ package org.complitex.flexbuh.common.entity.dictionary;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.complitex.flexbuh.common.annotation.Display;
 import org.complitex.flexbuh.common.entity.RowSet;
 
 import javax.validation.constraints.NotNull;
@@ -20,6 +21,10 @@ public class DocumentTerm extends AbstractPeriodDictionary {
     @XmlRootElement(name = "ROWSET")
     @XmlSeeAlso(DocumentTerm.class)
     public final static class RS extends RowSet<DocumentTerm>{}
+
+    @Display(visible = false)
+    @XmlTransient
+    private String nameUk;
 
     @NotNull
     @XmlElement(name = "C_DOC")
