@@ -5,6 +5,7 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.complitex.flexbuh.common.inject.JavaEE6ModuleNamingStrategy;
 import org.complitex.flexbuh.common.security.ServletAuthWebApplication;
+import org.complitex.flexbuh.common.template.pages.expired.SessionExpiredPage;
 import org.complitex.flexbuh.resources.theme.ThemeResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,7 @@ public abstract class TemplateWebApplication extends ServletAuthWebApplication{
         initializeTemplateConfig();
         getComponentInstantiationListeners().add(new JavaEEComponentInjector(this, new JavaEE6ModuleNamingStrategy()));
 
-//        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
-        getApplicationSettings().setPageExpiredErrorPage(getHomePage());
+        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
