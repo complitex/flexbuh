@@ -1,10 +1,7 @@
 package org.complitex.flexbuh.common.util;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -31,11 +28,20 @@ public class ReflectionUtil {
 
     public static List<Field> getAllFields(Class _class){
         List<Field> list = new ArrayList<>();
+        Set<String> names = new HashSet<>();
 
         Class c = _class;
 
         while (!c.equals(Object.class)){
-            list.addAll(0, Arrays.asList(c.getDeclaredFields()));
+            Field[] fields = c.getDeclaredFields();
+            for (int i = fields.length - 1; i >= 0; --i) {
+                Field field = fields[i];
+
+                if (!names.contains(field.getName())) {
+                    list.add(0, field);
+                    names.add(field.getName());
+                }
+            }
 
             c = c.getSuperclass();
         }
