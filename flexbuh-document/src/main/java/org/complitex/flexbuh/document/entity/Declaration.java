@@ -51,7 +51,7 @@ public class Declaration implements ILongId, Serializable{
     private String name;
     private Document document;
     private boolean validated;
-    private String validateMessage;
+    private List<ValidateMessage> validateMessages;
     private boolean checked;
     private String checkMessage;
 
@@ -175,7 +175,7 @@ public class Declaration implements ILongId, Serializable{
 
         return list;
     }
-    
+
     public int getDeclarationValuesCount(String name){
         int count = 0;
 
@@ -285,7 +285,7 @@ public class Declaration implements ILongId, Serializable{
     public boolean hasLinkedDeclarations(){
         return head.getLinkedDeclarations() != null && !head.getLinkedDeclarations().isEmpty();
     }
-    
+
     public String getFullName(){
         return getTemplateName() + " " + getName();
     }
@@ -310,6 +310,38 @@ public class Declaration implements ILongId, Serializable{
         declaration.getHead().setCDocVer(document.getVersion(head.getPeriodYear(), head.getPeriodMonth()));
 
         head.getLinkedDeclarations().add(new LinkedDeclaration(declaration));
+    }
+
+    public void addValidateMessage(int col, int row, String message){
+        if (validateMessages == null){
+            validateMessages = new ArrayList<>();
+        }
+
+        validateMessages.add(new ValidateMessage(col, row, message));
+    }
+
+    public void clearValidateMessage(){
+        if (validateMessages != null){
+            validateMessages.clear();
+        }
+    }
+
+    public String getValidateMessage(){
+        if (validateMessages != null && !validateMessages.isEmpty()){
+            String message = validateMessages.get(0).getFullMessage();
+
+            if (validateMessages.size() > 1){
+                message += " " + validateMessages.get(1).getFullMessage();
+            }
+
+            return message;
+        }
+
+        return "";
+    }
+
+    public boolean hasValidateMessages(){
+        return validateMessages != null && !validateMessages.isEmpty();
     }
 
     /*Auto-generated Getters and Setters*/
@@ -410,12 +442,12 @@ public class Declaration implements ILongId, Serializable{
         this.validated = validated;
     }
 
-    public String getValidateMessage() {
-        return validateMessage;
+    public List<ValidateMessage> getValidateMessages() {
+        return validateMessages;
     }
 
-    public void setValidateMessage(String validateMessage) {
-        this.validateMessage = validateMessage;
+    public void setValidateMessages(List<ValidateMessage> validateMessages) {
+        this.validateMessages = validateMessages;
     }
 
     public boolean isChecked() {
@@ -433,4 +465,6 @@ public class Declaration implements ILongId, Serializable{
     public void setCheckMessage(String checkMessage) {
         this.checkMessage = checkMessage;
     }
+
+
 }

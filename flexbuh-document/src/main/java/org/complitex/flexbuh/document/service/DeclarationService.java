@@ -18,7 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -109,18 +112,36 @@ public class DeclarationService {
         return getString(declaration, "UTF-8", false);
     }
 
-    public void validate(Declaration declaration){
+    public void validate(final Declaration declaration){
         try {
             Schema schema = templateXMLService.getSchema(declaration.getTemplateName());
             Validator validator = schema.newValidator();
 
+            validator.setErrorHandler(new ErrorHandler() {
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+
+                @Override
+                public void error(SAXParseException e) throws SAXException {
+                    declaration.addValidateMessage(e.getColumnNumber(), e.getLineNumber(), e.getLocalizedMessage());
+                }
+
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+            });
+
             StreamSource streamSource = new StreamSource(new StringReader(getString(declaration)));
 
             validator.validate(streamSource);
-            declaration.setValidated(true);
+
+            declaration.setValidated(!declaration.hasValidateMessages());
         } catch (Exception e) {
             declaration.setValidated(false);
-            declaration.setValidateMessage(e.getMessage());
+            log.error("Ошибка проверки документа", e);
         }
     }
 
