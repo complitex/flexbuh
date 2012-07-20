@@ -34,6 +34,8 @@
 
     <div wicket:id="table_container">
         <form action="#" wicket:id="filter_form">
+            <div wicket:id="validate_messages"></div>
+
             <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
                 <thead>
                 <tr>
@@ -79,6 +81,7 @@
                             <a href="#" target="_blank" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
                             <a href="#" wicket:id="action_attach"><wicket:message key="action_attach"/></a>
                             <a href="#" wicket:id="action_check"><wicket:message key="action_check"/></a>
+                            <a href="#" wicket:id="action_errors"><wicket:message key="action_errors"/></a>
                             <a href="#" wicket:id="action_clarify"><wicket:message key="action_clarify"/></a>
                         </td>
                     </tr>
@@ -97,6 +100,7 @@
                             <a href="#" target="_blank" wicket:id="action_pdf"><wicket:message key="action_pdf"/></a>
                             <a href="#" wicket:id="action_detach"><wicket:message key="action_detach"/></a>
                             <a href="#" wicket:id="action_check"><wicket:message key="action_check"/></a>
+                            <a href="#" wicket:id="action_errors"><wicket:message key="action_errors"/></a>
                             <a href="#" wicket:id="action_clarify"><wicket:message key="action_clarify"/></a>
                         </td>
                     </tr>

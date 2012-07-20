@@ -54,10 +54,7 @@ import org.complitex.flexbuh.document.entity.Period;
 import org.complitex.flexbuh.document.exception.DeclarationZipException;
 import org.complitex.flexbuh.document.service.DeclarationBean;
 import org.complitex.flexbuh.document.service.DeclarationService;
-import org.complitex.flexbuh.document.web.component.DeclarationClarifyLink;
-import org.complitex.flexbuh.document.web.component.DeclarationPdfLink;
-import org.complitex.flexbuh.document.web.component.DeclarationUploadDialog;
-import org.complitex.flexbuh.document.web.component.DeclarationXmlLink;
+import org.complitex.flexbuh.document.web.component.*;
 import org.odlabs.wiquery.ui.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -287,6 +284,10 @@ public class DeclarationList extends TemplatePage{
         };
         dataProvider.setSort("date", SortOrder.DESCENDING);
 
+        //Validate message dialog
+        final DeclarationValidateMessagesDialog validateMessages = new DeclarationValidateMessagesDialog("validate_messages");
+        filterForm.add(validateMessages);
+
         //Таблица
         final DataView<Declaration> dataView = new DataView<Declaration>("declarations", dataProvider) {
             @Override
@@ -332,6 +333,12 @@ public class DeclarationList extends TemplatePage{
                 item.add(new DeclarationPdfLink("action_pdf", declaration));
                 item.add(new DeclarationCheckLink("action_check", declaration));
                 item.add(new DeclarationClarifyLink("action_clarify", declaration));
+                item.add(new AjaxLink("action_errors") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        validateMessages.open(declaration, target);
+                    }
+                }.setVisible(!declaration.isValidated()));
 
                 //Attach
                 item.add(new Link("action_attach") {
@@ -395,7 +402,13 @@ public class DeclarationList extends TemplatePage{
                         linkedItem.add(new DeclarationXmlLink("action_xml", linkedDeclaration));
                         linkedItem.add(new DeclarationPdfLink("action_pdf", linkedDeclaration));
                         linkedItem.add(new DeclarationCheckLink("action_check", linkedDeclaration));
-                        linkedItem.add(new DeclarationClarifyLink("action_clarify", declaration));
+                        linkedItem.add(new DeclarationClarifyLink("action_clarify", linkedDeclaration));
+                        linkedItem.add(new AjaxLink("action_errors") {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                validateMessages.open(linkedDeclaration, target);
+                            }
+                        }.setVisible(!linkedDeclaration.isValidated()));
 
                         //Detach
                         linkedItem.add(new Link("action_detach") {
@@ -407,6 +420,7 @@ public class DeclarationList extends TemplatePage{
                                 info(getStringFormat("info_detached", linkedDeclaration.getFullName()));
                             }
                         });
+
                     }
                 };
                 linkedDeclarations.setVisible(false);

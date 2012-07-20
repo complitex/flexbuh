@@ -1,10 +1,12 @@
 package org.complitex.flexbuh.document.entity;
 
+import java.io.Serializable;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 20.07.12 16:17
  */
-public class ValidateMessage {
+public class ValidateMessage implements Serializable {
     private int col;
     private int row;
     private String message;
