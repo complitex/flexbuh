@@ -141,6 +141,7 @@ public class DeclarationService {
             declaration.setValidated(!declaration.hasValidateMessages());
         } catch (Exception e) {
             declaration.setValidated(false);
+            declaration.addValidateMessage(0, 0, e.getLocalizedMessage());
             log.error("Ошибка проверки документа", e);
         }
     }

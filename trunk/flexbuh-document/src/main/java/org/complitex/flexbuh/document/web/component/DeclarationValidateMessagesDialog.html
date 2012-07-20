@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+
+<body>
+<wicket:panel>
+    <div wicket:id="dialog" wicket:message="title:dialog_title">
+        <span wicket:id="name"></span>
+
+        <table border="0" cellspacing="0" cellpadding="0" class="tbColor" style="margin-top: 20px;">
+            <tr>
+                <th><wicket:message key="row"/></th>
+                <th><wicket:message key="col"/></th>
+                <th><wicket:message key="message"/></th>
+            </tr>
+            <tr wicket:id="list">
+                <td><span wicket:id="row"></span></td>
+                <td><span wicket:id="col"></span></td>
+                <td><span wicket:id="message"></span></td>
+            </tr>
+        </table>
+    </div>
+</wicket:panel>
+</body>
+</html>
