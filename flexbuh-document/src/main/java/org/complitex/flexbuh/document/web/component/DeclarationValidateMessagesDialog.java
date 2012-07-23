@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.document.web.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -24,6 +25,7 @@ public class DeclarationValidateMessagesDialog extends Panel{
     private DeclarationService declarationService;
 
     private Dialog dialog;
+    private WebMarkupContainer container;
 
     private Declaration declaration;
 
@@ -33,17 +35,20 @@ public class DeclarationValidateMessagesDialog extends Panel{
         dialog = new Dialog("dialog");
         dialog.setWidth(800);
         dialog.setHeight(492);
-        dialog.setOutputMarkupId(true);
         add(dialog);
 
-        dialog.add(new Label("name", new LoadableDetachableModel<Object>() {
+        container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        dialog.add(container);
+
+        container.add(new Label("name", new LoadableDetachableModel<Object>() {
             @Override
             protected Object load() {
                 return declaration != null ? declaration.getName() : "";
             }
         }));
 
-        dialog.add(new ListView<ValidateMessage>("list",
+        container.add(new ListView<ValidateMessage>("list",
                 new LoadableDetachableModel<List<ValidateMessage>>() {
                     @Override
                     protected List<ValidateMessage> load() {
@@ -62,11 +67,10 @@ public class DeclarationValidateMessagesDialog extends Panel{
     }
 
     public void open(Declaration declaration, AjaxRequestTarget target) {
-        target.add(dialog);
-
         this.declaration = declaration;
-
         declarationService.validate(declaration);
+
+        target.add(container);
 
         dialog.open(target);
     }

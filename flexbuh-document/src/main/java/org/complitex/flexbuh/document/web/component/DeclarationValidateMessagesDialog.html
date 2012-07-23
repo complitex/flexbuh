@@ -6,20 +6,22 @@
 <body>
 <wicket:panel>
     <div wicket:id="dialog" wicket:message="title:dialog_title">
-        <span wicket:id="name"></span>
+        <div wicket:id="container">
+            <span wicket:id="name"></span>
 
-        <table border="0" cellspacing="0" cellpadding="0" class="tbColor" style="margin-top: 20px;">
-            <tr>
-                <th><wicket:message key="row"/></th>
-                <th><wicket:message key="col"/></th>
-                <th><wicket:message key="message"/></th>
-            </tr>
-            <tr wicket:id="list">
-                <td><span wicket:id="row"></span></td>
-                <td><span wicket:id="col"></span></td>
-                <td><span wicket:id="message"></span></td>
-            </tr>
-        </table>
+            <table border="0" cellspacing="0" cellpadding="0" class="tbColor" style="margin-top: 20px;">
+                <tr>
+                    <th><wicket:message key="row"/></th>
+                    <th><wicket:message key="col"/></th>
+                    <th><wicket:message key="message"/></th>
+                </tr>
+                <tr wicket:id="list">
+                    <td><span wicket:id="row"></span></td>
+                    <td><span wicket:id="col"></span></td>
+                    <td><span wicket:id="message"></span></td>
+                </tr>
+            </table>
+        </div>
     </div>
 </wicket:panel>
 </body>
