@@ -114,6 +114,8 @@ public class DeclarationService {
 
     public void validate(final Declaration declaration){
         try {
+            declaration.clearValidateMessage();
+
             Schema schema = templateXMLService.getSchema(declaration.getTemplateName());
             Validator validator = schema.newValidator();
 
