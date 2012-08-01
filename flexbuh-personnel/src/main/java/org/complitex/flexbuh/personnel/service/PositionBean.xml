@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.personnel.service.PositionBean">
+    <resultMap id="positionResultMap" type="org.complitex.flexbuh.personnel.entity.Position"
+            extends="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectResultMap">
+
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+
+        <association property="payment" column="{id=payment_id, currentDate=current_date}"
+                             select="org.complitex.flexbuh.personnel.service.PaymentBean.selectCurrentTDObjectById"/>
+
+        <association property="schedule" column="{id=schedule_id, currentDate=current_date}"
+                     select="org.complitex.flexbuh.personnel.service.ScheduleBean.selectCurrentTDObjectById"/>
+
+        <association property="department" column="{id=department_id, currentDate=current_date}"
+                     select="org.complitex.flexbuh.personnel.service.DepartmentBean.selectCurrentTDObjectById"/>
+
+        <association property="organization" column="{id=organization_id, currentDate=current_date}"
+                     select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentTDObjectById"/>
+
+    </resultMap>
+
+    <sql id="columns">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
+        `name`, `code`, `description`
+        <if test="payment != null">, `payment_id`</if>
+        <if test="schedule != null">, `schedule_id`</if>
+        <if test="department != null">, `department_id`</if>
+        , `organization_id`
+    </sql>
+
+    <sql id="properties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        #{name}, #{code}, #{description}
+        <if test="payment != null">, #{payment.id}</if>
+        <if test="schedule != null">, #{schedule.id}</if>
+        <if test="department != null">, null</if>
+        , #{organization.id}
+    </sql>
+
+    <sql id="departmentProperties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        null, null, #{departmentAttributes.description}
+        <if test="departmentAttributes.payment != null">, #{departmentAttributes.payment.id}</if>
+        <if test="departmentAttributes.schedule != null">, #{departmentAttributes.schedule.id}</if>
+        , #{department.id}
+        , #{organization.id}
+    </sql>
+
+    <sql id="filter">
+        <choose>
+            <when test="currentDate != null">
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+            </when>
+            <when test="id != null">
+                `id` = #{id}
+            </when>
+            <otherwise>
+                `id` is not null
+            </otherwise>
+        </choose>
+        <if test="currentDate != null and id != null"> and `id` = #{id}</if>
+        <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
+        <if test="code != null"> and `type` like #{code}</if>
+        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+        <if test="departmentId != null"> and `department_id` = #{departmentId}</if>
+        <if test="currentDate == null and entryIntoForceDate != null">
+            and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
+        </if>
+        <if test="currentDate == null and completionDate != null">
+            and #{completionDate} >= `entry_into_force_date`
+        </if>
+        <if test="currentDate == null and id == null">
+          group by `id` order by `id` desc, `version` desc
+        </if>
+    </sql>
+
+    <sql id="byRequiredOrganizationPossibleDepartment">
+        `organization_id` = #{organization.id}
+        <choose>
+            <when test="department != null"> and `department_id` = #{department.id}</when>
+            <otherwise> and `department_id` is null</otherwise>
+        </choose>
+    </sql>
+
+    <sql id="byPossibleOrganizationOrDepartment">
+        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+        <choose>
+            <when test="department != null"> and `department_id` = #{departmentId}</when>
+            <otherwise> and `department_id` is null</otherwise>
+        </choose>
+    </sql>
+
+    <sql id="byPossibleOrganizationOrDepartment2">
+        <if test="organizationId != null"> and d1.`organization_id` = #{organizationId} and d2.`organization_id` = #{organizationId}</if>
+        <choose>
+            <when test="department != null"> and d1.`department_id` = #{departmentId} and d2.`department_id` = #{departmentId}</when>
+            <otherwise> and d1.`department_id` is null and d2.`department_id` is null</otherwise>
+        </choose>
+    </sql>
+
+    <insert id="insertPosition"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        <selectKey keyProperty="id" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+            FROM `position`
+        </selectKey>
+
+        insert into `position` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
+
+    </insert>
+
+    <insert id="insertDepartmentAttributePosition"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        insert into `position` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="departmentProperties"/>
+        )
+
+    </insert>
+
+    <insert id="updatePosition"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        <selectKey keyProperty="version" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            FROM `position` WHERE `id` = #{id} and <include refid="byRequiredOrganizationPossibleDepartment"/>
+        </selectKey>
+
+        insert into `position` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
+    </insert>
+
+    <update id="updatePositionNullCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        update `position` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
+            and <include refid="byRequiredOrganizationPossibleDepartment"/>
+
+    </update>
+
+    <update id="updatePositionCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        update `position` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
+            and <include refid="byRequiredOrganizationPossibleDepartment"/>
+
+    </update>
+
+    <update id="delete"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        update `position` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
+            and <include refid="byRequiredOrganizationPossibleDepartment"/>
+
+    </update>
+
+    <select id="selectCurrentTDObjectById" parameterType="map" resultMap="positionResultMap">
+        select *, #{currentDate} as `current_date` from `position` where `id` = #{id}
+        <include refid="byPossibleOrganizationOrDepartment"/>
+        and
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+    </select>
+
+    <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="positionResultMap">
+        select *, `entry_into_force_date` as `current_date` from `position` where `id` = #{id} and `version` = #{version}
+        <include refid="byPossibleOrganizationOrDepartment"/>
+    </select>
+
+    <select id="selectCurrentPositions" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultMap="positionResultMap">
+        select *, #{currentDate} as `current_date` from
+        (select * from `position` where
+        <include refid="filter"/>) as s
+        <if test="sortProperty != null">
+          order by ${sortProperty}
+          <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        </if>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectCurrentPositionsCount" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultType="int">
+        select count(distinct `id`, `version`) from `position` where
+        <include refid="filter"/>
+    </select>
+
+    <select id="selectTDObjectLastInHistory" parameterType="long" resultMap="positionResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `position` d
+        where d.`id` = #{id} and `version` =
+        (select max(`version`) from `position` where `id` = #{id} and `department_id` is null)
+        and `department_id` is null
+    </select>
+
+    <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="positionResultMap">
+        select d.*, `entry_into_force_date` as `current_date` from `position` d
+        where d.`id` = #{id} and `version` = (select max(d1.`version`) from `position` d1
+        inner join `position` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null) or (d1.`version` = 1 and d2.`version` = 1))
+              and #{version} > d1.`version` <include refid="byPossibleOrganizationOrDepartment2"/>)
+        <include refid="byPossibleOrganizationOrDepartment"/>
+        order by `version`
+    </select>
+
+    <select id="selectTDObjectNextInHistoryByField" parameterType="map" resultMap="positionResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `position` d
+        where d.`id` = #{id} and `version` = (select min(d1.`version`) from `position` d1
+        inner join `position` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null or
+              d1.`deleted` or d1.`completion_date` is null))
+            and d1.`version` > #{version} <include refid="byPossibleOrganizationOrDepartment2"/>)
+        <include refid="byPossibleOrganizationOrDepartment"/>
+        order by `version`
+    </select>
+
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+        <script type="text/javascript">
+            function selectAll(cb){
+                var items = document.getElementById('position_table').getElementsByTagName('input');
+                for (i=0; i< items.length; i++){
+                    if (items[i].type == 'checkbox' && !items[i].disabled){
+                        items[i].checked = cb.checked;
+                    }
+                }
+            }
+        </script>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:panel>
+    <br/>
+    <fieldset>
+    <div wicket:id="position">
+
+        <h3><a href="#" wicket:id="position_title" /></h3>
+
+        <div id="position_table">
+            <div wicket:id="messages"></div>
+            <input class="btnSmall" wicket:id="add" type="button" wicket:message="value:add"/>
+            <input class="btnSmall" wicket:id="delete" type="button" wicket:message="value:delete"/>
+            <form action="#" wicket:id="position_filter_form">
+                <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" onclick="selectAll(this)"/></th>
+                        <th>
+                            <span wicket:id="header.name">
+                                <wicket:message key="name"/>
+                            </span>
+                        </th>
+                        <th>
+                            <span wicket:id="header.code">
+                                <wicket:message key="code"/>
+                            </span>
+                        </th>
+                        <th>
+                            <span wicket:id="header.description">
+                                <wicket:message key="description"/>
+                            </span>
+                        </th>
+                        <th>
+                            <wicket:message key="payment"/>
+                        </th>
+                        <th>
+                            <wicket:message key="schedule"/>
+                        </th>
+                        <th class="center">
+                            <input class="btnSmall"  wicket:id="reset" type="button" wicket:message="value:reset"/>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th><input type="text" wicket:id="name"/></th>
+                        <th><input type="text" wicket:id="code"/></th>
+                        <th><input type="text" wicket:id="description"/></th>
+                        <th></th>
+                        <th></th>
+                        <th class="center">
+                            <input class="btnSmall default" type="submit" tabindex="0" wicket:message="value:filter"/>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr wicket:id="organizations">
+                        <td><input type="checkbox" wicket:id="select"/></td>
+                        <td><span wicket:id="name"></span></td>
+                        <td><span wicket:id="code"></span></td>
+                        <td><span wicket:id="description"></span></td>
+                        <td><span wicket:id="payment"></span></td>
+                        <td><span wicket:id="schedule"></span></td>
+                        <td>
+                            <span wicket:id="action"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <span wicket:id="paging"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+    </fieldset>
+</wicket:panel>
+</body>
+</html>

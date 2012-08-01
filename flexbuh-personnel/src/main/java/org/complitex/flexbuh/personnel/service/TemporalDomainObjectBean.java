@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public abstract class TemporalDomainObjectBean<T extends TemporalDomainObject> extends AbstractBean {
 
-    private String NS;
+    protected String NS;
 
     private TemporalDomainObjectBean() {
     }

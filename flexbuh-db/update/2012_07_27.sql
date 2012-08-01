@@ -1,52 +1,10 @@
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+DROP TABLE IF EXISTS `personnel`;
 
--- --------------------------
--- Department
--- --------------------------
-
-DROP TABLE IF EXISTS `department`;
-
-CREATE TABLE `department` (
-  `id` BIGINT(20) NOT NULL,
-  `version` BIGINT(20) NOT NULL,
-  `deleted` BOOLEAN,
-  `entry_into_force_date` DATETIME NOT NULL,
-  `completion_date` DATETIME,
-  `name` VARCHAR(255) NOT NULL,
-  `code` VARCHAR(255),
-  `organization_id` BIGINT(20) NOT NULL,
-  `master_id` BIGINT(20),
-  PRIMARY KEY (`id`, `version`),
-  KEY `key_department__master_id` (`master_id`),
-  CONSTRAINT `fk_department__master_department` FOREIGN KEY (`master_id`) REFERENCES `department` (`id`),
-  CONSTRAINT `fk_department__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- RateType
--- --------------------------
-
-DROP TABLE IF EXISTS `rate_type`;
-
-CREATE TABLE `rate_type` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `session_id` BIGINT(20) NOT NULL,
-  `object_id` BIGINT(20),
-  `name` VARCHAR(255),
-  `current` BOOLEAN NOT NULL,
-  `date_start` DATE NOT NULL,
-  `updated` TIMESTAMP NOT NULL DEFAULT NOW(),
-  `comment` VARCHAR(1000),
-  PRIMARY KEY (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- Schedule
--- --------------------------
+DROP TABLE IF EXISTS `position`;
 
 DROP TABLE IF EXISTS `schedule`;
+
+DROP TABLE IF EXISTS `payment`;
 
 CREATE TABLE `schedule` (
   `id` BIGINT(20) NOT NULL,
@@ -65,12 +23,6 @@ CREATE TABLE `schedule` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------
--- Payment
--- --------------------------
-
-DROP TABLE IF EXISTS `payment`;
-
 CREATE TABLE `payment` (
   `id` BIGINT(20) NOT NULL,
   `version` BIGINT(20) NOT NULL,
@@ -82,12 +34,6 @@ CREATE TABLE `payment` (
   PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- Position
--- --------------------------
-
-DROP TABLE IF EXISTS `position`;
 
 CREATE TABLE `position` (
   `id` BIGINT(20) NOT NULL,
@@ -102,22 +48,14 @@ CREATE TABLE `position` (
   `schedule_id` BIGINT(20),
   `organization_id` BIGINT(20) NOT NULL,
   `department_id` BIGINT(20),
-  -- `master_position_id` BIGINT(20),
   PRIMARY KEY (`id`, `version`),
   UNIQUE KEY `key_unique` (`id`, `version`, `department_id`),
   CONSTRAINT `fk_position__payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`),
   CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
   CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `fk_position__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
-  --CONSTRAINT `fk_position__master_position` FOREIGN KEY (`master_position_id`) REFERENCES `position` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
--- Personnel
--- --------------------------
-
-DROP TABLE IF EXISTS `personnel`;
 
 CREATE TABLE `personnel` (
   `id` BIGINT(20) NOT NULL,
@@ -174,4 +112,4 @@ CREATE TABLE `allowance` (
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+INSERT INTO `update` (`date`) VALUES ('2012-07-27');
