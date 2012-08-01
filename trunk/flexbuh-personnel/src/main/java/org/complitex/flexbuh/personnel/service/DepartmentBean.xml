@@ -43,7 +43,7 @@
         </choose>
         <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
-        <if test="code != null"> and `type` like #{filter.code}</if>
+        <if test="code != null"> and `type` like #{code}</if>
         <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
         <if test="organizationId != null and masterId == null"> and `master_id` is null</if>
         <if test="masterId != null"> and `master_id` = #{masterId}</if>
@@ -105,7 +105,7 @@
 
     </update>
 
-    <update id="deleteDepartment"
+    <update id="delete"
             parameterType="org.complitex.flexbuh.personnel.entity.Department">
 
         update `department` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
@@ -114,12 +114,12 @@
 
     <select id="selectCurrentTDObjectById" parameterType="map" resultMap="departmentResultMap">
         select *, #{currentDate} as `current_date` from `department` where `id` = #{id} and
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
     </select>
 
     <select id="selectCurrentChildDepartmentsByMasterId" parameterType="map" resultMap="departmentResultMap">
         select *, #{currentDate} as `current_date` from `department` where `master_id` = #{masterId} and
-         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
     </select>
 
     <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="departmentResultMap">
@@ -137,8 +137,8 @@
         limit #{first}, #{count}
     </select>
 
-    <select id="selectCurrentDepartmentsCount" parameterType="org.complitex.flexbuh.personnel.entity.DepartmentFilter" resultMap="departmentResultMap">
-        select *, #{currentDate} as `current_date` from `department` where
+    <select id="selectCurrentDepartmentsCount" parameterType="org.complitex.flexbuh.personnel.entity.DepartmentFilter" resultType="int">
+        select count(distinct `id`, `version`) from `department` where
         <include refid="filter"/>
     </select>
 

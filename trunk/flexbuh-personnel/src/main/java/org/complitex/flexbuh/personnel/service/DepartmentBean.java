@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
+import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.personnel.entity.Department;
@@ -16,7 +17,7 @@ import java.util.Map;
  *         Date: 01.03.12 15:49
  */
 @Stateless
-public class DepartmentBean extends TemporalDomainObjectBean<Department> {
+public class DepartmentBean extends HierarchicalTemporalDomainObjectBean<Department> {
 
     public static final String NS = DepartmentBean.class.getName();
 
@@ -25,6 +26,7 @@ public class DepartmentBean extends TemporalDomainObjectBean<Department> {
     }
 
     @Transactional
+    @Override
     public void save(Department department) {
         if (department.getId() != null) {
             update(department);
@@ -48,22 +50,6 @@ public class DepartmentBean extends TemporalDomainObjectBean<Department> {
     @Transactional
     public void updateCompletionDate(Department department) {
         sqlSession().update(NS + ".updateDepartmentCompletionDate", department);
-    }
-
-    @Transactional
-    public void deleteDepartment(Department department) {
-        department.setDeleted(true);
-        if (department.getCompletionDate() == null) {
-            department.setCompletionDate(new Date());
-        }
-        sqlSession().update(NS + ".deleteDepartment", department);
-        if (department.getChildDepartments() != null) {
-            for (Department childDepartment : department.getChildDepartments()) {
-                childDepartment.setEntryIntoForceDate(department.getCompletionDate());
-                childDepartment.setMasterDepartment(department.getMasterDepartment());
-                update(childDepartment);
-            }
-        }
     }
 
     public List<Department> getDepartments(DepartmentFilter filter) {

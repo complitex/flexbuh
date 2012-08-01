@@ -1,6 +1,8 @@
 package org.complitex.flexbuh.personnel.entity;
 
+import org.complitex.flexbuh.common.entity.HierarchicalTemporalDomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
+import org.complitex.flexbuh.common.entity.TemporalDomainObjectIterator;
 
 import java.util.List;
 
@@ -22,14 +24,17 @@ public class Position extends TemporalDomainObject {
     // Описание (должностные обязонности и т.п.)
     private String description;
 
-    // Департамент
+    // График работы
+    private Schedule schedule;
+
+    // Подразделение
     private Department department;
 
-    // Непосредственный руководитель
-    private Position masterPosition;
+    // Организация
+    private Organization organization;
 
-    // Подчиненные
-    private List<Position> childPositions;
+    // Специфические значения параметров подразделения
+    private Attributes departmentAttributes;
 
     public String getName() {
         return name;
@@ -55,6 +60,14 @@ public class Position extends TemporalDomainObject {
         this.payment = payment;
     }
 
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -71,19 +84,54 @@ public class Position extends TemporalDomainObject {
         this.department = department;
     }
 
-    public Position getMasterPosition() {
-        return masterPosition;
+    public Organization getOrganization() {
+        return organization;
     }
 
-    public void setMasterPosition(Position masterPosition) {
-        this.masterPosition = masterPosition;
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
-    public List<Position> getChildPositions() {
-        return childPositions;
+    public Attributes getDepartmentAttributes() {
+        return departmentAttributes;
     }
 
-    public void setChildPositions(List<Position> childPositions) {
-        this.childPositions = childPositions;
+    public void setDepartmentAttributes(Attributes departmentAttributes) {
+        this.departmentAttributes = departmentAttributes;
+    }
+
+    public class Attributes {
+        // Система оплаты труда
+        private Payment payment;
+
+        // Описание (должностные обязонности и т.п.)
+        private String description;
+
+        // График работы
+        private Schedule schedule;
+
+        public Payment getPayment() {
+            return payment;
+        }
+
+        public void setPayment(Payment payment) {
+            this.payment = payment;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public Schedule getSchedule() {
+            return schedule;
+        }
+
+        public void setSchedule(Schedule schedule) {
+            this.schedule = schedule;
+        }
     }
 }

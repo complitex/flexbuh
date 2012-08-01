@@ -53,11 +53,17 @@ public class Personnel extends TemporalDomainObject {
     // Должность
     private Position position;
 
-    // График работы
+    // Персональный график работы
     private Schedule schedule;
 
     // Персональные надбавки
     private List<Allowance> personalAllowances;
+
+    // Персональная оплата
+    private Payment payment;
+
+    // Коментарий
+    private String comment;
 
     public String getLastName() {
         return lastName;
@@ -217,5 +223,21 @@ public class Personnel extends TemporalDomainObject {
 
     public void setPersonalAllowances(List<Allowance> personalAllowances) {
         this.personalAllowances = personalAllowances;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

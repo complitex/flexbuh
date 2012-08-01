@@ -1,7 +1,8 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.complitex.flexbuh.common.entity.TemporalDomainObject;
+import org.complitex.flexbuh.common.entity.HierarchicalTemporalDomainObject;
+import org.complitex.flexbuh.common.entity.TemporalDomainObjectIterator;
 
 import java.util.List;
 
@@ -9,16 +10,21 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 27.02.12 10:22
  */
-public class Department extends TemporalDomainObject {
+public class Department extends HierarchicalTemporalDomainObject<Department> {
 
+    // Название
     private String name;
 
+    // Код
     private String code;
 
+    // Организация частью которой является подразделение
     private Organization organization;
 
+    // Вышестоящее подразделение
     private Department masterDepartment;
 
+    // Нижестоящие подразделения
     private List<Department> childDepartments;
 
     public String getName() {
@@ -57,8 +63,24 @@ public class Department extends TemporalDomainObject {
         return childDepartments;
     }
 
-    public void setChildDepartments(List<Department> childDepartments) {
-        this.childDepartments = childDepartments;
+    @Override
+    public void setChildes(List<Department> childes) {
+        childDepartments = childes;
+    }
+
+    @Override
+    public void setMaster(Department master) {
+        masterDepartment = master;
+    }
+
+    @Override
+    public TemporalDomainObjectIterator<Department> getChildes() {
+        return new TemporalDomainObjectIterator<>(childDepartments);
+    }
+
+    @Override
+    public Department getMaster() {
+        return masterDepartment;
     }
 
     @Override

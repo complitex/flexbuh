@@ -50,8 +50,8 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
     //private final static String FORM_DATE_FORMAT = "dd.MM.yyyy";
 
-    public final static String PARAM_ORGANIZATION_ID = "object_id";
-    public final static String PARAM_ORGANIZATION_VERSION = "object_version";
+    public final static String PARAM_ORGANIZATION_ID = "organization_id";
+    public final static String PARAM_ORGANIZATION_VERSION = "organization_version";
 
     @EJB
     private OrganizationBean organizationBean;
@@ -146,13 +146,13 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         form.add(updatedAjaxBehavior);
 
         // Departments
-        final DepartmentTreePanel panel = new DepartmentTreePanel("departments", organization);
+        final DepartmentTreePanel departmentTreePanel = new DepartmentTreePanel("departments", organization);
         if (organization.getId() == null) {
-            panel.setVisible(false);
+            departmentTreePanel.setVisible(false);
         }
-        //panel.setEnabled(!deleted);
-        panel.setOutputMarkupId(true);
-        form.add(panel);
+        //departmentTreePanel.setEnabled(!deleted);
+        departmentTreePanel.setOutputMarkupId(true);
+        form.add(departmentTreePanel);
 
         // Organization physical address
 
@@ -186,6 +186,12 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
                 new CompoundPropertyModel<>(organization.getJuridicalAddress()), juridicalCityModel, juridicalStreetModel);
         juridicalAddress.add(juridicalAddressPanel);
 
+        // Organization positions
+
+        final PositionListPanel positionListPanel = new PositionListPanel("positions", organization);
+        positionListPanel.setOutputMarkupId(true);
+        form.add(positionListPanel);
+
         historyUpdate = new TemporalDomainObjectUpdate<Organization>() {
             @Override
             public void onUpdate(AjaxRequestTarget target) {
@@ -212,7 +218,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
                 target.add(form);
                 target.add(organizationHistoryPanel);
-                //panel.update(target, organization);
+                //departmentTreePanel.update(target, organization);
                 Date currentDate;
                 if (organization.isDeleted()) {
                     currentDate = organization.getCompletionDate();
@@ -222,8 +228,11 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
                     currentDate = new Date();
                 }
 
-                panel.updateState(currentDate, isEnabledAction());
-                target.add(panel);
+                departmentTreePanel.updateState(currentDate, isEnabledAction());
+                target.add(departmentTreePanel);
+
+                positionListPanel.updateState(currentDate, isEnabledAction());
+                //target.add(positionListPanel);
             }
         };
 
