@@ -1,7 +1,9 @@
 package org.complitex.flexbuh.personnel.entity;
 
+import com.google.common.collect.Lists;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -9,16 +11,15 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.12.11 14:58
  */
-public class Payment extends TemporalDomainObject {
+public class Payment implements Serializable {
+
+    public static final List<String> CURRENCY_UNIT = Lists.newArrayList("RUB", "UAH", "USD", "EUR");
 
     // Оклад/ставка
     private Float salary;
 
     // Название валюты
     private String currencyUnit;
-
-    // Надбавки
-    private List<Allowance> allowances;
 
     public Float getSalary() {
         return salary;
@@ -34,13 +35,5 @@ public class Payment extends TemporalDomainObject {
 
     public void setCurrencyUnit(String currencyUnit) {
         this.currencyUnit = currencyUnit;
-    }
-
-    public List<Allowance> getAllowances() {
-        return allowances;
-    }
-
-    public void setAllowances(List<Allowance> allowances) {
-        this.allowances = allowances;
     }
 }

@@ -302,6 +302,11 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             }
             return true;
         }
+
+        @Override
+        public boolean isEnabled() {
+            return department.getCompletionDate() == null && !department.isDeleted();
+        }
     }
 
     @Override

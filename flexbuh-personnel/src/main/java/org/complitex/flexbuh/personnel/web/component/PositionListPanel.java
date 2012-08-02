@@ -30,6 +30,7 @@ import org.complitex.flexbuh.common.template.toolbar.AddOrganizationButton;
 import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
 import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.template.toolbar.search.CollapsibleSearchToolbarButton;
+import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -176,9 +177,10 @@ public class PositionListPanel extends Panel {
                 item.add(new Label("code", position.getCode()));
                 item.add(new Label("description", position.getDescription()));
                 item.add(new Label("schedule", position.getSchedule() == null? "":
-                        position.getSchedule().getName()));
+                        StringUtil.emptyOnNull(position.getSchedule().getName())));
                 item.add(new Label("payment", position.getPayment() == null? "":
-                        position.getPayment().getSalary() + " " + position.getPayment().getCurrencyUnit()));
+                        (position.getPayment().getSalary() != null? position.getPayment().getSalary() + "\u00A0": "") +
+                                StringUtil.emptyOnNull(position.getPayment().getCurrencyUnit())));
 
                 PageParameters pageParameters = new PageParameters();
 

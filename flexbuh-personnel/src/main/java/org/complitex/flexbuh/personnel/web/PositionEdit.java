@@ -1,24 +1,24 @@
 package org.complitex.flexbuh.personnel.web;
 
+import com.google.common.collect.Lists;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.personnel.entity.Department;
 import org.complitex.flexbuh.personnel.entity.Organization;
+import org.complitex.flexbuh.personnel.entity.Payment;
 import org.complitex.flexbuh.personnel.entity.Position;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
@@ -31,7 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.swing.event.ListSelectionEvent;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -196,6 +200,8 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         // Название отдела
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
         addHistoryFieldToForm(form, "code", new TextField<>("code"));
+        addHistoryFieldToForm(form, "payment_salary", new NumberTextField<Float>("payment.salary"));
+        addHistoryFieldToForm(form, "payment_currency_unit", new DropDownChoice<>("payment.currencyUnit", Payment.CURRENCY_UNIT));
         addHistoryFieldToForm(form, "description", new TextArea<>("description"));
 
         form.add(new TextField<>("organization", new Model<>(position.getOrganization() != null? position.getOrganization().getName(): "")));
@@ -242,6 +248,11 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return position.getCompletionDate() == null && !position.isDeleted();
         }
     }
 

@@ -27,6 +27,12 @@ public class PositionFilter extends AbstractFilter {
 
     private Date currentDate;
 
+    private Float minPaymentSalary;
+
+    private Float maxPaymentSalary;
+
+    private String paymentCurrencyUnit;
+
     private Long id;
 
     public String getName() {
@@ -99,6 +105,22 @@ public class PositionFilter extends AbstractFilter {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Float getMinPaymentSalary() {
+        return minPaymentSalary;
+    }
+
+    public void setMinPaymentSalary(Float minPaymentSalary) {
+        this.minPaymentSalary = minPaymentSalary;
+    }
+
+    public Float getMaxPaymentSalary() {
+        return maxPaymentSalary;
+    }
+
+    public void setMaxPaymentSalary(Float maxPaymentSalary) {
+        this.maxPaymentSalary = maxPaymentSalary;
     }
 
     @Override

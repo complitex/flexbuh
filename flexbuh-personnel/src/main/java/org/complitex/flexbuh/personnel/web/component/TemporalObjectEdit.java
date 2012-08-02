@@ -116,14 +116,18 @@ public abstract class TemporalObjectEdit<T extends TemporalDomainObject> extends
                 if (getOldTDObject() == null) {
                     return "";
                 }
-                PropertyModel<String> propertyModel1 = new PropertyModel<>(getOldTDObject(), field.getId());
-                PropertyModel<String> propertyModel2 = new PropertyModel<>(getTDObject(), field.getId());
-                return StringUtils.equals(propertyModel1.getObject(), propertyModel2.getObject()) ? "" : "edited";
+                return StringUtils.equals(getValueField(getOldTDObject(), field.getId()),
+                        getValueField(getTDObject(), field.getId())) ? "" : "edited";
             }
         });
 
         //form.add(field);
         //form.add(historyPanel);
+    }
+
+    private String getValueField(Object object, String fieldName) {
+        PropertyModel<Object> result = new PropertyModel<>(object, fieldName);
+        return result.getObject() != null? result.getObject().toString(): null;
     }
 
     abstract protected T getTDObject();

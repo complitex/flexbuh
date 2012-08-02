@@ -19,13 +19,16 @@ public class Position extends TemporalDomainObject {
     private String code;
 
     // Система оплаты труда
-    private Payment payment;
+    private Payment payment = new Payment();
 
     // Описание (должностные обязонности и т.п.)
     private String description;
 
     // График работы
     private Schedule schedule;
+
+    // Надбавки
+    private List<Allowance> allowances;
 
     // Подразделение
     private Department department;
