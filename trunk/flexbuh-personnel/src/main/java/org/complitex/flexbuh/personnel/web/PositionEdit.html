@@ -37,6 +37,28 @@
                 </td>
             </tr>
             <tr>
+                <th><wicket:message key="payment"/> </th>
+                <td>
+                    <div wicket:id="payment_salary_container">
+                        <div style="float: left;">
+                            <input type="number" maxlength="45" wicket:id="payment.salary" style="width: 277px"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="payment_salary_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>
+                    <div wicket:id="payment_currency_unit_container">
+                        <div style="float: left;">
+                            <select wicket:id="payment.currencyUnit" style="width: 277px"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="payment_currency_unit_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <th><wicket:message key="description"/> </th>
                 <td>
                     <div wicket:id="description_container">

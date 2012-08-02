@@ -9,8 +9,10 @@
         <result column="code" property="code"/>
         <result column="description" property="description"/>
 
-        <association property="payment" column="{id=payment_id, currentDate=current_date}"
-                             select="org.complitex.flexbuh.personnel.service.PaymentBean.selectCurrentTDObjectById"/>
+        <association property="payment" javaType="org.complitex.flexbuh.personnel.entity.Payment">
+            <result column="payment_salary" property="salary" />
+            <result column="payment_currency_unit" property="currencyUnit" />
+        </association>
 
         <association property="schedule" column="{id=schedule_id, currentDate=current_date}"
                      select="org.complitex.flexbuh.personnel.service.ScheduleBean.selectCurrentTDObjectById"/>
@@ -26,7 +28,7 @@
     <sql id="columns">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
         `name`, `code`, `description`
-        <if test="payment != null">, `payment_id`</if>
+        <if test="payment != null">, `payment_salary`, `payment_currency_unit`</if>
         <if test="schedule != null">, `schedule_id`</if>
         <if test="department != null">, `department_id`</if>
         , `organization_id`
@@ -35,7 +37,7 @@
     <sql id="properties">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
         #{name}, #{code}, #{description}
-        <if test="payment != null">, #{payment.id}</if>
+        <if test="payment != null">, #{payment.salary}, #{payment.currencyUnit}</if>
         <if test="schedule != null">, #{schedule.id}</if>
         <if test="department != null">, null</if>
         , #{organization.id}
@@ -44,7 +46,7 @@
     <sql id="departmentProperties">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
         null, null, #{departmentAttributes.description}
-        <if test="departmentAttributes.payment != null">, #{departmentAttributes.payment.id}</if>
+        <if test="departmentAttributes.payment != null">, #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.currencyUnit}</if>
         <if test="departmentAttributes.schedule != null">, #{departmentAttributes.schedule.id}</if>
         , #{department.id}
         , #{organization.id}
@@ -67,6 +69,9 @@
         <if test="code != null"> and `type` like #{code}</if>
         <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
         <if test="departmentId != null"> and `department_id` = #{departmentId}</if>
+        <if test="minPaymentSalary != null"> and `payment_salary` >= #{minPaymentSalary}</if>
+        <if test="maxPaymentSalary != null"> and #{maxPaymentSalary} >= `payment_salary`</if>
+        <if test="paymentCurrencyUnit != null"> and `payment_currency_unit` = #{paymentCurrencyUnit}</if>
         <if test="currentDate == null and entryIntoForceDate != null">
             and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
         </if>

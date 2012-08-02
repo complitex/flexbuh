@@ -66,24 +66,6 @@ CREATE TABLE `schedule` (
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- Payment
--- --------------------------
-
-DROP TABLE IF EXISTS `payment`;
-
-CREATE TABLE `payment` (
-  `id` BIGINT(20) NOT NULL,
-  `version` BIGINT(20) NOT NULL,
-  `deleted` BOOLEAN,
-  `entry_into_force_date` DATETIME NOT NULL,
-  `completion_date` DATETIME,
-  `salary` FLOAT,
-  `currency_unit` VARCHAR (45),
-  PRIMARY KEY (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
 -- Position
 -- --------------------------
 
@@ -97,7 +79,8 @@ CREATE TABLE `position` (
   `completion_date` DATETIME,
   `name` VARCHAR(255),
   `code` VARCHAR(255),
-  `payment_id` BIGINT(20),
+  `payment_salary` FLOAT,
+  `payment_currency_unit` VARCHAR (45),
   `description` VARCHAR(1000),
   `schedule_id` BIGINT(20),
   `organization_id` BIGINT(20) NOT NULL,
@@ -105,7 +88,6 @@ CREATE TABLE `position` (
   -- `master_position_id` BIGINT(20),
   PRIMARY KEY (`id`, `version`),
   UNIQUE KEY `key_unique` (`id`, `version`, `department_id`),
-  CONSTRAINT `fk_position__payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`),
   CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
   CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `fk_position__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
@@ -140,18 +122,18 @@ CREATE TABLE `personnel` (
   `resident` BOOLEAN default TRUE,
   `employment_date` DATE NOT NULL,
   `termination_date` DATE,
+  `payment_salary` FLOAT,
+  `payment_currency_unit` VARCHAR (45),
   `registration_address_id` BIGINT(20),
   `actual_address_id` BIGINT(20),
   `position_id` BIGINT(20) NOT NULL,
   `schedule_id` BIGINT(20),
-  `payment_id` BIGINT(20),
   `comment` VARCHAR(1000),
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_personnel__registration_address` FOREIGN KEY (`registration_address_id`) REFERENCES `address` (`id`),
   CONSTRAINT `fk_personnel__actual_address` FOREIGN KEY (`actual_address_id`) REFERENCES `address` (`id`),
   CONSTRAINT `fk_personnel__position` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
-  CONSTRAINT `fk_personnel__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
-  CONSTRAINT `fk_personnel__payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`)
+  CONSTRAINT `fk_personnel__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
