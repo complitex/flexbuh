@@ -1,6 +1,6 @@
 var setFocusOnFirstFormElement = function(){
     var form = $(".formFrame form");
-    if(form.length > 0){
+    if(form.length > 0 && !form.hasClass('form-template-page-unfocusable')){
         var elements = $(form).find('input','select','textarea');
         $.each(elements, function(index, field){
             //for debug only.

@@ -1,17 +1,16 @@
 package org.complitex.flexbuh.personnel.web;
 
-import com.google.common.collect.Lists;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -31,11 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.swing.event.ListSelectionEvent;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -162,24 +157,30 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         form.add(new SaveDepartmentButton("submit"));
 
         // Button cancel changes and return to organization page or parent position page
-        form.add(new Link<String>("cancel") {
+        PageParameters parameters = new PageParameters();
+        parameters.set(PARAM_POSITION_ID, position.getId() != null? position.getId(): 0L);
+        if (position.getDepartment() != null) {
+            parameters.set(DepartmentEdit.PARAM_DEPARTMENT_ID, position.getDepartment().getId());
+            form.add(new BookmarkablePageLink<DepartmentEdit>("cancel", DepartmentEdit.class, parameters) {
+                @Override
+                protected CharSequence getURL() {
+                    return super.getURL() + "#positions";
+                }
+            }.add(new AttributeModifier("value", getString("go_to_department"))));
+        }
+        if (position.getOrganization() != null) {
+            parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, position.getOrganization().getId());
+            form.add(new BookmarkablePageLink<OrganizationEdit>("cancel", OrganizationEdit.class, parameters) {
+                @Override
+                protected CharSequence getURL() {
+                    return super.getURL() + "#positions";
+                }
+            }.add(new AttributeModifier("value", getString("go_to_organization"))));
+        } else {
+            form.add(new BookmarkablePageLink<OrganizationList>("cancel", OrganizationList.class, parameters) {
 
-            @Override
-            public void onClick() {
-                PageParameters parameters = new PageParameters();
-                if (position.getDepartment() != null) {
-                    parameters.set(DepartmentEdit.PARAM_DEPARTMENT_ID, position.getDepartment().getId());
-                    setResponsePage(DepartmentEdit.class, parameters);
-                    return;
-                }
-                if (position.getOrganization() != null) {
-                    parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, position.getOrganization().getId());
-                    setResponsePage(OrganizationEdit.class, parameters);
-                    return;
-                }
-                setResponsePage(OrganizationList.class);
-            }
-        }.add(new AttributeModifier("value", position.getDepartment() != null ? getString("go_to_department") : getString("go_to_organization"))));
+            }.add(new AttributeModifier("value", getString("go_to_organization_list"))));
+        }
 
         historyUpdate = new TemporalDomainObjectUpdate<Position>() {
             @Override

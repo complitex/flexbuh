@@ -24,6 +24,7 @@ import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
+import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
@@ -81,6 +82,8 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
     private TemporalDomainObjectUpdate<Organization> historyUpdate;
 
+    private boolean collapsedPositionPanel = true;
+
     protected OrganizationEdit() {
         organization = new Organization();
         organization.setJuridicalAddress(new Address());
@@ -107,6 +110,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
             organization = organizationBean.getTDObject(id, version);
         } else {
             organization = organizationBean.getTDObject(id);
+            collapsedPositionPanel = pageParameters.get(PositionEdit.PARAM_POSITION_ID).toOptionalLong() == null;
         }
 
 
@@ -125,6 +129,8 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         }
     }
 
+
+
     protected  void init() {
 
         Organization lastOrganization = organization.getId() == null? null:
@@ -140,6 +146,9 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         add(messagesPanel);
 
         final Form<Organization> form = new Form<>("form", new CompoundPropertyModel<>(organization));
+        if (!collapsedPositionPanel) {
+            form.add(new AttributeModifier("class", UNFOCUSABLE_CSS_CLASS));
+        }
         form.setOutputMarkupId(true);
 
         updatedAjaxBehavior = new UpdatedAjaxBehavior();
@@ -188,7 +197,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
         // Organization positions
 
-        final PositionListPanel positionListPanel = new PositionListPanel("positions", organization);
+        final PositionListPanel positionListPanel = new PositionListPanel("positions", organization, collapsedPositionPanel);
         positionListPanel.setOutputMarkupId(true);
         form.add(positionListPanel);
 
