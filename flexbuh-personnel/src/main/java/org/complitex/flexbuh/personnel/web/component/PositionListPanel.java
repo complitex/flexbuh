@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -80,8 +81,15 @@ public class PositionListPanel extends Panel {
 
     private boolean enabled = true;
 
+    private boolean collapsedPanel = true;
+
     public PositionListPanel(@NotNull String id, @NotNull Organization organization) {
+        this(id, organization, true);
+    }
+
+    public PositionListPanel(@NotNull String id, @NotNull Organization organization, boolean collapsedPanel) {
         super(id);
+        this.collapsedPanel = collapsedPanel;
         init(organization);
     }
 
@@ -105,11 +113,13 @@ public class PositionListPanel extends Panel {
         clickBehavior = new ClickAjaxBehavior(false);
 
         position = new Accordion("position");
+        position.add(new Label("position_title", getString("legend_position")).add(clickBehavior));
         position.setCollapsible(true);
         position.setClearStyle(true);
         position.setNavigation(true);
-        position.setActive(new AccordionActive(false));
-        position.add(new Label("position_title", getString("legend_position")).add(clickBehavior));
+        if (collapsedPanel) {
+            position.setActive(new AccordionActive(false));
+        }
 
         add(position);
 
@@ -213,6 +223,21 @@ public class PositionListPanel extends Panel {
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, PositionListPanel.class.getName(), filterForm).setOutputMarkupId(true));
 
+        PageParameters pageParameters = new PageParameters();
+        if (filter.getDepartmentId() != null) {
+            pageParameters.set(DepartmentEdit.PARAM_DEPARTMENT_ID, filter.getDepartmentId());
+        }
+        if (filter.getOrganizationId() != null) {
+            pageParameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, filter.getOrganizationId());
+        }
+        position.add(new BookmarkablePageLink<Position>("add", PositionEdit.class, pageParameters) {
+
+            @Override
+            public boolean isEnabled() {
+                return isEnabledAction();
+            }
+        }.setVisible(isVisibleAction()));
+        /*
         position.add(new Link("add") {
 
             @Override
@@ -232,7 +257,7 @@ public class PositionListPanel extends Panel {
                 return isEnabledAction();
             }
         }.setVisible(isVisibleAction()));
-
+        */
         position.add(new AjaxButton("delete") {
 
             @Override

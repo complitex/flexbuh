@@ -10,7 +10,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  */
 public class FormTemplatePage extends TemplatePage {
 
-    private static final String UNFOCUSABLE_CSS_CLASS = "form-template-page-unfocusable";
+    public static final String UNFOCUSABLE_CSS_CLASS = "form-template-page-unfocusable";
 
     public FormTemplatePage() {
     }
