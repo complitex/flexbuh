@@ -86,7 +86,7 @@ CREATE TABLE `position` (
   `organization_id` BIGINT(20) NOT NULL,
   `department_id` BIGINT(20),
   -- `master_position_id` BIGINT(20),
-  PRIMARY KEY (`id`, `version`),
+  -- PRIMARY KEY (`id`, `version`),
   UNIQUE KEY `key_unique` (`id`, `version`, `department_id`),
   CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
   CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),

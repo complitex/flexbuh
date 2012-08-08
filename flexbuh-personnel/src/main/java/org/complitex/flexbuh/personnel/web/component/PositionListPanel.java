@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.ObjectNotFoundException;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,12 @@ public class PositionListPanel extends Panel {
     }
 
     public PositionListPanel(@NotNull String id, @NotNull Department department) {
+        this(id, department, true);
+    }
+
+    public PositionListPanel(@NotNull String id, @NotNull Department department, boolean collapsedPanel) {
         super(id);
+        this.collapsedPanel = collapsedPanel;
         filter.setDepartmentId(department.getId());
         init(department.getOrganization());
     }
@@ -154,12 +160,12 @@ public class PositionListPanel extends Panel {
                 filter.setSortProperty(getSort().getProperty());
 
                 filter.setAscending(getSort().isAscending());
-                return positionBean.getPositions(filter);
+                return filter.getOrganizationId() != null? positionBean.getPositions(filter): Collections.<Position>emptyList();
             }
 
             @Override
             protected int getSize() {
-                return positionBean.getPositionsCount(filter);
+                return filter.getOrganizationId() != null? positionBean.getPositionsCount(filter): 0;
             }
         };
         dataProvider.setSort("name", SortOrder.ASCENDING);
@@ -195,6 +201,9 @@ public class PositionListPanel extends Panel {
                 PageParameters pageParameters = new PageParameters();
 
                 pageParameters.set(PARAM_POSITION_ID, position.getId());
+                if (filter.getDepartmentId() != null) {
+                    pageParameters.set(DepartmentEdit.PARAM_DEPARTMENT_ID, filter.getDepartmentId());
+                }
                 item.add(new BookmarkablePageLinkPanel<Position>("action",
                         getString(position.isDeleted()? "action_view": "action_edit"),
                         PositionEdit.class, pageParameters));

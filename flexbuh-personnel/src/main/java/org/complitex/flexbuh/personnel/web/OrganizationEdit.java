@@ -110,8 +110,8 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
             organization = organizationBean.getTDObject(id, version);
         } else {
             organization = organizationBean.getTDObject(id);
-            collapsedPositionPanel = pageParameters.get(PositionEdit.PARAM_POSITION_ID).toOptionalLong() == null;
         }
+        collapsedPositionPanel = pageParameters.get(PositionEdit.PARAM_POSITION_ID).toOptionalLong() == null;
 
 
         if (organization != null) {
@@ -199,6 +199,9 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
         final PositionListPanel positionListPanel = new PositionListPanel("positions", organization, collapsedPositionPanel);
         positionListPanel.setOutputMarkupId(true);
+        if (organization.getId() == null) {
+            positionListPanel.setVisible(false);
+        }
         form.add(positionListPanel);
 
         historyUpdate = new TemporalDomainObjectUpdate<Organization>() {

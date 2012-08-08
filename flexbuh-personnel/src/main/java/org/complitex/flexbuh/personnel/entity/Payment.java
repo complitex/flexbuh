@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 import java.io.Serializable;
@@ -35,5 +36,10 @@ public class Payment implements Serializable {
 
     public void setCurrencyUnit(String currencyUnit) {
         this.currencyUnit = currencyUnit;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

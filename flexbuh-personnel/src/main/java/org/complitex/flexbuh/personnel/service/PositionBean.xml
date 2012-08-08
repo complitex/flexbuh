@@ -28,18 +28,49 @@
     <sql id="columns">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
         `name`, `code`, `description`
-        <if test="payment != null">, `payment_salary`, `payment_currency_unit`</if>
-        <if test="schedule != null">, `schedule_id`</if>
-        <if test="department != null">, `department_id`</if>
+        <if test="payment != null or (department != null and departmentAttributes != null and departmentAttributes.payment != null)">
+            , `payment_salary`, `payment_currency_unit`
+        </if>
+        <if test="schedule != null or (department != null and departmentAttributes != null and departmentAttributes.schedule != null)">
+            , `schedule_id`
+        </if>
+        <if test="departmentAttributes != null and department != null">, `department_id`</if>
         , `organization_id`
     </sql>
 
     <sql id="properties">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
-        #{name}, #{code}, #{description}
-        <if test="payment != null">, #{payment.salary}, #{payment.currencyUnit}</if>
-        <if test="schedule != null">, #{schedule.id}</if>
-        <if test="department != null">, null</if>
+        <choose>
+            <when test="department == null or departmentAttributes == null">
+                #{name}, #{code}, #{description}
+                <if test="payment != null">, #{payment.salary}, #{payment.currencyUnit}</if>
+                <if test="schedule != null">, #{schedule.id}</if>
+            </when>
+            <otherwise>
+                null, null, #{departmentAttributes.description}
+                <choose>
+                    <when test="departmentAttributes.payment != null">
+                        , #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.currencyUnit}
+                    </when>
+                    <otherwise>
+                        <if test="payment != null">
+                        , null, null
+                        </if>
+                    </otherwise>
+                </choose>
+                <choose>
+                    <when test="departmentAttributes.schedule != null">
+                        , #{departmentAttributes.schedule.id}
+                    </when>
+                    <otherwise>
+                        <if test="schedule != null">
+                        , null
+                        </if>
+                    </otherwise>
+                </choose>
+                , #{department.id}
+            </otherwise>
+        </choose>
         , #{organization.id}
     </sql>
 
@@ -67,8 +98,15 @@
         <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
         <if test="code != null"> and `type` like #{code}</if>
-        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
-        <if test="departmentId != null"> and `department_id` = #{departmentId}</if>
+        <choose>
+            <when test="organizationId != null and departmentId != null">
+                and (`organization_id` = #{organizationId} or `department_id` = #{departmentId})
+            </when>
+            <otherwise>
+                <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+                <if test="departmentId != null"> and `department_id` = #{departmentId}</if>
+            </otherwise>
+        </choose>
         <if test="minPaymentSalary != null"> and `payment_salary` >= #{minPaymentSalary}</if>
         <if test="maxPaymentSalary != null"> and #{maxPaymentSalary} >= `payment_salary`</if>
         <if test="paymentCurrencyUnit != null"> and `payment_currency_unit` = #{paymentCurrencyUnit}</if>
@@ -181,6 +219,7 @@
         <include refid="byPossibleOrganizationOrDepartment"/>
         and
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+        order by `department_id`
     </select>
 
     <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="positionResultMap">

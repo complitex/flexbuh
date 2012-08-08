@@ -1,9 +1,11 @@
 package org.complitex.flexbuh.personnel.entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.HierarchicalTemporalDomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObjectIterator;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -85,6 +87,9 @@ public class Position extends TemporalDomainObject {
 
     public void setDepartment(Department department) {
         this.department = department;
+        if (departmentAttributes == null) {
+            departmentAttributes = new Attributes();
+        }
     }
 
     public Organization getOrganization() {
@@ -99,13 +104,16 @@ public class Position extends TemporalDomainObject {
         return departmentAttributes;
     }
 
-    public void setDepartmentAttributes(Attributes departmentAttributes) {
-        this.departmentAttributes = departmentAttributes;
+    public void copyDepartmentAttributes(Position departmentPosition) {
+        departmentAttributes = new Attributes();
+        departmentAttributes.setPayment(departmentPosition.getPayment());
+        departmentAttributes.setDescription(departmentPosition.getDescription());
+        departmentAttributes.setSchedule(departmentPosition.getSchedule());
     }
 
-    public class Attributes {
+    public class Attributes implements Serializable {
         // Система оплаты труда
-        private Payment payment;
+        private Payment payment = new Payment();
 
         // Описание (должностные обязонности и т.п.)
         private String description;
@@ -136,5 +144,15 @@ public class Position extends TemporalDomainObject {
         public void setSchedule(Schedule schedule) {
             this.schedule = schedule;
         }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
