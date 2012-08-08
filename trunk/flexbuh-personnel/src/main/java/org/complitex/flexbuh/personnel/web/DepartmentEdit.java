@@ -1,13 +1,9 @@
 package org.complitex.flexbuh.personnel.web;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -15,7 +11,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -25,11 +20,7 @@ import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
-import org.complitex.flexbuh.personnel.web.component.DepartmentTreePanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryIncrementalPanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryPanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalObjectEdit;
+import org.complitex.flexbuh.personnel.web.component.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,13 +52,17 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
 
     private Department oldDepartment = null;
 
-    private DepartmentTreePanel panel;
+    private DepartmentTreePanel departmentTreePanel;
 
     private Form<Department> form;
 
     private TemporalHistoryIncrementalPanel<Department> departmentHistoryPanel;
 
+    private PositionListPanel positionListPanel;
+
     private TemporalDomainObjectUpdate<Department> historyUpdate;
+
+    private boolean collapsedPositionPanel = true;
 
     private DepartmentEdit() {
     }
@@ -106,6 +101,8 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             getSession().error(getString("error_empty_parameters"));
             throw new RestartResponseException(OrganizationList.class);
         }
+
+        collapsedPositionPanel = pageParameters.get(PositionEdit.PARAM_POSITION_ID).toOptionalLong() == null;
 
         Long id = pageParameters.get(PARAM_DEPARTMENT_ID).toOptionalLong();
         if (id != null) {
@@ -161,6 +158,9 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
 
         form = new Form<>("form", new CompoundPropertyModel<>(department));
         form.setOutputMarkupId(true);
+        if (!collapsedPositionPanel) {
+            form.add(new AttributeModifier("class", UNFOCUSABLE_CSS_CLASS));
+        }
         add(form);
 
         // Дата создания подразделения
@@ -178,11 +178,19 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
         */
 
         // Departments
-        panel = new DepartmentTreePanel("departments", department);
+        departmentTreePanel = new DepartmentTreePanel("departments", department);
         /*if (department.getId() == null) {
             panel.setEnabled(false);
         }*/
-        form.add(panel);
+        form.add(departmentTreePanel);
+
+        // Department positions
+        positionListPanel = new PositionListPanel("positions", department, collapsedPositionPanel);
+        positionListPanel.setOutputMarkupId(true);
+        form.add(positionListPanel);
+        if (department.getId() == null) {
+            positionListPanel.setVisible(false);
+        }
 
         // Button update/create department
         form.add(new SaveDepartmentButton("submit"));
@@ -193,8 +201,8 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             @Override
             public void onClick() {
                 PageParameters parameters = new PageParameters();
-                if (department.getId() == null && panel.getMasterDepartment() != null) {
-                    parameters.set(PARAM_DEPARTMENT_ID, panel.getMasterDepartment().getId());
+                if (department.getId() == null && departmentTreePanel.getMasterDepartment() != null) {
+                    parameters.set(PARAM_DEPARTMENT_ID, departmentTreePanel.getMasterDepartment().getId());
                     setResponsePage(DepartmentEdit.class, parameters);
                     return;
                 }
@@ -228,8 +236,10 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
                     currentDate = new Date();
                 }
 
-                panel.updateState(currentDate, isEnabledAction());
-                target.add(panel);
+                departmentTreePanel.updateState(currentDate, isEnabledAction());
+                target.add(departmentTreePanel);
+
+                positionListPanel.updateState(currentDate, isEnabledAction());
             }
         };
 
@@ -277,9 +287,12 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             info(getString("department_saved"));
 
             if (newObject) {
-                form.remove(panel);
-                panel = new DepartmentTreePanel("departments", department);
-                form.add(panel);
+                form.remove(departmentTreePanel);
+                departmentTreePanel = new DepartmentTreePanel("departments", department);
+                form.add(departmentTreePanel);
+                form.remove(positionListPanel);
+                positionListPanel = new PositionListPanel("positions", department, collapsedPositionPanel);
+                form.add(positionListPanel);
             }
 
             if (newObject) {

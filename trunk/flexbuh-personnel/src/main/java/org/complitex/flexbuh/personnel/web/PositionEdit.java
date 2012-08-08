@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.convert.ConversionException;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
@@ -101,11 +102,19 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
 
         Long id = pageParameters.get(PARAM_POSITION_ID).toOptionalLong();
         Long departmentId = pageParameters.get(DepartmentEdit.PARAM_DEPARTMENT_ID).toOptionalLong();
+        Department department = null;
+        if (departmentId != null) {
+            department = departmentBean.getTDObject(departmentId);
+            if (department == null) {
+                // department not found
+                getSession().error(getString("error_department_not_found"));
+                throw new RestartResponseException(OrganizationList.class);
+            }
+        }
         if (id != null) {
             log.debug("Start load position");
-            if (departmentId == null) {
-                position = positionBean.getTDObject(id);
-            }
+            position = positionBean.getTDObject(id, department);
+
             log.debug("Loaded position: {}", position);
             if (position != null) {
                 init();
@@ -116,16 +125,9 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
             return;
         }
 
-        if (departmentId != null) {
-            Department department = departmentBean.getTDObject(departmentId);
-            if (department != null) {
-                position.setDepartment(department);
-                init();
-            } else {
-                // department not found
-                getSession().error(getString("error_department_not_found"));
-                throw new RestartResponseException(OrganizationList.class);
-            }
+        if (department != null) {
+            position.setDepartment(department);
+            init();
             return;
         }
 
@@ -167,8 +169,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
                     return super.getURL() + "#positions";
                 }
             }.add(new AttributeModifier("value", getString("go_to_department"))));
-        }
-        if (position.getOrganization() != null) {
+        } else if (position.getOrganization() != null) {
             parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, position.getOrganization().getId());
             form.add(new BookmarkablePageLink<OrganizationEdit>("cancel", OrganizationEdit.class, parameters) {
                 @Override
@@ -201,7 +202,25 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         // Название отдела
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
         addHistoryFieldToForm(form, "code", new TextField<>("code"));
-        addHistoryFieldToForm(form, "payment_salary", new NumberTextField<Float>("payment.salary"));
+        addHistoryFieldToForm(form, "payment_salary",
+                new NumberTextField<Float>("payment.salary") {
+                    // TODO show organization value if department attribute is null but set value to department attribute
+                    @Override
+                    protected String getModelValue() {
+                        return position.getDepartmentAttributes() != null && position.getDepartmentAttributes().getPayment().getSalary() != null ?
+                                position.getDepartmentAttributes().getPayment().getSalary().toString(): super.getModelValue();
+                    }
+                    /*@Override
+                    protected Float convertValue(String[] value) throws ConversionException {
+                        Float result = super.convertValue(value);
+                        log.debug("convert value: {} ({})", result, value);
+                        Position.Attributes attributes = position.getDepartmentAttributes();
+                        if (position.getDepartmentAttributes() != null) {
+                            attributes.getPayment().setSalary(result);
+                        }
+                        return result;
+                    }*/
+                });
         addHistoryFieldToForm(form, "payment_currency_unit", new DropDownChoice<>("payment.currencyUnit", Payment.CURRENCY_UNIT));
         addHistoryFieldToForm(form, "description", new TextArea<>("description"));
 
@@ -230,6 +249,8 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
             }
 
             position.setEntryIntoForceDate(new Date());
+
+            log.debug("Position save: {}", position);
 
             boolean newObject = position.getId() == null;
             positionBean.save(position);

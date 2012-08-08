@@ -2,7 +2,7 @@
 -- Update
 -- ------------------------------
 
-INSERT INTO `update` (`date`, `date_version`) VALUE ('2012-08-01', '0');
+INSERT INTO `update` (`date`, `date_version`) VALUE ('2012-08-08', '0');
 
 -- --------------------------------
 -- User
