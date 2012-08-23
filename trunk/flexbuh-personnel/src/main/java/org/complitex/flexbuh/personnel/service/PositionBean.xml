@@ -132,7 +132,7 @@
     <sql id="byPossibleOrganizationOrDepartment">
         <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
         <choose>
-            <when test="department != null"> and `department_id` = #{departmentId}</when>
+            <when test="departmentId != null"> and (`department_id` = #{departmentId} or `department_id` is null)</when>
             <otherwise> and `department_id` is null</otherwise>
         </choose>
     </sql>
@@ -140,7 +140,7 @@
     <sql id="byPossibleOrganizationOrDepartment2">
         <if test="organizationId != null"> and d1.`organization_id` = #{organizationId} and d2.`organization_id` = #{organizationId}</if>
         <choose>
-            <when test="department != null"> and d1.`department_id` = #{departmentId} and d2.`department_id` = #{departmentId}</when>
+            <when test="departmentId != null"> and d1.`department_id` = #{departmentId} and d2.`department_id` = #{departmentId}</when>
             <otherwise> and d1.`department_id` is null and d2.`department_id` is null</otherwise>
         </choose>
     </sql>
