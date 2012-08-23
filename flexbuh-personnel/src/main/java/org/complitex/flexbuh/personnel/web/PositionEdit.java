@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.ConversionException;
@@ -203,24 +204,28 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
         addHistoryFieldToForm(form, "code", new TextField<>("code"));
         addHistoryFieldToForm(form, "payment_salary",
-                new NumberTextField<Float>("payment.salary") {
-                    // TODO show organization value if department attribute is null but set value to department attribute
+                new NumberTextField<>("payment.salary", new IModel<Float>() {
+
                     @Override
-                    protected String getModelValue() {
+                    public Float getObject() {
                         return position.getDepartmentAttributes() != null && position.getDepartmentAttributes().getPayment().getSalary() != null ?
-                                position.getDepartmentAttributes().getPayment().getSalary().toString(): super.getModelValue();
+                                position.getDepartmentAttributes().getPayment().getSalary(): position.getPayment().getSalary();
                     }
-                    /*@Override
-                    protected Float convertValue(String[] value) throws ConversionException {
-                        Float result = super.convertValue(value);
-                        log.debug("convert value: {} ({})", result, value);
-                        Position.Attributes attributes = position.getDepartmentAttributes();
+
+                    @Override
+                    public void setObject(Float object) {
                         if (position.getDepartmentAttributes() != null) {
-                            attributes.getPayment().setSalary(result);
+                            position.getDepartmentAttributes().getPayment().setSalary(object);
+                            return;
                         }
-                        return result;
-                    }*/
-                });
+                        position.getPayment().setSalary(object);
+                    }
+
+                    @Override
+                    public void detach() {
+
+                    }
+                }, Float.class));
         addHistoryFieldToForm(form, "payment_currency_unit", new DropDownChoice<>("payment.currencyUnit", Payment.CURRENCY_UNIT));
         addHistoryFieldToForm(form, "description", new TextArea<>("description"));
 
