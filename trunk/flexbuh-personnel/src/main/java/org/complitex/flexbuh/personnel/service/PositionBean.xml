@@ -100,10 +100,10 @@
         <if test="code != null"> and `type` like #{code}</if>
         <choose>
             <when test="organizationId != null and departmentId != null">
-                and (`organization_id` = #{organizationId} or `department_id` = #{departmentId})
+                and (`organization_id` = #{organizationId} and (`department_id` is null or `department_id` = #{departmentId}))
             </when>
             <otherwise>
-                <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+                <if test="organizationId != null"> and `organization_id` = #{organizationId} and `department_id` is null</if>
                 <if test="departmentId != null"> and `department_id` = #{departmentId}</if>
             </otherwise>
         </choose>
@@ -116,9 +116,9 @@
         <if test="currentDate == null and completionDate != null">
             and #{completionDate} >= `entry_into_force_date`
         </if>
-        <if test="currentDate == null and id == null">
+        <!--if test="currentDate == null and id == null">
           group by `id` order by `id` desc, `version` desc
-        </if>
+        </if-->
     </sql>
 
     <sql id="byRequiredOrganizationPossibleDepartment">
@@ -239,7 +239,7 @@
     </select>
 
     <select id="selectCurrentPositionsCount" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultType="int">
-        select count(distinct `id`, `version`) from `position` where
+        select count(distinct `id`) from `position` where
         <include refid="filter"/>
     </select>
 
