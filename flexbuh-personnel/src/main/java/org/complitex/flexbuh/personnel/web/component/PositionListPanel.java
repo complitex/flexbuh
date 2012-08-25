@@ -3,6 +3,7 @@ package org.complitex.flexbuh.personnel.web.component;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -194,9 +195,13 @@ public class PositionListPanel extends Panel {
                 item.add(new Label("description", position.getDescription()));
                 item.add(new Label("schedule", position.getSchedule() == null? "":
                         StringUtil.emptyOnNull(position.getSchedule().getName())));
-                item.add(new Label("payment", position.getPayment() == null? "":
-                        (position.getPayment().getSalary() != null? position.getPayment().getSalary() + "\u00A0": "") +
-                                StringUtil.emptyOnNull(position.getPayment().getCurrencyUnit())));
+                log.debug("Show payment: {}\n departmentAttributes: {}", position.getPayment(), position.getDepartmentAttributes());
+                String departmentPayment = position.getDepartmentAttributes() != null?
+                        paymentToString(position.getDepartmentAttributes().getPayment()): "";
+                item.add(new Label("payment",
+                        StringUtils.equals(departmentPayment, "")?
+                        paymentToString(position.getPayment()) : departmentPayment
+                        ));
 
                 PageParameters pageParameters = new PageParameters();
 
@@ -220,6 +225,12 @@ public class PositionListPanel extends Panel {
                         }
                     }
                 };
+            }
+
+            private String paymentToString(Payment payment) {
+                return payment == null? "":
+                        (payment.getSalary() != null? payment.getSalary() + "\u00A0": "") +
+                                StringUtil.emptyOnNull(payment.getCurrencyUnit());
             }
         };
         filterForm.add(dataView);
