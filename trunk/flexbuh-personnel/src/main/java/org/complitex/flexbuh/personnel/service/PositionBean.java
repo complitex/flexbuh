@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.ibatis.session.SqlSession;
 import org.complitex.flexbuh.common.mybatis.Transactional;
@@ -69,7 +70,32 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
             filter.setCount(Integer.MAX_VALUE);
         }
 
-        return sqlSession().selectList(NS + ".selectCurrentPositions", filter);
+        if (filter.getDepartmentId() != null && filter.getOrganizationId() != null) {
+            List<Position> sqlResult = sqlSession().selectList(NS + ".selectCurrentDepartmentPositions", filter);
+            List<Position> positions = Lists.newArrayList();
+            Position prevPosition = null;
+            for (Position position : sqlResult) {
+                if (position.getDepartment() != null && prevPosition != null && position.getId().equals(prevPosition.getId())) {
+                    prevPosition.setDepartment(position.getDepartment());
+                    prevPosition.copyDepartmentAttributes(position);
+                    prevPosition = null;
+                } else if (prevPosition != null && prevPosition.getDepartment() != null && position.getId().equals(prevPosition.getId())) {
+                    position.setDepartment(position.getDepartment());
+                    position.copyDepartmentAttributes(prevPosition);
+                    positions.add(position);
+                    prevPosition = null;
+                } else if(position.getDepartment() == null) {
+                    prevPosition = position;
+                    positions.add(position);
+                } else {
+                    prevPosition = position;
+                }
+            }
+            return positions;
+        } else if (filter.getOrganizationId() != null) {
+            return sqlSession().selectList(NS + ".selectCurrentOrganizationPositions", filter);
+        }
+        return Lists.newArrayList();
     }
 
     public int getPositionsCount(@Nullable PositionFilter filter) {

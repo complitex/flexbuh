@@ -84,10 +84,11 @@
     </sql>
 
     <sql id="filter">
+        <if test="currentDate != null">
+            <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+            and
+        </if>
         <choose>
-            <when test="currentDate != null">
-                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
-            </when>
             <when test="id != null">
                 `id` = #{id}
             </when>
@@ -95,27 +96,20 @@
                 `id` is not null
             </otherwise>
         </choose>
-        <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
         <if test="code != null"> and `type` like #{code}</if>
-        <choose>
-            <when test="organizationId != null and departmentId != null">
-                and (`organization_id` = #{organizationId} and (`department_id` is null or `department_id` = #{departmentId}))
-            </when>
-            <otherwise>
-                <if test="organizationId != null"> and `organization_id` = #{organizationId} and `department_id` is null</if>
-                <if test="departmentId != null"> and `department_id` = #{departmentId}</if>
-            </otherwise>
-        </choose>
         <if test="minPaymentSalary != null"> and `payment_salary` >= #{minPaymentSalary}</if>
         <if test="maxPaymentSalary != null"> and #{maxPaymentSalary} >= `payment_salary`</if>
         <if test="paymentCurrencyUnit != null"> and `payment_currency_unit` = #{paymentCurrencyUnit}</if>
+        <!--
         <if test="currentDate == null and entryIntoForceDate != null">
             and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
         </if>
         <if test="currentDate == null and completionDate != null">
             and #{completionDate} >= `entry_into_force_date`
         </if>
+        -->
+        and `organization_id` = #{organizationId} and `department_id` is null
         <!--if test="currentDate == null and id == null">
           group by `id` order by `id` desc, `version` desc
         </if-->
@@ -227,7 +221,22 @@
         <include refid="byPossibleOrganizationOrDepartment"/>
     </select>
 
-    <select id="selectCurrentPositions" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultMap="positionResultMap">
+    <select id="selectCurrentDepartmentPositions" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultMap="positionResultMap">
+        select p2.*, #{currentDate} as `current_date` from
+        (select `id`, `version` from `position` where
+        <include refid="filter"/>
+        <if test="sortProperty != null">
+          order by ${sortProperty}
+          <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        </if>
+        limit #{first}, #{count}) as p
+        inner join `position` p2 on p2.id=p.`id` and (p2.version = p.`version` and p2.`department_id` is null
+        <if test="departmentId != null"> or (p2.`department_id` = #{departmentId}<if test="currentDate != null">
+            and <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+        </if>)</if>)
+    </select>
+
+    <select id="selectCurrentOrganizationPositions" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultMap="positionResultMap">
         select *, #{currentDate} as `current_date` from
         (select * from `position` where
         <include refid="filter"/>) as s
