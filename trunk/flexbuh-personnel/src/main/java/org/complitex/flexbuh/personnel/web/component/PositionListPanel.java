@@ -25,13 +25,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.flexbuh.common.logging.Event;
-import org.complitex.flexbuh.common.logging.EventCategory;
-import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.common.template.toolbar.AddOrganizationButton;
-import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
-import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
-import org.complitex.flexbuh.common.template.toolbar.search.CollapsibleSearchToolbarButton;
 import org.complitex.flexbuh.common.util.StringUtil;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
@@ -47,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.ejb.ObjectNotFoundException;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.Date;
@@ -192,10 +184,22 @@ public class PositionListPanel extends Panel {
 
                 item.add(new Label("name", position.getName()));
                 item.add(new Label("code", position.getCode()));
-                item.add(new Label("description", position.getDescription()));
-                item.add(new Label("schedule", position.getSchedule() == null? "":
-                        StringUtil.emptyOnNull(position.getSchedule().getName())));
-                log.debug("Show payment: {}\n departmentAttributes: {}", position.getPayment(), position.getDepartmentAttributes());
+
+                // Show description (can be defined on department attributes)
+                item.add(new Label("description", position.getDepartmentAttributes() != null &&
+                        StringUtils.isNotEmpty(position.getDepartmentAttributes().getDescription())?
+                        position.getDepartmentAttributes().getDescription() :
+                        position.getDescription()));
+
+                // Show schedule (can be defined on department attributes)
+                String departmentSchedule = position.getDepartmentAttributes() != null?
+                        scheduleToString(position.getDepartmentAttributes().getSchedule()): "";
+                item.add(new Label("schedule",
+                        StringUtils.equals(departmentSchedule, "")?
+                        scheduleToString(position.getSchedule()) : departmentSchedule
+                        ));
+
+                // Show payment (can be defined on department attributes)
                 String departmentPayment = position.getDepartmentAttributes() != null?
                         paymentToString(position.getDepartmentAttributes().getPayment()): "";
                 item.add(new Label("payment",
@@ -231,6 +235,10 @@ public class PositionListPanel extends Panel {
                 return payment == null? "":
                         (payment.getSalary() != null? payment.getSalary() + "\u00A0": "") +
                                 StringUtil.emptyOnNull(payment.getCurrencyUnit());
+            }
+
+            private String scheduleToString(Schedule schedule) {
+                return schedule == null? "": StringUtil.emptyOnNull(schedule.getName());
             }
         };
         filterForm.add(dataView);

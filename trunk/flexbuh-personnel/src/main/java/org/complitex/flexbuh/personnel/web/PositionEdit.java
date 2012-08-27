@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -226,8 +227,52 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
 
                     }
                 }, Float.class));
-        addHistoryFieldToForm(form, "payment_currency_unit", new DropDownChoice<>("payment.currencyUnit", Payment.CURRENCY_UNIT));
-        addHistoryFieldToForm(form, "description", new TextArea<>("description"));
+        addHistoryFieldToForm(form, "payment_currency_unit", new DropDownChoice<>("payment.currencyUnit", new IModel<String>() {
+
+                    @Override
+                    public String getObject() {
+                        return position.getDepartmentAttributes() != null &&
+                                StringUtils.isNotEmpty(position.getDepartmentAttributes().getPayment().getCurrencyUnit()) ?
+                                position.getDepartmentAttributes().getPayment().getCurrencyUnit(): position.getPayment().getCurrencyUnit();
+                    }
+
+                    @Override
+                    public void setObject(String object) {
+                        if (position.getDepartmentAttributes() != null) {
+                            position.getDepartmentAttributes().getPayment().setCurrencyUnit(object);
+                            return;
+                        }
+                        position.getPayment().setCurrencyUnit(object);
+                    }
+
+                    @Override
+                    public void detach() {
+
+                    }
+                }, Payment.CURRENCY_UNIT));
+        addHistoryFieldToForm(form, "description", new TextArea<>("description", new IModel<String>() {
+
+                    @Override
+                    public String getObject() {
+                        return position.getDepartmentAttributes() != null &&
+                                StringUtils.isNotEmpty(position.getDepartmentAttributes().getDescription()) ?
+                                position.getDepartmentAttributes().getDescription(): position.getDescription();
+                    }
+
+                    @Override
+                    public void setObject(String object) {
+                        if (position.getDepartmentAttributes() != null) {
+                            position.getDepartmentAttributes().setDescription(object);
+                            return;
+                        }
+                        position.setDescription(object);
+                    }
+
+                    @Override
+                    public void detach() {
+
+                    }
+                }));
 
         form.add(new TextField<>("organization", new Model<>(position.getOrganization() != null? position.getOrganization().getName(): "")));
 
