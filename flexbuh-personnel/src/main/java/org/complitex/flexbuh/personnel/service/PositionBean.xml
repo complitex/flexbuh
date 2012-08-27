@@ -97,7 +97,8 @@
             </otherwise>
         </choose>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
-        <if test="code != null"> and `type` like #{code}</if>
+        <if test="code != null"> and `code` like #{code}</if>
+        <if test="description != null"> and `description` like #{description}</if>
         <if test="minPaymentSalary != null"> and `payment_salary` >= #{minPaymentSalary}</if>
         <if test="maxPaymentSalary != null"> and #{maxPaymentSalary} >= `payment_salary`</if>
         <if test="paymentCurrencyUnit != null"> and `payment_currency_unit` = #{paymentCurrencyUnit}</if>

@@ -124,8 +124,8 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         if (result.size() == 0) {
             return null;
         }
+        result.get(0).setDepartment(department);
         if (result.size() == 1) {
-            result.get(0).setDepartment(department);
             return result.get(0);
         }
         result.get(0).copyDepartmentAttributes(result.get(1));
