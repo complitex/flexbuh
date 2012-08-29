@@ -23,7 +23,7 @@ public class RowSetTest {
         List<Counterpart> counterparts = new ArrayList<>();
 
         Counterpart c1 = new Counterpart();
-        c1.setFirstName("F1");
+//        c1.setFirstName("F1");
         counterparts.add(c1);
 
         Counterpart c2 = new Counterpart();

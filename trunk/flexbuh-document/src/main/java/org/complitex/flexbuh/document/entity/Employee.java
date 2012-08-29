@@ -17,7 +17,7 @@ import java.util.Date;
 public class Employee extends SessionObject{
     private Long personProfileId;
     private Integer num;
-    private Integer htin;
+    private Long htin;
     private String lastName;
     private String firstName;
     private String middleName;
@@ -56,11 +56,11 @@ public class Employee extends SessionObject{
     }
 
     @XmlElement(name = "HTIN")
-    public Integer getHtin() {
+    public Long getHtin() {
         return htin;
     }
 
-    public void setHtin(Integer htin) {
+    public void setHtin(Long htin) {
         this.htin = htin;
     }
 

@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -182,18 +183,23 @@ public class EmployeeList extends TemplatePage{
                 Long personProfileId = getPreferenceLong(SELECTED_PERSON_PROFILE_ID);
 
                 try {
-                    employeeService.save(getSessionId(), personProfileId, fileUploadField.getFileUpload().getInputStream(),
-                            new IProcessListener<Employee>() {
-                                @Override
-                                public void onSuccess(Employee object) {
-                                    info(getStringFormat("info_upload", object.getHname()));
-                                }
+                    FileUpload fileUpload = fileUploadField.getFileUpload();
 
-                                @Override
-                                public void onError(Employee object, Exception e) {
-                                    error(getStringFormat("error_upload", e.getMessage()));
-                                }
-                            });
+                    if (fileUpload.getClientFileName() != null) {
+                        employeeService.save(getSessionId(), personProfileId, fileUpload.getClientFileName(),
+                                fileUpload.getInputStream(),
+                                new IProcessListener<Employee>() {
+                                    @Override
+                                    public void onSuccess(Employee object) {
+                                        info(getStringFormat("info_upload", object.getHname()));
+                                    }
+
+                                    @Override
+                                    public void onError(Employee object, Exception e) {
+                                        error(getStringFormat("error_upload", e.getMessage()));
+                                    }
+                                });
+                    }
                 } catch (Exception e) {
                     log.error("Ошибка загрузки сотрудников", e);
                     error("Ошибка загрузки сотрудников");
