@@ -63,7 +63,7 @@ public class EmployeeAutocompleteDialog extends AutocompleteDialogComponent<Empl
 
             switch (getAlias()){
                 case "HTIN":
-                    filter.getObject().setHtin(Integer.parseInt(tern));
+                    filter.getObject().setHtin(Long.parseLong(tern));
                     break;
                 case "HDATE_IN":
                     filter.getObject().setHdateIn(DATE_FORMAT.parse(tern));

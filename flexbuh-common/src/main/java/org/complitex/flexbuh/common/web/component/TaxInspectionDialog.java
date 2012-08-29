@@ -40,7 +40,7 @@ public class TaxInspectionDialog extends Panel {
         super(id, model);
 
         dialog = new Dialog("dialog");
-        dialog.setWidth(875);
+        dialog.setWidth(1000);
         dialog.setHeight(525);
         add(dialog);
 
