@@ -4,6 +4,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.HierarchicalTemporalDomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObjectIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.List;
  *         Date: 14.12.11 14:39
  */
 public class Position extends TemporalDomainObject {
+
+    private final static Logger log = LoggerFactory.getLogger(Position.class);
 
     // Название должности (специальности, профессии), разряда, класса (категории) квалификации
     private String name;
@@ -86,6 +90,7 @@ public class Position extends TemporalDomainObject {
     }
 
     public void setDepartment(Department department) {
+        log.debug("Set department");
         this.department = department;
         if (departmentAttributes == null) {
             departmentAttributes = new Attributes();
@@ -105,13 +110,16 @@ public class Position extends TemporalDomainObject {
     }
 
     public void copyDepartmentAttributes(Position departmentPosition) {
+        log.debug("copy department attributes: {}", departmentPosition);
         departmentAttributes = new Attributes();
         departmentAttributes.setPayment(departmentPosition.getPayment());
         departmentAttributes.setDescription(departmentPosition.getDescription());
         departmentAttributes.setSchedule(departmentPosition.getSchedule());
+        departmentAttributes.setVersion(departmentPosition.getVersion());
+        log.debug("result: {}", departmentAttributes);
     }
 
-    public class Attributes implements Serializable {
+    public class Attributes extends TemporalDomainObject {
         // Система оплаты труда
         private Payment payment = new Payment();
 
@@ -145,9 +153,17 @@ public class Position extends TemporalDomainObject {
             this.schedule = schedule;
         }
 
+        public boolean isNew() {
+            return getVersion() == null;
+        }
+
+        public boolean isNotNew() {
+            return getVersion() != null;
+        }
+
         @Override
         public String toString() {
-            return ToStringBuilder.reflectionToString(this);
+            return ToStringBuilder.reflectionToString(Attributes.this);
         }
     }
 
