@@ -91,7 +91,6 @@ CREATE TABLE `position` (
   CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
   CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `fk_position__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
-  --CONSTRAINT `fk_position__master_position` FOREIGN KEY (`master_position_id`) REFERENCES `position` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

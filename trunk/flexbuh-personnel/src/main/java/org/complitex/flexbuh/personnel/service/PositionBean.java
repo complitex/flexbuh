@@ -48,19 +48,36 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         position.setVersion(1L);
         sqlSession().insert(NS + ".insertPosition", position);
         if (position.getDepartment() != null && position.getDepartmentAttributes() != null) {
+            position.getDepartmentAttributes().setVersion(2L);
             sqlSession().insert(NS + ".insertDepartmentAttributePosition", position);
         }
     }
 
     @Transactional
     public void update(@NotNull Position position) {
+        /*
+        if (position.getDepartmentAttributes().isNew()) {
+            sqlSession().insert(NS + ".insertDepartmentAttributePosition", position);
+            return;
+        }*/
+        if (position.getDepartment() != null && position.getDepartmentAttributes() != null) {
+            if (position.getDepartmentAttributes().isNotNew()) {
+                sqlSession().update(NS + ".updateDepartmentAttributePositionNullCompletionDate", position);
+            }
+            sqlSession().insert(NS + ".updateDepartmentAttributePosition", position);
+            return;
+        }
         sqlSession().update(NS + ".updatePositionNullCompletionDate", position);
         sqlSession().insert(NS + ".updatePosition", position);
     }
 
     @Transactional
     public void updateCompletionDate(@NotNull Position position) {
-        sqlSession().update(NS + ".updatePositionCompletionDate", position);
+        if (position.getDepartment() != null && position.getDepartmentAttributes() != null) {
+            sqlSession().update(NS + ".updatePositionCompletionDate", position);
+            return;
+        }
+        sqlSession().update(NS + ".updateDepartmentAttributePositionCompletionDate", position);
     }
 
     public List<Position> getPositions(@Nullable PositionFilter filter) {
@@ -117,9 +134,12 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         Map<String, Object> params = Maps.newHashMap();
         params.put("id", id);
         params.put("currentDate", new Date());
+        params.put("organizationId", department.getOrganization().getId());
         params.put("departmentId", department.getId());
 
         List<Position> result = sqlSession().selectList(NS + ".selectCurrentTDObjectById", params);
+
+        log.debug("PositionBean.selectCurrentTDObjectById result: {} ({})", result, result.size());
 
         if (result.size() == 0) {
             return null;

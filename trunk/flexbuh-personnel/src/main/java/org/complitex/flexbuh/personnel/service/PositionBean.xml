@@ -39,14 +39,15 @@
     </sql>
 
     <sql id="properties">
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
         <choose>
             <when test="department == null or departmentAttributes == null">
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
                 #{name}, #{code}, #{description}
                 <if test="payment != null">, #{payment.salary}, #{payment.currencyUnit}</if>
                 <if test="schedule != null">, #{schedule.id}</if>
             </when>
             <otherwise>
+                #{id}, #{departmentAttributes.version}, #{departmentAttributes.entryIntoForceDate}, #{departmentAttributes.completionDate},
                 null, null, #{departmentAttributes.description}
                 <choose>
                     <when test="departmentAttributes.payment != null">
@@ -75,7 +76,7 @@
     </sql>
 
     <sql id="departmentProperties">
-        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        #{id}, #{departmentAttributes.version}, #{departmentAttributes.entryIntoForceDate}, #{departmentAttributes.completionDate},
         null, null, #{departmentAttributes.description}
         <if test="departmentAttributes.payment != null">, #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.currencyUnit}</if>
         <if test="departmentAttributes.schedule != null">, #{departmentAttributes.schedule.id}</if>
@@ -160,6 +161,11 @@
     <insert id="insertDepartmentAttributePosition"
             parameterType="org.complitex.flexbuh.personnel.entity.Position">
 
+        <selectKey keyProperty="departmentAttributes.version" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            FROM `position` WHERE `id` = #{id}
+        </selectKey>
+
         insert into `position` (
         <include refid="columns"/>
         )
@@ -174,7 +180,7 @@
 
         <selectKey keyProperty="version" order="BEFORE" resultType="long">
             SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
-            FROM `position` WHERE `id` = #{id} and <include refid="byRequiredOrganizationPossibleDepartment"/>
+            FROM `position` WHERE `id` = #{id}
         </selectKey>
 
         insert into `position` (
@@ -185,10 +191,35 @@
         )
     </insert>
 
+    <insert id="updateDepartmentAttributePosition"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        <selectKey keyProperty="departmentAttributes.version" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            FROM `position` WHERE `id` = #{id}
+        </selectKey>
+
+        insert into `position` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="departmentProperties"/>
+        )
+    </insert>
+
     <update id="updatePositionNullCompletionDate"
             parameterType="org.complitex.flexbuh.personnel.entity.Position">
 
         update `position` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
+            and <include refid="byRequiredOrganizationPossibleDepartment"/>
+
+    </update>
+
+    <update id="updateDepartmentAttributePositionNullCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Position">
+
+        update `position` set `completion_date` = #{departmentAttributes.entryIntoForceDate} where
+        `id` = #{id} and `version` = #{departmentAttributes.version} and `completion_date` is null
             and <include refid="byRequiredOrganizationPossibleDepartment"/>
 
     </update>

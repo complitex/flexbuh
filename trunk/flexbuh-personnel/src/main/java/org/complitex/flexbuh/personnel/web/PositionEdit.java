@@ -298,7 +298,11 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
                 return;
             }
 
-            position.setEntryIntoForceDate(new Date());
+            if (position.getDepartment() != null && position.getDepartmentAttributes() != null) {
+                position.getDepartmentAttributes().setEntryIntoForceDate(new Date());
+            } else {
+                position.setEntryIntoForceDate(new Date());
+            }
 
             log.debug("Position save: {}", position);
 
