@@ -153,7 +153,7 @@ public class PositionListPanel extends Panel {
                 filter.setSortProperty(getSort().getProperty());
 
                 filter.setAscending(getSort().isAscending());
-                return filter.getOrganizationId() != null? positionBean.getPositions(filter): Collections.<Position>emptyList();
+                return filter.getOrganizationId() != null? positionBean.getTDOObjects(filter): Collections.<Position>emptyList();
             }
 
             @Override

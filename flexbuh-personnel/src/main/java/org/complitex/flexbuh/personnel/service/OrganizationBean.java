@@ -1,21 +1,21 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
-import org.complitex.flexbuh.common.entity.FilterWrapper;
+import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.service.AddressBean;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.entity.OrganizationFilter;
-import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectFilter;
 import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectHistoryFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -80,7 +80,10 @@ public class OrganizationBean extends TemporalDomainObjectBean<Organization> {
         sqlSession().update(NS + ".deleteOrganization", organization);
     }
 
-    public List<Organization> getOrganizations(OrganizationFilter filter) {
+    @Override
+    @NotNull
+    public <A extends TemporalDomainObjectFilter> List<Organization> getTDOObjects(@Null A filter) {
+
         Map<String, Object> params = Maps.newHashMap();
         params.put("filter", filter);
         params.put("currentDate", new Date());

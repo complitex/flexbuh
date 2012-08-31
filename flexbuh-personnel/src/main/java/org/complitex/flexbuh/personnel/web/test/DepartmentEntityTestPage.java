@@ -62,11 +62,11 @@ public class DepartmentEntityTestPage extends WebPage {
         log.debug("update department: {}", department);
 
         log.debug("Select department by id: {}", departmentBean.getTDObject(department.getId()));
-        log.debug("Select all departments: {}", departmentBean.getDepartments(null));
+        log.debug("Select all departments: {}", departmentBean.getTDOObjects(null));
 
         OrganizationFilter filter = new OrganizationFilter();
         filter.setPhysicalAddress("Kharkov");
-        log.debug("Select organizations: {}", organizationBean.getOrganizations(filter));
+        log.debug("Select organizations: {}", organizationBean.getTDOObjects(filter));
     }
 
 }

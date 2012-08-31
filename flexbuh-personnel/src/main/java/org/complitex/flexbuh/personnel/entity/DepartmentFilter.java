@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Pavel Sknar
  *         Date: 19.03.12 17:32
  */
-public class DepartmentFilter extends AbstractFilter {
+public class DepartmentFilter extends TemporalDomainObjectFilter {
 
     private String name;
 
@@ -21,11 +21,7 @@ public class DepartmentFilter extends AbstractFilter {
 
     private Date completionDate;
 
-    private Date currentDate;
-
     private Long masterId;
-
-    private Long id;
 
     public String getName() {
         return name;
@@ -59,14 +55,6 @@ public class DepartmentFilter extends AbstractFilter {
         this.masterId = masterId;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Date getEntryIntoForceDate() {
         return entryIntoForceDate;
     }
@@ -81,14 +69,6 @@ public class DepartmentFilter extends AbstractFilter {
 
     public void setCompletionDate(Date completionDate) {
         this.completionDate = completionDate;
-    }
-
-    public Date getCurrentDate() {
-        return currentDate;
-    }
-
-    public void setCurrentDate(Date currentDate) {
-        this.currentDate = currentDate;
     }
 
     @Override

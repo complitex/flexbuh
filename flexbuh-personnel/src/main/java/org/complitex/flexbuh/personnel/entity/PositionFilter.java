@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Pavel Sknar
  *         Date: 18.07.12 12:05
  */
-public class PositionFilter extends AbstractFilter {
+public class PositionFilter extends TemporalDomainObjectFilter {
 
     private String name;
 
@@ -25,15 +25,11 @@ public class PositionFilter extends AbstractFilter {
 
     private Date completionDate;
 
-    private Date currentDate;
-
     private Float minPaymentSalary;
 
     private Float maxPaymentSalary;
 
     private String paymentCurrencyUnit;
-
-    private Long id;
 
     public String getName() {
         return name;
@@ -83,28 +79,12 @@ public class PositionFilter extends AbstractFilter {
         this.completionDate = completionDate;
     }
 
-    public Date getCurrentDate() {
-        return currentDate;
-    }
-
-    public void setCurrentDate(Date currentDate) {
-        this.currentDate = currentDate;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Float getMinPaymentSalary() {

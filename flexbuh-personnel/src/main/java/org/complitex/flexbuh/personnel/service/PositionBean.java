@@ -3,17 +3,16 @@ package org.complitex.flexbuh.personnel.service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.ibatis.session.SqlSession;
+import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.complitex.flexbuh.personnel.entity.Department;
-import org.complitex.flexbuh.personnel.entity.Organization;
-import org.complitex.flexbuh.personnel.entity.Position;
-import org.complitex.flexbuh.personnel.entity.PositionFilter;
+import org.complitex.flexbuh.personnel.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +79,10 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         sqlSession().update(NS + ".updateDepartmentAttributePositionCompletionDate", position);
     }
 
-    public List<Position> getPositions(@Nullable PositionFilter filter) {
+    @Override
+    @NotNull
+    public <A extends TemporalDomainObjectFilter> List<Position> getTDOObjects(@Null A f) {
+        PositionFilter filter = (PositionFilter)f;
         if (filter == null) {
             filter = new PositionFilter();
             filter.setCurrentDate(new Date());
@@ -115,7 +117,7 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         return Lists.newArrayList();
     }
 
-    public int getPositionsCount(@Nullable PositionFilter filter) {
+    public int getPositionsCount(@Null PositionFilter filter) {
         if (filter == null) {
             filter = new PositionFilter();
             filter.setCurrentDate(new Date());
@@ -127,7 +129,7 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         return (Integer)sqlSession.selectOne(NS + ".selectCurrentPositionsCount", filter);
     }
 
-    public Position getTDObject(@NotNull Long id, @Nullable Department department) {
+    public Position getTDObject(@NotNull Long id, @Null Department department) {
         if (department == null || department.getId() == null) {
             return getTDObject(id);
         }

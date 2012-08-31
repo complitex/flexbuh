@@ -289,7 +289,6 @@
         from `position` d
         where d.`id` = #{id} and `version` =
         (select max(`version`) from `position` where `id` = #{id} and `department_id` is null)
-        and `department_id` is null
     </select>
 
     <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="positionResultMap">
