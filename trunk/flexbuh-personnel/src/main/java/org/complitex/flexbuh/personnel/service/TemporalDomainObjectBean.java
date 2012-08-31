@@ -1,10 +1,13 @@
 package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Maps;
+import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 import org.complitex.flexbuh.common.service.AbstractBean;
+import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectFilter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,5 +64,7 @@ public abstract class TemporalDomainObjectBean<T extends TemporalDomainObject> e
     }
 
     abstract public void save(T object);
+
+    abstract public <A extends TemporalDomainObjectFilter> List<T> getTDOObjects(A filter);
 
 }

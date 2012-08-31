@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.personnel.entity;
 
-import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.entity.ShowMode;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 05.03.12 17:13
  */
-public class OrganizationFilter extends AbstractFilter {
+public class OrganizationFilter extends TemporalDomainObjectFilter {
 
     private String name;
     private String type;

@@ -30,9 +30,9 @@ import wickettree.content.CheckedFolder;
 import wickettree.util.InverseSet;
 import wickettree.util.ProviderSubset;
 
-import javax.annotation.Nullable;
 import javax.ejb.ObjectNotFoundException;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +60,7 @@ public abstract class TreePanel<T extends HierarchicalTemporalDomainObject<T>> e
 
     protected boolean enabled = true;
 
-    public TreePanel(@NotNull String id, @Nullable T currentItem) {
+    public TreePanel(@NotNull String id, @Null T currentItem) {
         super(id);
         this.currentItem = currentItem;
     }

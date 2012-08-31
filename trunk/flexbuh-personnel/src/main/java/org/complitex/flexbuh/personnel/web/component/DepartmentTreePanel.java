@@ -78,12 +78,12 @@ public class DepartmentTreePanel extends TreePanel<Department> {
             return null;
         }
         oldFilter.setId(id);
-        return departmentBean.getDepartments(oldFilter);
+        return departmentBean.getTDOObjects(oldFilter);
     }
 
     @Override
     protected List<Department> getFilteredTDObjects() {
-        return departmentBean.getDepartments(filter);
+        return departmentBean.getTDOObjects(filter);
     }
 
     @Override

@@ -1,16 +1,16 @@
 package org.complitex.flexbuh.personnel.service;
 
-import com.google.common.collect.Maps;
-import org.complitex.flexbuh.common.entity.TemporalDomainObject;
+import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.complitex.flexbuh.common.service.AbstractBean;
 import org.complitex.flexbuh.personnel.entity.Department;
 import org.complitex.flexbuh.personnel.entity.DepartmentFilter;
+import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectFilter;
 
 import javax.ejb.Stateless;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -52,7 +52,11 @@ public class DepartmentBean extends HierarchicalTemporalDomainObjectBean<Departm
         sqlSession().update(NS + ".updateDepartmentCompletionDate", department);
     }
 
-    public List<Department> getDepartments(DepartmentFilter filter) {
+    @Override
+    @NotNull
+    public <A extends TemporalDomainObjectFilter> List<Department> getTDOObjects(@Null A f) {
+
+        DepartmentFilter filter = (DepartmentFilter)f;
         if (filter == null) {
             filter = new DepartmentFilter();
             filter.setCurrentDate(new Date());
