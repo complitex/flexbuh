@@ -119,7 +119,7 @@ public class OrganizationList extends TemplatePage {
                 filter.setSortProperty(getSort().getProperty());
 
                 filter.setAscending(getSort().isAscending());
-                return organizationBean.getOrganizations(filter);
+                return organizationBean.getTDOObjects(filter);
             }
 
             @Override

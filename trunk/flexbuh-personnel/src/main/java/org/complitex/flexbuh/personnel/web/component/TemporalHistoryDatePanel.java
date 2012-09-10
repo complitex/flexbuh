@@ -33,7 +33,10 @@ public abstract class TemporalHistoryDatePanel<T extends TemporalDomainObject> e
     protected T getTDObjectNextInHistory(T object) {
         TemporalDomainObjectFilter filter = getFilter();
         filter.setId(object.getId());
-        filter.setCurrentDate(DateUtils.addMilliseconds(object.getEntryIntoForceDate(), +1));
+        if (object.getCompletionDate() == null) {
+            return null;
+        }
+        filter.setCurrentDate(DateUtils.addMilliseconds(object.getCompletionDate(), +1));
         return getTemporalDomainObject(filter);
     }
 
