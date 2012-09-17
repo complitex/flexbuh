@@ -85,18 +85,22 @@
     </sql>
 
     <sql id="filter">
+        `department_id` is null
         <if test="currentDate != null">
-            <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
-            and
+            and <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
         </if>
-        <choose>
-            <when test="id != null">
-                `id` = #{id}
+        <if test="id != null">
+            and `id` = #{id}
+        </if>
+        <!--choose>
+            <when test="departmentId != null">
+                (`department_id` = #{departmentId} or `department_id` is null)
             </when>
             <otherwise>
-                `id` is not null
+                `department_id` is null
             </otherwise>
-        </choose>
+        </choose-->
+        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
         <if test="code != null"> and `code` like #{code}</if>
         <if test="description != null"> and `description` like #{description}</if>
@@ -111,7 +115,6 @@
             and #{completionDate} >= `entry_into_force_date`
         </if>
         -->
-        and `organization_id` = #{organizationId} and `department_id` is null
         <!--if test="currentDate == null and id == null">
           group by `id` order by `id` desc, `version` desc
         </if-->
@@ -241,11 +244,14 @@
     </update>
 
     <select id="selectCurrentTDObjectById" parameterType="map" resultMap="positionResultMap">
-        select *, #{currentDate} as `current_date` from `position` where `id` = #{id}
-        <include refid="byPossibleOrganizationOrDepartment"/>
-        and
+        select *, #{currentDate} as `current_date` from `position` where `id` = #{id} and (
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
-        order by `department_id`
+        <include refid="byPossibleOrganizationOrDepartment"/>
+        <if test="departmentId != null"> or
+        (`entry_into_force_date` > #{currentDate} and `department_id` = #{departmentId})
+        </if>
+        )
+        order by `department_id`, `entry_into_force_date` asc limit 0,2
     </select>
 
     <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="positionResultMap">
@@ -255,17 +261,23 @@
 
     <select id="selectCurrentDepartmentPositions" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultMap="positionResultMap">
         select p2.*, #{currentDate} as `current_date` from
-        (select `id`, `version` from `position` where
+        (select `id`, `version`, `entry_into_force_date` as `e` from `position` where
         <include refid="filter"/>
         <if test="sortProperty != null">
           order by ${sortProperty}
           <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
         </if>
         limit #{first}, #{count}) as p
-        inner join `position` p2 on p2.id=p.`id` and (p2.version = p.`version` and p2.`department_id` is null
-        <if test="departmentId != null"> or (p2.`department_id` = #{departmentId}<if test="currentDate != null">
-            and <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
-        </if>)</if>)
+        inner join `position` p2 on p2.id=p.`id`and (p2.`version` = p.`version` and `entry_into_force_date` = p.`e`
+        <if test="departmentId != null">
+            or p2.`department_id` = #{departmentId}
+            <if test="currentDate != null">
+                and (<include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+                  or (`entry_into_force_date` > #{currentDate} and p.`version` = 1)
+                )
+            </if>
+        </if>
+        )
     </select>
 
     <select id="selectCurrentOrganizationPositions" parameterType="org.complitex.flexbuh.personnel.entity.PositionFilter" resultMap="positionResultMap">
@@ -284,11 +296,16 @@
         <include refid="filter"/>
     </select>
 
-    <select id="selectTDObjectLastInHistory" parameterType="long" resultMap="positionResultMap">
+    <select id="selectTDObjectLastInHistory" parameterType="map" resultMap="positionResultMap">
         select d.*, `entry_into_force_date` as `current_date`
         from `position` d
-        where d.`id` = #{id} and `version` =
-        (select max(`version`) from `position` where `id` = #{id} and `department_id` is null)
+        where d.`id` = #{id} and `version` IN
+        (select max(`version`) from `position` where `id` = #{id} and `department_id` is null
+        <if test="departmentId != null">
+        union
+        select max(`version`) from `position` where `id` = #{id} and `department_id` = #{departmentId}
+        </if>)
+        order by `department_id`
     </select>
 
     <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="positionResultMap">

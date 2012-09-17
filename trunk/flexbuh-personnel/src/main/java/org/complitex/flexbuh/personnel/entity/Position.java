@@ -90,7 +90,7 @@ public class Position extends TemporalDomainObject {
     }
 
     public void setDepartment(Department department) {
-        log.debug("Set department");
+        log.debug("Set department: {}", department);
         this.department = department;
         if (departmentAttributes == null) {
             departmentAttributes = new Attributes();
@@ -111,11 +111,15 @@ public class Position extends TemporalDomainObject {
 
     public void copyDepartmentAttributes(Position departmentPosition) {
         log.debug("copy department attributes: {}", departmentPosition);
+        department = departmentPosition.getDepartment();
         departmentAttributes = new Attributes();
         departmentAttributes.setPayment(departmentPosition.getPayment());
         departmentAttributes.setDescription(departmentPosition.getDescription());
         departmentAttributes.setSchedule(departmentPosition.getSchedule());
         departmentAttributes.setVersion(departmentPosition.getVersion());
+        departmentAttributes.setEntryIntoForceDate(departmentPosition.getEntryIntoForceDate());
+        departmentAttributes.setCompletionDate(departmentPosition.getCompletionDate());
+        departmentAttributes.setDeleted(departmentPosition.isDeleted());
         log.debug("result: {}", departmentAttributes);
     }
 

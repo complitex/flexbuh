@@ -3,13 +3,14 @@ package org.complitex.flexbuh.personnel.service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.ibatis.session.SqlSession;
-import org.complitex.flexbuh.common.entity.AbstractFilter;
 import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.complitex.flexbuh.personnel.entity.*;
+import org.complitex.flexbuh.personnel.entity.Department;
+import org.complitex.flexbuh.personnel.entity.Position;
+import org.complitex.flexbuh.personnel.entity.PositionFilter;
+import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -89,7 +90,11 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
             filter.setCount(Integer.MAX_VALUE);
         }
 
-        if (filter.getDepartmentId() != null && filter.getOrganizationId() != null) {
+        if (filter.getCurrentDate() != null && filter.getCurrentDate().getTime() == Long.MAX_VALUE) {
+            return Lists.newArrayList(getTDObjectLastInHistory(filter.getId(), filter.getDepartmentId()));
+        } else if (filter.getCurrentDate() != null && filter.getCurrentDate().getTime() == 0) {
+            return Lists.newArrayList(getPositionByDepartment(filter.getId(), filter.getDepartmentId(), filter.getEntryIntoForceDate()));
+        } else if (filter.getDepartmentId() != null) {
             List<Position> sqlResult = sqlSession().selectList(NS + ".selectCurrentDepartmentPositions", filter);
             List<Position> positions = Lists.newArrayList();
             Position prevPosition = null;
@@ -111,10 +116,8 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
                 }
             }
             return positions;
-        } else if (filter.getOrganizationId() != null) {
-            return sqlSession().selectList(NS + ".selectCurrentOrganizationPositions", filter);
         }
-        return Lists.newArrayList();
+        return sqlSession().selectList(NS + ".selectCurrentOrganizationPositions", filter);
     }
 
     public int getPositionsCount(@Null PositionFilter filter) {
@@ -130,14 +133,21 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
     }
 
     public Position getTDObject(@NotNull Long id, @Null Department department) {
+        return getTDObject(id, department, new Date());
+    }
+
+    public Position getTDObject(@NotNull Long id, @Null Department department, @NotNull Date currentDate) {
         if (department == null || department.getId() == null) {
             return getTDObject(id);
         }
+        return getPositionByDepartment(id, department.getId(), currentDate);
+    }
+
+    public Position getPositionByDepartment(@NotNull Long id, @Null Long departmentId, @NotNull Date currentDate) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("id", id);
-        params.put("currentDate", new Date());
-        params.put("organizationId", department.getOrganization().getId());
-        params.put("departmentId", department.getId());
+        params.put("currentDate", currentDate);
+        params.put("departmentId", departmentId);
 
         List<Position> result = sqlSession().selectList(NS + ".selectCurrentTDObjectById", params);
 
@@ -146,7 +156,27 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         if (result.size() == 0) {
             return null;
         }
-        result.get(0).setDepartment(department);
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+        result.get(0).setDepartment(result.get(1).getDepartment());
+        if (currentDate.after(result.get(1).getEntryIntoForceDate())) {
+            result.get(0).copyDepartmentAttributes(result.get(1));
+        } else {
+            result.get(0).setCompletionDate(result.get(1).getEntryIntoForceDate());
+        }
+        return result.get(0);
+    }
+
+    public Position getTDObjectLastInHistory(Long id, Long departmentId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("departmentId", departmentId);
+        List<Position> result = sqlSession().selectList(NS + ".selectTDObjectLastInHistory", params);
+
+        if (result.size() == 0) {
+            return null;
+        }
         if (result.size() == 1) {
             return result.get(0);
         }
