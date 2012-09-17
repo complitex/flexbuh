@@ -183,7 +183,7 @@
         <include refid="filter"/>
     </select>
     
-    <select id="selectTDObjectLastInHistory" parameterType="long" resultMap="organizationResultMap">
+    <select id="selectTDObjectLastInHistory" parameterType="map" resultMap="organizationResultMap">
         select o.*,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address1Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>

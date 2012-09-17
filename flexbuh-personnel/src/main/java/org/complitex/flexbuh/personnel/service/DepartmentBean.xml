@@ -142,7 +142,7 @@
         <include refid="filter"/>
     </select>
 
-    <select id="selectTDObjectLastInHistory" parameterType="long" resultMap="departmentResultMap">
+    <select id="selectTDObjectLastInHistory" parameterType="map" resultMap="departmentResultMap">
         select d.*, `entry_into_force_date` as `current_date`
         from `department`d
         where d.`id` = #{id} and `version` =

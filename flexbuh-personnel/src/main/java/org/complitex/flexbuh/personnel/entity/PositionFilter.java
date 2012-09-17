@@ -2,7 +2,10 @@ package org.complitex.flexbuh.personnel.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.AbstractFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -10,6 +13,8 @@ import java.util.Date;
  *         Date: 18.07.12 12:05
  */
 public class PositionFilter extends TemporalDomainObjectFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(PositionFilter.class);
 
     private String name;
 
@@ -30,6 +35,19 @@ public class PositionFilter extends TemporalDomainObjectFilter {
     private Float maxPaymentSalary;
 
     private String paymentCurrencyUnit;
+
+    public PositionFilter() {
+    }
+
+    public PositionFilter(Department department, Integer count) {
+        log.debug("Start init filter: department={}, count={}", department, count);
+        if (department != null && department.getId() != null) {
+            this.departmentId = department.getId();
+            this.entryIntoForceDate = department.getEntryIntoForceDate();
+            log.debug("Init filter: departmentId={}, entryIntoForceDate={}", this.departmentId, this.entryIntoForceDate);
+        }
+        this.count = count;
+    }
 
     public String getName() {
         return name;

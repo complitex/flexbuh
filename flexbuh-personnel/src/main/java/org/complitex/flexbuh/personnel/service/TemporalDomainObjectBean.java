@@ -42,7 +42,9 @@ public abstract class TemporalDomainObjectBean<T extends TemporalDomainObject> e
     }
 
     public T getTDObjectLastInHistory(Long id) {
-        return sqlSession().selectOne(NS + ".selectTDObjectLastInHistory", id);
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        return sqlSession().selectOne(NS + ".selectTDObjectLastInHistory", params);
     }
 
     public T getTDObjectPreviewInHistoryByField(Long id, Long version, String fieldName) {

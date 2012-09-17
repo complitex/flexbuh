@@ -8,26 +8,21 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.convert.ConversionException;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
-import org.complitex.flexbuh.personnel.entity.Department;
-import org.complitex.flexbuh.personnel.entity.Organization;
-import org.complitex.flexbuh.personnel.entity.Payment;
-import org.complitex.flexbuh.personnel.entity.Position;
+import org.complitex.flexbuh.personnel.entity.*;
 import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.PositionBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
 import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryIncrementalPanel;
+import org.complitex.flexbuh.personnel.web.component.TemporalHistoryDatePanel;
 import org.complitex.flexbuh.personnel.web.component.TemporalObjectEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +57,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
     
     private Form<Position> form;
 
-    private TemporalHistoryIncrementalPanel<Position> positionHistoryPanel;
+    private TemporalHistoryDatePanel<Position> positionHistoryPanel;
 
     private TemporalDomainObjectUpdate<Position> historyUpdate;
 
@@ -116,8 +111,12 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         if (id != null) {
             log.debug("Start load position");
             position = positionBean.getTDObject(id, department);
+            fixPositionVersion(position);
 
             log.debug("Loaded position: {}", position);
+            if (position != null && position.getDepartment() == null && department != null) {
+                position.setDepartment(department);
+            }
             if (position != null) {
                 init();
             } else {
@@ -158,7 +157,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         add(form);
 
         // Button update/create position
-        form.add(new SaveDepartmentButton("submit"));
+        form.add(new SavePositionButton("submit"));
 
         // Button cancel changes and return to organization page or parent position page
         PageParameters parameters = new PageParameters();
@@ -192,6 +191,8 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
 
                 oldPosition = position;
                 position = getObject();
+                fixPositionVersion(position);
+
                 form.setModel(new CompoundPropertyModel<>(position));
 
                 target.add(form);
@@ -276,7 +277,24 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
 
         form.add(new TextField<>("organization", new Model<>(position.getOrganization() != null? position.getOrganization().getName(): "")));
 
-        positionHistoryPanel = new TemporalHistoryIncrementalPanel<Position>("position_history", position, historyUpdate) {
+
+        positionHistoryPanel = new TemporalHistoryDatePanel<Position>("position_history", position, historyUpdate) {
+
+            @Override
+            protected <F extends TemporalDomainObjectFilter> Position getTemporalDomainObject(TemporalDomainObjectFilter filter) {
+                Position position = super.getTemporalDomainObject(filter);
+                fixPositionVersion(position);
+
+                return position;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected PositionFilter getFilter(Position position) {
+                log.debug("Filter position: {}", position);
+                return new PositionFilter(position.getDepartment(), 1);
+            }
+
             @Override
             protected TemporalDomainObjectBean<Position> getTDObjectBean() {
                 return positionBean;
@@ -285,9 +303,24 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         positionHistoryPanel.setOutputMarkupId(true);
         add(positionHistoryPanel);
     }
-    
-    private class SaveDepartmentButton extends Button {
-        public SaveDepartmentButton(String id) {
+
+    private void fixPositionVersion(Position position) {
+        if (position != null && position.getDepartment() != null && position.getDepartmentAttributes() != null
+                && position.getDepartmentAttributes().getVersion() != null) {
+            if (position.getDepartmentAttributes().getVersion() > position.getVersion()) {
+                position.setVersion(position.getDepartmentAttributes().getVersion());
+                position.setEntryIntoForceDate(position.getDepartmentAttributes().getEntryIntoForceDate());
+            }
+            if (position.getDepartmentAttributes().getCompletionDate() != null &&
+                    (position.getCompletionDate() == null || position.getCompletionDate() != null &&
+                            position.getCompletionDate().after(position.getDepartmentAttributes().getCompletionDate()))) {
+                position.setCompletionDate(position.getDepartmentAttributes().getCompletionDate());
+            }
+        }
+    }
+
+    private class SavePositionButton extends Button {
+        public SavePositionButton(String id) {
             super(id);
         }
 
@@ -311,9 +344,9 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
             info(getString("position_saved"));
 
             if (newObject) {
-                log.debug("Создание подразделения", new Event(EventCategory.CREATE, position));
+                log.debug("Создание должности", new Event(EventCategory.CREATE, position));
             } else {
-                log.debug("Редактирование подрdазделения", new Event(EventCategory.CREATE, oldPosition, position));
+                log.debug("Редактирование должности", new Event(EventCategory.CREATE, oldPosition, position));
             }
 
         }
