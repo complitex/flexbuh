@@ -148,8 +148,8 @@ CREATE TABLE  `organization` (
   `email` VARCHAR(45) NOT NULL COMMENT 'E-mail',
   `http_address` VARCHAR(255) COMMENT 'Официальный веб адрес организации',
 
-  `physical_address_id` BIGINT (20) NOT NULL COMMENT 'Идентификатор физического адреса организации',
-  `juridical_address_id` BIGINT (20) NOT NULL COMMENT 'Идентификатор юридического адреса организации',
+  `physical_address_id` BIGINT (20) COMMENT 'Идентификатор физического адреса организации',
+  `juridical_address_id` BIGINT (20) COMMENT 'Идентификатор юридического адреса организации',
 
   PRIMARY KEY (`id`, `version`),
   CONSTRAINT `fk_organization__physical_address` FOREIGN KEY (`physical_address_id`) REFERENCES `address` (`id`),
