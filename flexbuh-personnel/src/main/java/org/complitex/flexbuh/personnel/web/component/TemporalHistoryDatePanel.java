@@ -26,6 +26,14 @@ public abstract class TemporalHistoryDatePanel<T extends TemporalDomainObject> e
     }
 
     @Override
+    protected void initProperties(T currentObject) {
+        super.initProperties(currentObject);
+        if (previous != null && start == null) {
+            previous = null;
+        }
+    }
+
+    @Override
     protected T getTDObjectPreviousInHistory(T object) {
         TemporalDomainObjectFilter filter = getFilter(object);
         filter.setId(object.getId());
@@ -56,7 +64,7 @@ public abstract class TemporalHistoryDatePanel<T extends TemporalDomainObject> e
         filter.setCurrentDate(START_IN_HISTORY);
         T result = getTemporalDomainObject(filter);
         log.debug("Start in history object: {}", result);
-        return result;
+        return result != null && result.getVersion().equals(object.getVersion()) ? null : result;
     }
 
     @Override

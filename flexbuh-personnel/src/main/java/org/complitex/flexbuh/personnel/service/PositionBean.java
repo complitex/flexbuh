@@ -101,11 +101,23 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
             for (Position position : sqlResult) {
                 if (position.getDepartment() != null && prevPosition != null && position.getId().equals(prevPosition.getId())) {
                     prevPosition.setDepartment(position.getDepartment());
-                    prevPosition.copyDepartmentAttributes(position);
+                    if (filter.getCurrentDate() != null &&
+                            position.getEntryIntoForceDate().after(filter.getCurrentDate()) &&
+                            (prevPosition.getCompletionDate() == null || prevPosition.getCompletionDate().after(position.getEntryIntoForceDate()))) {
+                        prevPosition.setCompletionDate(position.getEntryIntoForceDate());
+                    } else {
+                        prevPosition.copyDepartmentAttributes(position);
+                    }
                     prevPosition = null;
                 } else if (prevPosition != null && prevPosition.getDepartment() != null && position.getId().equals(prevPosition.getId())) {
-                    position.setDepartment(position.getDepartment());
-                    position.copyDepartmentAttributes(prevPosition);
+                    position.setDepartment(prevPosition.getDepartment());
+                    if (filter.getCurrentDate() != null &&
+                            prevPosition.getEntryIntoForceDate().after(filter.getCurrentDate()) &&
+                            (position.getCompletionDate() == null || position.getCompletionDate().after(prevPosition.getEntryIntoForceDate()))) {
+                        position.setCompletionDate(position.getEntryIntoForceDate());
+                    } else {
+                        position.copyDepartmentAttributes(prevPosition);
+                    }
                     positions.add(position);
                     prevPosition = null;
                 } else if(position.getDepartment() == null) {

@@ -50,10 +50,10 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
     private Component forwardHistoryButton;
     private Component endHistoryButton;
 
-    private T start;
-    private T previous;
-    private T next;
-    private T end;
+    protected T start;
+    protected T previous;
+    protected T next;
+    protected T end;
 
     public TemporalHistoryPanel(String id, T currentObject, TemporalDomainObjectUpdate<T> update) {
         super(id);
@@ -98,7 +98,7 @@ public abstract class TemporalHistoryPanel<T extends TemporalDomainObject> exten
         updateState(end, HTML_CLASSES.get(HISTORY_END_BUTTON), endHistoryButton);
     }
 
-    private void initProperties(T currentObject) {
+    protected void initProperties(T currentObject) {
         start = getStartModification(currentObject);
         previous = getPreviousModification(currentObject);
         next = getNextModification(currentObject);
