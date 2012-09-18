@@ -92,8 +92,10 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
 
         if (filter.getCurrentDate() != null && filter.getCurrentDate().getTime() == Long.MAX_VALUE) {
             return Lists.newArrayList(getTDObjectLastInHistory(filter.getId(), filter.getDepartmentId()));
-        } else if (filter.getCurrentDate() != null && filter.getCurrentDate().getTime() == 0) {
+        } else if (filter.getCurrentDate() != null && filter.getCurrentDate().getTime() == 0 && filter.getDepartmentId() != null) {
             return Lists.newArrayList(getPositionByDepartment(filter.getId(), filter.getDepartmentId(), filter.getEntryIntoForceDate()));
+        } else if (filter.getCurrentDate() != null && filter.getCurrentDate().getTime() == 0 ) {
+            return Lists.newArrayList(getTDObject(filter.getId(), 1));
         } else if (filter.getDepartmentId() != null) {
             List<Position> sqlResult = sqlSession().selectList(NS + ".selectCurrentDepartmentPositions", filter);
             List<Position> positions = Lists.newArrayList();
