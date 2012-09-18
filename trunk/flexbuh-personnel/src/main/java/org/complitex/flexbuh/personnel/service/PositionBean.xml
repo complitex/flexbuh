@@ -273,7 +273,7 @@
             or p2.`department_id` = #{departmentId}
             <if test="currentDate != null">
                 and (<include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
-                  or (`entry_into_force_date` > #{currentDate} and p.`version` = 1)
+                  or `entry_into_force_date` > #{currentDate}
                 )
             </if>
         </if>
