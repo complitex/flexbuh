@@ -313,7 +313,7 @@
         where d.`id` = #{id} and `version` = (select max(d1.`version`) from `position` d1
         inner join `position` d2 on d1.`id` = d2.`id`
             where d1.id = #{id} and
-            (d1.`version` = d2.`version` + 1 and
+            (d1.`version` > d2.`version` and
              (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
               d1.`${fieldName}` is not null and d2.`${fieldName}` is null) or (d1.`version` = 1 and d2.`version` = 1))
               and #{version} > d1.`version` <include refid="byPossibleOrganizationOrDepartment2"/>)
@@ -327,7 +327,7 @@
         where d.`id` = #{id} and `version` = (select min(d1.`version`) from `position` d1
         inner join `position` d2 on d1.`id` = d2.`id`
             where d1.id = #{id} and
-            (d1.`version` = d2.`version` + 1 and
+            (d1.`version` > d2.`version` and
              (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
               d1.`${fieldName}` is not null and d2.`${fieldName}` is null or
               d1.`deleted` or d1.`completion_date` is null))
