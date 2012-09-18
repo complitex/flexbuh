@@ -449,7 +449,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         @Override
         public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 
-            if (updatedAjaxBehavior.isUpdated()) {
+            if (updatedAjaxBehavior.isUpdated() || organization.getId() == null) {
                 boolean emptyRequiredField = !checkRequiredField(organization.getName(), "name");
                 if (!checkRequiredField(organization.getEmail(), "email")) {
                     emptyRequiredField = true;
