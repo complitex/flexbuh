@@ -139,7 +139,10 @@
     <sql id="byPossibleOrganizationOrDepartment2">
         <if test="organizationId != null"> and d1.`organization_id` = #{organizationId} and d2.`organization_id` = #{organizationId}</if>
         <choose>
-            <when test="departmentId != null"> and d1.`department_id` = #{departmentId} and d2.`department_id` = #{departmentId}</when>
+            <when test="departmentId != null">
+                and (d1.`department_id` = #{departmentId} and d2.`department_id` = #{departmentId} or
+                d1.`department_id` is null or d2.`department_id` is null)
+            </when>
             <otherwise> and d1.`department_id` is null and d2.`department_id` is null</otherwise>
         </choose>
     </sql>
@@ -321,6 +324,20 @@
         order by `version`
     </select>
 
+    <select id="selectDepartmentPositionPreviewInHistoryByField" parameterType="map" resultMap="positionResultMap">
+        select p.*, d.`entry_into_force_date` as `current_date` from `position` d
+        inner join `position` p on p.id = d.id and  d.`entry_into_force_date` >= p.`entry_into_force_date` and
+            (p.`completion_date` > d.`entry_into_force_date` or p.`completion_date` is null)
+        where d.`id` = #{id} and d.`version` = (select max(d1.`version`) from `position` d1
+        inner join `position` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` > d2.`version` and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null) or (d1.`version` = 1 and d2.`version` = 1))
+              and #{version} > d1.`version` <include refid="byPossibleOrganizationOrDepartment2"/>)
+        order by p.`department_id`
+    </select>
+
     <select id="selectTDObjectNextInHistoryByField" parameterType="map" resultMap="positionResultMap">
         select d.*, `entry_into_force_date` as `current_date`
         from `position` d
@@ -334,6 +351,22 @@
             and d1.`version` > #{version} <include refid="byPossibleOrganizationOrDepartment2"/>)
         <include refid="byPossibleOrganizationOrDepartment"/>
         order by `version`
+    </select>
+
+    <select id="selectDepartmentPositionNextInHistoryByField" parameterType="map" resultMap="positionResultMap">
+        select p.*, d.`entry_into_force_date` as `current_date`
+        from `position` d
+        inner join `position` p on p.id = d.id and  d.`entry_into_force_date` >= p.`entry_into_force_date` and
+            (p.`completion_date` > d.`entry_into_force_date` or p.`completion_date` is null)
+        where d.`id` = #{id} and d.`version` = (select min(d1.`version`) from `position` d1
+        inner join `position` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` > d2.`version` and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null or
+              d1.`deleted` or d1.`completion_date` is null))
+            and d1.`version` > #{version} <include refid="byPossibleOrganizationOrDepartment2"/>)
+        order by p.`department_id`
     </select>
 
 </mapper>
