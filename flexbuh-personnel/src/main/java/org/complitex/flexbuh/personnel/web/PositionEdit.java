@@ -23,6 +23,7 @@ import org.complitex.flexbuh.personnel.service.PositionBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
 import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
 import org.complitex.flexbuh.personnel.web.component.TemporalHistoryDatePanel;
+import org.complitex.flexbuh.personnel.web.component.TemporalHistoryPanel;
 import org.complitex.flexbuh.personnel.web.component.TemporalObjectEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -302,6 +304,68 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         };
         positionHistoryPanel.setOutputMarkupId(true);
         add(positionHistoryPanel);
+    }
+
+    @Override
+    protected TemporalHistoryPanel<Position> getHistoryPanel(final String fieldName) {
+        return position.getDepartment() == null? super.getHistoryPanel(fieldName):
+                new TemporalHistoryPanel<Position>(fieldName + "_history",
+                    getTDObject(), getTDObjectUpdate()) {
+
+            @Override
+            protected void initProperties(Position currentObject) {
+                super.initProperties(currentObject);
+                if (previous != null && start == null) {
+                    previous = null;
+                }
+            }
+
+            @Override
+            protected Position getTDObjectPreviousInHistory(Position object) {
+                Position result = positionBean.getTDObjectPreviewInHistoryByField(object.getId(),
+                        getMaxVersion(object), object.getDepartment().getId(), fieldName);
+                if (result.getDepartment() == null) {
+                    result.setDepartment(object.getDepartment());
+                }
+                if (result.getDepartmentAttributes() != null && result.getDepartmentAttributes().getVersion() != null) {
+                    result.setEntryIntoForceDate(object.getDepartmentAttributes().getEntryIntoForceDate());
+                }
+                return result;
+            }
+
+            @Override
+            protected Position getTDObjectNextInHistory(Position object) {
+                Position result = positionBean.getTDObjectNextInHistoryByField(object.getId(),
+                        getMaxVersion(object), object.getDepartment().getId(), fieldName);
+                if (result.getDepartment() == null) {
+                    result.setDepartment(object.getDepartment());
+                }
+                return result;
+            }
+
+            @Override
+            protected Position getTDObjectStartInHistory(Position object) {
+                PositionFilter filter = new PositionFilter(object.getDepartment(), 1);
+                filter.setId(object.getId());
+                filter.setCurrentDate(TemporalHistoryDatePanel.START_IN_HISTORY);
+                List<Position> result = getTDObjectBean().getTDOObjects(filter);
+                return result.size() != 0 && !getMaxVersion(result.get(0)).equals(getMaxVersion(object))? result.get(0): null;
+            }
+
+            @Override
+            protected Position getTDObjectLastInHistory(Position object) {
+                Position result = positionBean.getTDObjectLastInHistory(object.getId(), object.getDepartment().getId());
+                if (result.getDepartment() == null) {
+                    result.setDepartment(object.getDepartment());
+                }
+                return result;
+            }
+
+            private Long getMaxVersion(Position object) {
+                return object.getDepartmentAttributes() != null && object.getDepartmentAttributes().getVersion() != null?
+                        Math.max(object.getVersion(), object.getDepartmentAttributes().getVersion()): object.getVersion();
+            }
+        };
     }
 
     private void fixPositionVersion(Position position) {

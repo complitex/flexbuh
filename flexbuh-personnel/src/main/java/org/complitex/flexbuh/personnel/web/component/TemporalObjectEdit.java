@@ -53,32 +53,7 @@ public abstract class TemporalObjectEdit<T extends TemporalDomainObject> extends
     protected void addHistoryFieldToForm(Form<T> form, final String fieldName,
                                        final Component field) {
         addOnMouseOver(form);
-        final TemporalHistoryPanel<T> historyPanel =
-            new TemporalHistoryPanel<T>(fieldName + "_history",
-                    getTDObject(), getTDObjectUpdate()) {
-
-            @Override
-            protected T getTDObjectPreviousInHistory(T object) {
-                return getTDObjectBean().getTDObjectPreviewInHistoryByField(object.getId(),
-                        object.getVersion(), fieldName);
-            }
-
-            @Override
-            protected T getTDObjectNextInHistory(T object) {
-                return getTDObjectBean().getTDObjectNextInHistoryByField(object.getId(),
-                        object.getVersion(), fieldName);
-            }
-
-            @Override
-            protected T getTDObjectStartInHistory(T object) {
-                return getTDObjectBean().getTDObject(object.getId(), 1);
-            }
-
-            @Override
-            protected T getTDObjectLastInHistory(T object) {
-                return getTDObjectBean().getTDObjectLastInHistory(object.getId());
-            }
-        };
+        final TemporalHistoryPanel<T> historyPanel = getHistoryPanel(fieldName);
         historyPanel.setOutputMarkupId(true);
         historyPanel.setVisible(false);
         historyPanel.setOutputMarkupPlaceholderTag(true);
@@ -123,6 +98,34 @@ public abstract class TemporalObjectEdit<T extends TemporalDomainObject> extends
 
         //form.add(field);
         //form.add(historyPanel);
+    }
+
+    protected TemporalHistoryPanel<T> getHistoryPanel(final String fieldName) {
+        return new TemporalHistoryPanel<T>(fieldName + "_history",
+                    getTDObject(), getTDObjectUpdate()) {
+
+            @Override
+            protected T getTDObjectPreviousInHistory(T object) {
+                return getTDObjectBean().getTDObjectPreviewInHistoryByField(object.getId(),
+                        object.getVersion(), fieldName);
+            }
+
+            @Override
+            protected T getTDObjectNextInHistory(T object) {
+                return getTDObjectBean().getTDObjectNextInHistoryByField(object.getId(),
+                        object.getVersion(), fieldName);
+            }
+
+            @Override
+            protected T getTDObjectStartInHistory(T object) {
+                return getTDObjectBean().getTDObject(object.getId(), 1);
+            }
+
+            @Override
+            protected T getTDObjectLastInHistory(T object) {
+                return getTDObjectBean().getTDObjectLastInHistory(object.getId());
+            }
+        };
     }
 
     private String getValueField(Object object, String fieldName) {

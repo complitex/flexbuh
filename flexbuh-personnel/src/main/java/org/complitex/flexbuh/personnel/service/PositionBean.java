@@ -198,6 +198,54 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
         return result.get(0);
     }
 
+    public Position getTDObjectPreviewInHistoryByField(Long id, Long version, Long departmentId, String fieldName) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("version", version);
+        params.put("fieldName", fieldName);
+        params.put("departmentId", departmentId);
+
+        List<Position> result = sqlSession().selectList(NS + ".selectDepartmentPositionPreviewInHistoryByField", params);
+
+        if (result.size() == 0) {
+            return null;
+        }
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+        result.get(0).setDepartment(result.get(1).getDepartment());
+        result.get(0).copyDepartmentAttributes(result.get(1));
+        /*
+        } else {
+            result.get(0).setCompletionDate(result.get(1).getEntryIntoForceDate());
+        }*/
+        return result.get(0);
+    }
+
+    public Position getTDObjectNextInHistoryByField(Long id, Long version, Long departmentId, String fieldName) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
+        params.put("version", version);
+        params.put("fieldName", fieldName);
+        params.put("departmentId", departmentId);
+
+        List<Position> result = sqlSession().selectList(NS + ".selectDepartmentPositionNextInHistoryByField", params);
+
+        if (result.size() == 0) {
+            return null;
+        }
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+        result.get(0).setDepartment(result.get(1).getDepartment());
+        result.get(0).copyDepartmentAttributes(result.get(1));
+        /*
+        } else {
+            result.get(0).setCompletionDate(result.get(1).getEntryIntoForceDate());
+        }*/
+        return result.get(0);
+    }
+
     @Transactional
     public void deletePosition(Position position) {
         position.setDeleted(true);
