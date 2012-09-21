@@ -96,9 +96,11 @@
             <if test="parentId == null">and `parent_id` is null</if>
             <if test="cDoc != null">and de.`c_doc` = #{cDoc}</if>
             <if test="cDocSub != null">and de.`c_doc_sub` = #{cDocSub}</if>
-            and (de.`session_id` = #{sessionId} or s.`shared_to_session_id` = #{sessionId})
+            <if test="sessionId != null and sessionId > 0">
+                and (de.`session_id` = #{sessionId} or s.`shared_to_session_id` = #{sessionId})
+            </if>
 
-            <if test="personProfileId != null">and de.`person_profile_id` = #{personProfileId}</if>
+            <if test="personProfileId != null and personProfileId > 0">and de.`person_profile_id` = #{personProfileId}</if>
             <if test="personProfileId == null">and de.`person_profile_id` is null</if>
 
             <foreach collection="periods" item="p" separator="or" open="and (" close=")">
@@ -166,8 +168,9 @@
         from
         `declaration` d left join `share` s on (d.`session_id` = s.`session_id`)
         where
-        (d.`session_id` = #{sessionId} or s.shared_to_session_id = #{sessionId}) and `parent_id` is null
-        <if test="personProfileId != null">and d.`person_profile_id` = #{personProfileId}</if>
+        `parent_id` is null
+        <if test="sessionId != null and sessionId > 0">and (d.`session_id` = #{sessionId} or s.shared_to_session_id = #{sessionId})</if>
+        <if test="personProfileId != null and personProfileId > 0">and d.`person_profile_id` = #{personProfileId}</if>
         <if test="personProfileId == null">and d.`person_profile_id` is null</if>
         group by `period_type`, `period_month`, `year`
     </select>

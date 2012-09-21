@@ -37,7 +37,9 @@ import org.apache.wicket.util.time.Time;
 import org.complitex.flexbuh.common.entity.PersonProfile;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
+import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.common.service.PersonProfileBean;
+import org.complitex.flexbuh.common.service.user.UserBean;
 import org.complitex.flexbuh.common.template.TemplatePage;
 import org.complitex.flexbuh.common.template.toolbar.AddDocumentButton;
 import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
@@ -109,7 +111,10 @@ public class DeclarationList extends TemplatePage{
         final Long sessionId = getSessionId();
 
         //Фильтр
-        declarationFilter = new DeclarationFilter(sessionId);
+        declarationFilter = canViewAllSessionDocument()? new DeclarationFilter(0L):
+                new DeclarationFilter(sessionId);
+
+        //declarationFilter = new DeclarationFilter(sessionId);
 
         //Default period
         declarationFilter.getPeriods().add(new Period(DateUtil.getCurrentMonth()+1, 1, DateUtil.getCurrentYear()));
@@ -125,7 +130,8 @@ public class DeclarationList extends TemplatePage{
             protected Map<Integer, List<Period>> load() {
                 Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
-                return declarationBean.getPeriodMap(sessionId, personProfileId);
+                //return declarationBean.getPeriodMap(sessionId, personProfileId);
+                return canViewAllSessionDocument()? declarationBean.getPeriodMap(null, null): declarationBean.getPeriodMap(sessionId, personProfileId);
             }
         };
 
@@ -246,6 +252,20 @@ public class DeclarationList extends TemplatePage{
         //Название
         filterForm.add(new TextField<>("name", new PropertyModel<String>(declarationFilter, "name")));
 
+        //SID
+        filterForm.add(new TextField<Long>("sessionId", new PropertyModel<Long>(declarationFilter, "sessionId") {
+            @Override
+            public Long getObject() {
+                Long object = super.getObject();
+                return object != null && object == 0L? null: object;
+            }
+        }) {
+            @Override
+            public boolean isVisible() {
+                return canViewAllSessionDocument();
+            }
+        });
+
         //Дата
         filterForm.add(new DatePicker<>("date", new PropertyModel<Date>(declarationFilter, "date")));
 
@@ -254,6 +274,9 @@ public class DeclarationList extends TemplatePage{
             @Override
             public void onSubmit() {
                 declarationFilter.clear();
+                if (canViewAllSessionDocument()) {
+                    declarationFilter.setSessionId(0L);
+                }
             }
         });
 
@@ -272,7 +295,7 @@ public class DeclarationList extends TemplatePage{
             @Override
             public int size() {
                 //предполагается что size() вызывается до iterator()
-                declarationFilter.setPersonProfileId(getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
+                declarationFilter.setPersonProfileId(canViewAllSessionDocument()? new Long(0L): getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID));
 
                 return declarationBean.getDeclarationsCount(declarationFilter);
             }
@@ -308,6 +331,14 @@ public class DeclarationList extends TemplatePage{
                                 target.add(selectedCount);
                             }
                         }));
+
+                //Session Id
+                item.add(new Label("sessionId",  Long.toString(declaration.getSessionId())) {
+                    @Override
+                    public boolean isVisible() {
+                        return canViewAllSessionDocument();
+                    }
+                });
 
                 //Name
                 PageParameters pageParameters = new PageParameters();
@@ -454,6 +485,12 @@ public class DeclarationList extends TemplatePage{
         //Названия колонок и сортировка
         filterForm.add(new OrderByBorder("header.name", "name", dataProvider));
         filterForm.add(new OrderByBorder("header.date", "date", dataProvider));
+        filterForm.add(new OrderByBorder("header.sessionId", "session_id", dataProvider) {
+            @Override
+            public boolean isVisible() {
+                return canViewAllSessionDocument();
+            }
+        });
 
         //Сохранение архива
         filterForm.add(new Button("download_xml_zip"){
@@ -638,5 +675,9 @@ public class DeclarationList extends TemplatePage{
         });
 
         return list;
+    }
+
+    private boolean canViewAllSessionDocument() {
+        return getTemplateWebApplication().hasAnyRole(SecurityRole.DOCUMENT_VIEW_ALL_SESSION);
     }
 }

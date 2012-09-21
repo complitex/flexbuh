@@ -2,6 +2,7 @@ package org.complitex.flexbuh.document.entity;
 
 import org.complitex.flexbuh.common.entity.AbstractFilter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,10 @@ public class DeclarationFilter extends AbstractFilter{
     private Set<Period> periods = new HashSet<>();
 
     public DeclarationFilter() {
+    }
+
+    public DeclarationFilter(@NotNull Period period) {
+        periods.add(period);
     }
 
     public DeclarationFilter(Long sessionId) {

@@ -21,6 +21,12 @@ GlassFish Application Server 3.0 Servlet 3.0//EN"
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>DOCUMENT_VIEW_ALL_SESSION</role-name>
+        <group-name>DOCUMENT_VIEW_ALL_SESSION</group-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
 	<security-role-mapping>
         <role-name>LOG_VIEW</role-name>
         <group-name>LOG_VIEW</group-name>

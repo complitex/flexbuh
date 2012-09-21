@@ -43,6 +43,7 @@
                         <span wicket:id="selected_count" style="font-weight: normal; color: #273540"></span>
                     </th>
                     <th></th>
+                    <th><span wicket:id="header.sessionId"><wicket:message key="sessionId"/></span></th>
                     <th><span wicket:id="header.date"><wicket:message key="date"/></span></th>
                     <th><span wicket:id="header.name"><wicket:message key="name"/></span></th>
                     <th><span><wicket:message key="hfill"/></span></th>
@@ -56,6 +57,7 @@
                 <tr>
                     <th class="center"><input type="checkbox" wicket:id="select_all_period"/></th>
                     <th></th>
+                    <th><input type="text" wicket:id="sessionId"/></th>
                     <th><input wicket:id="date" size="10"/></th>
                     <th><input type="text" wicket:id="name"/></th>
                     <th><input type="text" size="10"/></th>
@@ -71,6 +73,7 @@
                     <tr>
                         <td><input type="checkbox" wicket:id="select"/></td>
                         <td><a href="#" wicket:id="expand">[<span wicket:id="label"></span>]</a></td>
+                        <td><span wicket:id="sessionId"></span></td>
                         <td><span wicket:id="date"></span></td>
                         <td><span wicket:id="name"></span></td>
                         <td><span wicket:id="hfill"></span></td>
@@ -88,6 +91,7 @@
                     <tbody wicket:id="linked_container">
                     <tr wicket:id="linked_declarations">
                         <td><input type="checkbox" wicket:id="select"/></td>
+                        <td></td>
                         <td></td>
                         <td><span wicket:id="date"></span></td>
                         <td style="padding-left: 40px;"><span wicket:id="name"></span></td>
