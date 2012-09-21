@@ -44,7 +44,7 @@ public class UserBean extends AbstractBean {
     private static final Map<String, List<String>> GROUPS = Maps.newHashMap();
 
     static {
-        GROUPS.put("ADMINISTRATORS", Lists.<String>newArrayList(AUTHORIZED, ADMIN_MODULE_EDIT, LOG_VIEW, PERSONAL_MANAGER));
+        GROUPS.put("ADMINISTRATORS", Lists.<String>newArrayList(AUTHORIZED, ADMIN_MODULE_EDIT, DOCUMENT_VIEW_ALL_SESSION, LOG_VIEW, PERSONAL_MANAGER));
         GROUPS.put("EMPLOYEES", Lists.<String>newArrayList(AUTHORIZED));
         GROUPS.put("PERSONAL_MANAGER", Lists.<String>newArrayList(AUTHORIZED, PERSONAL_MANAGER));
 

@@ -29,6 +29,9 @@
     <security-role>
         <role-name>ADMIN_MODULE_EDIT</role-name>
     </security-role>
+    <security-role>
+        <role-name>DOCUMENT_VIEW_ALL_SESSION</role-name>
+    </security-role>
 	<security-role>
 		<role-name>LOG_VIEW</role-name>
 	</security-role>
