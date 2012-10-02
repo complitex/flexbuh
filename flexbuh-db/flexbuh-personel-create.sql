@@ -55,13 +55,17 @@ CREATE TABLE `schedule` (
   `entry_into_force_date` DATETIME NOT NULL,
   `completion_date` DATETIME,
   `name` VARCHAR(255),
-  `type` VARCHAR(255),
-  `day_of_year` VARCHAR(1000),
-  `day_of_week` VARCHAR(255),
-  `work_hours` VARCHAR(255),
-  `lunch_hours` VARCHAR(255),
+  `period_number_date` FLOAT,
+  `item_day_off` VARCHAR(255),
+  `reg_work_time_unit` VARCHAR (8),
+  `period_schedule` VARCHAR (1000),
+  `year_schedule` TEXT,
+  `pattern` BOOLEAN,
+  `total_work_time` BOOLEAN,
+  `organization_id` BIGINT(20),
   `comment` VARCHAR(1000),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_schedule__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
