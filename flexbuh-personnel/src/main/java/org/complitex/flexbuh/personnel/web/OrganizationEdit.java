@@ -84,6 +84,8 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
     private boolean collapsedPositionPanel = true;
 
+    private boolean collapsedSchedulePanel = true;
+
     protected OrganizationEdit() {
         organization = new Organization();
         organization.setJuridicalAddress(new Address());
@@ -112,6 +114,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
             organization = organizationBean.getTDObject(id);
         }
         collapsedPositionPanel = pageParameters.get(PositionEdit.PARAM_POSITION_ID).toOptionalLong() == null;
+        collapsedSchedulePanel = pageParameters.get(ScheduleEdit.PARAM_SCHEDULE_ID).toOptionalLong() == null;
 
 
         if (organization != null) {
@@ -146,7 +149,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         add(messagesPanel);
 
         final Form<Organization> form = new Form<>("form", new CompoundPropertyModel<>(organization));
-        if (!collapsedPositionPanel) {
+        if (!collapsedPositionPanel || !collapsedPositionPanel) {
             form.add(new AttributeModifier("class", UNFOCUSABLE_CSS_CLASS));
         }
         form.setOutputMarkupId(true);
@@ -154,7 +157,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         updatedAjaxBehavior = new UpdatedAjaxBehavior();
         form.add(updatedAjaxBehavior);
 
-        // Departments
+        // Organization`s departments
         final DepartmentTreePanel departmentTreePanel = new DepartmentTreePanel("departments", organization);
         if (organization.getId() == null) {
             departmentTreePanel.setVisible(false);
@@ -163,7 +166,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         departmentTreePanel.setOutputMarkupId(true);
         form.add(departmentTreePanel);
 
-        // Organization physical address
+        // Organization`s physical address
 
         final ClickAjaxBehavior physicalClickBehavior = new ClickAjaxBehavior(false);
 
@@ -179,7 +182,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
                 new CompoundPropertyModel<>(organization.getPhysicalAddress()), physicalCityModel, physicalStreetModel);
         physicalAddress.add(physicalAddressPanel);
 
-        // Organization juridical address
+        // Organization`s juridical address
 
         final ClickAjaxBehavior juridicalClickBehavior = new ClickAjaxBehavior(false);
 
@@ -195,7 +198,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
                 new CompoundPropertyModel<>(organization.getJuridicalAddress()), juridicalCityModel, juridicalStreetModel);
         juridicalAddress.add(juridicalAddressPanel);
 
-        // Organization positions
+        // Organization`s positions
 
         final PositionListPanel positionListPanel = new PositionListPanel("positions", organization, collapsedPositionPanel);
         positionListPanel.setOutputMarkupId(true);
@@ -203,6 +206,16 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
             positionListPanel.setVisible(false);
         }
         form.add(positionListPanel);
+
+        // Organization`s schedules
+
+        final ScheduleListAccordionPanel scheduleListAccordionPanel =
+                new ScheduleListAccordionPanel("schedules", organization, collapsedSchedulePanel);
+        scheduleListAccordionPanel.setOutputMarkupId(true);
+        if (organization.getId() == null) {
+            scheduleListAccordionPanel.setVisible(false);
+        }
+        form.add(scheduleListAccordionPanel);
 
         historyUpdate = new TemporalDomainObjectUpdate<Organization>() {
             @Override

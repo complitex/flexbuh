@@ -2,16 +2,176 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.complitex.flexbuh.personnel.service.ScheduleBean">
-    <resultMap id="scheduleResultMap" type="org.complitex.flexbuh.personnel.entity.Payment"
+    <resultMap id="scheduleResultMap" type="org.complitex.flexbuh.personnel.entity.Schedule"
             extends="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectResultMap">
 
         <result column="name" property="name"/>
+        <result column="period_number_date" property="periodNumberDate"/>
+        <result column="item_day_off" property="itemDayOff"/>
+        <result column="reg_work_time_unit" property="regWorkTimeUnit"/>
+        <result column="period_schedule" property="periodSchedule"/>
+        <result column="year_schedule" property="yearSchedule"/>
+        <result column="pattern" property="pattern"/>
+        <result column="totalWorkTime" property="totalWorkTime"/>
+        <result column="comment" property="comment"/>
+        <association property="organization" column="{id=organization_id, currentDate=current_date}"
+                     select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentTDObjectById"/>
 
     </resultMap>
+
+    <sql id="columns">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
+        `name`, `period_number_date`, `item_day_off`, `reg_work_time_unit`, `period_schedule`,
+        `year_schedule`, `pattern`, `total_work_time`, `comment`, `organization_id`
+    </sql>
+
+    <sql id="properties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        #{name}, #{periodNumberDate}, #{itemDayOff}, #{regWorkTimeUnit}, #{periodSchedule}, #{yearSchedule},
+        #{pattern}, #{totalWorkTime}, #{comment}
+        <choose>
+            <when test="organization != null">, #{organization.id}</when>
+            <otherwise>null,</otherwise>
+        </choose>
+    </sql>
+
+    <sql id="filter">
+        <choose>
+            <when test="currentDate != null">
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+            </when>
+            <when test="id != null">
+                `id` = #{id}
+            </when>
+            <otherwise>
+                `id` is not null
+            </otherwise>
+        </choose>
+        <if test="currentDate != null and id != null"> and `id` = #{id}</if>
+        <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
+        <if test="comment != null"> and `comment` like concat('%', #{comment}, '%')</if>
+        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+        <if test="currentDate == null and entryIntoForceDate != null">
+            and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
+        </if>
+        <if test="currentDate == null and completionDate != null">
+            and #{completionDate} >= `entry_into_force_date`
+        </if>
+        <if test="currentDate == null and id == null">
+          group by `id` order by `id` desc, `version` desc
+        </if>
+    </sql>
+
+    <insert id="insertSchedule"
+            parameterType="org.complitex.flexbuh.personnel.entity.Schedule">
+
+        <selectKey keyProperty="id" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+            FROM `schedule`
+        </selectKey>
+
+        insert into `schedule` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
+
+    </insert>
+
+    <insert id="updateSchedule"
+            parameterType="org.complitex.flexbuh.personnel.entity.Schedule">
+
+        <selectKey keyProperty="version" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            FROM `schedule` WHERE id = #{id}
+        </selectKey>
+
+        insert into `schedule` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
+    </insert>
+
+    <update id="updateScheduleNullCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Schedule">
+
+        update `schedule` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
+
+    </update>
+
+    <update id="updateScheduleCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Schedule">
+
+        update `schedule` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
+
+    </update>
+
+    <update id="delete"
+            parameterType="org.complitex.flexbuh.personnel.entity.Schedule">
+
+        update `schedule` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
+
+    </update>
 
     <select id="selectCurrentTDObjectById" parameterType="map" resultMap="scheduleResultMap">
         select *, #{currentDate} as `current_date` from `schedule` where `id` = #{id} and
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+    </select>
+
+    <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="scheduleResultMap">
+        select *, `entry_into_force_date` as `current_date` from `schedule` where `id` = #{id} and `version` = #{version}
+    </select>
+
+    <select id="selectCurrentSchedules" parameterType="org.complitex.flexbuh.personnel.entity.ScheduleFilter" resultMap="scheduleResultMap">
+        select *, #{currentDate} as `current_date` from
+        (select * from `schedule` where
+        <include refid="filter"/>) as s
+        <if test="sortProperty != null">
+          order by ${sortProperty}
+          <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        </if>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectCurrentSchedulesCount" parameterType="org.complitex.flexbuh.personnel.entity.ScheduleFilter" resultType="int">
+        select count(distinct `id`, `version`) from `schedule` where
+        <include refid="filter"/>
+    </select>
+
+    <select id="selectTDObjectLastInHistory" parameterType="map" resultMap="scheduleResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `schedule`d
+        where d.`id` = #{id} and `version` =
+        (select max(`version`) from `schedule` where `id` = #{id})
+    </select>
+
+    <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="scheduleResultMap">
+        select d.*, `entry_into_force_date` as `current_date` from `schedule` d
+        where d.`id` = #{id} and `version` = (select max(d1.`version`) from `schedule` d1
+        inner join `schedule` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null) or (d1.`version` = 1 and d2.`version` = 1))
+              and #{version} > d1.`version`)
+        order by `version`
+    </select>
+
+    <select id="selectTDObjectNextInHistoryByField" parameterType="map" resultMap="scheduleResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `schedule` d
+        where d.`id` = #{id} and `version` = (select min(d1.`version`) from `schedule` d1
+        inner join `schedule` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null or
+              d1.`deleted` or d1.`completion_date` is null))
+            and d1.`version` > #{version})
+        order by `version`
     </select>
 
 </mapper>
