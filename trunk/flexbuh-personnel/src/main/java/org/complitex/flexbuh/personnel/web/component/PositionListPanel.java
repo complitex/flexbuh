@@ -164,7 +164,7 @@ public class PositionListPanel extends Panel {
         dataProvider.setSort("name", SortOrder.ASCENDING);
 
         //Таблица
-        DataView<Position> dataView = new DataView<Position>("organizations", dataProvider, 10) {
+        DataView<Position> dataView = new DataView<Position>("positions", dataProvider, 10) {
 
             @Override
             protected void populateItem(Item<Position> item) {

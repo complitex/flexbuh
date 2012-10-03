@@ -43,7 +43,7 @@
         </choose>
         <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
-        <if test="code != null"> and `type` like #{code}</if>
+        <if test="code != null"> and `code` like #{code}</if>
         <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
         <if test="organizationId != null and masterId == null"> and `master_id` is null</if>
         <if test="masterId != null"> and `master_id` = #{masterId}</if>
