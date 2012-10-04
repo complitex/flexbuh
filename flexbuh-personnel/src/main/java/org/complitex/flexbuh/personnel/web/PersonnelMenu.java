@@ -12,5 +12,6 @@ import org.complitex.flexbuh.common.template.ResourceTemplateMenu;
 public class PersonnelMenu extends ResourceTemplateMenu{
     public PersonnelMenu() {
         add("organization", OrganizationList.class);
+        add("schedule", ScheduleList.class);
     }
 }

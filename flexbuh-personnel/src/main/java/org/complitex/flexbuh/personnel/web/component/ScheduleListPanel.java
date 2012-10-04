@@ -22,6 +22,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.flexbuh.common.template.toolbar.AddItemButton;
+import org.complitex.flexbuh.common.template.toolbar.DeleteItemButton;
+import org.complitex.flexbuh.common.template.toolbar.ToolbarButton;
 import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
@@ -64,6 +67,10 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
     private Map<Long, IModel<Boolean>> selectMap = Maps.newHashMap();
 
     private boolean enabled = true;
+
+    private BookmarkablePageLink<Schedule> addButton;
+
+    private AjaxButton deleteButton;
 
     public ScheduleListPanel(@NotNull String id) {
         super(id);
@@ -181,32 +188,24 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
         if (filter.getOrganizationId() != null) {
             pageParameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, filter.getOrganizationId());
         }
-        add(new BookmarkablePageLink<Schedule>("add", ScheduleEdit.class, pageParameters) {
+
+        // Кнопка добавить
+        addButton = new BookmarkablePageLink<Schedule>("add", ScheduleEdit.class, pageParameters) {
 
             @Override
             public boolean isEnabled() {
-                return isEnabledAction();
+                return super.isEnabled() && isEnabledAction();
             }
-        }.setVisible(isVisibleAction()));
-        add(new AjaxButton("delete") {
+        };
+        addButton.setVisible(isVisibleAction());
+        add(addButton);
+
+        // Кнопка удалить
+        deleteButton = new AjaxButton("delete") {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<Long> deleted = Lists.newArrayList();
-                for (Map.Entry<Long, IModel<Boolean>> entry : selectMap.entrySet()) {
-                    if (entry.getValue().getObject()) {
-                        deleted.add(entry.getKey());
-                        Schedule schedule = scheduleBean.getTDObject(entry.getKey());
-                        if (schedule != null) {
-                            scheduleBean.deleteSchedule(schedule);
-                        } else {
-                            log.error("Could not delete tree item {}: did not find", entry.getKey());
-                        }
-                    }
-                }
-                for (Long id : deleted) {
-                    selectMap.remove(id);
-                }
+                deleteSelectedSchedules();
                 initFilterData(organization);
                 target.add(filterForm);
             }
@@ -218,9 +217,29 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
 
             @Override
             public boolean isEnabled() {
-                return isEnabledAction();
+                return super.isEnabled() && isEnabledAction();
             }
-        }.setVisible(isVisibleAction()));
+        };
+        deleteButton.setVisible(isVisibleAction());
+        add(deleteButton);
+    }
+
+    private void deleteSelectedSchedules() {
+        List<Long> deleted = Lists.newArrayList();
+        for (Map.Entry<Long, IModel<Boolean>> entry : selectMap.entrySet()) {
+            if (entry.getValue().getObject()) {
+                deleted.add(entry.getKey());
+                Schedule schedule = scheduleBean.getTDObject(entry.getKey());
+                if (schedule != null) {
+                    scheduleBean.deleteSchedule(schedule);
+                } else {
+                    log.error("Could not delete tree item {}: did not find", entry.getKey());
+                }
+            }
+        }
+        for (Long id : deleted) {
+            selectMap.remove(id);
+        }
     }
 
     private void initFilterData(Organization organization) {
@@ -264,5 +283,42 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
         filter.setCurrentDate(currentDate);
 
         filterForm.setModel(new CompoundPropertyModel<>(filter));
+    }
+
+    public ToolbarButton getAddToolbarButton(String id) {
+        return new AddItemButton(id) {
+            @Override
+            protected void onClick() {
+                setResponsePage(ScheduleEdit.class, filter.getOrganizationId() != null ? new PageParameters().
+                        add(OrganizationEdit.PARAM_ORGANIZATION_ID, filter.getOrganizationId()): null);
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return isEnabledAction();
+            }
+        };
+    }
+
+    public ToolbarButton getDeleteToolbarButton(String id) {
+        return new DeleteItemButton(id) {
+            @Override
+            protected void onClick() {
+                deleteSelectedSchedules();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return isEnabledAction();
+            }
+        };
+    }
+
+    public void invisibleAddButtonInForm() {
+        addButton.setVisible(false);
+    }
+
+    public void invisibleDeleteButtonInForm() {
+        deleteButton.setVisible(false);
     }
 }
