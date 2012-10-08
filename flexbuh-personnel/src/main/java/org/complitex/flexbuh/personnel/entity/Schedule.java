@@ -44,6 +44,9 @@ public class Schedule extends TemporalDomainObject {
     // Комментарий
     private String comment;
 
+    // SID
+    private Long sessionId;
+
     public String getName() {
         return name;
     }
@@ -122,5 +125,13 @@ public class Schedule extends TemporalDomainObject {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
     }
 }

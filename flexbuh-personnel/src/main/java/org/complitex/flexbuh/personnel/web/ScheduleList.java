@@ -17,7 +17,7 @@ import java.util.List;
  * @author Pavel Sknar
  *         Date: 04.10.12 11:05
  */
-@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
+@AuthorizeInstantiation(SecurityRole.PERSONAL_MANAGER)
 public class ScheduleList extends TemplatePage {
 
     private ScheduleListPanel scheduleListPanel;
@@ -34,23 +34,22 @@ public class ScheduleList extends TemplatePage {
         add(new Form("schedule_list_form").add(scheduleListPanel));
     }
 
-     @Override
+    @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
-        List<ToolbarButton> list = Lists.newArrayList();
 
-        if (getTemplateWebApplication().hasAnyRole(SecurityRole.ADMIN_MODULE_EDIT)) {
-            ScheduleListPanel scheduleListPanel = getScheduleListPanel();
-            list.add(scheduleListPanel.getAddToolbarButton(id));
-            list.add(scheduleListPanel.getDeleteToolbarButton(id));
-        }
+        ScheduleListPanel scheduleListPanel = getScheduleListPanel();
 
-        return list;
+        return Lists.newArrayList(scheduleListPanel.getAddToolbarButton(id), scheduleListPanel.getDeleteToolbarButton(id));
     }
 
     private ScheduleListPanel getScheduleListPanel() {
         if (scheduleListPanel == null) {
-            scheduleListPanel = new ScheduleListPanel("schedules");
+            scheduleListPanel = new ScheduleListPanel("schedules", isAdmin(), getSessionId());
         }
         return scheduleListPanel;
+    }
+
+    private boolean isAdmin() {
+        return getTemplateWebApplication().hasAnyRole(SecurityRole.ADMIN_MODULE_EDIT);
     }
 }

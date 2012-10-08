@@ -64,7 +64,8 @@ CREATE TABLE `schedule` (
   `total_work_time` BOOLEAN,
   `organization_id` BIGINT(20),
   `comment` VARCHAR(1000),
-  PRIMARY KEY (`id`),
+  `session_id` BIGINT(20),
+  PRIMARY KEY (`id`, `version`),
   CONSTRAINT `fk_schedule__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;

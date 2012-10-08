@@ -298,7 +298,7 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             if (newObject) {
                 log.debug("Создание подразделения", new Event(EventCategory.CREATE, department));
             } else {
-                log.debug("Редактирование подразделения", new Event(EventCategory.CREATE, oldDepartment, department));
+                log.debug("Редактирование подразделения", new Event(EventCategory.EDIT, oldDepartment, department));
             }
 
             /*
