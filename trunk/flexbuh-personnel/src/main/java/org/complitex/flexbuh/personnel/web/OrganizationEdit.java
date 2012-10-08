@@ -401,7 +401,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         if (createOrganization) {
             log.debug("Создание организации", new Event(EventCategory.CREATE, organization));
         } else {
-            log.debug("Редактирование организации", new Event(EventCategory.CREATE, oldOrganization, organization));
+            log.debug("Редактирование организации", new Event(EventCategory.EDIT, oldOrganization, organization));
         }
 
         info(getString("organization_saved"));

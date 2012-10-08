@@ -17,6 +17,10 @@ public class ScheduleFilter extends TemporalDomainObjectFilter {
 
     private Long organizationId;
 
+    private Long sessionId;
+
+    private boolean admin;
+
     private Date entryIntoForceDate;
 
     private Date completionDate;
@@ -53,6 +57,22 @@ public class ScheduleFilter extends TemporalDomainObjectFilter {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public Date getEntryIntoForceDate() {

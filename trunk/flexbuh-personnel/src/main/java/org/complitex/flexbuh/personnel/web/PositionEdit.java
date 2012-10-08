@@ -410,7 +410,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
             if (newObject) {
                 log.debug("Создание должности", new Event(EventCategory.CREATE, position));
             } else {
-                log.debug("Редактирование должности", new Event(EventCategory.CREATE, oldPosition, position));
+                log.debug("Редактирование должности", new Event(EventCategory.EDIT, oldPosition, position));
             }
 
         }

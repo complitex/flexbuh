@@ -14,6 +14,7 @@
         <result column="pattern" property="pattern"/>
         <result column="totalWorkTime" property="totalWorkTime"/>
         <result column="comment" property="comment"/>
+        <result column="session_id" property="sessionId"/>
         <association property="organization" column="{id=organization_id, currentDate=current_date}"
                      select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentTDObjectById"/>
 
@@ -22,16 +23,16 @@
     <sql id="columns">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
         `name`, `period_number_date`, `item_day_off`, `reg_work_time_unit`, `period_schedule`,
-        `year_schedule`, `pattern`, `total_work_time`, `comment`, `organization_id`
+        `year_schedule`, `pattern`, `total_work_time`, `comment`, `session_id`, `organization_id`
     </sql>
 
     <sql id="properties">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
         #{name}, #{periodNumberDate}, #{itemDayOff}, #{regWorkTimeUnit}, #{periodSchedule}, #{yearSchedule},
-        #{pattern}, #{totalWorkTime}, #{comment}
+        #{pattern}, #{totalWorkTime}, #{comment}, #{sessionId}
         <choose>
             <when test="organization != null">, #{organization.id}</when>
-            <otherwise>null,</otherwise>
+            <otherwise>, null</otherwise>
         </choose>
     </sql>
 
@@ -50,7 +51,11 @@
         <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
         <if test="comment != null"> and `comment` like concat('%', #{comment}, '%')</if>
-        <if test="organizationId != null"> and `organization_id` = #{organizationId}</if>
+        <if test="sessionId != null and admin"> and (`session_id` = #{sessionId} or `session_id` is null)</if>
+        <if test="sessionId != null and !admin"> and `session_id` = #{sessionId}</if>
+        <if test="sessionId == null and admin"> and `session_id` is null</if>
+        <if test="organizationId != null and organizationId > 0"> and `organization_id` = #{organizationId}</if>
+        <if test="organizationId != null and organizationId == 0"> and `organization_id` is null</if>
         <if test="currentDate == null and entryIntoForceDate != null">
             and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
         </if>

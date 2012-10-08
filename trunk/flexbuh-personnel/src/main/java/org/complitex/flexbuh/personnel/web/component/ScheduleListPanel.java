@@ -72,18 +72,18 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
 
     private AjaxButton deleteButton;
 
-    public ScheduleListPanel(@NotNull String id) {
+    public ScheduleListPanel(@NotNull String id, boolean admin, final Long sessionId) {
         super(id);
-        init(null);
+        init(null, admin, sessionId);
     }
 
     public ScheduleListPanel(@NotNull String id, Organization organization) {
         super(id);
-        init(organization);
+        init(organization, false, null);
     }
 
-    private void init(final Organization organization) {
-        initFilterData(organization);
+    private void init(final Organization organization, final boolean admin, final Long sessionId) {
+        initFilterData(organization, admin, sessionId);
         try {
             initialFilter = (ScheduleFilter) BeanUtils.cloneBean(filter);
         } catch (ReflectiveOperationException e) {
@@ -158,7 +158,7 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
 
                 pageParameters.set(PARAM_SCHEDULE_ID, schedule.getId());
                 item.add(new BookmarkablePageLinkPanel<Schedule>("action",
-                        getString(schedule.isDeleted()? "action_view": "action_edit"),
+                        getString(schedule.isDeleted() || (!admin && schedule.getSessionId() == null)? "action_view": "action_edit"),
                         ScheduleEdit.class, pageParameters));
             }
 
@@ -206,7 +206,7 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 deleteSelectedSchedules();
-                initFilterData(organization);
+                //initFilterData(organization);
                 target.add(filterForm);
             }
 
@@ -242,7 +242,7 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
         }
     }
 
-    private void initFilterData(Organization organization) {
+    private void initFilterData(Organization organization, boolean admin, Long sessionId) {
         if (organization == null || organization.getCompletionDate() == null) {
             filter.setCurrentDate(new Date());
         } else {
@@ -250,7 +250,11 @@ private final static Logger log = LoggerFactory.getLogger(PositionListPanel.clas
         }
         if (organization != null) {
             filter.setOrganizationId(organization.getId());
+        } else {
+            filter.setOrganizationId(0L);
         }
+        filter.setAdmin(admin);
+        filter.setSessionId(sessionId);
     }
 
     private ScheduleFilter clearFilter() {
