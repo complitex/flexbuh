@@ -37,6 +37,54 @@
                 </td>
             </tr>
             <tr>
+                <th><wicket:message key="periodNumberDate"/> </th>
+                <td>
+                    <div wicket:id="period_number_date_container">
+                        <div style="float: left;">
+                            <select wicket:id="periodNumberDate"></select>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="period_number_date_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><wicket:message key="periodScheduleList"/> </th>
+                <td>
+                    <div wicket:id="period_schedule_container">
+                        <div style="float: left;">
+                            <table wicket:id="periodSchedule">
+                                <tr wicket:id="period_schedule_list"><td>
+                                    <table wicket:id="dateSchedule">
+                                        <tr wicket:id="date_schedule_list">
+                                            <td>
+                                                <span wicket:id="index"></span>
+                                            </td>
+                                            <td>
+                                                <wicket:message key="from"/>
+                                            </td>
+                                            <td>
+                                                <span wicket:id="begin_time"></span>
+                                            </td>
+                                            <td>
+                                                <wicket:message key="to"/>
+                                            </td>
+                                            <td>
+                                                <span wicket:id="end_time"></span>
+                                            </td>
+                                            <td>
+                                                <a href="#" wicket:id="action_add"><span wicket:id="action_label"></span></a><br/>
+                                                <a href="#" wicket:id="action_delete"><span wicket:id="action_label"></span></a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td></tr>
+                            </table>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="period_schedule_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <th><wicket:message key="organization"/> </th>
                 <td>
                     <input type="text" maxlength="45" wicket:id="organization" disabled="true" style="width: 277px">

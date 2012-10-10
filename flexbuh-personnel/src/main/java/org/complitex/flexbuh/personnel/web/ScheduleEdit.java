@@ -1,25 +1,35 @@
 package org.complitex.flexbuh.personnel.web;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.yui.calendar.TimeField;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.Loop;
+import org.apache.wicket.markup.html.list.LoopItem;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
+import org.complitex.flexbuh.common.util.DateUtil;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.entity.Schedule;
+import org.complitex.flexbuh.personnel.entity.WorkTime;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.ScheduleBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
@@ -31,8 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static org.complitex.flexbuh.personnel.web.OrganizationEdit.PARAM_ORGANIZATION_ID;
 
@@ -76,7 +89,7 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
     public ScheduleEdit(PageParameters pageParameters) {
 
         Long organizationId = pageParameters.get(PARAM_ORGANIZATION_ID).toOptionalLong();
-        if (organizationId != null) {
+        if (organizationId != null && organizationId > 0) {
             Organization organization = organizationBean.getTDObject(organizationId);
             if (organization != null) {
                 schedule.setOrganization(organization);
@@ -123,6 +136,9 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
         add(new FeedbackPanel("messages"));
 
+        if (schedule.getPeriodSchedule() != null)
+
+        log.debug("Edit schedule: {}", schedule);
         form = new Form<>("form", new CompoundPropertyModel<>(schedule));
         add(form);
 
@@ -168,8 +184,91 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         scheduleHistoryPanel.setOutputMarkupId(true);
         add(scheduleHistoryPanel);
 
+        final Component periodSchedule = new Loop("period_schedule_list", new PropertyModel<Integer>(schedule, "periodNumberDate") {
+            @Override
+            public Integer getObject() {
+                Integer object = super.getObject();
+                return object == null? 0: object;
+            }
+        }) {
+            @Override
+            protected void populateItem(final LoopItem item) {
+                log.debug("populate: {}", item.getIndex());
+
+                final List<List<WorkTime>> periodScheduleTime = schedule.getPeriodScheduleTime();
+
+                final List<WorkTime> workTimes;
+                if (periodScheduleTime.size() < item.getIndex() + 1) {
+                    workTimes = Lists.newArrayList(getNullWorkTime());
+                    periodScheduleTime.add(workTimes);
+                } else {
+                    workTimes = periodScheduleTime.get(item.getIndex());
+                }
+
+                final WebMarkupContainer listContainer = new WebMarkupContainer("dateSchedule");
+                listContainer.setOutputMarkupId(true);
+                final Loop dateSchedule = new Loop("date_schedule_list", workTimes.size()) {
+                    @Override
+                    protected void populateItem(final LoopItem item2) {
+                        WorkTime workTime = workTimes.get(item2.getIndex());
+                        item2.add(new Label("index", item2.getIndex() == 0? Integer.toString(item.getIndex() + 1) + ".": ""));
+                        item2.add(new TimeField("begin_time", new PropertyModel<Date>(workTime, "beginTime")) {
+                            @Override
+                            protected boolean use12HourFormat() {
+                                return false;
+                            }
+                        });
+                        item2.add(new TimeField("end_time", new PropertyModel<Date>(workTime, "endTime")) {
+                            @Override
+                            protected boolean use12HourFormat() {
+                                return false;
+                            }
+                        });
+                        item2.add(new AjaxLink("action_add") {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                workTimes.add(item2.getIndex() + 1, getNullWorkTime());
+                                setDefaultModelObject2(workTimes.size());
+                                target.add(listContainer);
+                            }
+                        }.add(new Label("action_label", getString("add"))));
+                        item2.add(new AjaxLink("action_delete") {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                workTimes.remove(item2.getIndex());
+                                if (workTimes.size() == 0) {
+                                    workTimes.add(getNullWorkTime());
+                                }
+                                setDefaultModelObject2(workTimes.size());
+                                target.add(listContainer);
+                            }
+                        }.add(new Label("action_label", getString("delete"))));
+                    }
+
+                    private void setDefaultModelObject2(int value) {
+                        setDefaultModelObject(value);
+                    }
+                };
+                listContainer.add(dateSchedule);
+
+                item.add(listContainer);
+            }
+        }.setOutputMarkupId(true);
+        final WebMarkupContainer listContainer = new WebMarkupContainer("periodSchedule");
+        listContainer.setOutputMarkupId(true);
+        listContainer.add(periodSchedule);
+
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
         addHistoryFieldToForm(form, "comment", new TextArea<>("comment"));
+        addHistoryFieldToForm(form, "period_number_date",
+                new DropDownChoice<>("periodNumberDate", Lists.newArrayList(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)).
+                        add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                log.debug("changed periodNumberDate: {}", schedule.getPeriodNumberDate());
+                                target.add(listContainer);
+                            }
+                        }));
+        addHistoryFieldToForm(form, "period_schedule", listContainer);
         form.add(new TextField<>("organization", new Model<>(schedule.getOrganization() != null?
                 schedule.getOrganization().getName(): "")));
     }
@@ -212,6 +311,13 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         public boolean isEnabled() {
             return schedule.getCompletionDate() == null && !schedule.isDeleted();
         }
+    }
+
+    private WorkTime getNullWorkTime() {
+        WorkTime workTime = new WorkTime();
+        workTime.setBeginTime(DateUtil.getBeginOfDay(new Date()));
+        workTime.setEndTime(DateUtil.getBeginOfDay(new Date()));
+        return workTime;
     }
 
     @Override
