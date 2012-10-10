@@ -36,12 +36,14 @@ public class ScheduleBean extends TemporalDomainObjectBean<Schedule> {
 
     @Transactional
     public void create(Schedule schedule) {
+        schedule.synchronizeUpdatedObject();
         schedule.setVersion(1L);
         sqlSession().insert(NS + ".insertSchedule", schedule);
     }
 
     @Transactional
     public void update(Schedule schedule) {
+        schedule.synchronizeUpdatedObject();
         sqlSession().update(NS + ".updateScheduleNullCompletionDate", schedule);
         sqlSession().insert(NS + ".updateSchedule", schedule);
     }

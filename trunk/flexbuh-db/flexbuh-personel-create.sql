@@ -55,7 +55,7 @@ CREATE TABLE `schedule` (
   `entry_into_force_date` DATETIME NOT NULL,
   `completion_date` DATETIME,
   `name` VARCHAR(255),
-  `period_number_date` FLOAT,
+  `period_number_date` INT(4),
   `item_day_off` VARCHAR(255),
   `reg_work_time_unit` VARCHAR (8),
   `period_schedule` VARCHAR (1000),
