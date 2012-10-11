@@ -30,7 +30,7 @@ public class Schedule extends TemporalDomainObject {
     // Единицы учета рабочего времени (дни/часы)
     private String regWorkTimeUnit;
 
-    // Перечисление через точку с запятой графика работы на каждый рабочий день в порядке возрастания
+    // Перечисление через точку с запятой графика работы на каждый день в порядке возрастания
     // [H[:m]-H[:m][,H[:m]-H[:m]]*][;H[:m]-H[:m][,H[:m]-H[:m]]*]*
     private String periodSchedule;
 
@@ -40,7 +40,7 @@ public class Schedule extends TemporalDomainObject {
     // Этот тип характерен малым изменениям основного скользящего графика.
     // [d:M:yyyy H[:m]-H[:m][,H[:m]-H[:m]]*;]*
     // 2. Перечисление через точку с запятой всего календарного года без указания даты.
-    // [H[:m]-H[:m][,H[:m]-H[:m]]*][;H[:m]-H[:m][,H[:m]-H[:m]]*]{364,365}
+    // [H[:m]-H[:m][,H[:m]-H[:m]]*][;H[:m]-H[:m][,H[:m]-H[:m]]*]{365,366}
     private String yearSchedule;
 
     // Шаблон
@@ -108,6 +108,7 @@ public class Schedule extends TemporalDomainObject {
     public void setPeriodScheduleTime(List<List<WorkTime>> periodScheduleTime) {
         this.periodScheduleTime = periodScheduleTime;
         this.periodSchedule = toStringScheduleWorkTime(periodScheduleTime);
+        this.itemDayOff = evaluateItemDayOff(periodScheduleTime);
     }
 
     public String getYearSchedule() {
@@ -160,26 +161,29 @@ public class Schedule extends TemporalDomainObject {
 
     public void synchronizeUpdatedObject() {
         periodSchedule = toStringScheduleWorkTime(periodScheduleTime);
-        log.debug("synchronize updated object: \n{}\n{}", periodScheduleTime, periodSchedule);
+        itemDayOff = evaluateItemDayOff(periodScheduleTime);
     }
 
     private String toStringScheduleWorkTime(List<List<WorkTime>> scheduleTime) {
         Calendar calendar = Calendar.getInstance();
         StringBuilder result = new StringBuilder();
 
-        boolean isNotFirst = false;
+        boolean notFirst = false;
         for (List<WorkTime> workTimeList : scheduleTime) {
-            if (isNotFirst) {
+            if (notFirst) {
                 result.append(";");
             } else {
-                isNotFirst = true;
+                notFirst = true;
             }
-            boolean isNotFirst2 = false;
+            boolean notFirst2 = false;
             for (WorkTime workTime : workTimeList) {
-                if (isNotFirst2) {
+                if (workTime.isEmpty()) {
+                    continue;
+                }
+                if (notFirst2) {
                     result.append(",");
                 } else {
-                    isNotFirst2 = true;
+                    notFirst2 = true;
                 }
                 calendar.setTime(workTime.getBeginTime());
                 appendTime(result, calendar).append("-");
@@ -188,6 +192,30 @@ public class Schedule extends TemporalDomainObject {
             }
         }
         return result.toString();
+    }
+
+    private String evaluateItemDayOff(List<List<WorkTime>> scheduleTime) {
+        StringBuilder itemDayOff = new StringBuilder();
+
+        int numberDay = 1;
+        for (List<WorkTime> workTimeList : scheduleTime) {
+
+            boolean empty = true;
+            for (WorkTime workTime : workTimeList) {
+                if (workTime.isEmpty()) {
+                    continue;
+                }
+                empty = false;
+            }
+            if (empty) {
+                if (itemDayOff.length() > 0) {
+                    itemDayOff.append(",");
+                }
+                itemDayOff.append(numberDay);
+            }
+            numberDay++;
+        }
+        return itemDayOff.toString();
     }
 
     private List<List<WorkTime>> parseScheduleDate(String inputString) {

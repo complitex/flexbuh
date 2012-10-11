@@ -43,6 +43,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +62,8 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
     private final static Logger log = LoggerFactory.getLogger(ScheduleEdit.class);
 
     public static final String PARAM_SCHEDULE_ID = "schedule_id";
+
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     @EJB
     private ScheduleBean scheduleBean;
@@ -283,6 +287,27 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
             boolean emptyRequiredField = !checkRequiredField(schedule.getName(), "name");
             if (emptyRequiredField) {
                 return;
+            }
+            for (List<WorkTime> workTimeList : schedule.getPeriodScheduleTime()) {
+                Date endTime = null;
+                for (WorkTime workTime : workTimeList) {
+                    if (workTime.isEmpty()) {
+                        continue;
+                    }
+                    if (!workTime.checkTime()) {
+                        error(MessageFormat.format(getString("error_schedule_failed_range_time"),
+                                timeFormat.format(workTime.getBeginTime()),
+                                timeFormat.format(workTime.getEndTime())));
+                        return;
+                    }
+                    if (endTime != null && endTime.after(workTime.getBeginTime())) {
+                        error(MessageFormat.format(getString("error_schedule_failed_preview_range_time"),
+                                timeFormat.format(workTime.getBeginTime()),
+                                timeFormat.format(endTime)));
+                        return;
+                    }
+                    endTime = workTime.getEndTime();
+                }
             }
 
             schedule.setEntryIntoForceDate(new Date());

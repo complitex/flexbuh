@@ -1,8 +1,10 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codehaus.jackson.map.deser.std.CalendarDeserializer;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -31,6 +33,18 @@ public class WorkTime implements Serializable {
 
     public boolean checkTime() {
         return beginTime != null && endTime != null && beginTime.before(endTime);
+    }
+
+    public boolean isEmpty() {
+        if (beginTime == null || endTime == null) {
+            return true;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(beginTime);
+        boolean result = calendar.get(Calendar.HOUR_OF_DAY) == 0 && calendar.get(Calendar.MINUTE) == 0;
+        calendar.setTime(endTime);
+        return result && calendar.get(Calendar.HOUR_OF_DAY) == 0 && calendar.get(Calendar.MINUTE) == 0;
+
     }
 
     @Override
