@@ -1,6 +1,7 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 import org.slf4j.Logger;
@@ -222,12 +223,14 @@ public class Schedule extends TemporalDomainObject {
         List<List<WorkTime>> result = Lists.newArrayList();
         for (String workTimes : inputString.split(";")) {
             List<WorkTime> workTimeList = Lists.newArrayList();
-            for (String workTime : workTimes.split(",")) {
-                String[] times = workTime.split("-");
-                WorkTime item = new WorkTime();
-                item.setBeginTime(getTime(times[0]));
-                item.setEndTime(getTime(times[1]));
-                workTimeList.add(item);
+            if (StringUtils.isNotBlank(workTimes)) {
+                for (String workTime : workTimes.split(",")) {
+                    String[] times = workTime.split("-");
+                    WorkTime item = new WorkTime();
+                    item.setBeginTime(getTime(times[0]));
+                    item.setEndTime(getTime(times[1]));
+                    workTimeList.add(item);
+                }
             }
             result.add(workTimeList);
         }
