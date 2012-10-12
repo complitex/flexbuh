@@ -19,6 +19,8 @@ public class Schedule extends TemporalDomainObject {
 
     private static final Logger log = LoggerFactory.getLogger(Schedule.class);
 
+    public static final List<String> REG_WORK_TIME_UNITS = Lists.newArrayList("DAY", "HOUR");
+
     // Название графика
     private String name;
 
@@ -29,7 +31,7 @@ public class Schedule extends TemporalDomainObject {
     private String itemDayOff;
 
     // Единицы учета рабочего времени (дни/часы)
-    private String regWorkTimeUnit;
+    private String regWorkTimeUnit = REG_WORK_TIME_UNITS.get(0);
 
     // Перечисление через точку с запятой графика работы на каждый день в порядке возрастания
     // [H[:m]-H[:m][,H[:m]-H[:m]]*][;H[:m]-H[:m][,H[:m]-H[:m]]*]*
@@ -169,8 +171,12 @@ public class Schedule extends TemporalDomainObject {
         Calendar calendar = Calendar.getInstance();
         StringBuilder result = new StringBuilder();
 
+        int numberDay = 1;
         boolean notFirst = false;
         for (List<WorkTime> workTimeList : scheduleTime) {
+            if (numberDay > periodNumberDate) {
+                break;
+            }
             if (notFirst) {
                 result.append(";");
             } else {
@@ -191,6 +197,7 @@ public class Schedule extends TemporalDomainObject {
                 calendar.setTime(workTime.getEndTime());
                 appendTime(result, calendar);
             }
+            numberDay++;
         }
         return result.toString();
     }
@@ -200,7 +207,9 @@ public class Schedule extends TemporalDomainObject {
 
         int numberDay = 1;
         for (List<WorkTime> workTimeList : scheduleTime) {
-
+            if (numberDay > periodNumberDate) {
+                break;
+            }
             boolean empty = true;
             for (WorkTime workTime : workTimeList) {
                 if (workTime.isEmpty()) {

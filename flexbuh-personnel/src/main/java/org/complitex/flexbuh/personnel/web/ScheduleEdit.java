@@ -5,12 +5,14 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.yui.calendar.TimeField;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -33,10 +35,7 @@ import org.complitex.flexbuh.personnel.entity.WorkTime;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.ScheduleBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
-import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryIncrementalPanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryPanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalObjectEdit;
+import org.complitex.flexbuh.personnel.web.component.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,29 +164,6 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         }.add(new AttributeModifier("value", schedule.getOrganization() == null || schedule.getId() == null ?
                 getString("cancel") : getString("go_to_organization"))));
 
-        historyUpdate = new TemporalDomainObjectUpdate<Schedule>() {
-            @Override
-            public void onUpdate(AjaxRequestTarget target) {
-                super.onUpdate(target);
-
-                oldSchedule = schedule;
-                schedule = getObject();
-                form.setModel(new CompoundPropertyModel<>(schedule));
-
-                target.add(form);
-                target.add(scheduleHistoryPanel);
-            }
-        };
-
-        scheduleHistoryPanel = new TemporalHistoryIncrementalPanel<Schedule>("schedule_history", schedule, historyUpdate) {
-            @Override
-            protected TemporalDomainObjectBean<Schedule> getTDObjectBean() {
-                return scheduleBean;
-            }
-        };
-        scheduleHistoryPanel.setOutputMarkupId(true);
-        add(scheduleHistoryPanel);
-
         final Component periodSchedule = new Loop("period_schedule_list", new PropertyModel<Integer>(schedule, "periodNumberDate") {
             @Override
             public Integer getObject() {
@@ -207,6 +183,9 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
                     periodScheduleTime.add(workTimes);
                 } else {
                     workTimes = periodScheduleTime.get(item.getIndex());
+                    if (workTimes.size() == 0) {
+                        workTimes.add(getNullWorkTime());
+                    }
                 }
 
                 final WebMarkupContainer listContainer = new WebMarkupContainer("dateSchedule");
@@ -262,8 +241,46 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         listContainer.setOutputMarkupId(true);
         listContainer.add(periodSchedule);
 
+        historyUpdate = new TemporalDomainObjectUpdate<Schedule>() {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                super.onUpdate(target);
+
+                oldSchedule = schedule;
+                schedule = getObject();
+                form.setModel(new CompoundPropertyModel<>(schedule));
+                periodSchedule.setDefaultModel(new PropertyModel<Integer>(schedule, "periodNumberDate") {
+                    @Override
+                    public Integer getObject() {
+                        Integer object = super.getObject();
+                        return object == null? 0: object;
+                    }
+                });
+
+                target.add(form);
+                target.add(scheduleHistoryPanel);
+            }
+        };
+
+        scheduleHistoryPanel = new TemporalHistoryIncrementalPanel<Schedule>("schedule_history", schedule, historyUpdate) {
+            @Override
+            protected TemporalDomainObjectBean<Schedule> getTDObjectBean() {
+                return scheduleBean;
+            }
+        };
+        scheduleHistoryPanel.setOutputMarkupId(true);
+        add(scheduleHistoryPanel);
+
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
         addHistoryFieldToForm(form, "comment", new TextArea<>("comment"));
+        addHistoryFieldToForm(form, "reg_work_time_unit",
+                new DropDownChoice<String>("regWorkTimeUnit", Schedule.REG_WORK_TIME_UNITS) {
+                    @Override
+                    protected boolean localizeDisplayValues() {
+                        return true;
+                    }
+                });
+        addHistoryFieldToForm(form, "total_work_time", new CheckBox("totalWorkTime"));
         addHistoryFieldToForm(form, "period_number_date",
                 new DropDownChoice<>("periodNumberDate", Lists.newArrayList(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)).
                         add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -275,6 +292,36 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         addHistoryFieldToForm(form, "period_schedule", listContainer);
         form.add(new TextField<>("organization", new Model<>(schedule.getOrganization() != null?
                 schedule.getOrganization().getName(): "")));
+
+        /*
+        Заготовка для модального окна: редактирование годового графика
+        final ModalWindow modal1;
+        add(modal1 = new ModalWindow("modal1"));
+
+        modal1.setCookieName("modal-1");
+
+        modal1.setPageCreator(new ModalWindow.PageCreator() {
+            public Page createPage() {
+                return new YearSchedulePage(ScheduleEdit.this.getPageReference(), modal1);
+            }
+        });
+        modal1.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+            public void onClose(AjaxRequestTarget target) {
+            }
+        });
+        modal1.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
+            public boolean onCloseButtonClicked(AjaxRequestTarget target) {
+                return true;
+            }
+        });
+
+        add(new AjaxLink<Void>("showModal1") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                modal1.show(target);
+            }
+        });
+        */
     }
 
     private class SaveDepartmentButton extends Button {

@@ -23,4 +23,5 @@ ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 insert into `schedule` (`id`, `version`, `entry_into_force_date`, `name`,
 `period_number_date`, `item_day_off`, `reg_work_time_unit`, `period_schedule`) value
-(1, 1, now(), '5 дневная 40 часовая рабочая неделя с 9 до 18', 7, '6,7', '9-13,14-18;9-13,14-18;9-13,14-18;9-13,14-18;9-13,14-18');
+(1, 1, now(), '5 дневная 40 часовая рабочая неделя с 9 до 18', 7, '6,7', 'DAY',
+'9-13,14-18;9-13,14-18;9-13,14-18;9-13,14-18;9-13,14-18');
