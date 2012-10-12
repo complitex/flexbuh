@@ -11,7 +11,10 @@
         <span wicket:id="header"></span>
     </h1>
     <div wicket:id="messages"></div>
-
+<!--
+    <div wicket:id="modal1"></div>
+    <a wicket:id="showModal1">Show modal dialog with a page</a>
+-->
     <form action="#" wicket:id="form">
         <table class="tbForm">
             <tr>
@@ -33,6 +36,28 @@
                             <textarea type="text" maxlength="1000" wicket:id="comment" rows="10" cols="45" />
                         </div>
                         <div class="history_buttons_field_center" wicket:id="comment_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><wicket:message key="regWorkTimeUnit"/> </th>
+                <td>
+                    <div wicket:id="reg_work_time_unit_container">
+                        <div style="float: left;">
+                            <select wicket:id="regWorkTimeUnit"></select>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="reg_work_time_unit_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><wicket:message key="totalWorkTime"/> </th>
+                <td>
+                    <div wicket:id="total_work_time_container">
+                        <div style="float: left;">
+                            <input type="checkbox" wicket:id="totalWorkTime"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="total_work_time_history"></div>
                     </div>
                 </td>
             </tr>
