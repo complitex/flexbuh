@@ -1,0 +1,55 @@
+?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+</head>
+
+<body>
+<wicket:panel>
+    <tr>
+        <th><wicket:message key="salary"/></th>
+        <td>
+            <div wicket:id="payment_salary_container">
+                <div style="float: left;">
+                    <input type="number" maxlength="45" wicket:id="payment.salary" style="width: 277px"/>
+                </div>
+                <div class="history_buttons_field_center" wicket:id="payment_salary_history"></div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th><wicket:message key="salaryNumber"/></th>
+        <td>
+            <div wicket:id="payment_number_container">
+                <div style="float: left;">
+                    <input type="number" maxlength="45" wicket:id="payment.number" style="width: 277px"/>
+                </div>
+                <div class="history_buttons_field_center" wicket:id="payment_number_history"></div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th><wicket:message key="currencyUnit"/></th>
+        <td>
+            <div wicket:id="payment_currency_unit_container">
+                <div style="float: left;">
+                    <select wicket:id="payment.currencyUnit" style="width: 277px"/>
+                </div>
+                <div class="history_buttons_field_center" wicket:id="payment_currency_unit_history"></div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th><wicket:message key="salaryType"/></th>
+        <td>
+            <div wicket:id="payment_type_container">
+                <div style="float: left;">
+                    <select wicket:id="payment.type" style="width: 277px"/>
+                </div>
+                <div class="history_buttons_field_center" wicket:id="payment_type_history"></div>
+            </div>
+        </td>
+    </tr>
+</wicket:panel>
+</body>
+</html>

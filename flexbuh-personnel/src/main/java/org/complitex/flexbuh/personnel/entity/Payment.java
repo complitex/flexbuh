@@ -16,11 +16,19 @@ public class Payment implements Serializable {
 
     public static final List<String> CURRENCY_UNIT = Lists.newArrayList("RUB", "UAH", "USD", "EUR");
 
-    // Оклад/ставка
+    public static final List<String> TYPE = Lists.newArrayList("SALARY", "HOUR", "DAY", "PIECE", "REVERSE", "NATURAL");
+
+    // Ставка
     private Float salary;
+
+    // Количество
+    private Integer number;
 
     // Название валюты
     private String currencyUnit;
+
+    // Тип (Оклад, тариф часовой, тариф по дням, сдельное начисление, от обратного, в натурально форме)
+    private String type;
 
     public Float getSalary() {
         return salary;
@@ -36,6 +44,22 @@ public class Payment implements Serializable {
 
     public void setCurrencyUnit(String currencyUnit) {
         this.currencyUnit = currencyUnit;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

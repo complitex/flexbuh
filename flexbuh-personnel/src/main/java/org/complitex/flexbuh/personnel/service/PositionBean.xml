@@ -11,7 +11,9 @@
 
         <association property="payment" javaType="org.complitex.flexbuh.personnel.entity.Payment">
             <result column="payment_salary" property="salary" />
+            <result column="payment_number" property="number" />
             <result column="payment_currency_unit" property="currencyUnit" />
+            <result column="payment_type" property="type" />
         </association>
 
         <association property="schedule" column="{id=schedule_id, currentDate=current_date}"
@@ -29,7 +31,7 @@
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
         `name`, `code`, `description`
         <if test="payment != null or (department != null and departmentAttributes != null and departmentAttributes.payment != null)">
-            , `payment_salary`, `payment_currency_unit`
+            , `payment_salary`, `payment_number`, `payment_currency_unit`, `payment_type`
         </if>
         <if test="schedule != null or (department != null and departmentAttributes != null and departmentAttributes.schedule != null)">
             , `schedule_id`
@@ -43,7 +45,7 @@
             <when test="department == null or departmentAttributes == null">
                 <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
                 #{name}, #{code}, #{description}
-                <if test="payment != null">, #{payment.salary}, #{payment.currencyUnit}</if>
+                <if test="payment != null">, #{payment.salary}, #{payment.number}, #{payment.currencyUnit}, #{payment.type}</if>
                 <if test="schedule != null">, #{schedule.id}</if>
             </when>
             <otherwise>
@@ -51,11 +53,12 @@
                 null, null, #{departmentAttributes.description}
                 <choose>
                     <when test="departmentAttributes.payment != null">
-                        , #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.currencyUnit}
+                        , #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.number}
+                        , #{departmentAttributes.payment.currencyUnit}, #{departmentAttributes.payment.type}
                     </when>
                     <otherwise>
                         <if test="payment != null">
-                        , null, null
+                        , null, null, null, null
                         </if>
                     </otherwise>
                 </choose>
@@ -78,7 +81,10 @@
     <sql id="departmentProperties">
         #{id}, #{departmentAttributes.version}, #{departmentAttributes.entryIntoForceDate}, #{departmentAttributes.completionDate},
         null, null, #{departmentAttributes.description}
-        <if test="departmentAttributes.payment != null">, #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.currencyUnit}</if>
+        <if test="departmentAttributes.payment != null">
+            , #{departmentAttributes.payment.salary}, #{departmentAttributes.payment.number}
+            , #{departmentAttributes.payment.currencyUnit}, #{departmentAttributes.payment.type}
+        </if>
         <if test="departmentAttributes.schedule != null">, #{departmentAttributes.schedule.id}</if>
         , #{department.id}
         , #{organization.id}

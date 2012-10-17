@@ -1,6 +1,5 @@
 package org.complitex.flexbuh.personnel.web;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -12,6 +11,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
@@ -21,14 +21,13 @@ import org.complitex.flexbuh.personnel.service.DepartmentBean;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.PositionBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
-import org.complitex.flexbuh.personnel.web.component.TemporalDomainObjectUpdate;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryDatePanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalHistoryPanel;
-import org.complitex.flexbuh.personnel.web.component.TemporalObjectEdit;
+import org.complitex.flexbuh.personnel.web.component.*;
+import org.complitex.flexbuh.personnel.web.component.theme.ObjectAttributesModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.validation.constraints.NotNull;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.List;
  *         Date: 26.07.12 15:49
  */
 @AuthorizeInstantiation(SecurityRole.PERSONAL_MANAGER)
-public class PositionEdit extends TemporalObjectEdit<Position> {
+public class PositionEdit extends TemporalObjectEdit<Position> implements ObjectAttributes {
 
     private final static Logger log = LoggerFactory.getLogger(PositionEdit.class);
 
@@ -46,7 +45,6 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
     public final static String PARAM_POSITION_VERSION = "position_version";
 
     private Position position = new Position();
-    private Position oldPosition;
 
     @EJB
     private PositionBean positionBean;
@@ -191,8 +189,9 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
             public void onUpdate(AjaxRequestTarget target) {
                 super.onUpdate(target);
 
-                oldPosition = position;
+                getState().setOldObject(position);
                 position = getObject();
+                getState().setObject(position);
                 fixPositionVersion(position);
 
                 form.setModel(new CompoundPropertyModel<>(position));
@@ -207,75 +206,30 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
         // Название отдела
         addHistoryFieldToForm(form, "name", new TextField<>("name"));
         addHistoryFieldToForm(form, "code", new TextField<>("code"));
-        addHistoryFieldToForm(form, "payment_salary",
-                new NumberTextField<>("payment.salary", new IModel<Float>() {
+        addHistoryFieldToForm(form, "description", new TextArea<>("description",
+                new ObjectAttributesModel<String>(this, "description")));
 
+        form.add(new PaymentPanel<Position>("payment_panel", this, getState()) {
+            @Override
+            protected HistoryPanelFactory<Position> getHistoryPanelFactory() {
+                return new HistoryPanelFactory<Position>() {
                     @Override
-                    public Float getObject() {
-                        return position.getDepartmentAttributes() != null && position.getDepartmentAttributes().getPayment().getSalary() != null ?
-                                position.getDepartmentAttributes().getPayment().getSalary(): position.getPayment().getSalary();
+                    protected Position getTDObject() {
+                        return position;
                     }
 
                     @Override
-                    public void setObject(Float object) {
-                        if (position.getDepartmentAttributes() != null) {
-                            position.getDepartmentAttributes().getPayment().setSalary(object);
-                            return;
-                        }
-                        position.getPayment().setSalary(object);
+                    protected TemporalDomainObjectUpdate<Position> getTDObjectUpdate() {
+                        return historyUpdate;
                     }
 
                     @Override
-                    public void detach() {
-
+                    protected TemporalDomainObjectBean<Position> getTDObjectBean() {
+                        return positionBean;
                     }
-                }, Float.class));
-        addHistoryFieldToForm(form, "payment_currency_unit", new DropDownChoice<>("payment.currencyUnit", new IModel<String>() {
-
-                    @Override
-                    public String getObject() {
-                        return position.getDepartmentAttributes() != null &&
-                                StringUtils.isNotEmpty(position.getDepartmentAttributes().getPayment().getCurrencyUnit()) ?
-                                position.getDepartmentAttributes().getPayment().getCurrencyUnit(): position.getPayment().getCurrencyUnit();
-                    }
-
-                    @Override
-                    public void setObject(String object) {
-                        if (position.getDepartmentAttributes() != null) {
-                            position.getDepartmentAttributes().getPayment().setCurrencyUnit(object);
-                            return;
-                        }
-                        position.getPayment().setCurrencyUnit(object);
-                    }
-
-                    @Override
-                    public void detach() {
-
-                    }
-                }, Payment.CURRENCY_UNIT));
-        addHistoryFieldToForm(form, "description", new TextArea<>("description", new IModel<String>() {
-
-                    @Override
-                    public String getObject() {
-                        return position.getDepartmentAttributes() != null &&
-                                StringUtils.isNotEmpty(position.getDepartmentAttributes().getDescription()) ?
-                                position.getDepartmentAttributes().getDescription(): position.getDescription();
-                    }
-
-                    @Override
-                    public void setObject(String object) {
-                        if (position.getDepartmentAttributes() != null) {
-                            position.getDepartmentAttributes().setDescription(object);
-                            return;
-                        }
-                        position.setDescription(object);
-                    }
-
-                    @Override
-                    public void detach() {
-
-                    }
-                }));
+                };
+            }
+        });
 
         form.add(new TextField<>("organization", new Model<>(position.getOrganization() != null? position.getOrganization().getName(): "")));
 
@@ -310,7 +264,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
     protected TemporalHistoryPanel<Position> getHistoryPanel(final String fieldName) {
         return position.getDepartment() == null? super.getHistoryPanel(fieldName):
                 new TemporalHistoryPanel<Position>(fieldName + "_history",
-                    getTDObject(), getTDObjectUpdate()) {
+                    position, historyUpdate) {
 
             @Override
             protected void initProperties(Position currentObject) {
@@ -348,7 +302,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
                 PositionFilter filter = new PositionFilter(object.getDepartment(), 1);
                 filter.setId(object.getId());
                 filter.setCurrentDate(TemporalHistoryDatePanel.START_IN_HISTORY);
-                List<Position> result = getTDObjectBean().getTDOObjects(filter);
+                List<Position> result = positionBean.getTDOObjects(filter);
                 return result.size() != 0 && !getMaxVersion(result.get(0)).equals(getMaxVersion(object))? result.get(0): null;
             }
 
@@ -401,6 +355,8 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
                 position.setEntryIntoForceDate(new Date());
             }
 
+            Position oldPosition = positionBean.getTDObject(position.getId());
+
             log.debug("Position save: {}", position);
 
             boolean newObject = position.getId() == null;
@@ -430,22 +386,32 @@ public class PositionEdit extends TemporalObjectEdit<Position> {
     }
 
     @Override
-    protected Position getTDObject() {
+    protected HistoryPanelFactory<Position> getHistoryPanelFactory() {
+        return new HistoryPanelFactory<Position>() {
+            @Override
+            protected Position getTDObject() {
+                return position;
+            }
+
+            @Override
+            protected TemporalDomainObjectUpdate<Position> getTDObjectUpdate() {
+                return historyUpdate;
+            }
+
+            @Override
+            protected TemporalDomainObjectBean<Position> getTDObjectBean() {
+                return positionBean;
+            }
+        };
+    }
+
+    @Override
+    public Object getObject() {
         return position;
     }
 
     @Override
-    protected Position getOldTDObject() {
-        return oldPosition;
-    }
-
-    @Override
-    protected TemporalDomainObjectUpdate<Position> getTDObjectUpdate() {
-        return historyUpdate;
-    }
-
-    @Override
-    protected TemporalDomainObjectBean<Position> getTDObjectBean() {
-        return positionBean;
+    public Object getAttributes() {
+        return position.getDepartmentAttributes();
     }
 }
