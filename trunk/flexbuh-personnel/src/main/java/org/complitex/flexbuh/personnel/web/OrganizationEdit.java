@@ -65,8 +65,6 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
     protected Organization organization;
 
-    private Organization oldOrganization = null;
-
     private IModel<String> physicalStreetModel = new Model<String>();
     private IModel<String> physicalCityModel = new Model<String>();
 
@@ -222,8 +220,9 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
             public void onUpdate(AjaxRequestTarget target) {
                 super.onUpdate(target);
 
-                oldOrganization = organization;
+                getState().setOldObject(organization);
                 organization = getObject();
+                getState().setObject(organization);
                 //form.setModelObject(organization);
                 form.setModel(new CompoundPropertyModel<>(organization));
                 physicalAddressPanel.updateModel(new CompoundPropertyModel<>(organization.getPhysicalAddress()),
@@ -544,22 +543,22 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
     }
 
     @Override
-    protected Organization getTDObject() {
-        return organization;
-    }
+    protected HistoryPanelFactory<Organization> getHistoryPanelFactory() {
+        return new HistoryPanelFactory<Organization>() {
+            @Override
+            protected Organization getTDObject() {
+                return organization;
+            }
 
-    @Override
-    protected Organization getOldTDObject() {
-        return oldOrganization;
-    }
+            @Override
+            protected TemporalDomainObjectUpdate<Organization> getTDObjectUpdate() {
+                return historyUpdate;
+            }
 
-    @Override
-    protected TemporalDomainObjectUpdate<Organization> getTDObjectUpdate() {
-        return historyUpdate;
-    }
-
-    @Override
-    protected TemporalDomainObjectBean<Organization> getTDObjectBean() {
-        return organizationBean;
+            @Override
+            protected TemporalDomainObjectBean<Organization> getTDObjectBean() {
+                return organizationBean;
+            }
+        };
     }
 }

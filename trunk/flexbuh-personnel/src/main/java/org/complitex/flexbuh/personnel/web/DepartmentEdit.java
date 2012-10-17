@@ -50,8 +50,6 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
 
     private Department department;
 
-    private Department oldDepartment = null;
-
     private DepartmentTreePanel departmentTreePanel;
 
     private Form<Department> form;
@@ -220,8 +218,9 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             public void onUpdate(AjaxRequestTarget target) {
                 super.onUpdate(target);
 
-                oldDepartment = department;
+                getState().setOldObject(department);
                 department = getObject();
+                getState().setObject(department);
                 form.setModel(new CompoundPropertyModel<>(department));
 
                 target.add(form);
@@ -298,7 +297,7 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
             if (newObject) {
                 log.debug("Создание подразделения", new Event(EventCategory.CREATE, department));
             } else {
-                log.debug("Редактирование подразделения", new Event(EventCategory.EDIT, oldDepartment, department));
+                log.debug("Редактирование подразделения", new Event(EventCategory.EDIT, getState().getOldObject(), department));
             }
 
             /*
@@ -323,22 +322,22 @@ public class DepartmentEdit extends TemporalObjectEdit<Department> {
     }
 
     @Override
-    protected Department getTDObject() {
-        return department;
-    }
+    protected HistoryPanelFactory<Department> getHistoryPanelFactory() {
+        return new HistoryPanelFactory<Department>() {
+            @Override
+            protected Department getTDObject() {
+                return department;
+            }
 
-    @Override
-    protected Department getOldTDObject() {
-        return oldDepartment;
-    }
+            @Override
+            protected TemporalDomainObjectUpdate<Department> getTDObjectUpdate() {
+                return historyUpdate;
+            }
 
-    @Override
-    protected TemporalDomainObjectUpdate<Department> getTDObjectUpdate() {
-        return historyUpdate;
-    }
-
-    @Override
-    protected TemporalDomainObjectBean<Department> getTDObjectBean() {
-        return departmentBean;
+            @Override
+            protected TemporalDomainObjectBean<Department> getTDObjectBean() {
+                return departmentBean;
+            }
+        };
     }
 }

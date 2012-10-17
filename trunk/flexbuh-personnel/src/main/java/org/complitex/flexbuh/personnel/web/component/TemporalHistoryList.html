@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+    <body>
+        <wicket:panel>
+            <br/>
+            <fieldset>
+            <div wicket:id="history">
+
+                <h3><a href="#" wicket:id="history_title" /></h3>
+
+                <div>
+                <form id="filter_form" action="#" wicket:id="filter_form">
+                    <table  border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                        <thead>
+                            <tr>
+                                <th class="center"><wicket:message key="entry_into_force_date"/></th>
+                                <th class="center"><wicket:message key="completion_date"/></th>
+                                <th></th>
+                                <th class="center">
+                                    <input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="center">
+                                    <div style="width:102px">
+                                        <input type="text" wicket:id="beginDateRange" style="width: 80px"/>
+                                    </div>
+                                </th>
+                                <th class="center">
+                                    <div style="width:102px">
+                                        <input type="text" wicket:id="endDateRange" style="width: 80px"/>
+                                    </div>
+                                </th>
+                                <th></th>
+                                <th class="center">
+                                    <input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr wicket:id="temporalDomainObjects">
+                                <td><span wicket:id="entry_into_force_date"></span></td>
+                                <td><span wicket:id="completion_date"></span></td>
+                                <td><span wicket:id="deleted"></span></td>
+                                <td>
+                                    <span wicket:id="action_edit"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div>
+                        <span wicket:id="paging"></span>
+                    </div>
+                </form>
+            </div>
+            </div>
+            </fieldset>
+        </wicket:panel>
+    </body>
+</html>

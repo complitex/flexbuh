@@ -3,6 +3,7 @@ package org.complitex.flexbuh.personnel.web.component;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -29,115 +30,45 @@ public abstract class TemporalObjectEdit<T extends TemporalDomainObject> extends
 
     private final static Logger log = LoggerFactory.getLogger(TemporalObjectEdit.class);
 
-    private TemporalHistoryPanel<T> currentEnabledPanel;
+    private TemporalHistoryPanelState<T> state = new TemporalHistoryPanelState<>();
 
-    private boolean inHistoryContainer = false;
-
-    private AjaxEventBehavior onmouseover;
-
-    private void addOnMouseOver(Form<T> form) {
-        if (onmouseover != null) {
-            return;
-        }
-        onmouseover = new AjaxEventBehavior("onmouseover") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                if (!inHistoryContainer && currentEnabledPanel != null && currentEnabledPanel.isVisible()) {
-                    currentEnabledPanel.setVisible(false);
-                    target.add(currentEnabledPanel);
-                }
-            }
-        };
-        form.add(onmouseover);
-    }
-
-    protected void addHistoryFieldToForm(Form<T> form, final String fieldName,
+    protected void addHistoryFieldToForm(MarkupContainer form, final String fieldName,
                                        final Component field) {
-        addOnMouseOver(form);
-        final TemporalHistoryPanel<T> historyPanel = getHistoryPanel(fieldName);
-        historyPanel.setOutputMarkupId(true);
-        historyPanel.setVisible(false);
-        historyPanel.setOutputMarkupPlaceholderTag(true);
-
-        WebMarkupContainer container = new WebMarkupContainer(fieldName + "_container");
-
-        container.add(new AjaxEventBehavior("onmouseover") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                //log.debug("mouse on container");
-                if (!inHistoryContainer) {
-                    //log.debug("mouse on container first");
-                    if (currentEnabledPanel != null && !currentEnabledPanel.equals(historyPanel)) {
-                        currentEnabledPanel.setVisible(false);
-                        target.add(currentEnabledPanel);
-                    }
-                    historyPanel.setVisible(true);
-                    currentEnabledPanel = historyPanel;
-                    target.add(historyPanel);
-                }
-                inHistoryContainer = true;
-            }
-        }).add(new AjaxEventBehavior("onmouseout") {
-            protected void onEvent(final AjaxRequestTarget target) {
-                inHistoryContainer = false;
-            }
-        });
-
-        container.add(field);
-        container.add(historyPanel);
-        form.add(container);
-
-        field.add(new AttributeModifier("class", "") {
-            @Override
-            protected String newValue(String currentValue, String replacementValue) {
-                if (getOldTDObject() == null) {
-                    return "";
-                }
-                return StringUtils.equals(getValueField(getOldTDObject(), field.getId()),
-                        getValueField(getTDObject(), field.getId())) ? "" : "edited";
-            }
-        });
-
-        //form.add(field);
-        //form.add(historyPanel);
+        TemporalObjectWebUtil.addHistoryFieldToForm(form, getHistoryPanelFactory(), state, fieldName, field);
     }
 
     protected TemporalHistoryPanel<T> getHistoryPanel(final String fieldName) {
         return new TemporalHistoryPanel<T>(fieldName + "_history",
-                    getTDObject(), getTDObjectUpdate()) {
+                    getHistoryPanelFactory().getTDObject(), getHistoryPanelFactory().getTDObjectUpdate()) {
 
             @Override
             protected T getTDObjectPreviousInHistory(T object) {
-                return getTDObjectBean().getTDObjectPreviewInHistoryByField(object.getId(),
+                return getHistoryPanelFactory().getTDObjectBean().getTDObjectPreviewInHistoryByField(object.getId(),
                         object.getVersion(), fieldName);
             }
 
             @Override
             protected T getTDObjectNextInHistory(T object) {
-                return getTDObjectBean().getTDObjectNextInHistoryByField(object.getId(),
+                return getHistoryPanelFactory().getTDObjectBean().getTDObjectNextInHistoryByField(object.getId(),
                         object.getVersion(), fieldName);
             }
 
             @Override
             protected T getTDObjectStartInHistory(T object) {
-                return getTDObjectBean().getTDObject(object.getId(), 1);
+                return getHistoryPanelFactory().getTDObjectBean().getTDObject(object.getId(), 1);
             }
 
             @Override
             protected T getTDObjectLastInHistory(T object) {
-                return getTDObjectBean().getTDObjectLastInHistory(object.getId());
+                return getHistoryPanelFactory().getTDObjectBean().getTDObjectLastInHistory(object.getId());
             }
         };
     }
 
-    private String getValueField(Object object, String fieldName) {
-        PropertyModel<Object> result = new PropertyModel<>(object, fieldName);
-        return result.getObject() != null? result.getObject().toString(): null;
+    protected TemporalHistoryPanelState<T> getState() {
+        return state;
     }
 
-    abstract protected T getTDObject();
+    protected abstract HistoryPanelFactory<T> getHistoryPanelFactory();
 
-    abstract protected T getOldTDObject();
-
-    abstract protected TemporalDomainObjectUpdate<T> getTDObjectUpdate();
-
-    abstract protected TemporalDomainObjectBean<T> getTDObjectBean();
 }

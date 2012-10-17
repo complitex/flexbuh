@@ -72,8 +72,6 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
     private Schedule schedule = new Schedule();
 
-    private Schedule oldSchedule;
-
     private Form<Schedule> form;
 
     private TemporalHistoryPanel<Schedule> scheduleHistoryPanel;
@@ -246,8 +244,9 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
             public void onUpdate(AjaxRequestTarget target) {
                 super.onUpdate(target);
 
-                oldSchedule = schedule;
+                getState().setOldObject(schedule);
                 schedule = getObject();
+                getState().setObject(schedule);
                 form.setModel(new CompoundPropertyModel<>(schedule));
                 periodSchedule.setDefaultModel(new PropertyModel<Integer>(schedule, "periodNumberDate") {
                     @Override
@@ -357,6 +356,8 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
                 }
             }
 
+            Schedule oldSchedule = scheduleBean.getTDObject(schedule.getId());
+
             schedule.setEntryIntoForceDate(new Date());
 
             boolean newObject = schedule.getId() == null;
@@ -393,23 +394,23 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
     }
 
     @Override
-    protected Schedule getTDObject() {
-        return schedule;
-    }
+    protected HistoryPanelFactory<Schedule> getHistoryPanelFactory() {
+        return new HistoryPanelFactory<Schedule>() {
+            @Override
+            protected Schedule getTDObject() {
+                return schedule;
+            }
 
-    @Override
-    protected Schedule getOldTDObject() {
-        return oldSchedule;
-    }
+            @Override
+            protected TemporalDomainObjectUpdate<Schedule> getTDObjectUpdate() {
+                return historyUpdate;
+            }
 
-    @Override
-    protected TemporalDomainObjectUpdate<Schedule> getTDObjectUpdate() {
-        return historyUpdate;
-    }
-
-    @Override
-    protected TemporalDomainObjectBean<Schedule> getTDObjectBean() {
-        return scheduleBean;
+            @Override
+            protected TemporalDomainObjectBean<Schedule> getTDObjectBean() {
+                return scheduleBean;
+            }
+        };
     }
 
     private boolean isAdmin() {

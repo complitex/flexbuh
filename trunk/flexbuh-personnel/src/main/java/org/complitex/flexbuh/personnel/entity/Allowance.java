@@ -1,6 +1,9 @@
 package org.complitex.flexbuh.personnel.entity;
 
+import com.google.common.collect.Lists;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
+
+import java.util.List;
 
 /**
  * @author Pavel Sknar
@@ -8,10 +11,17 @@ import org.complitex.flexbuh.common.entity.TemporalDomainObject;
  */
 public class Allowance extends TemporalDomainObject {
 
+    private static final List<String> CALCULATION_UNIT = Lists.newArrayList("PERCENT", "RATE");
+    private static final List<String> TYPE = Lists.newArrayList("");
+
+    static {
+        CALCULATION_UNIT.addAll(Payment.CURRENCY_UNIT);
+    }
+
     // Значение
     private Float value;
 
-    // В каких единицах изчисляется (проценты, коэфициент и т.п.)
+    // В каких единицах изчисляется (проценты, коэффициент и т.п.)
     private String calculationUnit;
 
     // Тип (премия, надбавка, "северные" и т.п.)
