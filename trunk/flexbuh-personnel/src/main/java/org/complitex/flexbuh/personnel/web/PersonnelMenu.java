@@ -13,5 +13,6 @@ public class PersonnelMenu extends ResourceTemplateMenu{
     public PersonnelMenu() {
         add("organization", OrganizationList.class);
         add("schedule", ScheduleList.class);
+        add("allowance", AllowanceList.class);
     }
 }

@@ -1,0 +1,69 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h1>
+        <span wicket:id="header"></span>
+    </h1>
+    <div wicket:id="messages"></div>
+<!--
+    <div wicket:id="modal1"></div>
+    <a wicket:id="showModal1">Show modal dialog with a page</a>
+-->
+    <form action="#" wicket:id="form">
+        <table class="tbForm">
+            <tr>
+                <th><wicket:message key="type"/> </th>
+                <td>
+                    <div wicket:id="type_container">
+                        <div style="float: left;">
+                            <input type="text" maxlength="45" wicket:id="type" style="width: 277px"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="type_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><wicket:message key="value"/> </th>
+                <td>
+                    <div wicket:id="value_container">
+                        <div style="float: left;">
+                            <input type="text" maxlength="45" wicket:id="value" style="width: 277px"/>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="value_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><wicket:message key="calculationUnit"/> </th>
+                <td>
+                    <div wicket:id="calculation_unit_container">
+                        <div style="float: left;">
+                            <select wicket:id="calculationUnit"></select>
+                        </div>
+                        <div class="history_buttons_field_center" wicket:id="calculation_unit_history"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><wicket:message key="organization"/> </th>
+                <td>
+                    <input type="text" maxlength="45" wicket:id="organization" disabled="true" style="width: 277px">
+                </td>
+            </tr>
+        </table>
+
+        <br/>
+
+        <input type="submit" class="btnBig" wicket:message="value:submit" wicket:id="submit"/>
+        <input type="button" class="btnMiddle" wicket:id="cancel"/>
+    </form>
+    <div wicket:id="allowance_history" class="history_buttons_page_center"/>
+</wicket:extend>
+</body>
+</html>

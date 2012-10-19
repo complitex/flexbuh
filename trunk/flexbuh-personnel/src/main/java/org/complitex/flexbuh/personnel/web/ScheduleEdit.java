@@ -1,18 +1,13 @@
 package org.complitex.flexbuh.personnel.web;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.yui.calendar.TimeField;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -41,13 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static org.complitex.flexbuh.personnel.web.OrganizationEdit.PARAM_ORGANIZATION_ID;
 
@@ -138,14 +130,14 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
         add(new FeedbackPanel("messages"));
 
-        if (schedule.getPeriodSchedule() != null)
+        //if (schedule.getPeriodSchedule() != null)
 
         log.debug("Edit schedule: {}", schedule);
         form = new Form<>("form", new CompoundPropertyModel<>(schedule));
         add(form);
 
         // Button update/create schedule
-        form.add(new SaveDepartmentButton("submit"));
+        form.add(new SaveScheduleButton("submit"));
 
         // Button cancel changes and return to organization page or schedule list
         if (schedule.getOrganization() != null) {
@@ -329,8 +321,8 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         */
     }
 
-    private class SaveDepartmentButton extends Button {
-        public SaveDepartmentButton(String id) {
+    private class SaveScheduleButton extends Button {
+        public SaveScheduleButton(String id) {
             super(id);
         }
 

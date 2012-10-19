@@ -152,7 +152,7 @@ public class AllowanceListPanel extends Panel {
 
                 item.add(new Label("type", allowance.getType()));
                 item.add(new Label("value", Float.toString(allowance.getValue())));
-                item.add(new Label("calculation_unit", allowance.getCalculationUnit()));
+                item.add(new Label("calculation_unit", getString(allowance.getCalculationUnit())));
 
                 PageParameters pageParameters = new PageParameters();
 
