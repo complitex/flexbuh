@@ -26,6 +26,7 @@ import org.complitex.flexbuh.common.service.CityTypeBean;
 import org.complitex.flexbuh.common.service.StreetTypeBean;
 import org.complitex.flexbuh.common.template.FormTemplatePage;
 import org.complitex.flexbuh.common.web.component.AddressPanel;
+import org.complitex.flexbuh.personnel.entity.Allowance;
 import org.complitex.flexbuh.personnel.entity.Organization;
 import org.complitex.flexbuh.personnel.service.OrganizationBean;
 import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
@@ -84,6 +85,8 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
 
     private boolean collapsedSchedulePanel = true;
 
+    private boolean collapsedAllowancePanel = true;
+
     protected OrganizationEdit() {
         organization = new Organization();
         organization.setJuridicalAddress(new Address());
@@ -113,6 +116,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         }
         collapsedPositionPanel = pageParameters.get(PositionEdit.PARAM_POSITION_ID).toOptionalLong() == null;
         collapsedSchedulePanel = pageParameters.get(ScheduleEdit.PARAM_SCHEDULE_ID).toOptionalLong() == null;
+        collapsedAllowancePanel = pageParameters.get(AllowanceEdit.PARAM_ALLOWANCE_ID).toOptionalLong() == null;
 
 
         if (organization != null) {
@@ -147,7 +151,7 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
         add(messagesPanel);
 
         final Form<Organization> form = new Form<>("form", new CompoundPropertyModel<>(organization));
-        if (!collapsedPositionPanel || !collapsedPositionPanel) {
+        if (!collapsedPositionPanel || !collapsedSchedulePanel || !collapsedAllowancePanel) {
             form.add(new AttributeModifier("class", UNFOCUSABLE_CSS_CLASS));
         }
         form.setOutputMarkupId(true);
@@ -214,6 +218,16 @@ public class OrganizationEdit extends TemporalObjectEdit<Organization> {
             scheduleListAccordionPanel.setVisible(false);
         }
         form.add(scheduleListAccordionPanel);
+
+        // Organization`s schedules
+
+        final AllowanceListAccordionPanel allowanceListAccordionPanel =
+                new AllowanceListAccordionPanel("allowances", organization, collapsedAllowancePanel);
+        allowanceListAccordionPanel.setOutputMarkupId(true);
+        if (organization.getId() == null) {
+            allowanceListAccordionPanel.setVisible(false);
+        }
+        form.add(allowanceListAccordionPanel);
 
         historyUpdate = new TemporalDomainObjectUpdate<Organization>() {
             @Override

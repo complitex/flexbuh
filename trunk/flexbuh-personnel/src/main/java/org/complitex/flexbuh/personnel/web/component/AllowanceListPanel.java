@@ -29,11 +29,11 @@ import org.complitex.flexbuh.common.web.component.BookmarkablePageLinkPanel;
 import org.complitex.flexbuh.common.web.component.datatable.DataProvider;
 import org.complitex.flexbuh.common.web.component.paging.PagingNavigator;
 import org.complitex.flexbuh.personnel.entity.Organization;
-import org.complitex.flexbuh.personnel.entity.Schedule;
-import org.complitex.flexbuh.personnel.entity.ScheduleFilter;
-import org.complitex.flexbuh.personnel.service.ScheduleBean;
+import org.complitex.flexbuh.personnel.entity.Allowance;
+import org.complitex.flexbuh.personnel.entity.AllowanceFilter;
+import org.complitex.flexbuh.personnel.service.AllowanceBean;
 import org.complitex.flexbuh.personnel.web.OrganizationEdit;
-import org.complitex.flexbuh.personnel.web.ScheduleEdit;
+import org.complitex.flexbuh.personnel.web.AllowanceEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,49 +43,49 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.complitex.flexbuh.personnel.web.ScheduleEdit.PARAM_SCHEDULE_ID;
+import static org.complitex.flexbuh.personnel.web.AllowanceEdit.PARAM_ALLOWANCE_ID;
 
 /**
  * @author Pavel Sknar
- *         Date: 02.10.12 19:05
+ *         Date: 18.10.12 15:13
  */
-public class ScheduleListPanel extends Panel {
+public class AllowanceListPanel extends Panel {
 
-    private final static Logger log = LoggerFactory.getLogger(PositionListPanel.class);
+    private final static Logger log = LoggerFactory.getLogger(AllowanceListPanel.class);
 
     @EJB
-    private ScheduleBean scheduleBean;
+    private AllowanceBean allowanceBean;
 
-    private ScheduleFilter filter = new ScheduleFilter();
+    private AllowanceFilter filter = new AllowanceFilter();
 
-    private ScheduleFilter oldFilter;
+    private AllowanceFilter oldFilter;
 
-    private ScheduleFilter initialFilter;
+    private AllowanceFilter initialFilter;
 
-    private Form<ScheduleFilter> filterForm;
+    private Form<AllowanceFilter> filterForm;
 
     private Map<Long, IModel<Boolean>> selectMap = Maps.newHashMap();
 
     private boolean enabled = true;
 
-    private BookmarkablePageLink<Schedule> addButton;
+    private BookmarkablePageLink<Allowance> addButton;
 
     private AjaxButton deleteButton;
 
-    public ScheduleListPanel(@NotNull String id, boolean admin, final Long sessionId) {
+    public AllowanceListPanel(@NotNull String id, final Long sessionId) {
         super(id);
-        init(null, admin, sessionId);
+        init(null, sessionId);
     }
 
-    public ScheduleListPanel(@NotNull String id, Organization organization) {
+    public AllowanceListPanel(@NotNull String id, Organization organization) {
         super(id);
-        init(organization, false, null);
+        init(organization, null);
     }
 
-    private void init(final Organization organization, final boolean admin, final Long sessionId) {
-        initFilterData(organization, admin, sessionId);
+    private void init(final Organization organization, final Long sessionId) {
+        initFilterData(organization, sessionId);
         try {
-            initialFilter = (ScheduleFilter) BeanUtils.cloneBean(filter);
+            initialFilter = (AllowanceFilter) BeanUtils.cloneBean(filter);
         } catch (ReflectiveOperationException e) {
             log.error("Can not create initial filter. Link will use", e);
             initialFilter = filter;
@@ -94,7 +94,7 @@ public class ScheduleListPanel extends Panel {
             enabled = organization.getCompletionDate() == null;
         }
 
-        filterForm = new Form<>("schedule_filter_form", new CompoundPropertyModel<>(filter));
+        filterForm = new Form<>("allowance_filter_form", new CompoundPropertyModel<>(filter));
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -109,39 +109,38 @@ public class ScheduleListPanel extends Panel {
         };
         filterForm.add(filterReset);
 
-        filterForm.add(new TextField<String>("name"));
-        filterForm.add(new TextField<String>("comment"));
+        filterForm.add(new TextField<String>("type"));
 
         //Модель
-        final DataProvider<Schedule> dataProvider = new DataProvider<Schedule>() {
+        final DataProvider<Allowance> dataProvider = new DataProvider<Allowance>() {
 
             @Override
-            protected Iterable<Schedule> getData(int first, int count) {
+            protected Iterable<Allowance> getData(int first, int count) {
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
 
                 filter.setAscending(getSort().isAscending());
-                return scheduleBean.getTDOObjects(filter);
+                return allowanceBean.getTDOObjects(filter);
             }
 
             @Override
             protected int getSize() {
-                return scheduleBean.getSchedulesCount(filter);
+                return allowanceBean.getAllowancesCount(filter);
             }
         };
-        dataProvider.setSort("name", SortOrder.ASCENDING);
+        dataProvider.setSort("type", SortOrder.ASCENDING);
 
         //Таблица
-        DataView<Schedule> dataView = new DataView<Schedule>("schedules", dataProvider, 10) {
+        DataView<Allowance> dataView = new DataView<Allowance>("allowances", dataProvider, 10) {
 
             @Override
-            protected void populateItem(Item<Schedule> item) {
-                Schedule schedule = item.getModelObject();
+            protected void populateItem(Item<Allowance> item) {
+                Allowance allowance = item.getModelObject();
 
                 IModel<Boolean> selectModel = new Model<>(false);
 
-                selectMap.put(schedule.getId(), selectModel);
+                selectMap.put(allowance.getId(), selectModel);
 
                 item.add(new CheckBox("select", selectModel)
                     .add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -149,22 +148,23 @@ public class ScheduleListPanel extends Panel {
                         protected void onUpdate(AjaxRequestTarget target) {
                             //update
                         }
-                    }).setEnabled(!schedule.isDeleted()));
+                    }).setEnabled(!allowance.isDeleted()));
 
-                item.add(new Label("name", schedule.getName()));
-                item.add(new Label("comment", schedule.getComment()));
+                item.add(new Label("type", allowance.getType()));
+                item.add(new Label("value", Float.toString(allowance.getValue())));
+                item.add(new Label("calculation_unit", allowance.getCalculationUnit()));
 
                 PageParameters pageParameters = new PageParameters();
 
-                pageParameters.set(PARAM_SCHEDULE_ID, schedule.getId());
-                item.add(new BookmarkablePageLinkPanel<Schedule>("action",
-                        getString(schedule.isDeleted() || (!admin && schedule.getSessionId() == null)? "action_view": "action_edit"),
-                        ScheduleEdit.class, pageParameters));
+                pageParameters.set(PARAM_ALLOWANCE_ID, allowance.getId());
+                item.add(new BookmarkablePageLinkPanel<Allowance>("action",
+                        getString(allowance.isDeleted() || allowance.getSessionId() == null? "action_view": "action_edit"),
+                        AllowanceEdit.class, pageParameters));
             }
 
             @Override
-            protected Item<Schedule> newItem(String id, int index, final IModel<Schedule> model) {
-                return new Item<Schedule>(id, index, model) {
+            protected Item<Allowance> newItem(String id, int index, final IModel<Allowance> model) {
+                return new Item<Allowance>(id, index, model) {
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
                         super.onComponentTag(tag);
@@ -178,11 +178,11 @@ public class ScheduleListPanel extends Panel {
         filterForm.add(dataView);
 
         //Названия колонок и сортировка
-        filterForm.add(new OrderByBorder("header.name", "name", dataProvider));
+        filterForm.add(new OrderByBorder("header.type", "type", dataProvider));
         //filterForm.add(new OrderByBorder("header.comment", "comment", dataProvider));
 
         //Постраничная навигация
-        filterForm.add(new PagingNavigator("paging", dataView, ScheduleListPanel.class.getName(), filterForm).setOutputMarkupId(true));
+        filterForm.add(new PagingNavigator("paging", dataView, AllowanceListPanel.class.getName(), filterForm).setOutputMarkupId(true));
 
         PageParameters pageParameters = new PageParameters();
         if (filter.getOrganizationId() != null) {
@@ -190,7 +190,7 @@ public class ScheduleListPanel extends Panel {
         }
 
         // Кнопка добавить
-        addButton = new BookmarkablePageLink<Schedule>("add", ScheduleEdit.class, pageParameters) {
+        addButton = new BookmarkablePageLink<Allowance>("add", AllowanceEdit.class, pageParameters) {
 
             @Override
             public boolean isEnabled() {
@@ -205,7 +205,7 @@ public class ScheduleListPanel extends Panel {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                deleteSelectedSchedules();
+                deleteSelectedAllowances();
                 //initFilterData(organization);
                 target.add(filterForm);
             }
@@ -224,14 +224,14 @@ public class ScheduleListPanel extends Panel {
         add(deleteButton);
     }
 
-    private void deleteSelectedSchedules() {
+    private void deleteSelectedAllowances() {
         List<Long> deleted = Lists.newArrayList();
         for (Map.Entry<Long, IModel<Boolean>> entry : selectMap.entrySet()) {
             if (entry.getValue().getObject()) {
                 deleted.add(entry.getKey());
-                Schedule schedule = scheduleBean.getTDObject(entry.getKey());
-                if (schedule != null) {
-                    scheduleBean.deleteSchedule(schedule);
+                Allowance allowance = allowanceBean.getTDObject(entry.getKey());
+                if (allowance != null) {
+                    allowanceBean.deleteAllowance(allowance);
                 } else {
                     log.error("Could not delete tree item {}: did not find", entry.getKey());
                 }
@@ -242,7 +242,7 @@ public class ScheduleListPanel extends Panel {
         }
     }
 
-    private void initFilterData(Organization organization, boolean admin, Long sessionId) {
+    private void initFilterData(Organization organization, Long sessionId) {
         if (organization == null || organization.getCompletionDate() == null) {
             filter.setCurrentDate(new Date());
         } else {
@@ -253,15 +253,14 @@ public class ScheduleListPanel extends Panel {
         } else {
             filter.setOrganizationId(0L);
         }
-        filter.setAdmin(admin);
         filter.setSessionId(sessionId);
     }
 
-    private ScheduleFilter clearFilter() {
+    private AllowanceFilter clearFilter() {
         try {
-            return (ScheduleFilter)BeanUtils.cloneBean(initialFilter);
+            return (AllowanceFilter)BeanUtils.cloneBean(initialFilter);
         } catch (ReflectiveOperationException e) {
-            log.error("Can not copy schedule filter", e);
+            log.error("Can not copy allowance filter", e);
         }
         return filter;
     }
@@ -278,7 +277,7 @@ public class ScheduleListPanel extends Panel {
 
         this.enabled = enabled;
         try {
-            oldFilter = (ScheduleFilter)BeanUtils.cloneBean(filter);
+            oldFilter = (AllowanceFilter)BeanUtils.cloneBean(filter);
         } catch (ReflectiveOperationException e) {
             log.error("Can not copy position filter", e);
             return;
@@ -293,7 +292,7 @@ public class ScheduleListPanel extends Panel {
         return new AddItemButton(id) {
             @Override
             protected void onClick() {
-                setResponsePage(ScheduleEdit.class, filter.getOrganizationId() != null ? new PageParameters().
+                setResponsePage(AllowanceEdit.class, filter.getOrganizationId() != null ? new PageParameters().
                         add(OrganizationEdit.PARAM_ORGANIZATION_ID, filter.getOrganizationId()): null);
             }
 
@@ -308,7 +307,7 @@ public class ScheduleListPanel extends Panel {
         return new DeleteItemButton(id) {
             @Override
             protected void onClick() {
-                deleteSelectedSchedules();
+                deleteSelectedAllowances();
             }
 
             @Override

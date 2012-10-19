@@ -1,9 +1,11 @@
 package org.complitex.flexbuh.personnel.entity;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Sknar
@@ -12,7 +14,6 @@ import java.util.List;
 public class Allowance extends TemporalDomainObject {
 
     private static final List<String> CALCULATION_UNIT = Lists.newArrayList("PERCENT", "RATE");
-    private static final List<String> TYPE = Lists.newArrayList("");
 
     static {
         CALCULATION_UNIT.addAll(Payment.CURRENCY_UNIT);
@@ -26,6 +27,12 @@ public class Allowance extends TemporalDomainObject {
 
     // Тип (премия, надбавка, "северные" и т.п.)
     private String type;
+
+    // Организация
+    private Organization organization;
+
+    // SID
+    private Long sessionId;
 
     public Float getValue() {
         return value;
@@ -49,5 +56,21 @@ public class Allowance extends TemporalDomainObject {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
     }
 }

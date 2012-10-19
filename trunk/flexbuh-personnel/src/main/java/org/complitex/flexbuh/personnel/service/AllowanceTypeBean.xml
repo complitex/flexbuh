@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.personnel.service.AllowanceTypeBean">
+    
+    <resultMap id="allowanceTypeResultMap" type="org.complitex.flexbuh.personnel.entity.AllowanceType"
+            extends="org.complitex.flexbuh.common.entity.LocalizedDomainObject.localizedDomainObjectResultMap">
+    </resultMap>
+    
+    <insert id="insertAllowanceType" parameterType="org.complitex.flexbuh.personnel.entity.AllowanceType" keyProperty="id" useGeneratedKeys="true">
+        insert into `allowance_type` (`name`)
+        	values (#{name})
+    </insert>
+
+    <sql id="selectAllowanceTypesWhere">
+        <where>
+            `name` like concat(#{object.name}, '%')
+        </where>
+    </sql>
+
+    <select id="selectAllowanceTypes" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultMap="allowanceTypeResultMap">
+        select * from `allowance_type` <include refid="selectAllowanceTypesWhere"/>
+        order by ${sortProperty}
+            <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+            <if test="first != 0 and count != 0">limit #{first}, #{count}</if>
+    </select>
+
+    <select id="isAllowanceTypeExist" parameterType="string" resultType="boolean">
+        select count(*) > 0 from `allowance_type` where `name` like #{startName}
+    </select>
+    
+</mapper>
