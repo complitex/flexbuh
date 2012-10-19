@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Allowance extends TemporalDomainObject {
 
-    private static final List<String> CALCULATION_UNIT = Lists.newArrayList("PERCENT", "RATE");
+    public static final List<String> CALCULATION_UNIT = Lists.newArrayList("PERCENT", "RATE");
 
     static {
         CALCULATION_UNIT.addAll(Payment.CURRENCY_UNIT);
