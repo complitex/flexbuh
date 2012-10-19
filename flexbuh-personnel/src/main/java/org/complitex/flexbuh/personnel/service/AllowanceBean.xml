@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.flexbuh.personnel.service.AllowanceBean">
+    <resultMap id="allowanceResultMap" type="org.complitex.flexbuh.personnel.entity.Allowance"
+            extends="org.complitex.flexbuh.common.entity.TemporalDomainObject.temporalDomainObjectResultMap">
+
+        <result column="value" property="value"/>
+        <result column="calculation_unit" property="calculationUnit"/>
+        <result column="type" property="type"/>
+        <result column="session_id" property="sessionId"/>
+        <association property="organization" column="{id=organization_id, currentDate=current_date}"
+                     select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentTDObjectById"/>
+
+    </resultMap>
+
+    <sql id="columns">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
+        `value`, `calculation_unit`, `type`, `session_id`, `organization_id`
+    </sql>
+
+    <sql id="properties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        #{value}, #{calculationUnit}, #{type}, #{sessionId}
+        <choose>
+            <when test="organization != null">, #{organization.id}</when>
+            <otherwise>, null</otherwise>
+        </choose>
+    </sql>
+
+    <sql id="filter">
+        <choose>
+            <when test="currentDate != null">
+                <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.currentDateConstraint"/>
+            </when>
+            <when test="id != null">
+                `id` = #{id}
+            </when>
+            <otherwise>
+                `id` is not null
+            </otherwise>
+        </choose>
+        <if test="currentDate != null and id != null"> and `id` = #{id}</if>
+        <if test="type != null"> and `type` like concat('%', #{type}, '%')</if>
+        <choose>
+            <when test="sessionId != null"> and `session_id` = #{sessionId}</when>
+            <otherwise> and `session_id` is null</otherwise>
+        </choose>
+        <if test="organizationId != null and organizationId > 0"> and `organization_id` = #{organizationId}</if>
+        <if test="organizationId != null and organizationId == 0"> and `organization_id` is null</if>
+        <if test="currentDate == null and entryIntoForceDate != null">
+            and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
+        </if>
+        <if test="currentDate == null and completionDate != null">
+            and #{completionDate} >= `entry_into_force_date`
+        </if>
+        <if test="currentDate == null and id == null">
+          group by `id` order by `id` desc, `version` desc
+        </if>
+    </sql>
+
+    <insert id="insertAllowance"
+            parameterType="org.complitex.flexbuh.personnel.entity.Allowance">
+
+        <selectKey keyProperty="id" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+            FROM `allowance`
+        </selectKey>
+
+        insert into `allowance` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
+
+    </insert>
+
+    <insert id="updateAllowance"
+            parameterType="org.complitex.flexbuh.personnel.entity.Allowance">
+
+        <selectKey keyProperty="version" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateVersion"/>
+            FROM `allowance` WHERE id = #{id}
+        </selectKey>
+
+        insert into `allowance` (
+        <include refid="columns"/>
+        )
+        values (
+        <include refid="properties"/>
+        )
+    </insert>
+
+    <update id="updateAllowanceNullCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Allowance">
+
+        update `allowance` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateNullCompletionDate"/>
+
+    </update>
+
+    <update id="updateAllowanceCompletionDate"
+            parameterType="org.complitex.flexbuh.personnel.entity.Allowance">
+
+        update `allowance` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.updateCompletionDate"/>
+
+    </update>
+
+    <update id="delete"
+            parameterType="org.complitex.flexbuh.personnel.entity.Allowance">
+
+        update `allowance` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/>
+
+    </update>
+
+    <select id="selectCurrentTDObjectById" parameterType="map" resultMap="allowanceResultMap">
+        select *, #{currentDate} as `current_date` from `allowance` where `id` = #{id} and
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.dateConstraint"/>
+    </select>
+
+    <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="allowanceResultMap">
+        select *, `entry_into_force_date` as `current_date` from `allowance` where `id` = #{id} and `version` = #{version}
+    </select>
+
+    <select id="selectCurrentAllowances" parameterType="org.complitex.flexbuh.personnel.entity.AllowanceFilter" resultMap="allowanceResultMap">
+        select *, #{currentDate} as `current_date` from
+        (select * from `allowance` where
+        <include refid="filter"/>) as s
+        <if test="sortProperty != null">
+          order by ${sortProperty}
+          <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+        </if>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectCurrentAllowancesCount" parameterType="org.complitex.flexbuh.personnel.entity.AllowanceFilter" resultType="int">
+        select count(distinct `id`, `version`) from `allowance` where
+        <include refid="filter"/>
+    </select>
+
+    <select id="selectTDObjectLastInHistory" parameterType="map" resultMap="allowanceResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `allowance` d
+        where d.`id` = #{id} and `version` =
+        (select max(`version`) from `allowance` where `id` = #{id})
+    </select>
+
+    <select id="selectTDObjectPreviewInHistoryByField" parameterType="map" resultMap="allowanceResultMap">
+        select d.*, `entry_into_force_date` as `current_date` from `allowance` d
+        where d.`id` = #{id} and `version` = (select max(d1.`version`) from `allowance` d1
+        inner join `allowance` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null) or (d1.`version` = 1 and d2.`version` = 1))
+              and #{version} > d1.`version`)
+        order by `version`
+    </select>
+
+    <select id="selectTDObjectNextInHistoryByField" parameterType="map" resultMap="allowanceResultMap">
+        select d.*, `entry_into_force_date` as `current_date`
+        from `allowance` d
+        where d.`id` = #{id} and `version` = (select min(d1.`version`) from `allowance` d1
+        inner join `allowance` d2 on d1.`id` = d2.`id`
+            where d1.id = #{id} and
+            (d1.`version` = d2.`version` + 1 and
+             (d1.`${fieldName}` != d2.`${fieldName}` or d1.`${fieldName}` is null and d2.`${fieldName}` is not null or
+              d1.`${fieldName}` is not null and d2.`${fieldName}` is null or
+              d1.`deleted` or d1.`completion_date` is null))
+            and d1.`version` > #{version})
+        order by `version`
+    </select>
+
+</mapper>

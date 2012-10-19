@@ -1,30 +1,18 @@
-DROP TABLE IF EXISTS `schedule`;
+alter table `allowance` add column `session_id` BIGINT(20);
+alter table `allowance` add column `organization_id` BIGINT(20);
+alter table `allowance` add CONSTRAINT `fk_allowance__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`);
+alter table `allowance` add UNIQUE KEY `unique_key_allowance` (`id`, `version`);
 
-CREATE TABLE `schedule` (
-  `id` BIGINT(20) NOT NULL,
-  `version` BIGINT(20) NOT NULL,
-  `deleted` BOOLEAN,
-  `entry_into_force_date` DATETIME NOT NULL,
-  `completion_date` DATETIME,
+alter table `position` add column `allowance_id` BIGINT(20);
+
+ALTER TABLE `position` add CONSTRAINT `fk_position__allowance` FOREIGN KEY (`allowance_id`) REFERENCES `allowance` (`id`);
+
+CREATE TABLE `allowance_type` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255),
-  `period_number_date` FLOAT,
-  `item_day_off` VARCHAR(255),
-  `reg_work_time_unit` VARCHAR (8),
-  `period_schedule` VARCHAR (1000),
-  `year_schedule` TEXT,
-  `pattern` BOOLEAN,
-  `total_work_time` BOOLEAN,
-  `organization_id` BIGINT(20),
-  `comment` VARCHAR(1000),
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_schedule__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+  PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-insert into `schedule` (`id`, `version`, `entry_into_force_date`, `name`,
-`period_number_date`, `item_day_off`, `reg_work_time_unit`, `period_schedule`) value
-(1, 1, now(), '5 дневная 40 часовая рабочая неделя с 9 до 18', 7, '6,7', 'DAY',
-'9-13,14-18;9-13,14-18;9-13,14-18;9-13,14-18;9-13,14-18');
 
 insert into `allowance_type` (`id`, `name`) value (1, 'Надбавка за работу в районах Крайнего Севера и приравненных к ним местностях');
 insert into `allowance_type` (`id`, `name`) value (2, 'Надбавка за вахтовый метод работы');
@@ -46,3 +34,5 @@ insert into `allowance_type` (`id`, `name`) value (17, 'Доплата при н
 insert into `allowance_type` (`id`, `name`) value (18, 'Доплата за совмещение профессий (должностей)');
 insert into `allowance_type` (`id`, `name`) value (19, 'Доплата за расширение зон обслуживания или увеличение объема выполняемых работ');
 insert into `allowance_type` (`id`, `name`) value (20, 'Доплата за выполнение обязанностей временно отсутствующего работника');
+
+INSERT INTO `update` (`date`) VALUES ('2012-10-15');

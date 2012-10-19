@@ -17,6 +17,7 @@ import org.apache.wicket.extensions.yui.calendar.TimeField;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.Loop;
 import org.apache.wicket.markup.html.list.LoopItem;
@@ -147,20 +148,25 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         form.add(new SaveDepartmentButton("submit"));
 
         // Button cancel changes and return to organization page or schedule list
-        form.add(new Link<String>("cancel") {
-
-            @Override
-            public void onClick() {
-                PageParameters parameters = new PageParameters();
-                if (schedule.getOrganization() != null) {
-                    parameters.set(PARAM_ORGANIZATION_ID, schedule.getOrganization().getId());
-                    setResponsePage(OrganizationEdit.class, parameters);
-                    return;
+        if (schedule.getOrganization() != null) {
+            PageParameters parameters = new PageParameters();
+            parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, schedule.getOrganization().getId());
+            parameters.set(PARAM_SCHEDULE_ID, schedule.getId());
+            form.add(new BookmarkablePageLink<OrganizationEdit>("cancel", OrganizationEdit.class, parameters) {
+                @Override
+                protected CharSequence getURL() {
+                    return super.getURL() + "#schedules";
                 }
-                setResponsePage(ScheduleList.class);
-            }
-        }.add(new AttributeModifier("value", schedule.getOrganization() == null || schedule.getId() == null ?
-                getString("cancel") : getString("go_to_organization"))));
+            }.add(new AttributeModifier("value", getString("go_to_organization"))));
+        } else {
+            form.add(new Link<String>("cancel") {
+
+                @Override
+                public void onClick() {
+                    setResponsePage(ScheduleList.class);
+                }
+            }.add(new AttributeModifier("value", getString("cancel"))));
+        }
 
         final Component periodSchedule = new Loop("period_schedule_list", new PropertyModel<Integer>(schedule, "periodNumberDate") {
             @Override
