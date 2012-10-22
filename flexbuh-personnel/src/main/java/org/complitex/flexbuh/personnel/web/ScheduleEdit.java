@@ -71,6 +71,8 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
     private TemporalDomainObjectUpdate<Schedule> historyUpdate;
 
+    private Long organizationId;
+
     public ScheduleEdit() {
         init();
     }
@@ -82,8 +84,9 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
     public ScheduleEdit(PageParameters pageParameters) {
 
-        Long organizationId = pageParameters.get(PARAM_ORGANIZATION_ID).toOptionalLong();
-        if (organizationId != null && organizationId > 0) {
+        organizationId = pageParameters.get(PARAM_ORGANIZATION_ID).toOptionalLong();
+        Long id = pageParameters.get(PARAM_SCHEDULE_ID).toOptionalLong();
+        if (organizationId != null && organizationId > 0 && id == null) {
             Organization organization = organizationBean.getTDObject(organizationId);
             if (organization != null) {
                 schedule.setOrganization(organization);
@@ -97,7 +100,6 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
             return;
         }
 
-        Long id = pageParameters.get(PARAM_SCHEDULE_ID).toOptionalLong();
         if (id != null) {
             log.debug("Start load schedule");
             schedule = scheduleBean.getTDObject(id);
@@ -140,9 +142,9 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
         form.add(new SaveScheduleButton("submit"));
 
         // Button cancel changes and return to organization page or schedule list
-        if (schedule.getOrganization() != null) {
+        if (organizationId != null) {
             PageParameters parameters = new PageParameters();
-            parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, schedule.getOrganization().getId());
+            parameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, organizationId);
             parameters.set(PARAM_SCHEDULE_ID, schedule.getId());
             form.add(new BookmarkablePageLink<OrganizationEdit>("cancel", OrganizationEdit.class, parameters) {
                 @Override
@@ -380,7 +382,10 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
         @Override
         public boolean isEnabled() {
-            return schedule.getCompletionDate() == null && !schedule.isDeleted();
+            return schedule.getCompletionDate() == null && !schedule.isDeleted() &&
+                    (schedule.getOrganization() != null && schedule.getOrganization().getId().equals(organizationId) ||
+                            schedule.getOrganization() == null && organizationId == null) &&
+                    (getSessionId().equals(schedule.getSessionId()) || isAdmin());
         }
     }
 

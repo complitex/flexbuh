@@ -52,6 +52,8 @@
         <mapper resource="org/complitex/flexbuh/personnel/service/DepartmentBean.xml"/>
         <mapper resource="org/complitex/flexbuh/personnel/service/PositionBean.xml"/>
         <mapper resource="org/complitex/flexbuh/personnel/service/ScheduleBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/personnel/service/AllowanceBean.xml"/>
+        <mapper resource="org/complitex/flexbuh/personnel/service/AllowanceTypeBean.xml"/>
 
         <mapper resource="org/complitex/flexbuh/document/service/DeclarationBean.xml"/>
         <mapper resource="org/complitex/flexbuh/document/service/CounterpartBean.xml"/>

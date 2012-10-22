@@ -17,10 +17,7 @@ import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.personnel.entity.*;
-import org.complitex.flexbuh.personnel.service.DepartmentBean;
-import org.complitex.flexbuh.personnel.service.OrganizationBean;
-import org.complitex.flexbuh.personnel.service.PositionBean;
-import org.complitex.flexbuh.personnel.service.TemporalDomainObjectBean;
+import org.complitex.flexbuh.personnel.service.*;
 import org.complitex.flexbuh.personnel.web.component.*;
 import org.complitex.flexbuh.personnel.web.component.theme.ObjectAttributesModel;
 import org.slf4j.Logger;
@@ -54,6 +51,9 @@ public class PositionEdit extends TemporalObjectEdit<Position> implements Object
 
     @EJB
     private DepartmentBean departmentBean;
+
+    @EJB
+    private ScheduleBean scheduleBean;
     
     private Form<Position> form;
 
@@ -230,6 +230,21 @@ public class PositionEdit extends TemporalObjectEdit<Position> implements Object
                 };
             }
         });
+
+        addHistoryFieldToForm(form, "schedule_id", new DropDownChoice<>("schedule", new ObjectAttributesModel<Schedule>(this, "schedule"),
+                scheduleBean.getTDOObjects(new ScheduleFilter(position.getOrganization(), getSessionId(), true, new Date(), Integer.MAX_VALUE)),
+                new IChoiceRenderer<Schedule>() {
+
+                    @Override
+                    public Object getDisplayValue(Schedule object) {
+                        return getStringOrKey(object.getName());
+                    }
+
+                    @Override
+                    public String getIdValue(Schedule object, int index) {
+                        return String.valueOf(object.getId());
+                    }
+                }));
 
         form.add(new TextField<>("organization", new Model<>(position.getOrganization() != null? position.getOrganization().getName(): "")));
 

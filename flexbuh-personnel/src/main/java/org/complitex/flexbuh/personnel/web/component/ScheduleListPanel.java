@@ -149,7 +149,7 @@ public class ScheduleListPanel extends Panel {
                         protected void onUpdate(AjaxRequestTarget target) {
                             //update
                         }
-                    }).setEnabled(!schedule.isDeleted()));
+                    }).setEnabled(!schedule.isDeleted() || (!admin && schedule.getSessionId() == null && organization != null)));
 
                 item.add(new Label("name", schedule.getName()));
                 item.add(new Label("comment", schedule.getComment()));
@@ -157,8 +157,11 @@ public class ScheduleListPanel extends Panel {
                 PageParameters pageParameters = new PageParameters();
 
                 pageParameters.set(PARAM_SCHEDULE_ID, schedule.getId());
+                if (organization != null) {
+                    pageParameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, organization.getId());
+                }
                 item.add(new BookmarkablePageLinkPanel<Schedule>("action",
-                        getString(schedule.isDeleted() || (!admin && schedule.getSessionId() == null)? "action_view": "action_edit"),
+                        getString(schedule.isDeleted() || (!admin && schedule.getSessionId() == null && organization != null)? "action_view": "action_edit"),
                         ScheduleEdit.class, pageParameters));
             }
 
