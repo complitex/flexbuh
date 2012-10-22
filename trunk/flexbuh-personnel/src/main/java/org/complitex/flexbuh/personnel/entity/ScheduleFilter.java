@@ -28,10 +28,13 @@ public class ScheduleFilter extends TemporalDomainObjectFilter {
     public ScheduleFilter() {
     }
 
-    public ScheduleFilter(Organization organization, Date currentDate) {
+    public ScheduleFilter(Organization organization, Long sessionId, boolean admin, Date currentDate, int count) {
         if (organization != null) {
             organizationId = organization.getId();
         }
+        this.sessionId = sessionId;
+        this.admin = admin;
+        this.setCount(count);
         setCurrentDate(currentDate);
     }
 

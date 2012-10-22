@@ -51,10 +51,9 @@
         <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="name != null"> and `name` like concat('%', #{name}, '%')</if>
         <if test="comment != null"> and `comment` like concat('%', #{comment}, '%')</if>
-        <if test="sessionId != null and admin"> and (`session_id` = #{sessionId} or `session_id` is null)</if>
-        <if test="sessionId != null and !admin"> and `session_id` = #{sessionId}</if>
+        <if test="sessionId != null"> and (`session_id` = #{sessionId} or `session_id` is null)</if>
         <if test="sessionId == null and admin"> and `session_id` is null</if>
-        <if test="organizationId != null and organizationId > 0"> and `organization_id` = #{organizationId}</if>
+        <if test="organizationId != null and organizationId > 0"> and (`organization_id` = #{organizationId} or `organization_id` is null)</if>
         <if test="organizationId != null and organizationId == 0"> and `organization_id` is null</if>
         <if test="currentDate == null and entryIntoForceDate != null">
             and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)
