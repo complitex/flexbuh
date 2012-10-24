@@ -85,10 +85,10 @@ CREATE TABLE `allowance` (
   `value` FLOAT,
   `calculation_unit` VARCHAR (45),
   `organization_id` BIGINT(20),
+  `session_id` BIGINT(20),
   `type` VARCHAR (255),
   UNIQUE KEY `unique_key_allowance` (`id`, `version`),
-  CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
-  CONSTRAINT `fk_position__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
+  CONSTRAINT `fk_allowance__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
