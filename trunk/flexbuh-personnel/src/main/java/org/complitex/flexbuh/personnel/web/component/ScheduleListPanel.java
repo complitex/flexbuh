@@ -149,7 +149,8 @@ public class ScheduleListPanel extends Panel {
                         protected void onUpdate(AjaxRequestTarget target) {
                             //update
                         }
-                    }).setEnabled(!schedule.isDeleted() || (!admin && schedule.getSessionId() == null && organization != null)));
+                    }).setEnabled(!schedule.isDeleted() && (!admin || schedule.getSessionId() != null || organization == null)
+                        && (admin || schedule.getSessionId() != null)));
 
                 item.add(new Label("name", schedule.getName()));
                 item.add(new Label("comment", schedule.getComment()));
@@ -161,7 +162,9 @@ public class ScheduleListPanel extends Panel {
                     pageParameters.set(OrganizationEdit.PARAM_ORGANIZATION_ID, organization.getId());
                 }
                 item.add(new BookmarkablePageLinkPanel<Schedule>("action",
-                        getString(schedule.isDeleted() || (!admin && schedule.getSessionId() == null && organization != null)? "action_view": "action_edit"),
+                        getString(schedule.isDeleted() ||
+                                (admin && schedule.getSessionId() == null && organization != null) ||
+                                (!admin && schedule.getSessionId() == null) ? "action_view": "action_edit"),
                         ScheduleEdit.class, pageParameters));
             }
 
@@ -296,7 +299,7 @@ public class ScheduleListPanel extends Panel {
         return new AddItemButton(id) {
             @Override
             protected void onClick() {
-                setResponsePage(ScheduleEdit.class, filter.getOrganizationId() != null ? new PageParameters().
+                setResponsePage(ScheduleEdit.class, filter.getOrganizationId() != null && filter.getOrganizationId() > 0 ? new PageParameters().
                         add(OrganizationEdit.PARAM_ORGANIZATION_ID, filter.getOrganizationId()): null);
             }
 
