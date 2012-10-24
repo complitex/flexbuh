@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.web.component;
 
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.model.PropertyModel;
 import org.complitex.flexbuh.common.web.component.AutoCompleteTextField;
 import org.complitex.flexbuh.personnel.entity.AllowanceType;
@@ -21,11 +22,11 @@ public class AllowanceTypeAutoCompleteTextField extends AutoCompleteTextField<Al
     private AllowanceTypeBean organizationTypeBean;
 
     public AllowanceTypeAutoCompleteTextField(String id) {
-        super(id);
+        super(id, new AutoCompleteSettings().setShowListOnEmptyInput(true));
     }
 
     public AllowanceTypeAutoCompleteTextField(String id, PropertyModel<String> model) {
-        super(id, model);
+        super(id, model, new AutoCompleteSettings().setShowListOnEmptyInput(true));
     }
 
     @Override

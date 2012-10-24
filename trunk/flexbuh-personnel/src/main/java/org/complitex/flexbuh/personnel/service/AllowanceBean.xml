@@ -42,8 +42,8 @@
         </choose>
         <if test="currentDate != null and id != null"> and `id` = #{id}</if>
         <if test="type != null"> and `type` like concat('%', #{type}, '%')</if>
-        <if test="sessionId != null"> and `session_id` = #{sessionId}</if>
-        <if test="organizationId != null and organizationId > 0"> and `organization_id` = #{organizationId}</if>
+        <if test="sessionId != null"> and (`session_id` = #{sessionId} or `session_id` is null)</if>
+        <if test="organizationId != null and organizationId > 0"> and (`organization_id` = #{organizationId} or `organization_id` is null)</if>
         <if test="organizationId != null and organizationId == 0"> and `organization_id` is null</if>
         <if test="currentDate == null and entryIntoForceDate != null">
             and (`completion_date` > #{entryIntoForceDate} or `completion_date` is null)

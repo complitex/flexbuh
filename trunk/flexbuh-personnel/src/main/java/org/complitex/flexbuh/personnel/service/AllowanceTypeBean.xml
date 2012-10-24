@@ -13,9 +13,11 @@
     </insert>
 
     <sql id="selectAllowanceTypesWhere">
-        <where>
-            `name` like concat(#{object.name}, '%')
-        </where>
+        <if test="object.name != null and object.name != ''">
+            <where>
+                `name` like concat(#{object.name}, '%')
+            </where>
+        </if>
     </sql>
 
     <select id="selectAllowanceTypes" parameterType="org.complitex.flexbuh.common.entity.FilterWrapper" resultMap="allowanceTypeResultMap">
