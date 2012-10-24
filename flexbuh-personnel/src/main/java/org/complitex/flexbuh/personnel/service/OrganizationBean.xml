@@ -167,7 +167,7 @@
         <include refid="org.complitex.flexbuh.common.service.AddressBean.address2Columns"/>,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.concat_address1"/> as `physical_address`,
         <include refid="org.complitex.flexbuh.common.service.AddressBean.concat_address2"/> as `juridical_address`
-        from `organization`
+        from `organization`o
         left join `address` address1 on address1.`id` = `physical_address_id`
         left join `address` address2 on address2.`id` = `juridical_address_id`
         where

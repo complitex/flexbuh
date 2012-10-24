@@ -148,7 +148,7 @@ public class AllowanceListPanel extends Panel {
                         protected void onUpdate(AjaxRequestTarget target) {
                             //update
                         }
-                    }).setEnabled(!allowance.isDeleted()));
+                    }).setEnabled(!allowance.isDeleted() && (allowance.getOrganization() != null || organization == null)));
 
                 item.add(new Label("type", allowance.getType()));
                 item.add(new Label("value", Float.toString(allowance.getValue())));
@@ -158,7 +158,7 @@ public class AllowanceListPanel extends Panel {
 
                 pageParameters.set(PARAM_ALLOWANCE_ID, allowance.getId());
                 item.add(new BookmarkablePageLinkPanel<Allowance>("action",
-                        getString(allowance.isDeleted() || allowance.getSessionId() == null? "action_view": "action_edit"),
+                        getString(allowance.isDeleted() || (allowance.getOrganization() == null && organization != null) ? "action_view": "action_edit"),
                         AllowanceEdit.class, pageParameters));
             }
 

@@ -107,7 +107,7 @@ public class ScheduleEdit extends TemporalObjectEdit<Schedule> {
 
             if (schedule != null) {
 
-                if (isNotAdmin() && !schedule.getSessionId().equals(getSessionId())) {
+                if (isNotAdmin() && schedule.getSessionId() != null && !schedule.getSessionId().equals(getSessionId())) {
                     getSession().error(getString("error_schedule_permission_denied"));
                     throw new RestartResponseException(ScheduleList.class);
                 }
