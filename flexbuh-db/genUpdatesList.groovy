@@ -1,17 +1,18 @@
 import java.text.*
 
-assert args.size() >= 1, 'Please specify version in YYYY-MM-DD[-N] format'
+assert args.size() >= 1, 'Please specify version in N.N.N format'
 
 def versionStr = args[0]
 
-assert versionStr =~ /\d\d\d\d-\d\d-\d\d(-\d+)?/, 'Need to specify version as parameter in YYYY-MM-DD[-N] format'
+assert versionStr =~ /\d+.\d+.\d+/, 'Need to specify version as parameter in N.N.N format'
 
 class Version implements Comparable {
-	Date date
-	int number
+	int number1
+    int number2
+    int number3
 
 	int compareTo(Version v) {
-		return date <=> v.date ?: number <=> v.number
+		return number1 <=> v.number1 ?: number2 <=> v.number2 ?: number3 <=> v.number3
 	}
 
 	int compareTo(Object v) {
@@ -22,7 +23,7 @@ class Version implements Comparable {
 	}
 
 	String toString() {
-		return "Date: ${date.format('yyyy-MM-dd')}, number: ${number}"
+		return "Number: ${number1}.${number2}.${number3}"
 	}
 }
 
@@ -60,12 +61,11 @@ class SQLCommentsExtractor {
 	}
 }
 
-def version = new Version(number : 0)
-if (versionStr.count("-") == 3) {
-	version.number = versionStr.substring("yyyy-MM-dd-".size()) as int
-	versionStr = versionStr.substring(0, "yyyy-MM-dd".size())
-}
-version.date = new SimpleDateFormat("yyyy-MM-dd").parse(versionStr)
+def version = new Version()
+def numbers = versionStr.split("\\.")
+version.number1 = numbers[0] as int
+version.number2 = numbers[1] as int
+version.number3 = numbers[2] as int
 
 // find new updates
 def paths = []
@@ -75,7 +75,7 @@ dir.eachFile { file ->
         return
     }
     def name = file.name
-    if (! (name =~ /\d\d\d\d_\d\d_\d\d(_\d+)?\.(sql)|(pls)/)) {
+    if (! (name =~ /\d\d\d\d\d\d\d\d_\d+_\d+\.\d+\.\d+\.(sql|pls)/)) {
         println "Unsupported file ${file}"
         return
     }
@@ -87,14 +87,12 @@ dir.eachFile { file ->
     }
     name = name.substring(0, sqlPos)
 
-    def ver = new Version(number : 0)
-    if (name.count("_") == 3) {
-        def num = name.substring('yyyy_MM_dd_'.size())
+    def ver = new Version()
 
-        ver.number = num as int
-        name = name.substring(0, 'yyyy_MM_dd'.size())
-    }
-    ver.date = new SimpleDateFormat('yyyy_MM_dd').parse(name)
+    numbers = name.substring(name.lastIndexOf('_') + 1).split('\\.')
+    ver.number1 = numbers[0] as int
+    ver.number2 = numbers[1] as int
+    ver.number3 = numbers[2] as int
 
     if (version < ver) {
         paths.push new UpdatePath(version : ver, path : file)
