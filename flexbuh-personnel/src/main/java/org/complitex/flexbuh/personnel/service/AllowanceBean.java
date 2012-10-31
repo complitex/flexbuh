@@ -1,9 +1,7 @@
 package org.complitex.flexbuh.personnel.service;
 
 import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.complitex.flexbuh.personnel.entity.Allowance;
-import org.complitex.flexbuh.personnel.entity.AllowanceFilter;
-import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectFilter;
+import org.complitex.flexbuh.personnel.entity.*;
 
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
@@ -82,5 +80,27 @@ public class AllowanceBean extends TemporalDomainObjectBean<Allowance> {
             position.setCompletionDate(new Date());
         }
         sqlSession().update(NS + ".delete", position);
+    }
+
+    @Transactional
+    public void create(Position position, Allowance allowance) {
+        PositionAllowance positionAllowance = new PositionAllowance();
+        positionAllowance.setPosition(position);
+        positionAllowance.setAllowance(allowance);
+        positionAllowance.setEntryIntoForceDate(new Date());
+        positionAllowance.setVersion(1L);
+
+        sqlSession().insert(NS + ".insertPositionAllowance", positionAllowance);
+    }
+
+    @Transactional
+    public void delete(Position position, Allowance allowance) {
+        PositionAllowance positionAllowance = new PositionAllowance();
+        positionAllowance.setPosition(position);
+        positionAllowance.setAllowance(allowance);
+        positionAllowance.setDeleted(true);
+        positionAllowance.setCompletionDate(new Date());
+
+        sqlSession().update(NS + ".deletePositionAllowance", positionAllowance);
     }
 }

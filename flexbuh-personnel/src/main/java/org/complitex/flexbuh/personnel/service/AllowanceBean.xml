@@ -16,7 +16,7 @@
 
     <sql id="columns">
         <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
-        `value`, `calculation_unit`, `type`, `session_id`, `organization_id`
+        `value`, `calculation_unit`, `type`, `session_id`, `organization_id`, `position_id`
     </sql>
 
     <sql id="properties">
@@ -24,6 +24,10 @@
         #{value}, #{calculationUnit}, #{type}, #{sessionId}
         <choose>
             <when test="organization != null">, #{organization.id}</when>
+            <otherwise>, null</otherwise>
+        </choose>
+        <choose>
+            <when test="position != null">, #{position.id}</when>
             <otherwise>, null</otherwise>
         </choose>
     </sql>
@@ -89,6 +93,41 @@
         )
     </insert>
 
+    <sql id="positionAllowanceColumns">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.columns"/>,
+        `position_id`, `allowance_id`
+    </sql>
+
+    <sql id="positionAllowanceProperties">
+        <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.properties"/>,
+        #{position.id}, #{allowance.id}
+    </sql>
+
+    <insert id="insertPositionAllowance"
+            parameterType="org.complitex.flexbuh.personnel.entity.PositionAllowance">
+
+        <selectKey keyProperty="id" order="BEFORE" resultType="long">
+            SELECT <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.generateId"/>
+            FROM `position_allowance`
+        </selectKey>
+
+        insert into `position_allowance` (
+        <include refid="positionAllowanceColumns"/>
+        )
+        values (
+        <include refid="positionAllowanceProperties"/>
+        )
+
+    </insert>
+
+    <insert id="deletePositionAllowance"
+            parameterType="org.complitex.flexbuh.personnel.entity.PositionAllowance">
+
+        update `position_allowance` <include refid="org.complitex.flexbuh.common.entity.TemporalDomainObject.delete"/> or
+        `allowance_id` = #{allowance.id} and `position_id` = #{position.id} and `completion_date` is null
+
+    </insert>
+
     <update id="updateAllowanceNullCompletionDate"
             parameterType="org.complitex.flexbuh.personnel.entity.Allowance">
 
@@ -117,6 +156,14 @@
 
     <select id="selectTDObjectByIdAndVersion" parameterType="map" resultMap="allowanceResultMap">
         select *, `entry_into_force_date` as `current_date` from `allowance` where `id` = #{id} and `version` = #{version}
+    </select>
+
+    <select id="selectCurrentPositionAllowances" parameterType="map" resultMap="allowanceResultMap">
+        select a.*, #{currentDate} as `current_date` from `allowance` a
+         inner join `position_allowance` pa on pa.`allowance_id` = a.`id`
+        where pa.`position_id` = #{positionId} and
+          #{currentDate} >= pa.`entry_into_force_date` and (pa.`completion_date` > #{currentDate} or pa.`completion_date` is null) and
+          #{currentDate} >= a.`entry_into_force_date` and (a.`completion_date` > #{currentDate} or a.`completion_date` is null)
     </select>
 
     <select id="selectCurrentAllowances" parameterType="org.complitex.flexbuh.personnel.entity.AllowanceFilter" resultMap="allowanceResultMap">

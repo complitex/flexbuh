@@ -50,6 +50,49 @@
             </div>
         </td>
     </tr>
+    <tr>
+        <td colspan="2">
+            <fieldset>
+                <legend>
+                    <wicket:message key="legend_allowances"/>
+                </legend>
+                <div wicket:id="add_allowances_dialog">
+                    <form action="#" wicket:id="select_allowances_form">
+                        <table>
+                            <tr>
+                                <td style="width: 100%">
+                                    <select wicket:id="select_allowances" style="height: 75px;">
+                                        <option></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="btnSmall default" wicket:id="add" type="submit" wicket:message="value:add" tabindex="0"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <table class="tbForm" wicket:id="allowancesContainer">
+                    <tr wicket:id="allowances">
+                        <td>
+                            <input class="selected" type="checkbox" wicket:id="selected"/>
+                        </td>
+                        <td>
+                            <span wicket:id="allowanceType"></span>
+                            <span wicket:id="allowanceValue"></span>
+                            <span wicket:id="allowanceCalculationUnit"></span>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <input type="button" wicket:id="addAllowances" wicket:message="value:add" class="btnSmall"/>
+                    <input type="button" wicket:id="removeAllowances" wicket:message="value:remove" class="btnSmall"/>
+                </div>
+            </fieldset>
+        </td>
+    </tr>
 </wicket:panel>
 </body>
 </html>

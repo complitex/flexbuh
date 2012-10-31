@@ -25,6 +25,9 @@
         <association property="organization" column="{id=organization_id, currentDate=current_date}"
                      select="org.complitex.flexbuh.personnel.service.OrganizationBean.selectCurrentTDObjectById"/>
 
+        <collection property="allowances" column="{positionId=id, currentDate=current_date}"
+                    select="org.complitex.flexbuh.personnel.service.AllowanceBean.selectCurrentPositionAllowances"/>
+
     </resultMap>
 
     <sql id="columns">
