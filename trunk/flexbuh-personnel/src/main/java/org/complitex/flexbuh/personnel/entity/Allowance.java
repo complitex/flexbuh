@@ -2,6 +2,8 @@ package org.complitex.flexbuh.personnel.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
 
 import java.util.List;
@@ -30,6 +32,9 @@ public class Allowance extends TemporalDomainObject {
 
     // Организация
     private Organization organization;
+
+    // Должность
+    private Position position;
 
     // SID
     private Long sessionId;
@@ -66,11 +71,29 @@ public class Allowance extends TemporalDomainObject {
         this.organization = organization;
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public Long getSessionId() {
         return sessionId;
     }
 
     public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

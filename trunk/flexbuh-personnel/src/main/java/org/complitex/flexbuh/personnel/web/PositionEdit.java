@@ -1,12 +1,18 @@
 package org.complitex.flexbuh.personnel.web;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.ListUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -15,6 +21,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.flexbuh.common.logging.Event;
 import org.complitex.flexbuh.common.logging.EventCategory;
+import org.complitex.flexbuh.common.mybatis.Transactional;
 import org.complitex.flexbuh.common.security.SecurityRole;
 import org.complitex.flexbuh.personnel.entity.*;
 import org.complitex.flexbuh.personnel.service.*;
@@ -26,8 +33,12 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.validation.constraints.NotNull;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * @author Pavel Sknar
@@ -54,12 +65,17 @@ public class PositionEdit extends TemporalObjectEdit<Position> implements Object
 
     @EJB
     private ScheduleBean scheduleBean;
+
+    @EJB
+    private AllowanceBean allowanceBean;
     
     private Form<Position> form;
 
     private TemporalHistoryDatePanel<Position> positionHistoryPanel;
 
     private TemporalDomainObjectUpdate<Position> historyUpdate;
+
+    private AllowanceFilter allowanceFilter = new AllowanceFilter();
 
     private PositionEdit() {
     }
@@ -156,6 +172,10 @@ public class PositionEdit extends TemporalObjectEdit<Position> implements Object
         form.setOutputMarkupId(true);
         add(form);
 
+        allowanceFilter.setOrganizationId(position.getOrganization().getId());
+        allowanceFilter.setCurrentDate(new Date());
+        allowanceFilter.setCount(Integer.MAX_VALUE);
+
         // Button update/create position
         form.add(new SavePositionButton("submit"));
 
@@ -210,6 +230,14 @@ public class PositionEdit extends TemporalObjectEdit<Position> implements Object
                 new ObjectAttributesModel<String>(this, "description")));
 
         form.add(new PaymentPanel<Position>("payment_panel", this, getState()) {
+
+            @Override
+            protected List<Allowance> getSelectAllowances() {
+                List<Allowance> result = allowanceBean.getTDOObjects(allowanceFilter);
+                result.removeAll(position.getAllowances());
+                return result;
+            }
+
             @Override
             protected HistoryPanelFactory<Position> getHistoryPanelFactory() {
                 return new HistoryPanelFactory<Position>() {
@@ -357,6 +385,7 @@ public class PositionEdit extends TemporalObjectEdit<Position> implements Object
             super(id);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void onSubmit() {
             boolean emptyRequiredField = !checkRequiredField(position.getName(), "name");

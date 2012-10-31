@@ -71,28 +71,6 @@ CREATE TABLE `schedule` (
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------
--- Allowance
--- --------------------------
-
-DROP TABLE IF EXISTS `allowance`;
-
-CREATE TABLE `allowance` (
-  `id` BIGINT(20) NOT NULL,
-  `version` BIGINT(20) NOT NULL,
-  `deleted` BOOLEAN,
-  `entry_into_force_date` DATETIME NOT NULL,
-  `completion_date` DATETIME,
-  `value` FLOAT,
-  `calculation_unit` VARCHAR (45),
-  `organization_id` BIGINT(20),
-  `session_id` BIGINT(20),
-  `type` VARCHAR (255),
-  UNIQUE KEY `unique_key_allowance` (`id`, `version`),
-  CONSTRAINT `fk_allowance__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------
 -- Position
 -- --------------------------
 
@@ -112,16 +90,58 @@ CREATE TABLE `position` (
   `payment_type` VARCHAR (45),
   `description` VARCHAR(1000),
   `schedule_id` BIGINT(20),
-  `allowance_id` BIGINT(20),
   `organization_id` BIGINT(20) NOT NULL,
   `department_id` BIGINT(20),
   -- `master_position_id` BIGINT(20),
   -- PRIMARY KEY (`id`, `version`),
   UNIQUE KEY `key_unique` (`id`, `version`, `department_id`),
-  CONSTRAINT `fk_position__allowance` FOREIGN KEY (`allowance_id`) REFERENCES `allowance` (`id`),
   CONSTRAINT `fk_position__schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`),
   CONSTRAINT `fk_position__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `fk_position__department` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Allowance
+-- --------------------------
+
+DROP TABLE IF EXISTS `allowance`;
+
+CREATE TABLE `allowance` (
+  `id` BIGINT(20) NOT NULL,
+  `version` BIGINT(20) NOT NULL,
+  `deleted` BOOLEAN,
+  `entry_into_force_date` DATETIME NOT NULL,
+  `completion_date` DATETIME,
+  `value` FLOAT,
+  `calculation_unit` VARCHAR (45),
+  `organization_id` BIGINT(20),
+  `position_id` BIGINT(20),
+  `session_id` BIGINT(20),
+  `type` VARCHAR (255),
+  UNIQUE KEY `unique_key_allowance` (`id`, `version`, `position_id`),
+  CONSTRAINT `fk_allowance__position` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
+  CONSTRAINT `fk_allowance__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------
+-- Position`s allowance
+-- --------------------------
+
+DROP TABLE IF EXISTS `position_allowance`;
+
+CREATE TABLE `position_allowance` (
+  `id` BIGINT(20) NOT NULL,
+  `version` BIGINT(20) NOT NULL,
+  `deleted` BOOLEAN,
+  `entry_into_force_date` DATETIME NOT NULL,
+  `completion_date` DATETIME,
+  `position_id` BIGINT(20) NOT NULL,
+  `allowance_id` BIGINT(20) NOT NULL,
+  PRIMARY KEY (`id`, `version`),
+  CONSTRAINT `fk_position_allowance__position` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
+  CONSTRAINT `fk_position_allowance__allowance` FOREIGN KEY (`allowance_id`) REFERENCES `allowance` (`id`)
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,5 +1,6 @@
 package org.complitex.flexbuh.personnel.entity;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.complitex.flexbuh.common.entity.HierarchicalTemporalDomainObject;
 import org.complitex.flexbuh.common.entity.TemporalDomainObject;
@@ -34,7 +35,7 @@ public class Position extends TemporalDomainObject {
     private Schedule schedule;
 
     // Надбавки
-    private List<Allowance> allowances;
+    private List<Allowance> allowances = Lists.newArrayList();
 
     // Подразделение
     private Department department;
@@ -83,6 +84,14 @@ public class Position extends TemporalDomainObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Allowance> getAllowances() {
+        return allowances;
+    }
+
+    public void setAllowances(List<Allowance> allowances) {
+        this.allowances = allowances;
     }
 
     public Department getDepartment() {

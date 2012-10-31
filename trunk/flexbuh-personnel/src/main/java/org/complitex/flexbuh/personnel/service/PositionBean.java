@@ -2,15 +2,14 @@ package org.complitex.flexbuh.personnel.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.ListUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.complitex.flexbuh.common.mybatis.Transactional;
-import org.complitex.flexbuh.personnel.entity.Department;
-import org.complitex.flexbuh.personnel.entity.Position;
-import org.complitex.flexbuh.personnel.entity.PositionFilter;
-import org.complitex.flexbuh.personnel.entity.TemporalDomainObjectFilter;
+import org.complitex.flexbuh.personnel.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -28,6 +27,9 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
     private static final Logger log = LoggerFactory.getLogger(PositionBean.class);
 
     public static final String NS = PositionBean.class.getName();
+
+    @EJB
+    private AllowanceBean allowanceBean;
 
     public PositionBean() {
         super(NS);
@@ -51,8 +53,12 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
             position.getDepartmentAttributes().setVersion(2L);
             sqlSession().insert(NS + ".insertDepartmentAttributePosition", position);
         }
+        for (Allowance allowance : position.getAllowances()) {
+            allowanceBean.create(position, allowance);
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional
     public void update(@NotNull Position position) {
         /*
@@ -60,6 +66,20 @@ public class PositionBean extends TemporalDomainObjectBean<Position> {
             sqlSession().insert(NS + ".insertDepartmentAttributePosition", position);
             return;
         }*/
+        //
+        Position oldPosition = getTDObject(position.getId());
+        if (oldPosition != null) {
+            List<Allowance> removed = ListUtils.subtract(oldPosition.getAllowances(), position.getAllowances());
+            for (Allowance allowance : removed) {
+                allowanceBean.delete(position, allowance);
+            }
+        }
+        List<Allowance> added = oldPosition != null?
+                ListUtils.subtract(position.getAllowances(), oldPosition.getAllowances()) : position.getAllowances();
+        for (Allowance allowance : added) {
+            allowanceBean.create(position, allowance);
+        }
+
         if (position.getDepartment() != null && position.getDepartmentAttributes() != null) {
             if (position.getDepartmentAttributes().isNotNew()) {
                 sqlSession().update(NS + ".updateDepartmentAttributePositionNullCompletionDate", position);

@@ -14,6 +14,8 @@ public class AllowanceFilter extends TemporalDomainObjectFilter {
 
     private Long sessionId;
 
+    private Long positionId;
+
     private Date entryIntoForceDate;
 
     private Date completionDate;
@@ -40,6 +42,14 @@ public class AllowanceFilter extends TemporalDomainObjectFilter {
 
     public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
     }
 
     public Date getEntryIntoForceDate() {
