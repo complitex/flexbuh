@@ -84,6 +84,11 @@ public class TemplateXMLService {
     public Schema getSchema(String templateName) throws SAXException {
         TemplateXML xsd = templateXMLBean.getTemplateXML(XSD, templateName);
 
+        if (xsd == null) {
+            log.warn("Template xml did not find by name '{}'", templateName);
+            return null;
+        }
+
         Source xsdSource = new StreamSource(new StringReader(xsd.getData()), templateName + ".xsd");
 
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -91,7 +96,7 @@ public class TemplateXMLService {
         factory.setResourceResolver(new LSResourceResolver() {
             @Override
             public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-                if ("common_types.xsd".equals(systemId)){
+                if ("common_types.xsd".equals(systemId)) {
                     TemplateXML common = templateXMLBean.getTemplateXML(XSD, "common_types");
 
                     LSInputImpl lsInput = new LSInputImpl();

@@ -75,14 +75,24 @@ public class DeclarationUploadDialog extends TemplatePanel {
                 for (FileUpload fileUpload : fileUploads){
                     String fileName = fileUpload.getClientFileName();
 
+                    DeclarationHead head = null;
                     try {
                         Declaration declaration = declarationService.parse(getSessionId(), personProfiles, fileName,
                                 fileUpload.getInputStream());
 
                         //period version check
-                        DeclarationHead head = declaration.getHead();
+                        head = declaration.getHead();
                         DocumentVersion documentVersion = documentVersionBean.getDocumentVersion(head.getCDoc(),
                                 head.getCDocSub(), head.getCDocVer());
+
+                        if (documentVersion == null) {
+                            log.error("Ошибка загрузки документа - не найдена верия документа: " +
+                                    "С_DOC={}, C_DOC_SUB={}, C_DOC_VER={}", new Object[]{head.getCDoc(),
+                                head.getCDocSub(), head.getCDocVer()});
+                            error(getStringFormat("error_not_found_document_version", head.getCDoc(),
+                                head.getCDocSub(), head.getCDocVer()));
+                            continue;
+                        }
 
                         Date periodDate = DateUtil.getLastDayOfMonth(head.getPeriodYear(), head.getPeriodMonth() - 1);
 
@@ -122,11 +132,6 @@ public class DeclarationUploadDialog extends TemplatePanel {
                                     : getStringFormat("info_check_error", declaration.getCheckMessage())));
                         }
 
-                        //add to filter
-                        declarationFilter.getPeriods().clear();
-                        declarationFilter.getPeriods().add(new Period(head.getPeriodMonth(), head.getPeriodType(),
-                                head.getPeriodYear()));
-
                         log.info("Документ загружен", new Event(EventCategory.IMPORT, declaration));
                     } catch (NumberFormatException e) {
                         error(getStringFormat("error_filename", fileName));
@@ -136,6 +141,13 @@ public class DeclarationUploadDialog extends TemplatePanel {
                         error(getStringFormat("error_upload", fileName));
 
                         log.error("Ошибка загрузки документа", e);
+                    } finally {
+                        //add to filter
+                        declarationFilter.getPeriods().clear();
+                        if (head != null) {
+                            declarationFilter.getPeriods().add(new Period(head.getPeriodMonth(), head.getPeriodType(),
+                                    head.getPeriodYear()));
+                        }
                     }
                 }
 
