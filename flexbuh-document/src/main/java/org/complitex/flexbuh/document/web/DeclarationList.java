@@ -131,7 +131,7 @@ public class DeclarationList extends TemplatePage{
                 Long personProfileId = getPreferenceLong(PersonProfile.SELECTED_PERSON_PROFILE_ID);
 
                 //return declarationBean.getPeriodMap(sessionId, personProfileId);
-                return canViewAllSessionDocument()? declarationBean.getPeriodMap(null, null): declarationBean.getPeriodMap(sessionId, personProfileId);
+                return canViewAllSessionDocument()? declarationBean.getPeriodMap(null, -1L): declarationBean.getPeriodMap(sessionId, personProfileId);
             }
         };
 
