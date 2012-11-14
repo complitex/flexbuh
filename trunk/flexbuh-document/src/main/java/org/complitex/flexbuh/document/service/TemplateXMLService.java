@@ -92,6 +92,7 @@ public class TemplateXMLService {
         Source xsdSource = new StreamSource(new StringReader(xsd.getData()), templateName + ".xsd");
 
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.FALSE);
 
         factory.setResourceResolver(new LSResourceResolver() {
             @Override
