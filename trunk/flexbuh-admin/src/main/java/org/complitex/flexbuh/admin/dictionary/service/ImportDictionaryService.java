@@ -67,6 +67,8 @@ public class ImportDictionaryService{
             listener.criticalError(e.getMessage());
 
             log.error("Критическая ошибка импорта" , e);
+        } finally {
+            listener.setExecute(false);
         }
     }
 

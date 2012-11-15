@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DictionaryImportListener implements Serializable {
     private String criticalErrorMessage;
     private boolean criticalError = false;
+    private volatile boolean execute = false;
 
     private Map<Enum, DictionaryImportChildListener> childListenerMap = new ConcurrentHashMap<>();
 
@@ -27,7 +28,7 @@ public class DictionaryImportListener implements Serializable {
     }
 
     public boolean isDone() {
-        boolean childProcessed = true;
+        boolean childProcessed = !isExecute();
 
         for (DictionaryImportChildListener childListener : childListenerMap.values()){
             if (childListener.getStatus() == null || DictionaryImportChildListener.Status.PROCESSING.equals(childListener.getStatus())){
@@ -37,6 +38,14 @@ public class DictionaryImportListener implements Serializable {
         }
 
         return childProcessed || criticalError;
+    }
+
+    public boolean isExecute() {
+        return execute;
+    }
+
+    public void setExecute(boolean execute) {
+        this.execute = execute;
     }
 
     public void criticalError(String message){

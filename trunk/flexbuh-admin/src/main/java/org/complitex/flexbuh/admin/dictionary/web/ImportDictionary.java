@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.flexbuh.admin.dictionary.service.ImportDictionaryService;
@@ -20,7 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -86,6 +89,7 @@ public class ImportDictionary extends TemplatePage {
             public void onSubmit() {
                 listener.clear();
 
+                listener.setExecute(true);
                 importDictionaryService.process(listener, dictionaryModel.getObject());
 
                 container.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
@@ -94,6 +98,7 @@ public class ImportDictionary extends TemplatePage {
                         target.add(dictionaryTypes);
 
                         if (listener.isDone()) {
+                            log.debug("Import Done");
                             dictionaryModel.getObject().clear();
 
                             if (listener.getCriticalErrorMessage() != null){
