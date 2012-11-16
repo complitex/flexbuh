@@ -136,7 +136,13 @@ public class DeclarationService {
                 }
             });
 
+            //clear person profile id before validate
+            Long personProfileId = declaration.getPersonProfileId();
+            declaration.setPersonProfileId(null);
+
             StreamSource streamSource = new StreamSource(new StringReader(getString(declaration)));
+
+            declaration.setPersonProfileId(personProfileId);
 
             validator.validate(streamSource);
 

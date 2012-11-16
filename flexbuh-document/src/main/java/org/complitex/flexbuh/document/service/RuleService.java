@@ -90,7 +90,7 @@ public class RuleService {
                         }
                     }
                 }else {
-                    if (check(null, declaration, rule, context)){
+                    if (!check(null, declaration, rule, context)){
                         declaration.setChecked(false);
                         declaration.setCheckMessage(rule.getDescription());
 
@@ -109,12 +109,12 @@ public class RuleService {
         DeclarationValue value = declaration.getDeclarationValue(rowNum, name);
 
         if (value != null){
-            String expr = value.getValue()
-                    + rule.getSign().replace("=", "==")
+            String expr = (value.getValue() != null ? value.getValue() : "0")
+                    + (rule.getSign().equals("=") ? "==" : rule.getSign())
                     + getExpression(rowNum, declaration, rule);
 
             try {
-                return !(Boolean)context.evaluateString(context.initStandardObjects(), expr, "js", 0, null);
+                return (Boolean)context.evaluateString(context.initStandardObjects(), expr, "js", 0, null);
             } catch (Exception e) {
                 log.error("Ошибка выполнения скрипта", e);
             }
@@ -132,7 +132,7 @@ public class RuleService {
         Matcher sumMatcher = SUM_PATTERN.matcher(expression);
 
         while (sumMatcher.find()){
-            String expr = sumMatcher.group(0);
+            String param = sumMatcher.group(0);
             String name = sumMatcher.group(1);
 
             double value = 0;
@@ -143,14 +143,14 @@ public class RuleService {
                 }
             }
 
-            expression = expression.replace(expr, value + "");
+            expression = replace(expression, param, value + "");
         }
 
         //Linked
         Matcher linkedMather = LINKED_PATTERN.matcher(expression);
 
         while (linkedMather.find()){
-            String expr = linkedMather.group(0);
+            String param = linkedMather.group(0);
             String id = linkedMather.group(1);
             String name = linkedMather.group(2);
 
@@ -164,21 +164,21 @@ public class RuleService {
                 value = linkedDeclaration.getDeclaration().getDeclarationValue(name).getValue();
             }
 
-            expression = expression.replace(expr, StringUtil.isDecimal(value) ? value : "0");
+            expression = replace(expression, param, value);
         }
 
         //Value
         Matcher valueMatcher = VALUE_PATTERN.matcher(expression);
 
         while (valueMatcher.find()){
-            String expr = valueMatcher.group(0);
+            String param = valueMatcher.group(0);
             String name = valueMatcher.group(1);
 
             DeclarationValue declarationValue = declaration.getDeclarationValue(rowNum, name);
 
             String value = declarationValue != null ? declarationValue.getValue() : "0";
 
-            expression = expression.replace(expr, StringUtil.isDecimal(value) ? value : "0");
+            expression = replace(expression, param, value);
         }
 
         //ABS
@@ -188,6 +188,10 @@ public class RuleService {
         expression = StringEscapeUtils.unescapeXml(expression);
 
         return expression;
+    }
+
+    private String replace(String expression, String param, String value){
+        return expression.replaceAll("(\\" + param + "(\\W|$))", (StringUtil.isDecimal(value) ? value : "0") + "$2");
     }
 }
 
